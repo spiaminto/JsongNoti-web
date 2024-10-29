@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+  <meta name="description" content="노래방 일본어 신곡을 알려드리는 서비스입니다."/>
+  <meta name="author" content=""/>
+  <title>일본 신곡 알림이</title>
+  <!-- Favicon-->
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico"/>
+  <!-- Bootstrap icons-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet"
+        type="text/css"/>
+  <!-- nanum fonts-->
+  <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css" rel="stylesheet">
+  <!-- Core theme CSS (includes Bootstrap)-->
+  <link href="/static/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
+
+  <style>
+      /*
+        media
+        @media (min-width: 576px)
+        @media (min-width: 768px)
+        @media (min-width: 992px)
+        // 여기서 부터 레이아웃 가로로 확장
+        @media (min-width: 1200px)
+      */
+
+      /*
+      .container 의 maxwidth 가 px 단위로 맞춰져있는걸 수정
+       */
+      .container {
+          max-width: 95% !important;
+      }
+
+      section {
+          margin-top: 3rem;
+      }
+
+      body {
+          font-family: 'NanumSquareRound', sans-serif;
+          background-color: #f8f9fa;
+      }
+
+      .navbar-brand {
+          font-size: 1.5rem;
+          font-weight: bold;
+          text-indent: 1rem;
+      }
+
+      @media (min-width: 768px) {
+          .navbar-brand {
+              font-size: 2rem;
+              text-indent: 2rem;
+          }
+      }
+
+      header.masthead {
+          padding-top: 0;
+          padding-bottom: 0;
+      }
+
+      .masthead-background {
+          position: relative;
+          background: url("/static/assets/img/karaoke.jpg") no-repeat center center;
+          background-size: cover;
+          padding-top: 8rem;
+          padding-bottom: 8rem;
+          border-radius: 25px;
+          width: 93%;
+          margin: 0 auto;
+          box-shadow: darkgrey 5px 5px 5px;
+      }
+
+      .masthead-background:before {
+          content: "";
+          position: absolute;
+          background-color: #1c375e;
+          border-radius: 25px;
+          height: 100%;
+          width: 100%;
+          top: 0;
+          left: 0;
+          opacity: 0.5;
+      }
+
+      @media (min-width: 768px) {
+          .masthead-background {
+              padding-top: 12rem;
+              padding-bottom: 12rem;
+          }
+      }
+
+      .headerText {
+          font-weight: normal;
+          text-shadow: 1px 1px 1px grey;
+      }
+
+      .form-check {
+          margin-top: 1rem;
+      }
+
+      .form-check .form-check-input {
+          float: none;
+      }
+
+      #subscribeForm .col {
+          padding: 0;
+      }
+      #subscribeForm #emailInput {
+      }
+
+      #subscribeForm .col-auto {
+          padding: 0;
+      }
+      #subscribeForm #submitButton {
+          margin-left: 0.5rem;
+      }
+
+      /* 모바일 폼 크기 조정 - 이메일입력, 구독버튼 */
+      @media (min-width: 768px) {
+          #subscribeForm .col {
+              padding-left: 0.5rem;
+              padding-right: 0.5rem;
+          }
+          #subscribeForm #emailInput {
+              /*from bootstrap .form-control-lg */
+              min-height: calc(1.5em + 2rem + 2px);
+              padding: 1rem 1.25rem;
+              font-size: 1.25rem;
+              border-radius: 0.5rem;
+          }
+
+          #subscribeForm .col-auto {
+              padding-left: 0.5rem;
+              padding-right: 0.5rem;
+          }
+          #subscribeForm #submitButton {
+              /*from bootstrap .form-control-lg */
+              min-height: calc(1.5em + 2rem + 2px);
+              padding: 1rem 1.25rem;
+              font-size: 1.25rem;
+              border-radius: 0.5rem;
+          }
+
+          #unsubscribeForm .col {
+              padding-left: 0.5rem;
+              padding-right: 0.5rem;
+          }
+          #unsubscribeForm #unsubscribeEmailInput {
+              /*from bootstrap .form-control-lg */
+              min-height: calc(1.5em + 2rem + 2px);
+              padding: 1rem 1.25rem;
+              font-size: 1.25rem;
+              border-radius: 0.5rem;
+          }
+
+          #unsubscribeForm .col-auto {
+              padding-left: 0.5rem;
+              padding-right: 0.5rem;
+          }
+          #unsubscribeForm #unsubscribeButton {
+              /*from bootstrap .form-control-lg */
+              min-height: calc(1.5em + 2rem + 2px);
+              padding: 1rem 1.25rem;
+              font-size: 1.25rem;
+              border-radius: 0.5rem;
+          }
+      }
+
+      .agreement-btn {
+          border: 0;
+          background-color: transparent;
+          cursor: pointer;
+          padding: 0;
+          color: #cccccc;
+      }
+
+      /* 신곡 영역 */
+
+      .new-song-section {
+          /*padding-top: 2rem;*/
+          /*padding-bottom: 2rem;*/
+      }
+
+      #song-container {
+      }
+
+      .song-content-border {
+          border: solid 1px #aaaaaa;
+          border-radius: 10px;
+          margin-top: 20px;
+          overflow: hidden;
+          box-shadow: lightgrey 2px 2px 2px;
+      }
+
+      .table-tj {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 1.1rem;
+          border-radius: 25px;
+          border-style: hidden;
+      }
+
+      .table-ky {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 1.1rem;
+          border-style: hidden;
+      }
+
+      .table-tj th {
+          background-color: #f95001;
+          border: 1px solid #aaaaaa;
+          text-align: left;
+          padding: 8px;
+          color: white;
+      }
+
+      .table-ky th {
+          background-color: #6495ed;
+          border: 1px solid #aaaaaa;
+          text-align: left;
+          padding: 8px;
+          color: white;
+      }
+
+      .song-number {
+          border: 1px solid #aaaaaa;
+          text-align: left;
+          padding: 8px;
+          width: 8%;
+          font-size: 0.95rem;
+      }
+
+      .song-title {
+          border: 1px solid #aaaaaa;
+          text-align: left;
+          padding: 8px;
+          width: 67%;
+      }
+
+      .song-info-text {
+          font-size: 0.9rem;
+          color: #777;
+          text-indent: 0.5rem;
+      }
+
+      .song-singer {
+          border: 1px solid #aaaaaa;
+          text-align: left;
+          padding: 8px;
+          width: 25%;
+      }
+
+      .song-title-text > a {
+          display: block;
+          color: #111111;
+          font-weight: bold;
+          text-decoration: none;
+      }
+
+      .song-title-text > a:hover {
+          text-decoration: underline;
+      }
+
+      .song-header-text {
+          text-align: center;
+          margin-top: 2rem;
+      }
+
+      @media (min-width: 992px) {
+          .song-header-text {
+              margin-top: 0;
+          }
+      }
+
+      @media (min-width: 768px) {
+          /* 모바일 폰트 사이즈 조정 */
+          .table-tj {
+              font-size: 1.2rem;
+          }
+
+          .table-ky {
+              font-size: 1.2rem;
+          }
+      }
+
+      .showcase-img {
+          width: 93%;
+          border-radius: 25px;
+          margin: 0 auto;
+          box-shadow: darkgrey 5px 5px 5px;
+          aspect-ratio: 1.5 / 1;
+      }
+
+      @media (min-width: 992px) {
+          .showcase-img-wrapper {
+              width: 50%;
+              min-height: 30rem;
+          }
+
+          .showcase .showcase-img {
+              min-height: 25rem;
+          }
+
+          .showcase .row {
+              padding: 1rem;
+          }
+      }
+
+      /* 지나치게 큰 크기에서 showcase-img 의 aspect-ratio 로 인해 이미지 꽉차는거 보정 */
+      @media (min-width: 1400px) {
+          .showcase .row {
+              margin-top: 2rem;
+          }
+      }
+
+      .showcase .showcase-text {
+          padding: 3rem;
+      }
+
+      @media (min-width: 992px) {
+          .showcase .showcase-text {
+              padding: 1rem;
+          }
+      }
+  </style>
+  <script src="http://code.jquery.com/jquery.min.js"></script>
+  <script th:inline="javascript">
+    $(function () {
+        //loaded
+// alert
+        let alertMessage = [[${alertMessage}]];
+        if (alertMessage) {
+            alert(alertMessage);
+        }
+
+// 이메일 폼 전송
+        $('#subscribeForm').submit(function (event) {
+            event.preventDefault();
+            $(this).prop('disabled', true);
+
+            let email = $('#emailInput').val();
+            let csrf = $('#csrfToken').val();
+            let agreement = $('#flexCheckDefault').is(':checked');
+            if (!agreement) {
+                alert('이메일 수집에 동의해주세요.');
+                return;
+            }
+            $.ajax({
+                type: 'POST',
+                url: '/users',
+                data: {
+                    email: email,
+                    _csrf: csrf
+                },
+                success: function (data) {
+                    console.log(data);
+                    alert(data);
+                    $('#emailInput').val('');
+                },
+                error: function (xhr) {
+                    console.log();
+                    let message = xhr.responseText;
+                    alert(message);
+                },
+                complete: function () {
+                    $(this).prop('disabled', false);
+                }
+            });
+        });
+
+        // 구독 취소
+        $('#unsubscribeButton').click(function (event) {
+            event.preventDefault();
+            if (!confirm('정말 구독을 취소하시겠습니까?')) {
+                return;
+            }
+
+            let email = $('#unsubscribeEmailInput').val();
+            let csrf = $('#csrfToken').val();
+            $.ajax({
+                type: 'POST',
+                url: '/users/delete',
+                data: {
+                    email: email,
+                    _csrf: csrf
+                },
+                success: function (data) {
+                    console.log(data);
+                    alert(data);
+                    $('#unsubscribeEmailInput').val('');
+                },
+                error: function (xhr) {
+                    console.log();
+                    let message = xhr.responseText;
+                    alert(message);
+                }
+            });
+        });
+
+    })
+  </script>
+</head>
+<body>
+<!-- Navigation-->
+<nav class="navbar navbar-light bg-light static-top">
+  <div class="container">
+    <a class="navbar-brand" href="/">노래방 일본 신곡 알림이</a>
+  </div>
+</nav>
+<!-- Masthead-->
+<header class="masthead">
+  <div class="masthead-background" th:style="'background-image:url(/assets/img/karaoke.jpg)'">
+    <div class="container position-relative">
+      <div class="row justify-content-center">
+        <div class="col-xl-6">
+          <div class="text-center text-white">
+            <!-- Page heading-->
+            <h2 class="mb-5 headerText">매일 오전 10시 <br> TJ, 금영 노래방에 일본 신곡이 등록되면 알림 메일을 전송해드립니다.</h2>
+            <form class="form-subscribe" id="subscribeForm" >
+              <!-- Email address input-->
+              <div class="row">
+                <div class="col">
+                  <input class="form-control form-control" id="emailInput" type="email" placeholder="이메일 입력"
+                         required>
+                </div>
+                <div class="col-auto">
+                  <button class="btn btn-outline-light btn" id="submitButton" type="submit">구독하기</button>
+                  <input type="hidden" id="csrfToken" name="_csrf" th:value="${_csrf.token}"/>
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                  <label class="form-check-label" for="flexCheckDefault">
+                    이메일 수집에 동의합니다
+                  </label>
+                  <!-- Button trigger modal -->
+                  <button type="button" class="btn btn-outline-light agreement-btn" data-bs-toggle="modal"
+                          data-bs-target="#agreementModal">
+                    [ 자세히 보기 ]
+                  </button>
+                </div>
+              </div>
+              <!-- Submit success message-->
+              <!---->
+              <!-- This is what your users will see when the form-->
+              <!-- has successfully submitted-->
+              <div class="d-none" id="submitSuccessMessage">
+                <div class="text-center mb-3">
+                  <div class="fw-bolder">Form submission successful!</div>
+                  <p>To activate this form, sign up at</p>
+                  <a class="text-white" href="https://startbootstrap.com/solution/contact-forms">https://startbootstrap.com/solution/contact-forms</a>
+                </div>
+              </div>
+              <!-- Submit error message-->
+              <!---->
+              <!-- This is what your users will see when there is-->
+              <!-- an error submitting the form-->
+              <div class="d-none" id="submitErrorMessage">
+                <div class="text-center text-danger mb-3">Error sending message!</div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- agreement Modal -->
+<div class="modal fade" id="agreementModal" tabindex="-1" aria-labelledby="agreementModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">이메일 수집 동의</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-body-content">
+          <p>어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고
+            저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고
+            저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">확인</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 신곡 일람 표 -->
+<section class="new-song-section bg-light text-center">
+  <div id="song-container" class="container text-center">
+    <div class="new-song-section-header">
+      <p> 최근 신곡 목록입니다. 노래 제목을 클릭하시면 구글 검색으로 이동합니다.</p>
+    </div>
+    <div class="row">
+      <!-- 태진 -->
+      <div class="col-lg-4">
+        <h3 class="song-header-text"
+            th:text="${tjDate + ' TJ 노래방 신곡 목록'}">TJ 노래방 신곡 목록</h3>
+        <div class="song-content-border">
+          <table class="table-tj">
+            <thead>
+            <tr>
+              <th>번호</th>
+              <th>제목</th>
+              <th>아티스트</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="song : ${tjNewSongs}">
+              <td class="song-number" th:text="${song.number}">12345
+              </td>
+              <td class="song-title">
+                <div class="song-title-text">
+                  <a target="_blank" th:href="${song.searchUrl}"
+                     href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9"
+                     th:text="${song.title}">
+                    노래 제목
+                  </a>
+                </div>
+                <div class="song-info-text" th:text="${song.info}">정보 텍스트
+                </div>
+              </td>
+              <td class="song-singer" th:text="${song.singer}">가수명
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- 금영 -->
+      <div class="col-lg-4">
+        <h3 class="song-header-text"
+            th:text="${kyDate + ' 금영 노래방 신곡 목록'}">금영 노래방 신곡 목록</h3>
+        <div class="song-content-border">
+          <table class="table-ky">
+            <thead>
+            <tr>
+              <th>번호</th>
+              <th>제목</th>
+              <th>아티스트</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="song : ${kyNewSongs}">
+              <td class="song-number" th:text="${song.number}">12345
+              </td>
+              <td class="song-title">
+                <div class="song-title-text">
+                  <a target="_blank" th:href="${song.searchUrl}"
+                     href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9"
+                     th:text="${song.title}">
+                    노래 제목
+                  </a>
+                </div>
+                <div class="song-info-text" th:text="${song.info}">정보 텍스트
+                </div>
+              </td>
+              <td class="song-singer" th:text="${song.singer}">가수명
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- 사용 방법 및 주의사항 표-->
+<section class="showcase">
+  <div class="container-fluid p-0">
+    <div class="row g-0">
+      <div class="showcase-img-wrapper">
+        <div class="col-lg-6 order-lg-2 text-white showcase-img"
+             style="background-image: url('/static/assets/img/bg-showcase-1.jpg')"
+             th:style="'background-image: url(/assets/img/bg-showcase-1.jpg)'"></div>
+      </div>
+      <div class="col-lg-6 order-lg-1 my-auto showcase-text">
+        <h2>등록 방법</h2>
+        <p class="lead mb-0">이메일을 입력한 후 등록하기 버튼을 누릅니다. 입력한 이메일로 전송된 인증 메일의 버튼을 클릭하면
+          인증이 완료됩니다.</p>
+      </div>
+    </div>
+    <div class="row g-0">
+      <div class="showcase-img-wrapper">
+        <div class="col-lg-6 text-white showcase-img"
+             style="background-image: url('/static/assets/img/bg-showcase-2.jpg')"
+             th:style="'background-image: url(/assets/img/bg-showcase-1.jpg)'"></div>
+      </div>
+      <div class="col-lg-6 my-auto showcase-text">
+        <h2>이메일 수신</h2>
+        <p class="lead mb-0"> 노래방에 일본 신곡이 추가되면 오전 10시에 등록된 이메일로 알려드립니다.</p>
+      </div>
+    </div>
+    <div class="row g-0">
+      <div class="showcase-img-wrapper">
+        <div class="col-lg-6 order-lg-2 text-white showcase-img"
+             style="background-image: url('/static/assets/img/bg-showcase-3.jpg')"
+             th:style="'background-image: url(/assets/img/bg-showcase-1.jpg)'"></div>
+      </div>
+      <div class="col-lg-6 order-lg-1 my-auto showcase-text">
+        <h2>문의사항</h2>
+        <p class="lead mb-0">문의사항은 spiaminto@gmail.com 으로 문의 부탁드립니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 구독 취소 모달 버튼 -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#unsubscribeModal">
+  Launch static backdrop modal
+</button>
+
+<!-- 구독 취소 모달 -->
+<div class="modal fade" id="unsubscribeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">구독 취소하기</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-subscribe" id="unsubscribeForm" >
+          <!-- Email address input-->
+          <div class="row">
+            <div class="col">
+              <input class="form-control form-control" id="unsubscribeEmailInput" type="email" placeholder="이메일 입력"
+                     required/>
+            </div>
+            <div class="col-auto">
+              <button class="btn btn-outline-danger btn" id="unsubscribeButton" type="submit">구독취소</button>
+              <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="unsubscribeModalCloseButton" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Footer-->
+<footer class="footer bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
+        <ul class="list-inline mb-2">
+          <li class="list-inline-item"><a href="#!">구독 취소</a></li>
+          <li class="list-inline-item">⋅</li>
+          <li class="list-inline-item"><a href="#!">Contact</a></li>
+          <li class="list-inline-item">⋅</li>
+          <li class="list-inline-item"><a href="#!">Terms of Use</a></li>
+          <li class="list-inline-item">⋅</li>
+          <li class="list-inline-item"><a href="#!">Privacy Policy</a></li>
+        </ul>
+        <p class="text-muted small mb-4 mb-lg-0">&copy; JsongNoti by spiaminto. All Rights Reserved.</p>
+      </div>
+      <div class="col-lg-6 h-100 text-center text-lg-end my-auto">
+        <ul class="list-inline mb-0">
+          <li class="list-inline-item me-4">
+            <a href="#!"><i class="bi-github fs-3"></i></a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#!"><i class="bi-envelope fs-3"></i></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<script src="/js/scripts.js"></script>
+</body>
+</html>
