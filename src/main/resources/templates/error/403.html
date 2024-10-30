@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<h2> 403 에러 </h2>
+<p> 해당 페이지에 접근 권한이 없습니다. </p>
+<button type="button" onclick="location.href='index.html'"
+        th:onclick="|location.href='@{/}'|">
+  홈으로 돌아가기
+</button>
+</body>
+</html>

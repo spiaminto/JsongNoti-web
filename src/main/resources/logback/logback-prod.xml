@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- EB 의 EC2 인스턴스 내부 경로-->
+    <property name="LOG_DIR" value="/var/log/jsongnoti/" />
+
+    <!-- CONSOLE 콘솔 로그 -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %highlight(%-5level) %d{yy-MM-dd HH:mm:ss.SSS} [%thread] : %green(%30logger{1}) - %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <!-- 콘솔로그 전체를 파일로 출력 -->
+    <appender name="consoleToFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/console.log</file>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%thread] : %30logger{1} - %msg%n
+            </Pattern>
+        </layout>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/console %d{yyyy-MM-dd} [%i].log</fileNamePattern>
+            <maxFileSize>5MB</maxFileSize>
+            <maxHistory>30</maxHistory> <!--갯수 한계-->
+        </rollingPolicy>
+    </appender>
+
+    <!-- trace 파일출력 -->
+    <appender name="traceToFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/trace.log</file>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%thread] : %30logger{1} - %msg%n
+            </Pattern>
+        </layout>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/trace %d{yyyy-MM-dd} [%i].log</fileNamePattern>
+            <maxFileSize>5MB</maxFileSize>
+            <maxHistory>30</maxHistory> <!--갯수 한계-->
+        </rollingPolicy>
+    </appender>
+
+    <!-- sql.timing 만 파일로 출력 -->
+    <appender name="sqlToFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/sql.log</file>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%thread] : %30logger{1} - %msg%n
+            </Pattern>
+        </layout>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/sql %d{yyyy-MM-dd} [%i].log</fileNamePattern>
+            <maxFileSize>5MB</maxFileSize>
+            <maxHistory>30</maxHistory> <!--갯수 한계-->
+        </rollingPolicy>
+    </appender>
+
+    <!-- 콘솔 출력물 중 에러만 파일로 출력 -->
+    <appender name="errorToFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--LOG LEVEL FILTER, if ERROR true -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <OnMatch>ACCEPT</OnMatch>
+            <OnMismatch>DENY</OnMismatch>
+        </filter>
+        <!-- 작성할 파일 -->
+        <file>${LOG_DIR}/error.log</file>
+        <!-- 로그 작성 (encoder)-->
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%thread] : %30logger{1} %n[message] %msg%n
+            </Pattern>
+        </layout>
+        <!-- 새 파일 작성 정책 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/error %d{yyyy-MM-dd} [%i].log</fileNamePattern>
+            <maxFileSize>5MB</maxFileSize>
+            <maxHistory>30</maxHistory> <!--갯수 한계-->
+        </rollingPolicy>
+    </appender>
+
+
+    <root level="info">
+        <appender-ref ref="console" />
+        <appender-ref ref="consoleToFile" />
+        <appender-ref ref="errorToFile"/>
+    </root>
+
+    <logger name="com.jsongnoti.jsongnoti_web.log.trace">
+        <appender-ref ref="traceToFile" />
+    </logger>
+
+    <logger name="jdbc.sqltiming" level="info">
+        <appender-ref ref="sqlToFile" />
+    </logger>
+
+
+    <!-- jdbc 관련 로그 다 켜져서 일단 끔 -->
+    <logger name="jdbc.sqlonly" level="off"/>
+    <logger name="jdbc.audit" level="off" />
+    <logger name="jdbc.resultset" level="off" />
+    <logger name="jdbc.resultsettable" level="off" />
+    <logger name="jdbc.connection" level="off" />
+
+</configuration>

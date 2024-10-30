@@ -128,7 +128,7 @@ public class GmailSender {
      * @return
      */
     public String getDeleteSubject() {
-        return "일본 신곡 알림이 구독 취소 메일 (" + DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()) + ")";
+        return "일본 신곡 알림이 구독취소 인증메일 (" + DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()) + ")";
     }
 
     /**
@@ -137,7 +137,7 @@ public class GmailSender {
      * @return
      */
     public String getDeleteHeaderText() {
-        return "아래의 링크를 클릭하시면 구독 취소가 완료됩니다. (이 인증은 5분간 유효합니다.)";
+        return "아래의 링크를 클릭하시면 구독취소가 완료됩니다. (이 인증은 5분간 유효합니다.)";
     }
 
 }

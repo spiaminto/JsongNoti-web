@@ -38,8 +38,25 @@ dependencies {
     // Spring Security starter
     implementation 'org.springframework.boot:spring-boot-starter-security:3.3.4'
 
+    // log4jdbc
+    implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+version = '1.0.0'
+// AWS Elastic Beanstalk 배포를 위한 빌드
+task buildAwsEb(type: Zip) {
+    from bootJar.outputs.files
+    from('.ebextensions') {
+        into('.ebextensions')
+    }
+    from('.platform') {
+        into('.platform')
+    }
+    archiveFileName = "JsongNoti_Web-${project.version}.zip"
+    destinationDirectory = file('build/distributions') // 일반 빌드인 lib 과 구별
 }

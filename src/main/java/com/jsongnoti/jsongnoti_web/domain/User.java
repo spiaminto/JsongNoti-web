@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -42,13 +43,13 @@ public class User {
     }
 
     /**
-     * 주어진 토큰과 토큰생성 시간으로 User 의 인증 정보를 설정합니다.
-     * @param token
-     * @param time
+     * User 의 인증 토큰과 인증토큰 만료시간을 갱신합니다.
      */
-    public void setAuth(String token, LocalDateTime time) {
-        this.authenticationToken = token;
-        this.authenticationTimestamp = time;
+    public void setAuth() {
+        String authenticationToken = UUID.randomUUID().toString();
+        LocalDateTime authenticationTimestamp = LocalDateTime.now();
+        this.authenticationToken = authenticationToken;
+        this.authenticationTimestamp = authenticationTimestamp;
 
     }
 

@@ -6,14 +6,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
 public interface SongRepository extends JpaRepository<Song, Long> {
 
     @Query("SELECT s FROM Song s " +
-            "WHERE s.brand = :brand AND " +
-            "DATE(s.createdAt) = (SELECT DATE(MAX(s2.createdAt)) FROM Song s2 WHERE s2.brand = :brand)")
-    List<Song> findLatestSongsByBrand(Brand brand);
+            "WHERE s.brand = :brand " +
+            "AND s.regDate >= :startDate " +
+            "AND s.regDate <= :endDate")
+    List<Song> findSongsByBrandBetweenTime(Brand brand, LocalDate startDate, LocalDate endDate);
 
 }

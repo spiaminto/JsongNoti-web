@@ -26,8 +26,10 @@ public class SecurityConfig {
                         authorizeRequests
                                 // resources
                                 .requestMatchers("/static/**", "/assets/**", "/css/**", "/js/**").permitAll()
+                                // healthcheck
+                                .requestMatchers("/health-check").permitAll()
                                 .requestMatchers("/", "/users/**").permitAll()
-                                .anyRequest().authenticated()
+                                .anyRequest().permitAll()
                 )
                 // 미구현
                 .formLogin(formLogin ->

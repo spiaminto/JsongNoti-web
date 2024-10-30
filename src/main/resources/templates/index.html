@@ -7,7 +7,7 @@
   <meta name="author" content=""/>
   <title>일본 신곡 알림이</title>
   <!-- Favicon-->
-  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico"/>
+  <link rel="icon" type="image/x-icon" href="/static/assets/favicon_32.png" th:href="@{/assets/favicon_32.png}"/>
   <!-- Bootstrap icons-->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet"
         type="text/css"/>
@@ -33,8 +33,18 @@
           max-width: 95% !important;
       }
 
+      .navbar {
+          padding-bottom: 4px; /* 원본 8px */
+      }
+
       section {
-          margin-top: 3rem;
+          margin-top: 1.5rem;
+      }
+
+      @media (min-width: 992px) {
+          section {
+              margin-top: 3rem;
+          }
       }
 
       body {
@@ -67,7 +77,7 @@
           padding-top: 8rem;
           padding-bottom: 8rem;
           border-radius: 25px;
-          width: 93%;
+          width: 92%;
           margin: 0 auto;
           box-shadow: darkgrey 5px 5px 5px;
       }
@@ -93,7 +103,7 @@
 
       .headerText {
           font-weight: normal;
-          text-shadow: 1px 1px 1px grey;
+          text-shadow: 1px 1px 1px dimgray;
       }
 
       .form-check {
@@ -118,6 +128,7 @@
       #subscribeForm #submitButton {
           margin-left: 0.5rem;
       }
+
 
       /* 모바일 폼 크기 조정 - 이메일입력, 구독버튼 */
       @media (min-width: 768px) {
@@ -182,6 +193,31 @@
           color: #cccccc;
       }
 
+      #goToUsageButton {
+          position: absolute;
+          bottom: -5rem;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 10;
+          padding: 10px 20px;
+          font-size: 1rem;
+          border-radius: 20px;
+          transition: all 0.3s ease;
+      }
+
+      #goToUsageButton:hover {
+          background-color: #fff;
+          color: #1c375e;
+      }
+
+      @media (max-width: 768px) {
+          #goToUsageButton {
+              bottom: -3rem;
+              font-size: 0.9rem;
+              padding: 8px 16px;
+          }
+      }
+
       /* 신곡 영역 */
 
       .new-song-section {
@@ -203,8 +239,8 @@
       /* 노래 테이블 페이드 인 */
       .fade-in-element {
           opacity: 0;
-          transform: translateY(20px);
-          transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+          transform: translateY(25px);
+          transition: opacity 0.8s ease-out, transform 0.8s ease-out;
       }
 
       .fade-in-element.is-visible {
@@ -288,9 +324,15 @@
           margin-top: 2rem;
       }
 
+      /* 모바일상에서 윗마진 줄임 */
+      .song-header-text-tj {
+          margin-top: 1rem;
+      }
+
+      /* 양옆으로 펴질때 원래대로 */
       @media (min-width: 992px) {
-          .song-header-text {
-              margin-top: 0;
+          .song-header-text-tj {
+              margin-top: 2rem;
           }
       }
 
@@ -306,6 +348,16 @@
       }
 
       /* 사용 방법 및 주의 사항 스타일 */
+
+      .showcase {
+          margin-top: 3rem; /* section 1.5rem 오버라이드 */
+      }
+
+      .showcase #showCaseHeaderText {
+          text-align: center;
+          margin-bottom: 2rem;
+      }
+
       .showcase-img {
           width: 93%;
           border-radius: 25px;
@@ -348,23 +400,28 @@
       }
 
       /* 푸터 영역 */
+      footer.footer {
+          padding: 2rem 0; /* 원본 4rem */
+      }
+
       #footerText {
           margin-top: 1rem;
+          margin-bottom: 0 !important;
       }
 
       #unsubscribeButton {
           margin: 0 auto;
       }
   </style>
-  <script src="http://code.jquery.com/jquery.min.js"></script>
-  <script th:inline="javascript">
+  <script src="https://code.jquery.com/jquery.min.js"></script>
+  <script>
       $(function () {
           //loaded
 // alert
-//           let alertMessage = [[${alertMessage}]];
-          let alertMessage = "";
+          let alertMessage = $('#alertMessage').text();
           if (alertMessage) {
               alert(alertMessage);
+              alertMessage.text('');
           }
 
 // 요소 페이드 인
@@ -385,9 +442,9 @@
           }
 
           function checkElement() {
-              // 뷰포트 90% 지점
-              var viewportTop = $(window).scrollTop() * 1.1;
-              var viewportBottom = viewportTop + $(window).height() * 0.9;
+              // 뷰포트 88% 지점
+              var viewportTop = $(window).scrollTop() * 1.12;
+              var viewportBottom = viewportTop + $(window).height() * 0.88;
 
               var elementTop = $(this).offset().top;
               var elementBottom = elementTop + $(this).outerHeight();
@@ -398,6 +455,13 @@
                   // fadeElements = fadeElements.not($(this));
               }
           }
+
+// 사용방법 바로가기 버튼 클릭 이벤트
+          $('#goToUsageButton').click(function() {
+              $('html, body').animate({
+                  scrollTop: $('.showcase').offset().top - 32 // 2rem 여유
+              }, 1); // fade in 걸린 요소 때문에 애니메이션 이상해져서 1ms 로 줄임
+          });
 
 
           // 이메일 폼 전송
@@ -425,7 +489,7 @@
                       $('#emailInput').val('');
                   },
                   error: function (xhr) {
-                      console.log();
+                      console.log(xhr);
                       let message = xhr.responseText;
                       alert(message);
                   },
@@ -457,7 +521,7 @@
                       $('#unsubscribeEmailInput').val('');
                   },
                   error: function (xhr) {
-                      console.log();
+                      console.log(xhr);
                       let message = xhr.responseText;
                       alert(message);
                   }
@@ -468,6 +532,7 @@
   </script>
 </head>
 <body>
+<div id="alertMessage" th:text="${alertMessage}" style="width: 0; height: 0; display: none"></div>
 <!-- Navigation-->
 <nav class="navbar navbar-light bg-light static-top">
   <div class="container">
@@ -508,25 +573,13 @@
                   </button>
                 </div>
               </div>
-              <!-- Submit success message-->
-              <!---->
-              <!-- This is what your users will see when the form-->
-              <!-- has successfully submitted-->
-              <div class="d-none" id="submitSuccessMessage">
-                <div class="text-center mb-3">
-                  <div class="fw-bolder">Form submission successful!</div>
-                  <p>To activate this form, sign up at</p>
-                  <a class="text-white" href="https://startbootstrap.com/solution/contact-forms">https://startbootstrap.com/solution/contact-forms</a>
-                </div>
-              </div>
-              <!-- Submit error message-->
-              <!---->
-              <!-- This is what your users will see when there is-->
-              <!-- an error submitting the form-->
-              <div class="d-none" id="submitErrorMessage">
-                <div class="text-center text-danger mb-3">Error sending message!</div>
-              </div>
             </form>
+            <!-- 사용방법 바로가기 버튼 -->
+            <div class="row justify-content-center mt-4">
+              <div class="col-auto">
+                <button id="goToUsageButton" class="btn btn-outline-light btn-lg"> 사용 방법 	</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -545,12 +598,12 @@
       <div class="modal-body">
         <div class="modal-body-content">
           <p><h5>개인정보 수집 및 이용 안내 동의</h5> <br>
-            '노래방 일본 신곡 알림이'는 서비스 제공을 위해 다음과 같은 개인정보를 수집하고 있습니다.<br>
-            개인정보 수집을 거부하는 경우 메일 서비스 이용에 제한이 될 수 있습니다.<br>
-            ▪ 수집하고자 하는 항목: 이메일 주소<br>
-            ▪ 개인정보 수집 목적: 신곡 알림 및 공지 메일 발송<br>
-            ▪ 보유 및 이용 기간: 수집일로부터 1년 보유. 구독 취소시 24시간 이내 삭제. 구독 취소시 이메일 인증이 어려운 경우 7일간 보관 후 삭제.<br>
-            </p>
+          '노래방 일본 신곡 알림이'는 서비스 제공을 위해 다음과 같은 개인정보를 수집하고 있습니다.<br>
+          개인정보 수집을 거부하는 경우 메일 서비스 이용에 제한이 될 수 있습니다.<br>
+          ▪ 수집하고자 하는 항목: 이메일 주소<br>
+          ▪ 개인정보 수집 목적: 신곡 알림 및 공지 메일 발송<br>
+          ▪ 보유 및 이용 기간: 수집일로부터 1년 보유. 구독 취소시 24시간 이내 삭제. 구독 취소시 이메일 인증이 어려운 경우 7일간 보관 후 삭제.<br>
+          </p>
         </div>
       </div>
       <div class="modal-footer">
@@ -569,8 +622,8 @@
     <div class="row">
       <!-- 태진 -->
       <div class="col-lg-4 fade-in-element">
-        <h3 class="song-header-text"
-            th:text="${tjDate + ' TJ 노래방 신곡 목록'}">TJ 노래방 신곡 목록</h3>
+        <h3 class="song-header-text song-header-text-tj"
+            th:text="${tjMonth + ' TJ 일본 신곡 목록'}">TJ 일본 신곡 목록</h3>
         <div class="song-content-border">
           <table class="table-tj">
             <thead>
@@ -604,8 +657,8 @@
       </div>
       <!-- 금영 -->
       <div class="col-lg-4 fade-in-element">
-        <h3 class="song-header-text"
-            th:text="${kyDate + ' 금영 노래방 신곡 목록'}">금영 노래방 신곡 목록</h3>
+        <h3 class="song-header-text song-header-text-ky"
+            th:text="${kyMonth + ' 금영 일본 신곡 목록'}">금영 일본 신곡 목록</h3>
         <div class="song-content-border">
           <table class="table-ky">
             <thead>
@@ -640,9 +693,15 @@
     </div>
   </div>
 </section>
+
 <!-- 사용 방법 및 주의사항 표-->
 <section class="showcase">
   <div class="container-fluid p-0">
+    <div class="row g-0 fade-in-element">
+      <h2 id="showCaseHeaderText">
+        사용 방법
+      </h2>
+    </div>
     <div class="row g-0 fade-in-element">
       <div class="showcase-img-wrapper">
         <div class="col-lg-6 order-lg-2 text-white showcase-img"
@@ -650,9 +709,11 @@
              th:style="'background-image: url(/assets/img/bg-showcase-1.jpg)'"></div>
       </div>
       <div class="col-lg-6 order-lg-1 my-auto showcase-text">
-        <h2>등록 방법</h2>
-        <p class="lead mb-0">이메일을 입력한 후 등록하기 버튼을 누릅니다. 입력한 이메일로 전송된 인증 메일의 버튼을 클릭하면
-          인증이 완료됩니다.</p>
+        <h3>구독하기</h3>
+        <p class="lead mb-0">
+          이메일을 입력한 후 등록하기 버튼을 누릅니다. <br>
+          입력한 이메일로 전송된 인증 메일의 버튼을 클릭하면 인증이 완료됩니다.
+        </p>
       </div>
     </div>
     <div class="row g-0 fade-in-element">
@@ -662,8 +723,11 @@
              th:style="'background-image: url(/assets/img/bg-showcase-1.jpg)'"></div>
       </div>
       <div class="col-lg-6 my-auto showcase-text">
-        <h2>이메일 수신</h2>
-        <p class="lead mb-0"> 노래방에 일본 신곡이 추가되면 오전 10시에 등록된 이메일로 알려드립니다.</p>
+        <h3>이메일 수신</h3>
+        <p class="lead mb-0">
+          노래방에 일본 신곡이 추가되면 오전 10시에 등록된 이메일로 알려드립니다.<br>
+          메일이 정상적으로 수신되지 않을 시 스팸함을 확인해주세요.
+        </p>
       </div>
     </div>
     <div class="row g-0 fade-in-element">
@@ -673,8 +737,25 @@
              th:style="'background-image: url(/assets/img/bg-showcase-1.jpg)'"></div>
       </div>
       <div class="col-lg-6 order-lg-1 my-auto showcase-text">
-        <h2>문의사항</h2>
-        <p class="lead mb-0">문의사항은 spiaminto@gmail.com 으로 문의 부탁드립니다.</p>
+        <h3>구독 취소</h3>
+        <p class="lead mb-0">
+          구독 취소는 홈페이지 아래의 구독취소 버튼을 눌러 할 수 있습니다.<br>
+          이메일 인증 후 취소되며 이메일 인증이 불가능할 시 문의 부탁드립니다.</p>
+      </div>
+    </div>
+    <div class="row g-0 fade-in-element">
+      <div class="showcase-img-wrapper">
+        <div class="col-lg-6 order-lg-2 text-white showcase-img"
+             style="background-image: url('/static/assets/img/bg-showcase-3.jpg')"
+             th:style="'background-image: url(/assets/img/bg-showcase-1.jpg)'"></div>
+      </div>
+      <div class="col-lg-6 order-lg-1 my-auto showcase-text">
+        <h3>문의사항</h3>
+        <p class="lead mb-0">
+          문의사항이 있으시면
+          <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=jsongnoti+cs@gmail.com" target="_blank">메일로
+            문의하기</a>
+          를 통해 문의 부탁드립니다.</p>
       </div>
     </div>
   </div>
@@ -717,10 +798,12 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
-        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#unsubscribeModal">
+        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal"
+                data-bs-target="#unsubscribeModal">
           구독 취소
         </button>
         <p id="footerText" class="text-muted small mb-4 mb-lg-0">&copy; JsongNoti by spiaminto. All Rights Reserved.</p>
+        <p id="footerTextCopyright" class="text-muted small mb-4 mb-lg-0">favicon Designed by Freepik</p>
       </div>
       <div class="col-lg-6 h-100 text-center text-lg-end my-auto">
         <ul class="list-inline mb-0">
@@ -730,7 +813,8 @@
           </li>
           <li class="list-inline-item">
             Contact &nbsp;
-            <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=jsongnoti@gmail.com"><i class="bi-envelope fs-3"></i></a>
+            <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=jsongnoti+cs@gmail.com" target="_blank"><i
+                class="bi-envelope fs-3"></i></a>
           </li>
         </ul>
       </div>
