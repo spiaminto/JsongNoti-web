@@ -44,7 +44,6 @@ public class UserController {
                 ResponseEntity.ok().body(resultDto.getMessage());
     }
 
-    @Transactional
     @GetMapping("/users/{userId}/verify")
     public String verifyAddUser(@PathVariable(name = "userId") Long userId,
                                                   @RequestParam(name = "token") String authenticationToken,
@@ -57,7 +56,6 @@ public class UserController {
         return "redirect:/";
     }
 
-    @Transactional
     @PostMapping("/users/delete")
     public ResponseEntity<String> deleteUser(@Validated @ModelAttribute UnSubscriptionDto unSubscriptionDto,
                                              BindingResult bindingResult) {
@@ -75,7 +73,6 @@ public class UserController {
                 ResponseEntity.ok().body(resultDto.getMessage());
     }
 
-    @Transactional
     @GetMapping("/users/{userId}/delete")
     public String confirmDelete(@PathVariable(name = "userId") Long userId,
                                   @RequestParam(name = "token") String authenticationToken,
@@ -87,6 +84,5 @@ public class UserController {
 
         return "redirect:/";
     }
-
 
 }
