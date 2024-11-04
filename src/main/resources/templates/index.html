@@ -19,6 +19,7 @@
   <style>
       /*
         media
+        최소치 360px
         @media (min-width: 576px)
         @media (min-width: 768px)
         @media (min-width: 992px)
@@ -50,6 +51,8 @@
       body {
           font-family: 'NanumSquareRound', sans-serif;
           background-color: #f8f9fa;
+
+          min-width: 360px;
       }
 
       .navbar-brand {
@@ -77,7 +80,7 @@
           padding-top: 8rem;
           padding-bottom: 8rem;
           border-radius: 25px;
-          width: 92%;
+          width: 95%;
           margin: 0 auto;
           box-shadow: darkgrey 5px 5px 5px;
       }
@@ -228,6 +231,16 @@
       #song-container {
       }
 
+      #song-container .col-lg-4 {
+          padding: 0;
+      }
+
+      @media (min-width: 992px) {
+          #song-container .col-lg-4 {
+              padding: 0 0.5rem;
+          }
+      }
+
       .song-content-border {
           border: solid 1px #aaaaaa;
           border-radius: 10px;
@@ -253,8 +266,8 @@
           width: 100%;
           border-collapse: collapse;
           font-size: 1.1rem;
-          border-radius: 25px;
           border-style: hidden;
+          text-align: center;
       }
 
       .table-ky {
@@ -262,12 +275,13 @@
           border-collapse: collapse;
           font-size: 1.1rem;
           border-style: hidden;
+          text-align: center;
       }
 
       .table-tj th {
           background-color: #f95001;
           border: 1px solid #aaaaaa;
-          text-align: left;
+          /*text-align: left;*/
           padding: 8px;
           color: white;
       }
@@ -275,15 +289,15 @@
       .table-ky th {
           background-color: #6495ed;
           border: 1px solid #aaaaaa;
-          text-align: left;
+          /*text-align: left;*/
           padding: 8px;
           color: white;
       }
 
       .song-number {
           border: 1px solid #aaaaaa;
-          text-align: left;
-          padding: 8px;
+          /*text-align: left;*/
+          padding: 0.3rem;
           width: 8%;
           font-size: 0.95rem;
       }
@@ -291,7 +305,7 @@
       .song-title {
           border: 1px solid #aaaaaa;
           text-align: left;
-          padding: 8px;
+          padding: 0.5rem;
           width: 67%;
       }
 
@@ -304,7 +318,7 @@
       .song-singer {
           border: 1px solid #aaaaaa;
           text-align: left;
-          padding: 8px;
+          padding: 0.5rem;
           width: 25%;
       }
 
@@ -347,10 +361,18 @@
           }
       }
 
+      .last-month-show-button {
+          margin-top: 1rem;
+      }
+
       /* 사용 방법 및 주의 사항 스타일 */
 
       .showcase {
           margin-top: 3rem; /* section 1.5rem 오버라이드 */
+      }
+
+      .showcase-img-wrapper {
+          text-align: center;
       }
 
       .showcase #showCaseHeaderText {
@@ -360,14 +382,30 @@
 
       .showcase-img {
           width: 93%;
-          border-radius: 25px;
+          max-width: 500px;
+          border-radius: 10px;
           margin: 0 auto;
-          box-shadow: darkgrey 5px 5px 5px;
+          box-shadow: lightgrey 2px 2px 2px;
           aspect-ratio: 1.5 / 1;
+      }
+
+      video {
+          object-fit: fill;
+          width: 95%;
+          max-width: 500px;
+          border-radius: 10px;
+          border: #aaaaaa 1px solid;
+          box-shadow: lightgrey 3px 3px 3px;
       }
 
       /* 사용방법 및 주의사항 양옆으로 펼쳐질때 보정 */
       @media (min-width: 992px) {
+
+          video {
+              width: 95%;
+              max-width: 600px;
+          }
+
           .showcase-img-wrapper {
               width: 50%;
               min-height: 30rem;
@@ -375,6 +413,7 @@
 
           .showcase .showcase-img {
               min-height: 25rem;
+              max-width: 600px;
           }
 
           .showcase .row {
@@ -390,7 +429,7 @@
       }
 
       .showcase .showcase-text {
-          padding: 3rem;
+          padding: 2rem;
       }
 
       @media (min-width: 992px) {
@@ -457,7 +496,7 @@
           }
 
 // 사용방법 바로가기 버튼 클릭 이벤트
-          $('#goToUsageButton').click(function() {
+          $('#goToUsageButton').click(function () {
               $('html, body').animate({
                   scrollTop: $('.showcase').offset().top - 32 // 2rem 여유
               }, 1); // fade in 걸린 요소 때문에 애니메이션 이상해져서 1ms 로 줄임
@@ -577,7 +616,7 @@
             <!-- 사용방법 바로가기 버튼 -->
             <div class="row justify-content-center mt-4">
               <div class="col-auto">
-                <button id="goToUsageButton" class="btn btn-outline-light btn-lg"> 사용 방법 	</button>
+                <button id="goToUsageButton" class="btn btn-outline-light btn-lg"> 사용 방법</button>
               </div>
             </div>
           </div>
@@ -623,7 +662,7 @@
       <!-- 태진 -->
       <div class="col-lg-4 fade-in-element">
         <h3 class="song-header-text song-header-text-tj"
-            th:text="${tjMonth + ' TJ 일본 신곡 목록'}">TJ 일본 신곡 목록</h3>
+            th:text="${tjLatestMonth + ' TJ 일본 신곡 목록'}">TJ 일본 신곡 목록</h3>
         <div class="song-content-border">
           <table class="table-tj">
             <thead>
@@ -634,7 +673,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="song : ${tjNewSongs}">
+            <tr th:each="song : ${tjLatestSongs}">
               <td class="song-number" th:text="${song.number}">12345
               </td>
               <td class="song-title">
@@ -654,11 +693,51 @@
             </tbody>
           </table>
         </div>
+        <!-- TJ 저번달 -->
+        <div class="last-month-show-button">
+          <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#tjLastMonthSongContentBorder" aria-expanded="false"
+                  aria-controls="tjLastMonthSongContentBorder"
+                  th:text="${tjLastMonth + ' 신곡 목록'}">
+            저번달 신곡 목록
+          </button>
+        </div>
+        <div class="song-content-border collapse" id="tjLastMonthSongContentBorder">
+          <table class="table-tj">
+            <thead>
+            <tr>
+              <th>번호</th>
+              <th>제목</th>
+              <th>아티스트</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="song : ${tjLastSongs}">
+              <td class="song-number" th:text="${song.number}">12345
+              </td>
+              <td class="song-title">
+                <div class="song-title-text">
+                  <a target="_blank" th:href="${song.searchUrl}"
+                     href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9"
+                     th:text="${song.title}">
+                    노래 제목
+                  </a>
+                </div>
+                <div class="song-info-text" th:text="${song.info}">정보 텍스트
+                </div>
+              </td>
+              <td class="song-singer" th:text="${song.singer}">가수명
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
       </div>
       <!-- 금영 -->
       <div class="col-lg-4 fade-in-element">
         <h3 class="song-header-text song-header-text-ky"
-            th:text="${kyMonth + ' 금영 일본 신곡 목록'}">금영 일본 신곡 목록</h3>
+            th:text="${kyLatestMonth + ' 금영 일본 신곡 목록'}">금영 일본 신곡 목록</h3>
         <div class="song-content-border">
           <table class="table-ky">
             <thead>
@@ -669,7 +748,46 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="song : ${kyNewSongs}">
+            <tr th:each="song : ${kyLatestSongs}">
+              <td class="song-number" th:text="${song.number}">12345
+              </td>
+              <td class="song-title">
+                <div class="song-title-text">
+                  <a target="_blank" th:href="${song.searchUrl}"
+                     href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9"
+                     th:text="${song.title}">
+                    노래 제목
+                  </a>
+                </div>
+                <div class="song-info-text" th:text="${song.info}">정보 텍스트
+                </div>
+              </td>
+              <td class="song-singer" th:text="${song.singer}">가수명
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- 금영 저번달 목록 -->
+        <div class="last-month-show-button">
+          <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#kyLastMonthSongContentBorder" aria-expanded="false"
+                  aria-controls="kyLastMonthSongContentBorder"
+                  th:text="${kyLastMonth + ' 신곡 목록'}">
+            저번달 신곡 목록
+          </button>
+        </div>
+        <div class="song-content-border collapse" id="kyLastMonthSongContentBorder">
+          <table class="table-ky">
+            <thead>
+            <tr>
+              <th>번호</th>
+              <th>제목</th>
+              <th>아티스트</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="song : ${kyLastSongs}">
               <td class="song-number" th:text="${song.number}">12345
               </td>
               <td class="song-title">
@@ -692,6 +810,7 @@
       </div>
     </div>
   </div>
+
 </section>
 
 <!-- 사용 방법 및 주의사항 표-->
@@ -704,9 +823,10 @@
     </div>
     <div class="row g-0 fade-in-element">
       <div class="showcase-img-wrapper">
-        <div class="col-lg-6 order-lg-2 text-white showcase-img"
-             style="background-image: url('/static/assets/img/bg-showcase-1.jpg')"
-             th:style="'background-image: url(/assets/img/bg-showcase-1.jpg)'"></div>
+        <video autoplay muted loop>
+          <source src="/static/assets/mov/subscribe.webm" th:src="@{/assets/mov/subscribe.webm}" type="video/webm">
+          구독하기 동영상
+        </video>
       </div>
       <div class="col-lg-6 order-lg-1 my-auto showcase-text">
         <h3>구독하기</h3>
@@ -718,9 +838,10 @@
     </div>
     <div class="row g-0 fade-in-element">
       <div class="showcase-img-wrapper">
-        <div class="col-lg-6 text-white showcase-img"
-             style="background-image: url('/static/assets/img/bg-showcase-2.jpg')"
-             th:style="'background-image: url(/assets/img/bg-showcase-1.jpg)'"></div>
+        <video autoplay muted loop>
+          <source src="/static/assets/mov/noti.webm" th:src="@{/assets/mov/noti.webm}" type="video/webm">
+          이메일 수신 동영상
+        </video>
       </div>
       <div class="col-lg-6 my-auto showcase-text">
         <h3>이메일 수신</h3>
@@ -732,9 +853,11 @@
     </div>
     <div class="row g-0 fade-in-element">
       <div class="showcase-img-wrapper">
-        <div class="col-lg-6 order-lg-2 text-white showcase-img"
-             style="background-image: url('/static/assets/img/bg-showcase-3.jpg')"
-             th:style="'background-image: url(/assets/img/bg-showcase-1.jpg)'"></div>
+        <video autoplay muted loop>
+          <source src="/static/assets/mov/unsubscribe.webm" th:src="@{/assets/mov/unsubscribe.webm}"
+                  type="video/webm">
+          구독 취소 영상
+        </video>
       </div>
       <div class="col-lg-6 order-lg-1 my-auto showcase-text">
         <h3>구독 취소</h3>

@@ -3,6 +3,7 @@ package com.jsongnoti.jsongnoti_web.controller;
 import com.jsongnoti.jsongnoti_web.domain.Brand;
 import com.jsongnoti.jsongnoti_web.domain.Song;
 import com.jsongnoti.jsongnoti_web.repository.SongRepository;
+import com.jsongnoti.jsongnoti_web.service.LatestAndLastSongsDto;
 import com.jsongnoti.jsongnoti_web.service.SongService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -33,30 +35,33 @@ public class IndexController {
 
     @GetMapping("/")
     public String index(Model model) {
+        LatestAndLastSongsDto latestAndLastSongs = songService.getLatestAndLastSongs();
 
-        log.info("index");
-        LocalDate now = LocalDate.now();
-        LocalDate startDate = LocalDate.of(now.getYear(), now.getMonth(), 1);
-        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
-        String tjMonth = "";
-        String kyMonth = "";
+        List<NewSongDto> tjLatestSongs = latestAndLastSongs.getTjLatestSongs().stream().map(NewSongDto::fromSong).toList();
+        String tjLatestMonth = latestAndLastSongs.getTjLatestMonth().getDisplayName(TextStyle.FULL, Locale.KOREA);
+        log.info("\n[IndexController.index()] tjMonth = {} tjSongs = {}", tjLatestMonth, tjLatestSongs);
+        List<NewSongDto> tjLastSongs = latestAndLastSongs.getTjLastSongs().stream().map(NewSongDto::fromSong).toList();
+        String tjLastMonth = latestAndLastSongs.getTjLastMonth().getDisplayName(TextStyle.FULL, Locale.KOREA);
+        log.info("\n[IndexController.index()] tjMonth = {} tjSongs = {}", tjLastMonth, tjLastSongs);
+        List<NewSongDto> kyLatestSongs = latestAndLastSongs.getKyLatestSongs().stream().map(NewSongDto::fromSong).toList();
+        String kyLatestMonth = latestAndLastSongs.getKyLatestMonth().getDisplayName(TextStyle.FULL, Locale.KOREA);
+        log.info("\n[IndexController.index()] tjMonth = {} tjSongs = {}", kyLatestMonth, kyLatestSongs);
+        List<NewSongDto> kyLastSongs = latestAndLastSongs.getKyLastSongs().stream().map(NewSongDto::fromSong).toList();
+        String kyLastMonth = latestAndLastSongs.getKyLastMonth().getDisplayName(TextStyle.FULL, Locale.KOREA);
+        log.info("\n[IndexController.index()] tjMonth = {} tjSongs = {}", kyLastMonth, kyLastSongs);
 
-        // TJ 신곡 조회
-        List<Song> tjSongs = songService.getRecentTjSongsByMonth();
-        if (!tjSongs.isEmpty()) tjMonth = tjSongs.get(0).getRegDate().getMonth().getDisplayName(TextStyle.FULL, Locale.KOREAN);
-        log.info("\n[IndexController.index()] tjMonth = {} tjSongs = {}", tjMonth, tjSongs);
-        List<NewSongDto> tjNewSongs = tjSongs.stream().map(NewSongDto::fromSong).toList();
+        model.addAttribute("tjLatestMonth", tjLatestMonth);
+        model.addAttribute("tjLatestSongs", tjLatestSongs);
 
-        // KY 신곡 조회
-        List<Song> kySongs = songService.getRecentKySongsByMonth();
-        if (!kySongs.isEmpty()) kyMonth = kySongs.get(0).getRegDate().getMonth().getDisplayName(TextStyle.FULL, Locale.KOREAN);
-        log.info("\n[IndexController.index()] kyMonth = {} kySongs = {}", kyMonth, kySongs);
-        List<NewSongDto> kyNewSongs = kySongs.stream().map(NewSongDto::fromSong).toList();
-        
-        model.addAttribute("tjNewSongs", tjNewSongs);
-        model.addAttribute("kyNewSongs", kyNewSongs);
-        model.addAttribute("tjMonth", tjMonth);
-        model.addAttribute("kyMonth", kyMonth);
+        model.addAttribute("tjLastMonth", tjLastMonth);
+        model.addAttribute("tjLastSongs", tjLastSongs);
+
+        model.addAttribute("kyLatestMonth", kyLatestMonth);
+        model.addAttribute("kyLatestSongs", kyLatestSongs);
+
+        model.addAttribute("kyLastMonth", kyLastMonth);
+        model.addAttribute("kyLastSongs", kyLastSongs);
+
         return "index";
     }
 
