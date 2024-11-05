@@ -3,7 +3,10 @@ package com.jsongnoti.jsongnoti_web.service;
 import com.jsongnoti.jsongnoti_web.domain.User;
 import com.jsongnoti.jsongnoti_web.mail.GmailSender;
 import com.jsongnoti.jsongnoti_web.repository.UserRepository;
+import com.jsongnoti.jsongnoti_web.repository.UserWithTotalCountDto;
+import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,12 +16,19 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
     private final GmailSender gmailSender;
 
     public ResultDto addUser(String email) {
+        // 구독자 수 제한
+        long totalCount = userRepository.count();
+        if (totalCount > 100) {
+            return ResultDto.builder().hasError(true).message("죄송합니다. 현재 구독자수가 많아 추가 구독이 어렵습니다.").build();
+        }
+
         User findUser = userRepository.findByEmail(email);
 
         if (findUser != null) {
