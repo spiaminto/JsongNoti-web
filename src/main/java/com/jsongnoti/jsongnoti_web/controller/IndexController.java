@@ -39,16 +39,16 @@ public class IndexController {
 
         List<NewSongDto> tjLatestSongs = latestAndLastSongs.getTjLatestSongs().stream().map(NewSongDto::fromSong).toList();
         String tjLatestMonth = latestAndLastSongs.getTjLatestMonth().getDisplayName(TextStyle.FULL, Locale.KOREA);
-        log.info("\n[IndexController.index()] tjMonth = {} tjSongs = {}", tjLatestMonth, tjLatestSongs);
+//        log.info("\n[IndexController.index()] tjMonth = {} tjSongs = {}", tjLatestMonth, tjLatestSongs);
         List<NewSongDto> tjLastSongs = latestAndLastSongs.getTjLastSongs().stream().map(NewSongDto::fromSong).toList();
         String tjLastMonth = latestAndLastSongs.getTjLastMonth().getDisplayName(TextStyle.FULL, Locale.KOREA);
-        log.info("\n[IndexController.index()] tjMonth = {} tjSongs = {}", tjLastMonth, tjLastSongs);
+//        log.info("\n[IndexController.index()] tjMonth = {} tjSongs = {}", tjLastMonth, tjLastSongs);
         List<NewSongDto> kyLatestSongs = latestAndLastSongs.getKyLatestSongs().stream().map(NewSongDto::fromSong).toList();
         String kyLatestMonth = latestAndLastSongs.getKyLatestMonth().getDisplayName(TextStyle.FULL, Locale.KOREA);
-        log.info("\n[IndexController.index()] tjMonth = {} tjSongs = {}", kyLatestMonth, kyLatestSongs);
+//        log.info("\n[IndexController.index()] tjMonth = {} tjSongs = {}", kyLatestMonth, kyLatestSongs);
         List<NewSongDto> kyLastSongs = latestAndLastSongs.getKyLastSongs().stream().map(NewSongDto::fromSong).toList();
         String kyLastMonth = latestAndLastSongs.getKyLastMonth().getDisplayName(TextStyle.FULL, Locale.KOREA);
-        log.info("\n[IndexController.index()] tjMonth = {} tjSongs = {}", kyLastMonth, kyLastSongs);
+//        log.info("\n[IndexController.index()] tjMonth = {} tjSongs = {}", kyLastMonth, kyLastSongs);
 
         model.addAttribute("tjLatestMonth", tjLatestMonth);
         model.addAttribute("tjLatestSongs", tjLatestSongs);

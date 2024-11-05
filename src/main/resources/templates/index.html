@@ -361,6 +361,10 @@
           }
       }
 
+      .collapsing {
+          transition: height 0.5s ease; /* 기본값 0.35s */
+      }
+
       .last-month-show-button {
           margin-top: 1rem;
       }
@@ -862,7 +866,7 @@
       <div class="col-lg-6 order-lg-1 my-auto showcase-text">
         <h3>구독 취소</h3>
         <p class="lead mb-0">
-          구독 취소는 홈페이지 아래의 구독취소 버튼을 눌러 할 수 있습니다.<br>
+          구독 취소는 홈페이지 맨 아래의 구독취소 버튼을 눌러 할 수 있습니다.<br>
           이메일 인증 후 취소되며 이메일 인증이 불가능할 시 문의 부탁드립니다.</p>
       </div>
     </div>
@@ -870,15 +874,15 @@
       <div class="showcase-img-wrapper">
         <div class="col-lg-6 order-lg-2 text-white showcase-img"
              style="background-image: url('/static/assets/img/bg-showcase-3.jpg')"
-             th:style="'background-image: url(/assets/img/bg-showcase-1.jpg)'"></div>
+             th:style="'background-image: url(/assets/img/bg-showcase-3.jpg)'"></div>
       </div>
       <div class="col-lg-6 order-lg-1 my-auto showcase-text">
         <h3>문의사항</h3>
         <p class="lead mb-0">
-          문의사항이 있으시면
-          <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=jsongnoti+cs@gmail.com" target="_blank">메일로
-            문의하기</a>
-          를 통해 문의 부탁드립니다.</p>
+          문의사항은 jsongnoti+cs@gmail.com 으로 문의 부탁드립니다. 지메일 사용자는
+          <a href="https://mail.google.com/mail/?view=cm&fs=1&to=jsongnoti%2Bcs@gmail.com&su=일본 신곡 알림이 문의">이 링크</a>
+          를 클릭하시면 바로 메일을 작성할 수 있습니다.
+        </p>
       </div>
     </div>
   </div>
@@ -936,7 +940,7 @@
           </li>
           <li class="list-inline-item">
             Contact &nbsp;
-            <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=jsongnoti+cs@gmail.com" target="_blank"><i
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=jsongnoti%2Bcs@gmail.com&su=일본 신곡 알림이 문의" target="_blank"><i
                 class="bi-envelope fs-3"></i></a>
           </li>
         </ul>
