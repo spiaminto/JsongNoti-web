@@ -31,10 +31,6 @@ public class UserController {
     public ResponseEntity<String> addUser(@Validated @ModelAttribute SubscriptionDto subscriptionDto,
                                           BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            log.info("bindingResult: {}", bindingResult);
-            log.info("bindingResult.getFieldError(): {}", bindingResult.getFieldError());
-            log.info("bindingResult.getFieldError().getDefaultMessage(): {}", bindingResult.getFieldError().getDefaultMessage());
-            log.info("bindingResult.getFieldError().code: {}", bindingResult.getFieldError().getCode());
             return ResponseEntity.badRequest().body(bindingResult.getFieldError().getDefaultMessage());
         }
 
