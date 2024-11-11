@@ -2,17 +2,15 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-  </style>
 </head>
-<body style="background-color: #fefefe">
-<div class="container">
+<body>
+<div>
   <h2 style="font-size: 1.1rem">일본 신곡 알림이 이메일 인증</h2>
   <div style="font-size: 1.05rem" th:text="${headerText}">헤더텍스트</div>
-  <a th:href="${verifyEmailActionUrl}" style="display: block; font-size: 1.05rem; text-decoration: underline">
+  <a th:href="${verifyEmailActionUrl}" style="display: block; font-size: 1.05rem; text-decoration: underline" target="_blank">
     이메일 인증하기
   </a>
+  <div style="font-size: 1.05rem; margin-top: 16px" th:text="${footerText}">푸터텍스트</div>
 </div>
 </body>
 </html>

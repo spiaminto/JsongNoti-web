@@ -3,8 +3,6 @@ package com.jsongnoti.jsongnoti_web.service;
 import com.jsongnoti.jsongnoti_web.domain.User;
 import com.jsongnoti.jsongnoti_web.mail.GmailSender;
 import com.jsongnoti.jsongnoti_web.repository.UserRepository;
-import com.jsongnoti.jsongnoti_web.repository.UserWithTotalCountDto;
-import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -53,7 +51,7 @@ public class UserService {
             gmailSender.sendVerifyMail(savedUser.getId(), savedUser.getEmail(), savedUser.getAuthenticationToken());
         }
 
-        return ResultDto.builder().hasError(false).message("인증메일이 발송되었습니다. 확인해주세요.").build();
+        return ResultDto.builder().hasError(false).message("인증메일이 발송되었습니다. 메일이 수신되지 않을 경우 스팸 메일함을 확인해 주세요").build();
     }
 
     public ResultDto verifyAddUser(Long userId, String authenticationToken) {

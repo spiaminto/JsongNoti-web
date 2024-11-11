@@ -31,7 +31,11 @@ public class UserController {
     public ResponseEntity<String> addUser(@Validated @ModelAttribute SubscriptionDto subscriptionDto,
                                           BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body("이메일 형식이 올바르지 않습니다.");
+            log.info("bindingResult: {}", bindingResult);
+            log.info("bindingResult.getFieldError(): {}", bindingResult.getFieldError());
+            log.info("bindingResult.getFieldError().getDefaultMessage(): {}", bindingResult.getFieldError().getDefaultMessage());
+            log.info("bindingResult.getFieldError().code: {}", bindingResult.getFieldError().getCode());
+            return ResponseEntity.badRequest().body(bindingResult.getFieldError().getDefaultMessage());
         }
 
         log.info("email: {}", subscriptionDto.getEmail());
@@ -59,9 +63,8 @@ public class UserController {
     @PostMapping("/users/delete")
     public ResponseEntity<String> deleteUser(@Validated @ModelAttribute UnSubscriptionDto unSubscriptionDto,
                                              BindingResult bindingResult) {
-
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body("이메일 형식이 올바르지 않습니다.");
+            return ResponseEntity.badRequest().body(bindingResult.getFieldError().getDefaultMessage());
         }
 
         String email = unSubscriptionDto.getEmail();

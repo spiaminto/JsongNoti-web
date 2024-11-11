@@ -46,12 +46,12 @@ public class GmailSender {
 
         context.setVariable("headerText", getHeaderText());
         context.setVariable("verifyEmailActionUrl", verifyEmailActionUrl);
+        context.setVariable("footerText", getFooterText());
 
         // 보낼 메일 생성
         MimeMessagePreparator preparatory = mimeMessage -> { // callback 이므로 테스트는 메일을 보내거나 따로 떼어서 실행
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
-
-            helper.setFrom(from);
+            helper.setFrom(from, "신곡 알림이");
             helper.setTo(email);
             helper.setSubject(getSubject());
 
@@ -85,6 +85,13 @@ public class GmailSender {
     public String getHeaderText() {
         return "아래의 링크를 클릭하시면 이메일 인증이 완료됩니다. (이 인증은 30분간 유효합니다.)";
     }
+
+    public String getFooterText() {
+        return "인증메일이 스팸으로 분류되었을 경우, 스팸해제 해주셔야 알림메일을 정상적으로 수신할 수 있습니다.";
+    }
+
+
+    // 삭제 인증 메일 전송 =================================================================================================
 
     @Async
     public void sendDeleteMail(Long userId, String email, String authenticationToken) {
