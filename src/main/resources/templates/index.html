@@ -5,10 +5,10 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name=”title” content="노래방 일본 신곡 알림이"/>
-  <meta name="description" content="노래방 일본 신곡 알림이에서 TJ, 금영 노래방에 등록되는 일본 신곡을 확인하고, 신곡 등록 정보를 메일로 받아보세요."/>
+  <meta name="description" content="노래방 일본 신곡 알림이 에서 TJ, 금영 노래방에 등록되는 일본 신곡을 확인하고, 신곡 등록 정보를 메일로 받아보세요."/>
   <meta name="keywords" content="노래방, 일본 노래, 신곡"/>
   <meta name="google-site-verification" content="00_l8httzNCkM1xkzw0ksQyJ0uhLb2ZFP2POJnLB-Mk"/>
-  <meta name="naver-site-verification" content="81d3e8c9dfbb40001d6dfddf06db7c3546ac03cd" />
+  <meta name="naver-site-verification" content="81d3e8c9dfbb40001d6dfddf06db7c3546ac03cd"/>
   <!--  <meta name="author" content=""/>-->
   <!-- Favicon-->
   <link rel="icon" type="image/x-icon" href="/static/assets/favicon_32.png" th:href="@{/assets/favicon_32.png}"/>
@@ -24,7 +24,11 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-JFWLSXBEYR"></script>
   <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
+
+      function gtag() {
+          dataLayer.push(arguments);
+      }
+
       gtag('js', new Date());
 
       gtag('config', 'G-JFWLSXBEYR');
@@ -161,8 +165,9 @@
   </nav>
   <!-- Masthead-->
   <header class="masthead">
-    <div class="masthead-background" style="background-image: url('/static/assets/img/karaoke.jpg')" th:style="'background-image:url(/assets/img/karaoke.jpg)'">
-      <div class="container position-relative">
+    <div class="masthead-background" style="background-image: url('/static/assets/img/karaoke.jpg')"
+         th:style="'background-image:url(/assets/img/karaoke.jpg)'">
+      <div class="container position-relative masthead-content-wrapper">
         <div class="row justify-content-center">
           <div class="col-xl-6">
             <div class="text-center text-white">
@@ -243,8 +248,10 @@
       <div class="row">
         <!-- 태진 -->
         <div class="col-lg-4 fade-in-element">
-          <h3 class="song-header-text song-header-text-tj"
-              th:text="${tjLatestMonth + ' TJ 일본 신곡 목록'}">TJ 일본 신곡 목록</h3>
+          <h2 class="song-header-text song-header-text-tj position-relative">
+            <span th:text="${tjLatestMonth + ' TJ 신곡'}" >11월 TJ 신곡</span>
+            <mark class="position-absolute song-header-subtext" th:text="${tjLatestDateStr + ' 추가됨'}">00/00(요) 추가됨</mark>
+          </h2>
           <div class="song-content-border">
             <table class="table-tj">
               <thead>
@@ -255,8 +262,9 @@
               </tr>
               </thead>
               <tbody>
-              <tr th:each="song : ${tjLatestSongs}">
-                <td class="song-number" th:text="${song.number}">12345
+              <tr th:each="song : ${tjLatestMonthSongs}">
+                <td class="song-number">
+                  <span th:text="${song.number}" th:classappend="${song.latest} ? latest : ''">12345</span>
                 </td>
                 <td class="song-title">
                   <div class="song-title-text">
@@ -281,7 +289,7 @@
                     data-bs-toggle="collapse"
                     data-bs-target="#tjLastMonthSongContentBorder" aria-expanded="false"
                     aria-controls="tjLastMonthSongContentBorder"
-                    th:text="${tjLastMonth + ' 신곡 목록'}">
+                    th:text="${tjLastMonth + ' TJ 신곡'}">
               저번달 신곡 목록
             </button>
           </div>
@@ -295,7 +303,7 @@
               </tr>
               </thead>
               <tbody>
-              <tr th:each="song : ${tjLastSongs}">
+              <tr th:each="song : ${tjLastMonthSongs}">
                 <td class="song-number" th:text="${song.number}">12345
                 </td>
                 <td class="song-title">
@@ -319,8 +327,10 @@
         </div>
         <!-- 금영 -->
         <div class="col-lg-4 fade-in-element">
-          <h3 class="song-header-text song-header-text-ky"
-              th:text="${kyLatestMonth + ' 금영 일본 신곡 목록'}">금영 일본 신곡 목록</h3>
+          <h2 class="song-header-text song-header-text-ky">
+            <span th:text="${kyLatestMonth + ' 금영 신곡'}">11월 금영 신곡</span>
+            <mark class="position-absolute song-header-subtext" th:text="${kyLatestDateStr + ' 추가됨'}">00/00(0) 추가됨</mark>
+          </h2>
           <div class="song-content-border">
             <table class="table-ky">
               <thead>
@@ -331,8 +341,9 @@
               </tr>
               </thead>
               <tbody>
-              <tr th:each="song : ${kyLatestSongs}">
-                <td class="song-number" th:text="${song.number}">12345
+              <tr th:each="song : ${kyLatestMonthSongs}">
+                <td class="song-number">
+                  <span th:text="${song.number}" th:classappend="${song.latest} ? latest : ''">12345</span>
                 </td>
                 <td class="song-title">
                   <div class="song-title-text">
@@ -357,7 +368,7 @@
                     data-bs-toggle="collapse"
                     data-bs-target="#kyLastMonthSongContentBorder" aria-expanded="false"
                     aria-controls="kyLastMonthSongContentBorder"
-                    th:text="${kyLastMonth + ' 신곡 목록'}">
+                    th:text="${kyLastMonth + ' 금영 신곡'}">
               저번달 신곡 목록
             </button>
           </div>
@@ -371,7 +382,7 @@
               </tr>
               </thead>
               <tbody>
-              <tr th:each="song : ${kyLastSongs}">
+              <tr th:each="song : ${kyLastMonthSongs}">
                 <td class="song-number" th:text="${song.number}">12345
                 </td>
                 <td class="song-title">
@@ -558,7 +569,8 @@
   </footer>
 
   <!-- agreement Modal -->
-  <div class="modal fade" id="googleAnalyticsModal" tabindex="-1" aria-labelledby="googleAnalyticsModal" aria-hidden="true">
+  <div class="modal fade" id="googleAnalyticsModal" tabindex="-1" aria-labelledby="googleAnalyticsModal"
+       aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -570,7 +582,8 @@
             <p><h4>구글 애널리틱스 개인정보 처리 방침</h4> <br>
             노래방 일본 신곡 알림이는 보다 나은 서비스의 제공을 위하여 구글(Google)에서 제공하는 웹로그 분석 도구인 구글 애널리틱스를 이용하고 있습니다. <br>
             구글 애널리틱스는 쿠키(Cookie)를 통하여 현재 웹사이트 이용자의 행태정보를 수집하게 되며, 이 경우 이용자 개인을 식별할 수 없는 비식별정보 만이 수집됩니다. <br>
-            그럼에도 이용자는 Google 애널리틱스 차단 브라우저 부가기능의 설치(https://tools.google.com/dlpage/gaoptout) 또는 웹브라우저의 쿠키 설정 거부를 통해 구글 애널리틱스 이용을 거부할 수 있습니다.
+            그럼에도 이용자는 Google 애널리틱스 차단 브라우저 부가기능의 설치(https://tools.google.com/dlpage/gaoptout) 또는 웹브라우저의 쿠키 설정 거부를 통해 구글
+            애널리틱스 이용을 거부할 수 있습니다.
             </p>
           </div>
         </div>

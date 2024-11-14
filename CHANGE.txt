@@ -38,3 +38,8 @@ commit 5
     이메일 입력길이 제한
     SEO 개선
     구글애널리틱스 추가
+
+commit 6
+    rate limit 설정
+    최신 신곡 하이라이트 추가
+    UI 수정

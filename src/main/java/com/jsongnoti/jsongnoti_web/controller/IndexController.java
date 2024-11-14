@@ -1,8 +1,5 @@
 package com.jsongnoti.jsongnoti_web.controller;
 
-import com.jsongnoti.jsongnoti_web.domain.Brand;
-import com.jsongnoti.jsongnoti_web.domain.Song;
-import com.jsongnoti.jsongnoti_web.repository.SongRepository;
 import com.jsongnoti.jsongnoti_web.service.LatestAndLastSongsDto;
 import com.jsongnoti.jsongnoti_web.service.SongService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +15,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 @Slf4j
 @Controller
@@ -37,30 +33,37 @@ public class IndexController {
     public String index(Model model) {
         LatestAndLastSongsDto latestAndLastSongs = songService.getLatestAndLastSongs();
 
-        List<NewSongDto> tjLatestSongs = latestAndLastSongs.getTjLatestSongs().stream().map(NewSongDto::fromSong).toList();
+        // 태진 dto 매핑
+        LocalDate tjLatestDate = latestAndLastSongs.getTjLatestDate();
+        String tjLatestDateStr = tjLatestDate.getMonth().getValue() + "/" + tjLatestDate.getDayOfMonth() + "(" + tjLatestDate.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.KOREA) + ")";
+
         String tjLatestMonth = latestAndLastSongs.getTjLatestMonth().getDisplayName(TextStyle.FULL, Locale.KOREA);
-//        log.info("\n[IndexController.index()] tjMonth = {} tjSongs = {}", tjLatestMonth, tjLatestSongs);
-        List<NewSongDto> tjLastSongs = latestAndLastSongs.getTjLastSongs().stream().map(NewSongDto::fromSong).toList();
+        List<NewSongDto> tjLatestMonthSongs = latestAndLastSongs.getTjLatestMonthSongs().stream().map(song -> NewSongDto.fromSongWithLatest(song, tjLatestDate)).toList();
         String tjLastMonth = latestAndLastSongs.getTjLastMonth().getDisplayName(TextStyle.FULL, Locale.KOREA);
-//        log.info("\n[IndexController.index()] tjMonth = {} tjSongs = {}", tjLastMonth, tjLastSongs);
-        List<NewSongDto> kyLatestSongs = latestAndLastSongs.getKyLatestSongs().stream().map(NewSongDto::fromSong).toList();
+        List<NewSongDto> tjLastMonthSongs = latestAndLastSongs.getTjLastMonthSongs().stream().map(NewSongDto::fromSong).toList();
+
+        // 금영 dto 매핑
+        LocalDate kyLatestDate = latestAndLastSongs.getKyLatestDate();
+        String kyLatestDateStr = kyLatestDate.getMonth().getValue() + "/" + kyLatestDate.getDayOfMonth() + "(" + kyLatestDate.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.KOREA) + ")";
+
         String kyLatestMonth = latestAndLastSongs.getKyLatestMonth().getDisplayName(TextStyle.FULL, Locale.KOREA);
-//        log.info("\n[IndexController.index()] tjMonth = {} tjSongs = {}", kyLatestMonth, kyLatestSongs);
-        List<NewSongDto> kyLastSongs = latestAndLastSongs.getKyLastSongs().stream().map(NewSongDto::fromSong).toList();
+        List<NewSongDto> kyLatestMonthSongs = latestAndLastSongs.getKyLatestMonthSongs().stream().map(song -> NewSongDto.fromSongWithLatest(song, kyLatestDate)).toList();
         String kyLastMonth = latestAndLastSongs.getKyLastMonth().getDisplayName(TextStyle.FULL, Locale.KOREA);
-//        log.info("\n[IndexController.index()] tjMonth = {} tjSongs = {}", kyLastMonth, kyLastSongs);
+        List<NewSongDto> kyLastMonthSongs = latestAndLastSongs.getKyLastMonthSongs().stream().map(NewSongDto::fromSong).toList();
+
+        // 모델 매핑
+        model.addAttribute("tjLatestDateStr", tjLatestDateStr);
+        model.addAttribute("kyLatestDateStr", kyLatestDateStr);
 
         model.addAttribute("tjLatestMonth", tjLatestMonth);
-        model.addAttribute("tjLatestSongs", tjLatestSongs);
-
+        model.addAttribute("tjLatestMonthSongs", tjLatestMonthSongs);
         model.addAttribute("tjLastMonth", tjLastMonth);
-        model.addAttribute("tjLastSongs", tjLastSongs);
+        model.addAttribute("tjLastMonthSongs", tjLastMonthSongs);
 
         model.addAttribute("kyLatestMonth", kyLatestMonth);
-        model.addAttribute("kyLatestSongs", kyLatestSongs);
-
+        model.addAttribute("kyLatestMonthSongs", kyLatestMonthSongs);
         model.addAttribute("kyLastMonth", kyLastMonth);
-        model.addAttribute("kyLastSongs", kyLastSongs);
+        model.addAttribute("kyLastMonthSongs", kyLastMonthSongs);
 
         return "index";
     }
