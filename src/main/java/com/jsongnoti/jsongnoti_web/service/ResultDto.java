@@ -8,5 +8,6 @@ public class ResultDto {
 
     private boolean hasError;
     private String message;
+    private Long userId;
 
 }

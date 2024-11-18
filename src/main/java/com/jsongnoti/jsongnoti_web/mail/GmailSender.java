@@ -33,20 +33,14 @@ public class GmailSender {
      * html 형식으로 메일 전송
      */
     @Async
-    public void sendVerifyMail(Long userId, String email, String authenticationToken) {
+    public void sendVerifyMail(String email, String authenticationToken) {
         Context context = new Context(); // thymeleaf context
         log.info("email = {}, authenticationToken = {}", email, authenticationToken);
 
-        // url/ + /users/{userId}/verify?token={token}
-        String verifyEmailActionUrl = actionUrl +
-                "/users" +
-                "/" + userId +
-                "/verify" +
-                "?token=" + authenticationToken;
-
         context.setVariable("headerText", getHeaderText());
-        context.setVariable("verifyEmailActionUrl", verifyEmailActionUrl);
+        context.setVariable("authenticationToken", authenticationToken);
         context.setVariable("footerText", getFooterText());
+        context.setVariable("timestamp", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()));
 
         // 보낼 메일 생성
         MimeMessagePreparator preparatory = mimeMessage -> { // callback 이므로 테스트는 메일을 보내거나 따로 떼어서 실행
@@ -74,7 +68,7 @@ public class GmailSender {
      * @return
      */
     public String getSubject() {
-        return "일본 신곡 알림이 인증메일 (" + DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()) + ")";
+        return "일본 신곡 알림이 인증메일 (" + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()) + ")";
     }
 
     /**
@@ -83,7 +77,7 @@ public class GmailSender {
      * @return
      */
     public String getHeaderText() {
-        return "아래의 링크를 클릭하시면 이메일 인증이 완료됩니다. (이 인증은 30분간 유효합니다.)";
+        return "일본 신곡 알림이 구독 인증 메일 입니다. 인증번호를 입력하시면 구독이 완료됩니다. (인증코드는 5분간 유효합니다)" ;
     }
 
     public String getFooterText() {
@@ -94,25 +88,19 @@ public class GmailSender {
     // 삭제 인증 메일 전송 =================================================================================================
 
     @Async
-    public void sendDeleteMail(Long userId, String email, String authenticationToken) {
+    public void sendDeleteMail(String email, String authenticationToken) {
         Context context = new Context(); // thymeleaf context
         log.info("email = {}, authenticationToken = {}", email, authenticationToken);
 
-        // url/ + /users/{userId}/delete?token={token}
-        String verifyEmailActionUrl = actionUrl +
-                "/users" +
-                "/" + userId +
-                "/delete" +
-                "?token=" + authenticationToken;
-
-        context.setVariable("headerText", getDeleteHeaderText());
-        context.setVariable("deleteEmailActionUrl", verifyEmailActionUrl);
+        context.setVariable("headerText", getDeleteHeaderText(email));
+        context.setVariable("authenticationToken", authenticationToken);
+        context.setVariable("timestamp", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()));
 
         // 보낼 메일 생성
         MimeMessagePreparator preparatory = mimeMessage -> { // callback 이므로 테스트는 메일을 보내거나 따로 떼어서 실행
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
 
-            helper.setFrom(from);
+            helper.setFrom(from, "신곡 알림이");
             helper.setTo(email);
             helper.setSubject(getDeleteSubject());
 
@@ -135,7 +123,7 @@ public class GmailSender {
      * @return
      */
     public String getDeleteSubject() {
-        return "일본 신곡 알림이 구독취소 인증메일 (" + DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()) + ")";
+        return "일본 신곡 알림이 구독취소 인증메일 (" + DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()) + ")";
     }
 
     /**
@@ -143,8 +131,8 @@ public class GmailSender {
      *
      * @return
      */
-    public String getDeleteHeaderText() {
-        return "아래의 링크를 클릭하시면 구독취소가 완료됩니다. (이 인증은 5분간 유효합니다.)";
+    public String getDeleteHeaderText(String email) {
+        return "일본 신곡 알림이 구독취소 인증메일 입니다. 인증번호를 입력하시면 구독이 취소됩니다. (인증코드는 5분간 유효합니다)";
     }
 
 }

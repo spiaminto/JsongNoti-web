@@ -1,24 +1,15 @@
 package com.jsongnoti.jsongnoti_web.controller;
 
-import com.jsongnoti.jsongnoti_web.domain.User;
-import com.jsongnoti.jsongnoti_web.mail.GmailSender;
-import com.jsongnoti.jsongnoti_web.repository.UserRepository;
+import com.jsongnoti.jsongnoti_web.controller.dto.*;
 import com.jsongnoti.jsongnoti_web.service.ResultDto;
 import com.jsongnoti.jsongnoti_web.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Controller
 @Slf4j
@@ -28,60 +19,75 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/users")
-    public ResponseEntity<String> addUser(@Validated @ModelAttribute SubscriptionDto subscriptionDto,
-                                          BindingResult bindingResult) {
+    public ResponseEntity<ResponseDto> addUser(@Validated @ModelAttribute SubscriptionForm subscriptionForm,
+                                               BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getFieldError().getDefaultMessage());
+            return ResponseEntity.badRequest().body(ResponseDto.builder().message(bindingResult.getFieldError().getDefaultMessage()).build());
         }
 
-        log.info("email: {}", subscriptionDto.getEmail());
-        String email = subscriptionDto.getEmail();
+        log.info("email: {}", subscriptionForm.getEmail());
+        String email = subscriptionForm.getEmail();
 
         ResultDto resultDto = userService.addUser(email);
 
         return resultDto.isHasError() ? // 검증오류시 409 conflict
-                ResponseEntity.status(409).body(resultDto.getMessage()) :
-                ResponseEntity.ok().body(resultDto.getMessage());
+                ResponseEntity.status(409).body(ResponseDto.builder().message(resultDto.getMessage()).build()) :
+                ResponseEntity.ok().body(ResponseDto.builder()
+                        .userId(resultDto.getUserId()).message(resultDto.getMessage()).build());
     }
 
-    @GetMapping("/users/{userId}/verify")
-    public String verifyAddUser(@PathVariable(name = "userId") Long userId,
-                                                  @RequestParam(name = "token") String authenticationToken,
-                                                  RedirectAttributes redirectAttributes) {
+    @PostMapping("/users/{userId}/verify-add")
+    public ResponseEntity<ResponseDto> verifyAddUser(@PathVariable(name = "userId") Long userId,
+                                                     @Validated @ModelAttribute VerifyEmailForm verifyEmailForm,
+                                                     BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(ResponseDto.builder().message(bindingResult.getFieldError().getDefaultMessage()).build());
+        }
+
+        String authenticationToken = verifyEmailForm.getCode();
         log.info("userId: {}, token: {}", userId, authenticationToken);
 
         ResultDto resultDto = userService.verifyAddUser(userId, authenticationToken);
-        redirectAttributes.addFlashAttribute("alertMessage", resultDto.getMessage());
 
-        return "redirect:/";
+        return resultDto.isHasError() ? // 검증오류시 409 conflict
+                ResponseEntity.status(409).body(ResponseDto.builder().message(resultDto.getMessage()).build()) :
+                ResponseEntity.ok().body(ResponseDto.builder().message(resultDto.getMessage()).build());
     }
 
     @PostMapping("/users/delete")
-    public ResponseEntity<String> deleteUser(@Validated @ModelAttribute UnSubscriptionDto unSubscriptionDto,
-                                             BindingResult bindingResult) {
+    public ResponseEntity<ResponseDto> deleteUser(@Validated @ModelAttribute UnSubscriptionForm unSubscriptionForm,
+                                                  BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getFieldError().getDefaultMessage());
+            return ResponseEntity.badRequest().body(ResponseDto.builder().message(bindingResult.getFieldError().getDefaultMessage()).build());
         }
 
-        String email = unSubscriptionDto.getEmail();
+        String email = unSubscriptionForm.getEmail();
         log.info("email: {}", email);
 
         ResultDto resultDto = userService.deleteUser(email);
+
         return resultDto.isHasError() ? // 검증오류시 409 conflict
-                ResponseEntity.status(409).body(resultDto.getMessage()) :
-                ResponseEntity.ok().body(resultDto.getMessage());
+                ResponseEntity.status(409).body(ResponseDto.builder().message(resultDto.getMessage()).build()) :
+                ResponseEntity.ok().body(ResponseDto.builder()
+                        .userId(resultDto.getUserId()).message(resultDto.getMessage()).build());
     }
 
-    @GetMapping("/users/{userId}/delete")
-    public String confirmDelete(@PathVariable(name = "userId") Long userId,
-                                  @RequestParam(name = "token") String authenticationToken,
-                                  RedirectAttributes redirectAttributes) {
+    @PostMapping("/users/{userId}/verify-delete")
+    public ResponseEntity<ResponseDto> verifyDeleteUser(@PathVariable(name = "userId") Long userId,
+                                                        @Validated @ModelAttribute ConfirmDeleteForm confirmDeleteForm,
+                                                        BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(ResponseDto.builder().message(bindingResult.getFieldError().getDefaultMessage()).build());
+        }
+
+        String authenticationToken = confirmDeleteForm.getCode();
         log.info("userId: {}, token: {}", userId, authenticationToken);
 
         ResultDto resultDto = userService.verifyDeleteUser(userId, authenticationToken);
-        redirectAttributes.addFlashAttribute("alertMessage", resultDto.getMessage());
 
-        return "redirect:/";
+        return resultDto.isHasError() ? // 검증오류시 409 conflict
+                ResponseEntity.status(409).body(ResponseDto.builder().message(resultDto.getMessage()).build()) :
+                ResponseEntity.ok().body(ResponseDto.builder().message(resultDto.getMessage()).build());
     }
 
 }

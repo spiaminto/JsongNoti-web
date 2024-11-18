@@ -41,7 +41,7 @@
           let alertMessage = $('#alertMessage').text();
           if (alertMessage) {
               alert(alertMessage);
-              alertMessage.text('');
+              $('#alertMessage').text('');
           }
 
 // 요소 페이드 인
@@ -83,8 +83,8 @@
               }, 1); // fade in 걸린 요소 때문에 애니메이션 이상해져서 1ms 로 줄임
           });
 
-
-          // 이메일 폼 전송
+// 구독하기 폼 전송
+          let userId = 0;
           $('#subscribeForm').submit(function (event) {
               event.preventDefault();
               $(this).prop('disabled', true);
@@ -105,12 +105,16 @@
                   },
                   success: function (data) {
                       // console.log(data);
-                      alert(data);
-                      $('#emailInput').val('');
+                      userId = data.userId;
+                      let message = data.message;
+                      alert(message);
+                      if (!$("#verifyEmailCollapse").hasClass("show")) {
+                          $("#verifyEmailCollapseButton").click();
+                      }
                   },
                   error: function (xhr) {
                       // console.log(xhr);
-                      let message = xhr.responseText;
+                      let message = xhr.responseJSON.message;
                       alert(message);
                   },
                   complete: function () {
@@ -119,7 +123,40 @@
               });
           });
 
-          // 구독 취소
+//  구독하기 인증코드 전송
+          $('#verifyEmailForm').submit(function (event) {
+              event.preventDefault();
+              $(this).prop('disabled', true);
+
+              let code = $('#verifyCodeInput').val();
+              let csrf = $('#csrfToken').val();
+              $.ajax({
+                  type: 'POST',
+                  url: '/users' + '/' + userId + '/verify-add',
+                  data: {
+                      code: code,
+                      _csrf: csrf
+                  },
+                  success: function (data) {
+                      let message = data.message;
+                      // console.log(data);
+                      alert(message);
+                      if ($("#verifyEmailCollapse").hasClass("show")) {
+                          $("#verifyEmailCollapseButton").click();
+                      }
+                  },
+                  error: function (xhr) {
+                      // console.log(xhr);
+                      let message = xhr.responseJSON.message;
+                      alert(message);
+                  },
+                  complete: function () {
+                      $(this).prop('disabled', false);
+                  }
+              });
+          });
+
+// 구독 취소 폼 전송
           $('#unsubscribeButton').click(function (event) {
               event.preventDefault();
               if (!confirm('정말 구독을 취소하시겠습니까?')) {
@@ -137,13 +174,51 @@
                   },
                   success: function (data) {
                       // console.log(data);
-                      alert(data);
-                      $('#unsubscribeEmailInput').val('');
+                      userId = data.userId;
+                      let message = data.message;
+                      alert(message);
+                      if (!$("#verifyDeleteCollapse").hasClass("show")) {
+                          $("#verifyDeleteCollapseButton").click();
+                      }
                   },
                   error: function (xhr) {
                       // console.log(xhr);
                       let message = xhr.responseText;
                       alert(message);
+                  }
+              });
+          });
+
+// 구독 취소 인증코드 전송
+          $('#verifyDeleteForm').submit(function (event) {
+              event.preventDefault();
+              $(this).prop('disabled', true);
+
+              let code = $('#verifyDeleteCodeInput').val();
+              let csrf = $('#csrfToken').val();
+              $.ajax({
+                  type: 'POST',
+                  url: '/users' + '/' + userId + '/verify-delete',
+                  data: {
+                      code: code,
+                      _csrf: csrf
+                  },
+                  success: function (data) {
+                      let message = data.message;
+                      // console.log(data);
+                      alert(message);
+                      if ($("#verifyDeleteCollapse").hasClass("show")) {
+                          $("#verifyDeleteCollapseButton").click();
+                      }
+                      $("#unsubscribeModalCloseButton").click();
+                  },
+                  error: function (xhr) {
+                      // console.log(xhr);
+                      let message = xhr.responseJSON.message;
+                      alert(message);
+                  },
+                  complete: function () {
+                      $(this).prop('disabled', false);
                   }
               });
           });
@@ -165,6 +240,7 @@
   </nav>
   <!-- Masthead-->
   <header class="masthead">
+<!--    <button class="btn btn-primary" onclick="document.getElementById('verifyEmailCollapseButton').click()">test</button>-->
     <div class="masthead-background" style="background-image: url('/static/assets/img/karaoke.jpg')"
          th:style="'background-image:url(/assets/img/karaoke.jpg)'">
       <div class="container position-relative masthead-content-wrapper">
@@ -174,15 +250,17 @@
               <!-- Page heading-->
               <h2 class="mb-5 headerText">TJ, 금영 노래방에<br class="br-mobile"> 일본 신곡이 등록되면 <br> 오전 10시에 <br
                   class="br-mobile">알림 메일을 보내드립니다</h2>
-              <form class="form-subscribe" id="subscribeForm">
+              <form class="forms-subscribe forms" id="subscribeForm">
                 <!-- Email address input-->
                 <div class="row">
                   <div class="col">
-                    <input class="form-control form-control" id="emailInput" type="email" placeholder="이메일 입력"
+                    <input class="form-control form-control forms-email-input" id="emailInput" type="email"
+                           placeholder="이메일 입력"
                            required>
                   </div>
                   <div class="col-auto">
-                    <button class="btn btn-outline-light btn" id="submitButton" type="submit">구독하기</button>
+                    <button class="btn btn-outline-light btn forms-submit-button" id="submitButton" type="submit">구독하기
+                    </button>
                     <input type="hidden" id="csrfToken" name="_csrf" th:value="${_csrf.token}"/>
                   </div>
                 </div>
@@ -200,6 +278,27 @@
                   </div>
                 </div>
               </form>
+              <!-- 인증코드 전송폼 -->
+              <button id="verifyEmailCollapseButton" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#verifyEmailCollapse" aria-expanded="false" aria-controls="verifyEmailCollapse">
+              </button>
+              <form class="forms forms-verify" id="verifyEmailForm">
+                <div class="collapse" id="verifyEmailCollapse">
+                  <div class="row">
+                    <div class="col">
+                      <input class="form-control forms-email-input" id="verifyCodeInput" type="number"
+                             placeholder="4자리 인증 코드 입력"
+                             required>
+                    </div>
+                    <div class="col-auto">
+                      <button class="btn btn-outline-light btn forms-submit-button" id="verifySubmitButton"
+                              type="submit">인증하기
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+
               <!-- 사용방법 바로가기 버튼 -->
               <div class="row justify-content-center mt-4">
                 <div class="col-auto" id="goToUsageButtonWrapper">
@@ -249,8 +348,9 @@
         <!-- 태진 -->
         <div class="col-lg-4 fade-in-element">
           <h2 class="song-header-text song-header-text-tj position-relative">
-            <span th:text="${tjLatestMonth + ' TJ 신곡'}" >11월 TJ 신곡</span>
-            <mark class="position-absolute song-header-subtext" th:text="${tjLatestDateStr + ' 추가됨'}">00/00(요) 추가됨</mark>
+            <span th:text="${tjLatestMonth + ' TJ 신곡'}">11월 TJ 신곡</span>
+            <mark class="position-absolute song-header-subtext" th:text="${tjLatestDateStr + ' 추가됨'}">00/00(요) 추가됨
+            </mark>
           </h2>
           <div class="song-content-border">
             <table class="table-tj">
@@ -329,7 +429,8 @@
         <div class="col-lg-4 fade-in-element">
           <h2 class="song-header-text song-header-text-ky">
             <span th:text="${kyLatestMonth + ' 금영 신곡'}">11월 금영 신곡</span>
-            <mark class="position-absolute song-header-subtext" th:text="${kyLatestDateStr + ' 추가됨'}">00/00(0) 추가됨</mark>
+            <mark class="position-absolute song-header-subtext" th:text="${kyLatestDateStr + ' 추가됨'}">00/00(0) 추가됨
+            </mark>
           </h2>
           <div class="song-content-border">
             <table class="table-ky">
@@ -420,16 +521,17 @@
       </div>
       <div class="row g-0 fade-in-element">
         <div class="showcase-img-wrapper">
-          <video autoplay muted loop>
+          <video autoplay muted loop playsinline>
             <source src="/static/assets/mov/subscribe.webm" th:src="@{/assets/mov/subscribe.webm}" type="video/webm">
+            <source src="/static/assets/mov/subscribe.mp4" th:src="@{/assets/mov/subscribe.mp4}" type="video/mp4">
             노래방 일본 신곡 알림이 구독하기 동영상
           </video>
         </div>
         <div class="col-lg-6 order-lg-1 my-auto showcase-text">
           <h3>구독하기</h3>
           <p class="lead mb-3">
-            이메일을 입력한 후 등록하기 버튼을 누릅니다. <br>
-            입력한 이메일로 전송된 인증 메일의 버튼을 클릭하면 인증이 완료됩니다. <br>
+            이메일을 입력한 후 구독하기 버튼을 누릅니다. <br>
+            이메일로 전송된 구독 인증 메일의 인증번호를 입력하면 구독이 완료됩니다. <br>
           </p>
           <p class="lead mb-0">
             메일이 정상적으로 수신되지 않을 시 스팸함을 확인해주세요. <br>
@@ -439,8 +541,9 @@
       </div>
       <div class="row g-0 fade-in-element">
         <div class="showcase-img-wrapper">
-          <video autoplay muted loop>
+          <video autoplay muted loop playsinline>
             <source src="/static/assets/mov/noti.webm" th:src="@{/assets/mov/noti.webm}" type="video/webm">
+            <source src="/static/assets/mov/noti.mp4" th:src="@{/assets/mov/noti.mp4}" type="video/mp4">
             노래방 일본 신곡 알림이 이메일 수신 동영상
           </video>
         </div>
@@ -457,9 +560,9 @@
       </div>
       <div class="row g-0 fade-in-element">
         <div class="showcase-img-wrapper">
-          <video autoplay muted loop>
-            <source src="/static/assets/mov/unsubscribe.webm" th:src="@{/assets/mov/unsubscribe.webm}"
-                    type="video/webm">
+          <video autoplay muted loop playsinline>
+            <source src="/static/assets/mov/unsubscribe.webm" th:src="@{/assets/mov/unsubscribe.webm}" type="video/webm">
+            <source src="/static/assets/mov/unsubscribe.mp4" th:src="@{/assets/mov/unsubscribe.mp4}" type="video/mp4">
             노래방 일본 신곡 알림이 구독취소 동영상
           </video>
         </div>
@@ -467,7 +570,8 @@
           <h3>구독 취소</h3>
           <p class="lead mb-0">
             구독 취소는 홈페이지 맨 아래의 구독취소 버튼을 눌러 할 수 있습니다.<br>
-            이메일 인증 후 취소되며 이메일 인증이 불가능할 시 문의 부탁드립니다.</p>
+            이메일로 전송된 구독취소 인증번호를 입력하면 구독이 취소됩니다. <br>
+            이메일 인증이 불가능할 시 문의 부탁드립니다.</p>
         </div>
       </div>
       <div class="row g-0 fade-in-element">
@@ -504,16 +608,35 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form class="form-subscribe" id="unsubscribeForm">
+          <form class="forms-unsubscribe forms" id="unsubscribeForm">
             <!-- Email address input-->
             <div class="row">
               <div class="col">
-                <input class="form-control form-control" id="unsubscribeEmailInput" type="email" placeholder="이메일 입력"
+                <input class="form-control forms-email-input" id="unsubscribeEmailInput" type="email" placeholder="이메일 입력"
                        required/>
               </div>
               <div class="col-auto">
-                <button class="btn btn-outline-danger btn" id="unsubscribeButton" type="submit">구독취소</button>
+                <button class="btn btn-outline-danger btn forms-submit-button" id="unsubscribeButton" type="submit">구독취소</button>
                 <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+              </div>
+            </div>
+          </form>
+          <button id="verifyDeleteCollapseButton" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#verifyDeleteCollapse" aria-expanded="false" aria-controls="verifyDeleteCollapse">
+          </button>
+          <form class="forms forms-verify" id="verifyDeleteForm">
+            <div class="collapse" id="verifyDeleteCollapse">
+              <div class="row">
+                <div class="col">
+                  <input class="form-control forms-email-input" id="verifyDeleteCodeInput" type="number"
+                         placeholder="4자리 인증 코드 입력"
+                         required>
+                </div>
+                <div class="col-auto">
+                  <button class="btn btn-outline-secondary btn forms-submit-button" id="verifyDeleteSubmitButton"
+                          type="submit">인증하기
+                  </button>
+                </div>
               </div>
             </div>
           </form>
