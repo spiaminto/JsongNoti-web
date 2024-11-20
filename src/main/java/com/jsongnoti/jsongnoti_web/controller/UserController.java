@@ -19,7 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/users")
-    public ResponseEntity<UserResponse> addUser(@Validated @RequestBody AddUserForm addUserForm,
+    public ResponseEntity<UserResponse> addUser(@Validated @ModelAttribute AddUserForm addUserForm,
                                                 BindingResult bindingResult) {
         if (bindingResult.hasErrors()) { return ResponseEntity.badRequest().body(UserResponse.withMessage(bindingResult.getFieldError().getDefaultMessage())); }
 
@@ -50,7 +50,7 @@ public class UserController {
     }
 
     @PostMapping("/users/delete")
-    public ResponseEntity<UserResponse> deleteUser(@Validated @RequestBody DeleteUserForm deleteUserForm,
+    public ResponseEntity<UserResponse> deleteUser(@Validated @ModelAttribute DeleteUserForm deleteUserForm,
                                                    BindingResult bindingResult) {
         if (bindingResult.hasErrors()) { return ResponseEntity.badRequest().body(UserResponse.withMessage(bindingResult.getFieldError().getDefaultMessage())); }
 
