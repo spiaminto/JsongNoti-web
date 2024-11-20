@@ -183,7 +183,7 @@
                   },
                   error: function (xhr) {
                       // console.log(xhr);
-                      let message = xhr.responseText;
+                      let message = xhr.responseJSON.message;
                       alert(message);
                   }
               });

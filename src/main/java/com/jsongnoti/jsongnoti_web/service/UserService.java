@@ -175,7 +175,7 @@ public class UserService {
             if (user.getAuthenticationTimestamp().isBefore(LocalDateTime.now().minusMinutes(5))) {
                 return ValidateVerifyResult.fail("인증 시간이 만료되었습니다. 다시 인증요청 해주세요.");
             }
-            if (user.getAuthenticationRetry() > 2) {
+            if (user.getAuthenticationRetry() >= 3) {
                 return ValidateVerifyResult.fail("인증 시도 횟수를 초과했습니다. 다시 인증요청 해주세요.");
             }
         }

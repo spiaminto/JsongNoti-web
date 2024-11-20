@@ -53,4 +53,7 @@ commit 7
 commit 8
     리팩토링
 
+commit 9
+    버그수정
+
 
