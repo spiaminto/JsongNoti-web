@@ -1,7 +1,7 @@
 package com.jsongnoti.jsongnoti_web.controller;
 
 import com.jsongnoti.jsongnoti_web.controller.dto.*;
-import com.jsongnoti.jsongnoti_web.service.ResultDto;
+import com.jsongnoti.jsongnoti_web.service.UserServiceResult;
 import com.jsongnoti.jsongnoti_web.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,75 +19,67 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/users")
-    public ResponseEntity<ResponseDto> addUser(@Validated @ModelAttribute SubscriptionForm subscriptionForm,
-                                               BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(ResponseDto.builder().message(bindingResult.getFieldError().getDefaultMessage()).build());
-        }
+    public ResponseEntity<UserResponse> addUser(@Validated @RequestBody AddUserForm addUserForm,
+                                                BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) { return ResponseEntity.badRequest().body(UserResponse.withMessage(bindingResult.getFieldError().getDefaultMessage())); }
 
-        log.info("email: {}", subscriptionForm.getEmail());
-        String email = subscriptionForm.getEmail();
+        String email = addUserForm.getEmail();
+        log.debug("email: {}", email);
 
-        ResultDto resultDto = userService.addUser(email);
+        UserServiceResult userServiceResult = userService.addUser(email);
+        int statusCode = userServiceResult.isHasError() ? 409 : 200; // 검증실패시 409 Conflict
 
-        return resultDto.isHasError() ? // 검증오류시 409 conflict
-                ResponseEntity.status(409).body(ResponseDto.builder().message(resultDto.getMessage()).build()) :
-                ResponseEntity.ok().body(ResponseDto.builder()
-                        .userId(resultDto.getUserId()).message(resultDto.getMessage()).build());
+        return ResponseEntity.status(statusCode)
+                .body(UserResponse.withMessageAndUserId(userServiceResult.getMessage(), userServiceResult.getUserId()));
     }
 
     @PostMapping("/users/{userId}/verify-add")
-    public ResponseEntity<ResponseDto> verifyAddUser(@PathVariable(name = "userId") Long userId,
-                                                     @Validated @ModelAttribute VerifyEmailForm verifyEmailForm,
-                                                     BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(ResponseDto.builder().message(bindingResult.getFieldError().getDefaultMessage()).build());
-        }
+    public ResponseEntity<UserResponse> verifyAddUser(@PathVariable(name = "userId") Long userId,
+                                                      @Validated @ModelAttribute VerifyAddUserForm verifyAddUserForm,
+                                                      BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) { return ResponseEntity.badRequest().body(UserResponse.withMessage(bindingResult.getFieldError().getDefaultMessage())); }
 
-        String authenticationToken = verifyEmailForm.getCode();
-        log.info("userId: {}, token: {}", userId, authenticationToken);
+        String authenticationToken = verifyAddUserForm.getCode();
+        log.debug("userId: {}, token: {}", userId, authenticationToken);
 
-        ResultDto resultDto = userService.verifyAddUser(userId, authenticationToken);
+        UserServiceResult userServiceResult = userService.verifyAddUser(userId, authenticationToken);
+        int statusCode = userServiceResult.isHasError() ? 409 : 200;
 
-        return resultDto.isHasError() ? // 검증오류시 409 conflict
-                ResponseEntity.status(409).body(ResponseDto.builder().message(resultDto.getMessage()).build()) :
-                ResponseEntity.ok().body(ResponseDto.builder().message(resultDto.getMessage()).build());
+        return ResponseEntity.status(statusCode)
+                .body(UserResponse.withMessage(userServiceResult.getMessage()));
     }
 
     @PostMapping("/users/delete")
-    public ResponseEntity<ResponseDto> deleteUser(@Validated @ModelAttribute UnSubscriptionForm unSubscriptionForm,
-                                                  BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(ResponseDto.builder().message(bindingResult.getFieldError().getDefaultMessage()).build());
-        }
+    public ResponseEntity<UserResponse> deleteUser(@Validated @RequestBody DeleteUserForm deleteUserForm,
+                                                   BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) { return ResponseEntity.badRequest().body(UserResponse.withMessage(bindingResult.getFieldError().getDefaultMessage())); }
 
-        String email = unSubscriptionForm.getEmail();
-        log.info("email: {}", email);
+        String email = deleteUserForm.getEmail();
+        log.debug("email: {}", email);
 
-        ResultDto resultDto = userService.deleteUser(email);
+        UserServiceResult userServiceResult = userService.deleteUser(email);
+        int statusCode = userServiceResult.isHasError() ? 409 : 200;
 
-        return resultDto.isHasError() ? // 검증오류시 409 conflict
-                ResponseEntity.status(409).body(ResponseDto.builder().message(resultDto.getMessage()).build()) :
-                ResponseEntity.ok().body(ResponseDto.builder()
-                        .userId(resultDto.getUserId()).message(resultDto.getMessage()).build());
+        return ResponseEntity.status(statusCode)
+                .body(UserResponse.withMessageAndUserId(userServiceResult.getMessage(), userServiceResult.getUserId()));
     }
 
     @PostMapping("/users/{userId}/verify-delete")
-    public ResponseEntity<ResponseDto> verifyDeleteUser(@PathVariable(name = "userId") Long userId,
-                                                        @Validated @ModelAttribute ConfirmDeleteForm confirmDeleteForm,
-                                                        BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(ResponseDto.builder().message(bindingResult.getFieldError().getDefaultMessage()).build());
-        }
+    public ResponseEntity<UserResponse> verifyDeleteUser(@PathVariable(name = "userId") Long userId,
+                                                         @Validated @ModelAttribute VerifyDeleteUserForm verifyDeleteUserForm,
+                                                         BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) { return ResponseEntity.badRequest().body(UserResponse.withMessage(bindingResult.getFieldError().getDefaultMessage())); }
 
-        String authenticationToken = confirmDeleteForm.getCode();
-        log.info("userId: {}, token: {}", userId, authenticationToken);
+        String authenticationToken = verifyDeleteUserForm.getCode();
+        log.debug("userId: {}, token: {}", userId, authenticationToken);
 
-        ResultDto resultDto = userService.verifyDeleteUser(userId, authenticationToken);
+        UserServiceResult userServiceResult = userService.verifyDeleteUser(userId, authenticationToken);
+        int statusCode = userServiceResult.isHasError() ? 409 : 200;
 
-        return resultDto.isHasError() ? // 검증오류시 409 conflict
-                ResponseEntity.status(409).body(ResponseDto.builder().message(resultDto.getMessage()).build()) :
-                ResponseEntity.ok().body(ResponseDto.builder().message(resultDto.getMessage()).build());
+        return ResponseEntity.status(statusCode)
+                .body(UserResponse.withMessage(userServiceResult.getMessage()));
     }
+
+
 
 }

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class UnSubscriptionForm {
+public class AddUserForm {
 
     @Email @NotBlank @Size(max = 40, message = "{Size.email}")
     private String email;

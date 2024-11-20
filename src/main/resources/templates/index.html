@@ -124,7 +124,7 @@
           });
 
 //  구독하기 인증코드 전송
-          $('#verifyEmailForm').submit(function (event) {
+          $('#verifyAddUserForm').submit(function (event) {
               event.preventDefault();
               $(this).prop('disabled', true);
 
@@ -190,7 +190,7 @@
           });
 
 // 구독 취소 인증코드 전송
-          $('#verifyDeleteForm').submit(function (event) {
+          $('#verifyDeleteUserForm').submit(function (event) {
               event.preventDefault();
               $(this).prop('disabled', true);
 
@@ -282,7 +282,7 @@
               <button id="verifyEmailCollapseButton" type="button" data-bs-toggle="collapse"
                       data-bs-target="#verifyEmailCollapse" aria-expanded="false" aria-controls="verifyEmailCollapse">
               </button>
-              <form class="forms forms-verify" id="verifyEmailForm">
+              <form class="forms forms-verify" id="verifyAddUserForm">
                 <div class="collapse" id="verifyEmailCollapse">
                   <div class="row">
                     <div class="col">
@@ -624,7 +624,7 @@
           <button id="verifyDeleteCollapseButton" type="button" data-bs-toggle="collapse"
                   data-bs-target="#verifyDeleteCollapse" aria-expanded="false" aria-controls="verifyDeleteCollapse">
           </button>
-          <form class="forms forms-verify" id="verifyDeleteForm">
+          <form class="forms forms-verify" id="verifyDeleteUserForm">
             <div class="collapse" id="verifyDeleteCollapse">
               <div class="row">
                 <div class="col">

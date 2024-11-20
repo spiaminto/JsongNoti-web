@@ -4,9 +4,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class ConfirmDeleteForm {
+public class VerifyAddUserForm {
 
-    @Size(min = 4, max = 4 , message = "{Size.code}")
+    @Size(min = 4, max = 4, message = "{Size.code}")
     private String code;
 
 }

@@ -20,44 +20,6 @@ public class SongService {
     private final SongRepository songRepository;
 
     /**
-     * 최근 1달간의 TJ 노래 목록을 조회한다. 만약 조회된 노래가 없다면 1달 전의 노래 목록을 조회한다.
-     * @return
-     */
-    public List<Song> getRecentTjSongsByMonth() {
-        List<Song> tjSongs = new ArrayList<>();
-        LocalDate now = LocalDate.now();
-        LocalDate startDate = LocalDate.of(now.getYear(), now.getMonth(), 1);
-        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
-
-        tjSongs = songRepository.findSongsByBrandBetweenTime(Brand.TJ, startDate, endDate);
-        if (tjSongs.isEmpty()) {
-            tjSongs = songRepository.findSongsByBrandBetweenTime(Brand.TJ, startDate.minusMonths(1), endDate.minusMonths(1));
-        }
-
-//        log.info("\n[SongService.getRecentTjSongsByMonth()] tjSongs = {}", tjSongs);
-        return tjSongs;
-    }
-
-    /**
-     * 최근 1달간의 KY 노래 목록을 조회한다. 만약 조회된 노래가 없다면 1달 전의 노래 목록을 조회한다.
-     * @return
-     */
-    public List<Song> getRecentKySongsByMonth() {
-        List<Song> kySongs = new ArrayList<>();
-        LocalDate now = LocalDate.now();
-        LocalDate startDate = LocalDate.of(now.getYear(), now.getMonth(), 1);
-        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
-
-        kySongs = songRepository.findSongsByBrandBetweenTime(Brand.KY, startDate, endDate);
-        if (kySongs.isEmpty()) {
-            kySongs = songRepository.findSongsByBrandBetweenTime(Brand.KY, startDate.minusMonths(1), endDate.minusMonths(1));
-        }
-
-//        log.info("\n[SongService.getRecentKySongsByMonth()] kySongs = {}", kySongs);
-        return kySongs;
-    }
-
-    /**
      * 홈페이지용 통합된 메서드
      * 오늘부터 세달간의 노래를 DB 조회후 브랜드별 및 시간별(두 달)로 필터링하여 리턴
      * @return LatestAndLastSongsDto
@@ -108,6 +70,44 @@ public class SongService {
                 .kyLatestMonth(kyLatestMonth)
                 .kyLastMonth(kyLastMonth)
                 .build();
+    }
+
+    /**
+     * 최근 1달간의 TJ 노래 목록을 조회한다. 만약 조회된 노래가 없다면 1달 전의 노래 목록을 조회한다.
+     * @return
+     */
+    public List<Song> getRecentTjSongsByMonth() {
+        List<Song> tjSongs = new ArrayList<>();
+        LocalDate now = LocalDate.now();
+        LocalDate startDate = LocalDate.of(now.getYear(), now.getMonth(), 1);
+        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+
+        tjSongs = songRepository.findSongsByBrandBetweenTime(Brand.TJ, startDate, endDate);
+        if (tjSongs.isEmpty()) {
+            tjSongs = songRepository.findSongsByBrandBetweenTime(Brand.TJ, startDate.minusMonths(1), endDate.minusMonths(1));
+        }
+
+//        log.info("\n[SongService.getRecentTjSongsByMonth()] tjSongs = {}", tjSongs);
+        return tjSongs;
+    }
+
+    /**
+     * 최근 1달간의 KY 노래 목록을 조회한다. 만약 조회된 노래가 없다면 1달 전의 노래 목록을 조회한다.
+     * @return
+     */
+    public List<Song> getRecentKySongsByMonth() {
+        List<Song> kySongs = new ArrayList<>();
+        LocalDate now = LocalDate.now();
+        LocalDate startDate = LocalDate.of(now.getYear(), now.getMonth(), 1);
+        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+
+        kySongs = songRepository.findSongsByBrandBetweenTime(Brand.KY, startDate, endDate);
+        if (kySongs.isEmpty()) {
+            kySongs = songRepository.findSongsByBrandBetweenTime(Brand.KY, startDate.minusMonths(1), endDate.minusMonths(1));
+        }
+
+//        log.info("\n[SongService.getRecentKySongsByMonth()] kySongs = {}", kySongs);
+        return kySongs;
     }
 
 }

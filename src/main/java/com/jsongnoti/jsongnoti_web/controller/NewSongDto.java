@@ -1,14 +1,17 @@
 package com.jsongnoti.jsongnoti_web.controller;
 
 import com.jsongnoti.jsongnoti_web.domain.Song;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
 
 /**
  * index 페이지를 통해 보낼 노래 Dto
  */
-@Data
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Setter(value = AccessLevel.PRIVATE)
+@Getter
 public class NewSongDto {
     private int number;
     private String title;

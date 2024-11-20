@@ -1,14 +1,14 @@
 package com.jsongnoti.jsongnoti_web.service;
 
 import com.jsongnoti.jsongnoti_web.domain.Song;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
 
-@Data @Builder
+@Builder @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class LatestAndLastSongsDto {
 
 
