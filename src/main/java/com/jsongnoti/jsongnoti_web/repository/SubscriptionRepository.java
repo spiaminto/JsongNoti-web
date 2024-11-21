@@ -1,14 +1,14 @@
 package com.jsongnoti.jsongnoti_web.repository;
 
-import com.jsongnoti.jsongnoti_web.domain.User;
+import com.jsongnoti.jsongnoti_web.domain.Subscription;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 
-    Optional<User> findByEmail(String email);
+    Optional<Subscription> findByEmail(String email);
 
 }

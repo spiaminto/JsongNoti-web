@@ -6,16 +6,16 @@ import lombok.Getter;
 public class UserResponse {
 
     private String message;
-    private Long userId;
+    private Long subscriptionId;
 
-    private UserResponse(String message, Long userId) {
+    private UserResponse(String message, Long subscriptionId) {
         this.message = message;
-        this.userId = userId;
+        this.subscriptionId = subscriptionId;
     }
 
     private UserResponse(String message) {
         this.message = message;
-        this.userId = null;
+        this.subscriptionId = null;
     }
 
     public static UserResponse withMessage(String message) {

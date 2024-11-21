@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserServiceResult {
+public class SubscriptionServiceResult {
 
     private boolean hasError;
     private String message;
@@ -17,8 +17,8 @@ public class UserServiceResult {
      * @param userId
      * @return ResultDto
      */
-    public static UserServiceResult success(String message, Long userId) {
-        return new UserServiceResult(false, message, userId);
+    public static SubscriptionServiceResult success(String message, Long userId) {
+        return new SubscriptionServiceResult(false, message, userId);
     }
 
     /**
@@ -27,8 +27,8 @@ public class UserServiceResult {
      * @param userId
      * @return ResultDto
      */
-    public static UserServiceResult fail(String message, Long userId) {
-        return new UserServiceResult(true, message, userId);
+    public static SubscriptionServiceResult fail(String message, Long userId) {
+        return new SubscriptionServiceResult(true, message, userId);
     }
 
 

@@ -38,6 +38,9 @@ dependencies {
     // Spring Security starter
     implementation 'org.springframework.boot:spring-boot-starter-security:3.3.4'
 
+    // Spring Security OAuth2 Client
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
     // log4jdbc
     implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
 

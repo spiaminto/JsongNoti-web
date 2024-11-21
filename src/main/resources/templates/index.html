@@ -84,7 +84,7 @@
           });
 
 // 구독하기 폼 전송
-          let userId = 0;
+          let subscriptionId = 0;
           $('#subscribeForm').submit(function (event) {
               event.preventDefault();
               $(this).prop('disabled', true);
@@ -98,14 +98,14 @@
               }
               $.ajax({
                   type: 'POST',
-                  url: '/users',
+                  url: '/subscriptions',
                   data: {
                       email: email,
                       _csrf: csrf
                   },
                   success: function (data) {
                       // console.log(data);
-                      userId = data.userId;
+                      subscriptionId = data.subscriptionId;
                       let message = data.message;
                       alert(message);
                       if (!$("#verifyEmailCollapse").hasClass("show")) {
@@ -124,7 +124,7 @@
           });
 
 //  구독하기 인증코드 전송
-          $('#verifyAddUserForm').submit(function (event) {
+          $('#verifySubscriptionForm').submit(function (event) {
               event.preventDefault();
               $(this).prop('disabled', true);
 
@@ -132,7 +132,7 @@
               let csrf = $('#csrfToken').val();
               $.ajax({
                   type: 'POST',
-                  url: '/users' + '/' + userId + '/verify-add',
+                  url: '/subscriptions' + '/' + subscriptionId + '/verify-add',
                   data: {
                       code: code,
                       _csrf: csrf
@@ -167,14 +167,14 @@
               let csrf = $('#csrfToken').val();
               $.ajax({
                   type: 'POST',
-                  url: '/users/delete',
+                  url: '/subscriptions/delete',
                   data: {
                       email: email,
                       _csrf: csrf
                   },
                   success: function (data) {
                       // console.log(data);
-                      userId = data.userId;
+                      subscriptionId = data.subscriptionId;
                       let message = data.message;
                       alert(message);
                       if (!$("#verifyDeleteCollapse").hasClass("show")) {
@@ -190,7 +190,7 @@
           });
 
 // 구독 취소 인증코드 전송
-          $('#verifyDeleteUserForm').submit(function (event) {
+          $('#verifyUnsubscriptionForm').submit(function (event) {
               event.preventDefault();
               $(this).prop('disabled', true);
 
@@ -198,7 +198,7 @@
               let csrf = $('#csrfToken').val();
               $.ajax({
                   type: 'POST',
-                  url: '/users' + '/' + userId + '/verify-delete',
+                  url: '/subscriptions' + '/' + subscriptionId + '/verify-delete',
                   data: {
                       code: code,
                       _csrf: csrf
@@ -282,7 +282,7 @@
               <button id="verifyEmailCollapseButton" type="button" data-bs-toggle="collapse"
                       data-bs-target="#verifyEmailCollapse" aria-expanded="false" aria-controls="verifyEmailCollapse">
               </button>
-              <form class="forms forms-verify" id="verifyAddUserForm">
+              <form class="forms forms-verify" id="verifySubscriptionForm">
                 <div class="collapse" id="verifyEmailCollapse">
                   <div class="row">
                     <div class="col">
@@ -624,7 +624,7 @@
           <button id="verifyDeleteCollapseButton" type="button" data-bs-toggle="collapse"
                   data-bs-target="#verifyDeleteCollapse" aria-expanded="false" aria-controls="verifyDeleteCollapse">
           </button>
-          <form class="forms forms-verify" id="verifyDeleteUserForm">
+          <form class="forms forms-verify" id="verifyUnsubscriptionForm">
             <div class="collapse" id="verifyDeleteCollapse">
               <div class="row">
                 <div class="col">
