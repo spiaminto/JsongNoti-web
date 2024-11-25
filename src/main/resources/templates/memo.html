@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>노래방 일본 신곡 알림이 메모장</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name=”title” content="노래방 일본 신곡 알림이 메모장"/>
+  <meta name="description" content="노래방 일본 신곡 알림이 에서 TJ, 금영 노래방에 등록되는 일본 신곡을 확인하고, 신곡 등록 정보를 메일로 받아보세요."/>
+  <meta name="keywords" content="노래방, 일본 노래, 신곡"/>
+  <meta name="google-site-verification" content="00_l8httzNCkM1xkzw0ksQyJ0uhLb2ZFP2POJnLB-Mk"/>
+  <meta name="naver-site-verification" content="81d3e8c9dfbb40001d6dfddf06db7c3546ac03cd"/>
+  <!--  <meta name="author" content=""/>-->
+  <!-- Favicon-->
+  <link rel="icon" type="image/x-icon" href="/static/assets/favicon_32.png" th:href="@{/assets/favicon_32.png}"/>
+  <!-- Bootstrap icons-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet"
+        type="text/css"/>
+  <!-- nanum fonts-->
+  <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css" rel="stylesheet"/>
+  <!-- Core theme CSS (includes Bootstrap)-->
+  <link href="/static/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
+  <link href="/static/css/custom.css" th:href="@{/css/custom.css}" rel="stylesheet"/>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JFWLSXBEYR"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+
+      function gtag() {
+          dataLayer.push(arguments);
+      }
+
+      gtag('js', new Date());
+
+      gtag('config', 'G-JFWLSXBEYR');
+  </script>
+  <script src="https://code.jquery.com/jquery.min.js"></script>
+  <script>
+      $(function () {
+          //loaded
+// alert
+          let alertMessage = $('#alertMessage').text();
+          if (alertMessage) {
+              alert(alertMessage);
+              $('#alertMessage').text('');
+          }
+
+// 요소 페이드 인
+          let fadeElements = $('.fade-in-element');
+          $(window).on('scroll', onScroll);
+          onScroll(); // 초기체크
+
+          function onScroll() {
+              fadeElements.each(function () {
+                  checkElement.call(this);
+              });
+
+              // 모든 요소가 나타났는지 확인
+              fadeElements = fadeElements.filter(':not(.is-visible)');
+              if (fadeElements.length === 0) {
+                  // $(window).off('scroll', onScroll);
+              }
+          }
+
+          function checkElement() {
+              // 뷰포트 88% 지점
+              var viewportTop = $(window).scrollTop() * 1.12;
+              var viewportBottom = viewportTop + $(window).height() * 0.88;
+
+              var elementTop = $(this).offset().top;
+              var elementBottom = elementTop + $(this).outerHeight();
+
+              if (elementTop < viewportBottom && elementBottom > viewportTop) { // 화면아랫방향으로 / 화면윗방향으로
+                  $(this).addClass('is-visible');
+                  // 요소가 나타나면 fadeElements 배열에서 제거
+                  // fadeElements = fadeElements.not($(this));
+              }
+          }
+
+// 사용방법 바로가기 버튼 클릭 이벤트
+          $('.usage-Button').click(function () {
+              $('html, body').animate({
+                  scrollTop: $('.showcase').offset().top - 32 // 2rem 여유
+              }, 1); // fade in 걸린 요소 때문에 애니메이션 이상해져서 1ms 로 줄임
+          });
+
+      })
+  </script>
+</head>
+<body>
+<div id="alertMessage" th:text="${alertMessage}" style="width: 0; height: 0; display: none"></div>
+<div id="container">
+  <!-- Navigation-->
+  <nav class="navbar navbar-light bg-light static-top">
+    <div class="container">
+      <h1>
+        <a class="navbar-brand" href="/memo">노래방 일본 신곡 알림이 메모장</a>
+      </h1>
+      <div class="col-auto">
+        <button id="goToUsageButtonNav" class="btn btn-outline-dark btn-lg usage-Button"> 사용 방법</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 신곡 일람 표 -->
+  <section class="new-song-section bg-light text-center">
+    <div id="song-container" class="container text-center">
+      <div class="new-song-section-header">
+        <p> 메모된 곡 목록입니다. </p>
+      </div>
+      <div class="row">
+        <!-- 태진 -->
+        <div class="col-lg-4 fade-in-element">
+          <h2 class="song-header-text song-header-text-tj position-relative">
+            <span th:text="${tjLatestMonth + ' TJ 신곡'}">TJ 메모</span>
+          </h2>
+          <div class="song-content-border">
+            <table class="table-tj">
+              <thead>
+              <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>아티스트</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="song : ${tjLatestMonthSongs}">
+                <td class="song-number">
+                  <span th:text="${song.number}" th:classappend="${song.latest} ? latest : ''">12345</span>
+                </td>
+                <td class="song-title">
+                  <div class="song-title-text">
+                    <a target="_blank" th:href="${song.searchUrl}"
+                       href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9"
+                       th:text="${song.title}">
+                      노래 제목
+                    </a>
+                  </div>
+                  <div class="song-info-text" th:text="${song.info}">정보 텍스트
+                  </div>
+                </td>
+                <td class="song-singer" th:text="${song.singer}">가수명
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- TJ 저번달 -->
+          <div class="last-month-show-button-wrapper">
+            <button class="btn btn-sm btn-outline-secondary last-month-show-button" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#tjLastMonthSongContentBorder" aria-expanded="false"
+                    aria-controls="tjLastMonthSongContentBorder"
+                    th:text="${tjLastMonth + ' TJ 신곡'}">
+              전체 열기
+            </button>
+          </div>
+          <div class="song-content-border collapse" id="tjLastMonthSongContentBorder">
+            <table class="table-tj">
+              <thead>
+              <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>아티스트</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="song : ${tjLastMonthSongs}">
+                <td class="song-number" th:text="${song.number}">12345
+                </td>
+                <td class="song-title">
+                  <div class="song-title-text">
+                    <a target="_blank" th:href="${song.searchUrl}"
+                       href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9"
+                       th:text="${song.title}">
+                      노래 제목
+                    </a>
+                  </div>
+                  <div class="song-info-text" th:text="${song.info}">정보 텍스트
+                  </div>
+                </td>
+                <td class="song-singer" th:text="${song.singer}">가수명
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+        <!-- 금영 -->
+        <div class="col-lg-4 fade-in-element">
+          <h2 class="song-header-text song-header-text-ky">
+            <span th:text="${kyLatestMonth + ' 금영 신곡'}">금영 메모</span>
+          </h2>
+          <div class="song-content-border">
+            <table class="table-ky">
+              <thead>
+              <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>아티스트</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="song : ${kyLatestMonthSongs}">
+                <td class="song-number">
+                  <span th:text="${song.number}" th:classappend="${song.latest} ? latest : ''">12345</span>
+                </td>
+                <td class="song-title">
+                  <div class="song-title-text">
+                    <a target="_blank" th:href="${song.searchUrl}"
+                       href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9"
+                       th:text="${song.title}">
+                      노래 제목
+                    </a>
+                  </div>
+                  <div class="song-info-text" th:text="${song.info}">정보 텍스트
+                  </div>
+                </td>
+                <td class="song-singer" th:text="${song.singer}">가수명
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- 금영 저번달 목록 -->
+          <div class="last-month-show-button-wrapper">
+            <button class="btn btn-sm btn-outline-secondary last-month-show-button" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#kyLastMonthSongContentBorder" aria-expanded="false"
+                    aria-controls="kyLastMonthSongContentBorder"
+                    th:text="${kyLastMonth + ' 금영 신곡'}">
+              전체 열기
+            </button>
+          </div>
+          <div class="song-content-border collapse" id="kyLastMonthSongContentBorder">
+            <table class="table-ky">
+              <thead>
+              <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>아티스트</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="song : ${kyLastMonthSongs}">
+                <td class="song-number" th:text="${song.number}">12345
+                </td>
+                <td class="song-title">
+                  <div class="song-title-text">
+                    <a target="_blank" th:href="${song.searchUrl}"
+                       href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9"
+                       th:text="${song.title}">
+                      노래 제목
+                    </a>
+                  </div>
+                  <div class="song-info-text" th:text="${song.info}">정보 텍스트
+                  </div>
+                </td>
+                <td class="song-singer" th:text="${song.singer}">가수명
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="splitter"></div>
+
+
+  <!-- Footer-->
+  <footer class="footer bg-light">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
+          <button type="button" class="btn btn-danger btn-sm" id="unsubscribeModalButton" data-bs-toggle="modal"
+                  data-bs-target="#unsubscribeModal">
+            구독 취소
+          </button>
+          <p id="footerText" class="text-muted small mb-4 mb-lg-0">&copy; JsongNoti by spiaminto. All Rights
+            Reserved.</p>
+          <p id="footerTextCopyright" class="text-muted small mb-0">favicon Designed by Freepik</p>
+          <p id="footerTextGoogleAnalytics" class="text-muted small mb-4 mb-lg-0">이 사이트는 구글 애널리틱스를 사용중입니다
+            <button type="button" class="btn btn-outline-secondary google-analytics-button" data-bs-toggle="modal"
+                    data-bs-target="#googleAnalyticsModal">
+              [ 자세히 ]
+            </button>
+          </p>
+        </div>
+        <div class="col-lg-6 h-100 text-center text-lg-end my-auto">
+          <ul class="list-inline mb-0">
+            <li class="list-inline-item me-4">
+              Github &nbsp;
+              <a href="https://github.com/spiaminto/JsongNoti-web"><i class="bi-github fs-3"></i></a>
+            </li>
+            <li class="list-inline-item contact-mail-pc">
+              Contact
+              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=jsongnoti%2Bcs@gmail.com&su=일본 신곡 알림이 문의"
+                 target="_blank"><i
+                  class="bi-envelope fs-3"></i></a>
+            </li>
+            <li class="list-inline-item contact-mail-mobile">
+              Contact
+              <a href="mailto:jsongnoti+cs@gmail.com?subject=일본 신곡 알림이 문의"><i
+                  class="bi-envelope fs-3"></i></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- agreement Modal -->
+  <div class="modal fade" id="googleAnalyticsModal" tabindex="-1" aria-labelledby="googleAnalyticsModal"
+       aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="googleAnalyticsModalHeaderText">구글 애널리틱스</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-body-content">
+            <p><h4>구글 애널리틱스 개인정보 처리 방침</h4> <br>
+            노래방 일본 신곡 알림이는 보다 나은 서비스의 제공을 위하여 구글(Google)에서 제공하는 웹로그 분석 도구인 구글 애널리틱스를 이용하고 있습니다. <br>
+            구글 애널리틱스는 쿠키(Cookie)를 통하여 현재 웹사이트 이용자의 행태정보를 수집하게 되며, 이 경우 이용자 개인을 식별할 수 없는 비식별정보 만이 수집됩니다. <br>
+            그럼에도 이용자는 Google 애널리틱스 차단 브라우저 부가기능의 설치(https://tools.google.com/dlpage/gaoptout) 또는 웹브라우저의 쿠키 설정 거부를 통해 구글
+            애널리틱스 이용을 거부할 수 있습니다.
+            </p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">확인</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div> <!-- #container -->
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<!--<script src="/js/scripts.js"></script>-->
+</body>
+</html>

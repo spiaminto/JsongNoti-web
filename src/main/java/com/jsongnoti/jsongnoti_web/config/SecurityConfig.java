@@ -1,5 +1,7 @@
 package com.jsongnoti.jsongnoti_web.config;
 
+import com.jsongnoti.jsongnoti_web.auth.oauth.PrincipalOauth2UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,7 +11,10 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final PrincipalOauth2UserService principalOauth2UserService;
 
     @Bean
     BCryptPasswordEncoder passwordEncoder() {
@@ -31,18 +36,31 @@ public class SecurityConfig {
                                 .requestMatchers("/", "/users/**").permitAll()
                                 .anyRequest().permitAll()
                 )
-                // 미구현
+
                 .formLogin(formLogin ->
                         formLogin
                                 .loginPage("/login")
-                                .permitAll()
                 )
-                // 미구현
+
                 .logout(logout ->
                         logout
-                                .logoutUrl("/logout")
                                 .permitAll()
-                );
+                                .logoutUrl("/logout")
+                                .logoutSuccessUrl("/login")
+                                .deleteCookies("JSESSIONID")
+                                .invalidateHttpSession(true)
+                                .clearAuthentication(true))
+
+                .oauth2Login(oauth2Login ->
+                        oauth2Login
+                                .authorizationEndpoint(authorizationEndpoint ->
+                                        authorizationEndpoint.baseUri("/oauth2/authorization"))
+                                .redirectionEndpoint(redirectionEndpoint ->
+                                        redirectionEndpoint.baseUri("/oauth2/code/**"))
+                                .loginPage("/login")
+                                .defaultSuccessUrl("/")
+                                .userInfoEndpoint(userInfoEndpoint ->
+                                        userInfoEndpoint.userService(principalOauth2UserService)));
         return http.build();
     }
 
