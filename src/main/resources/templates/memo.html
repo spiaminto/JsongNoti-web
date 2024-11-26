@@ -33,6 +33,11 @@
 
       gtag('config', 'G-JFWLSXBEYR');
   </script>
+  <style>
+      #songSearchResultRow {
+          display: none;
+      }
+  </style>
   <script src="https://code.jquery.com/jquery.min.js"></script>
   <script>
       $(function () {
@@ -96,10 +101,53 @@
         <a class="navbar-brand" href="/memo">노래방 일본 신곡 알림이 메모장</a>
       </h1>
       <div class="col-auto">
-        <button id="goToUsageButtonNav" class="btn btn-outline-dark btn-lg usage-Button"> 사용 방법</button>
+        <button class="btn btn-outline-dark btn-lg setting-Button" id="settingButton" data-bs-toggle="modal"
+                data-bs-target="#settingModal">설정
+        </button>
       </div>
     </div>
   </nav>
+
+  <div class="modal fade" id="settingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+       aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="unsubscribeModalHeaderText">설정</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form class="forms-unsubscribe forms" id="unsubscribeForm">
+            <div>정렬방식</div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="sortType" id="sortTypeCheckboxByOrder" value="option1">
+              <label class="form-check-label" for="sortTypeCheckboxByOrder">순서대로</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="sortType" id="sortTypeCheckboxByArtist"
+                     value="option2">
+              <label class="form-check-label" for="sortTypeCheckboxByArtist">아티스트별</label>
+            </div>
+            <hr>
+            <div>표시할 메모</div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="showTjMemo" id="showTjCheckbox" value="true">
+              <label class="form-check-label" for="showTjCheckbox">TJ</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="showKyMemo" id="showKyCheckbox" value="true">
+              <label class="form-check-label" for="showKyCheckbox">금영</label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="unsubscribeModalCloseButton" class="btn btn-outline-secondary"
+                  data-bs-dismiss="modal">닫기
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- 신곡 일람 표 -->
   <section class="new-song-section bg-light text-center">
@@ -144,47 +192,6 @@
               </tbody>
             </table>
           </div>
-          <!-- TJ 저번달 -->
-          <div class="last-month-show-button-wrapper">
-            <button class="btn btn-sm btn-outline-secondary last-month-show-button" type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#tjLastMonthSongContentBorder" aria-expanded="false"
-                    aria-controls="tjLastMonthSongContentBorder"
-                    th:text="${tjLastMonth + ' TJ 신곡'}">
-              전체 열기
-            </button>
-          </div>
-          <div class="song-content-border collapse" id="tjLastMonthSongContentBorder">
-            <table class="table-tj">
-              <thead>
-              <tr>
-                <th>번호</th>
-                <th>제목</th>
-                <th>아티스트</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr th:each="song : ${tjLastMonthSongs}">
-                <td class="song-number" th:text="${song.number}">12345
-                </td>
-                <td class="song-title">
-                  <div class="song-title-text">
-                    <a target="_blank" th:href="${song.searchUrl}"
-                       href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9"
-                       th:text="${song.title}">
-                      노래 제목
-                    </a>
-                  </div>
-                  <div class="song-info-text" th:text="${song.info}">정보 텍스트
-                  </div>
-                </td>
-                <td class="song-singer" th:text="${song.singer}">가수명
-                </td>
-              </tr>
-              </tbody>
-            </table>
-          </div>
-
         </div>
         <!-- 금영 -->
         <div class="col-lg-4 fade-in-element">
@@ -222,18 +229,22 @@
               </tbody>
             </table>
           </div>
-          <!-- 금영 저번달 목록 -->
-          <div class="last-month-show-button-wrapper">
-            <button class="btn btn-sm btn-outline-secondary last-month-show-button" type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#kyLastMonthSongContentBorder" aria-expanded="false"
-                    aria-controls="kyLastMonthSongContentBorder"
-                    th:text="${kyLastMonth + ' 금영 신곡'}">
-              전체 열기
-            </button>
-          </div>
-          <div class="song-content-border collapse" id="kyLastMonthSongContentBorder">
-            <table class="table-ky">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="splitter"></div>
+
+  <section class="add-memo-section bg-light text-center">
+    <div id="addMemoContainer" class="container text-center">
+      <h2>메모하기</h2>
+
+      <div class="container">
+        <!--노래 추가 폼 -->
+        <form id="songAddForm">
+          <div class="song-content-border">
+            <table class="table">
               <thead>
               <tr>
                 <th>번호</th>
@@ -242,44 +253,109 @@
               </tr>
               </thead>
               <tbody>
-              <tr th:each="song : ${kyLastMonthSongs}">
-                <td class="song-number" th:text="${song.number}">12345
+              <tr class="search-song-row">
+                <td class="song-number">
+                  <span>00000</span>
                 </td>
                 <td class="song-title">
                   <div class="song-title-text">
-                    <a target="_blank" th:href="${song.searchUrl}"
-                       href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9"
-                       th:text="${song.title}">
-                      노래 제목
+                    <a>
+                      아래에서 노래를 검색해주세요
                     </a>
                   </div>
-                  <div class="song-info-text" th:text="${song.info}">정보 텍스트
+                  <div class="song-info-text">노래제목 또는 아티스트명을 한글 발음으로 검색할 수 있습니다
                   </div>
                 </td>
-                <td class="song-singer" th:text="${song.singer}">가수명
+                <td class="song-singer">
                 </td>
               </tr>
               </tbody>
             </table>
           </div>
+          <button class="btn btn-primary d-inline" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#addInfoTextCollapse" aria-expanded="false" aria-controls="addTextCollapse">
+            보기
+          </button>
+          <!-- 노래 추가 폼 - 추가 텍스트 부분 -->
+          <div class="collapse" id="addInfoTextCollapse">
+            <div>
+              <p>추가 텍스트를 입력할 수 있습니다. 비워둘 경우 노래의 기본값으로 등록됩니다.</p>
+            </div>
+            <div class="input-group mb-3">
+              <input type="text" id="addInfoTextInput" class="form-control" placeholder="추가 텍스트"
+                     aria-label="추가텍스트" aria-describedby="">
+              <button class="btn btn-outline-primary" type="button" id="addSongButton">메모하기</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!--노래 검색 폼-->
+      <form id="songSearchForm">
+        <div class="input-group mb-3">
+          <input type="text" id="searchSongInput" class="form-control" placeholder="노래 제목 또는 아티스트명"
+                 aria-label="노래 제목 또는 아티스트명" aria-describedby="">
+          <button class="btn btn-outline-primary" type="button" id="searchSongButton">검색하기</button>
+        </div>
+      </form>
+
+      <!--노래 검색 결과-->
+      <h3 class="d-inline-block">검색결과</h3>
+
+      <button class="btn btn-primary d-inline" type="button" data-bs-toggle="collapse"
+              data-bs-target="#songSearchCollapse" aria-expanded="false" aria-controls="collapseExample">
+        <i class="bi bi-arrow-up-circle"></i>
+      </button>
+
+      <div class="collapse" id="songSearchCollapse">
+        <div class="card card-body">
+          <div>
+            노래 제목을 누르면 해당 노래가 폼에 자동으로 입력됩니다.
+          </div>
+          <div class="song-content-border">
+            <table class="table">
+              <thead>
+              <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>아티스트</th>
+              </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
+
+      <!--검색 결과 추가를 위한 빈 행-->
+      <div id="songSearchResultRow">
+        <tr class="search-song-row">
+          <td class="song-number">
+            <span>12345</span>
+          </td>
+          <td class="song-title">
+            <div class="song-title-text">
+              <a>
+                노래 제목
+              </a>
+            </div>
+            <div class="song-info-text">정보 텍스트
+            </div>
+          </td>
+          <td class="song-singer">가수명
+          </td>
+        </tr>
+      </div>
+
     </div>
-
   </section>
-
-  <div class="splitter"></div>
-
 
   <!-- Footer-->
   <footer class="footer bg-light">
     <div class="container">
       <div class="row">
         <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
-          <button type="button" class="btn btn-danger btn-sm" id="unsubscribeModalButton" data-bs-toggle="modal"
-                  data-bs-target="#unsubscribeModal">
-            구독 취소
-          </button>
           <p id="footerText" class="text-muted small mb-4 mb-lg-0">&copy; JsongNoti by spiaminto. All Rights
             Reserved.</p>
           <p id="footerTextCopyright" class="text-muted small mb-0">favicon Designed by Freepik</p>
