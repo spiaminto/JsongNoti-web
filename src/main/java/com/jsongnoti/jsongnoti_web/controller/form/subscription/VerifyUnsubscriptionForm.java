@@ -1,4 +1,4 @@
-package com.jsongnoti.jsongnoti_web.controller.dto;
+package com.jsongnoti.jsongnoti_web.controller.form.subscription;
 
 import jakarta.validation.constraints.Size;
 import lombok.Data;

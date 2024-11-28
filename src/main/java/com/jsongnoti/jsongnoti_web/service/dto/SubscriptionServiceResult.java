@@ -1,4 +1,4 @@
-package com.jsongnoti.jsongnoti_web.service;
+package com.jsongnoti.jsongnoti_web.service.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
