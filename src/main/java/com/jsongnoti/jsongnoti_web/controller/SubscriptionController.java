@@ -1,7 +1,11 @@
 package com.jsongnoti.jsongnoti_web.controller;
 
 import com.jsongnoti.jsongnoti_web.controller.dto.*;
-import com.jsongnoti.jsongnoti_web.service.SubscriptionServiceResult;
+import com.jsongnoti.jsongnoti_web.controller.form.subscription.SubscriptionForm;
+import com.jsongnoti.jsongnoti_web.controller.form.subscription.UnsubscriptionForm;
+import com.jsongnoti.jsongnoti_web.controller.form.subscription.VerifySubscriptionForm;
+import com.jsongnoti.jsongnoti_web.controller.form.subscription.VerifyUnsubscriptionForm;
+import com.jsongnoti.jsongnoti_web.service.dto.SubscriptionServiceResult;
 import com.jsongnoti.jsongnoti_web.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

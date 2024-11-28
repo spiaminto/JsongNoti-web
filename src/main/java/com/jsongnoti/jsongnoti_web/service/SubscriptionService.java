@@ -3,6 +3,7 @@ package com.jsongnoti.jsongnoti_web.service;
 import com.jsongnoti.jsongnoti_web.domain.Subscription;
 import com.jsongnoti.jsongnoti_web.mail.GmailSender;
 import com.jsongnoti.jsongnoti_web.repository.SubscriptionRepository;
+import com.jsongnoti.jsongnoti_web.service.dto.SubscriptionServiceResult;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -1,5 +1,6 @@
 package com.jsongnoti.jsongnoti_web.mail;
 
+import com.jsongnoti.jsongnoti_web.domain.SongSearchType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
