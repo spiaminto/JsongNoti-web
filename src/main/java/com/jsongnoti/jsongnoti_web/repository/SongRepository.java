@@ -4,6 +4,7 @@ import com.jsongnoti.jsongnoti_web.domain.Brand;
 import com.jsongnoti.jsongnoti_web.domain.Song;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -25,5 +26,29 @@ public interface SongRepository extends JpaRepository<Song, Long> {
             "AND s.regDate <= :endDate " +
             "ORDER BY s.regDate DESC")
     List<Song> findSongsBetweenTime(LocalDate startDate, LocalDate endDate);
+
+    List<Song> findSongByTitleContaining(String keyword);
+
+    List<Song> findSongBySingerContaining(String keyword);
+
+    List<Song> findSongByInfoContaining(String keyword);
+
+    @Query(value =
+            "SELECT * FROM {h-schema} song " +
+                    "WHERE title =% :keyword " +
+                    "order by bigm_similarity(title, :keyword) desc", nativeQuery = true)
+    List<Song> findSongByTitleSimilar(String keyword);
+
+    @Query(value =
+            "SELECT * FROM {h-schema} song " +
+                    "WHERE singer =% :keyword " +
+                    "order by bigm_similarity(singer, :keyword) desc", nativeQuery = true)
+    List<Song> findSongBySingerSimilar(String keyword);
+
+    @Query(value =
+            "SELECT * FROM {h-schema} song " +
+                    "WHERE info =% :keyword " +
+                    "order by bigm_similarity(info, :keyword) desc", nativeQuery = true)
+    List<Song> findSongByInfoSimilar(String keyword);
 
 }

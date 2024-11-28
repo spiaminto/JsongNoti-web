@@ -88,6 +88,44 @@
               }, 1); // fade in 걸린 요소 때문에 애니메이션 이상해져서 1ms 로 줄임
           });
 
+// 검색 요청 보내기
+          $("#songSearchForm").submit(function (event) {
+              event.preventDefault();
+
+              $.ajax({
+                  type: "GET",
+                  url: "/songs",
+                  data: $("#songSearchForm").serialize(),
+                  success: function (data) {
+                      console.log(data);
+
+                      // 기존 검색 결과 초기화
+                      $('#songSearchResultTableBody').empty();
+
+                      // 검색결과 추가
+                      let songSearchResultRow = $('.search-song-row');
+                      $.each(data, function (index, song) {
+                          let songRow = songSearchResultRow.clone();
+                          songRow.find('.song-number span').text(song.number);
+                          songRow.find('.song-title a').text(song.title);
+                          songRow.find('.song-info-text').text(song.info);
+                          songRow.find('.song-singer').text(song.singer);
+                          songRow.show();
+                          $('#songSearchResultTableBody').append(songRow);
+                      });
+
+                      // 검색결과 collapse 안보일경우 보이게
+                      if (!$("#songSearchResultCollapse").hasClass("show")) {
+                          $("#songSearchResultCollapseButton").click();
+                      }
+                  },
+                  error: function (request, status, error) {
+                      alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+                  }
+              });
+
+          });
+
       })
   </script>
 </head>
@@ -292,28 +330,36 @@
 
       <!--노래 검색 폼-->
       <form id="songSearchForm">
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="searchType" id="searchTypeArtist" value="SINGER" checked>
+          <label class="form-check-label" for="searchTypeArtist">아티스트명</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="searchType" id="searchTypeTitle" value="TITLE">
+          <label class="form-check-label" for="searchTypeTitle">노래제목</label>
+        </div>
         <div class="input-group mb-3">
-          <input type="text" id="searchSongInput" class="form-control" placeholder="노래 제목 또는 아티스트명"
+          <input type="text" name="keyword" id="searchSongInput" class="form-control" placeholder="노래 제목 또는 아티스트명"
                  aria-label="노래 제목 또는 아티스트명" aria-describedby="">
-          <button class="btn btn-outline-primary" type="button" id="searchSongButton">검색하기</button>
+          <button class="btn btn-outline-primary" type="submit" id="searchSongButton">검색하기</button>
         </div>
       </form>
 
       <!--노래 검색 결과-->
       <h3 class="d-inline-block">검색결과</h3>
 
-      <button class="btn btn-primary d-inline" type="button" data-bs-toggle="collapse"
-              data-bs-target="#songSearchCollapse" aria-expanded="false" aria-controls="collapseExample">
+      <button class="btn btn-primary d-inline" id="songSearchResultCollapseButton" type="button" data-bs-toggle="collapse"
+              data-bs-target="#songSearchResultCollapse" aria-expanded="false" aria-controls="collapseExample">
         <i class="bi bi-arrow-up-circle"></i>
       </button>
 
-      <div class="collapse" id="songSearchCollapse">
+      <div class="collapse" id="songSearchResultCollapse">
         <div class="card card-body">
           <div>
             노래 제목을 누르면 해당 노래가 폼에 자동으로 입력됩니다.
           </div>
           <div class="song-content-border">
-            <table class="table">
+            <table class="table" id="songSearchResultTable">
               <thead>
               <tr>
                 <th>번호</th>
@@ -321,7 +367,7 @@
                 <th>아티스트</th>
               </tr>
               </thead>
-              <tbody>
+              <tbody id="songSearchResultTableBody">
               </tbody>
             </table>
           </div>

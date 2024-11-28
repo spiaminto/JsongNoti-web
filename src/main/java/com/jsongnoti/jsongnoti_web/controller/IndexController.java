@@ -1,6 +1,7 @@
 package com.jsongnoti.jsongnoti_web.controller;
 
-import com.jsongnoti.jsongnoti_web.service.LatestAndLastSongsDto;
+import com.jsongnoti.jsongnoti_web.controller.dto.NewSongDto;
+import com.jsongnoti.jsongnoti_web.service.dto.LatestAndLastSongsDto;
 import com.jsongnoti.jsongnoti_web.service.SongService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
@@ -71,6 +71,11 @@ public class IndexController {
     @GetMapping("/login")
     public String login() {
         return "loginForm";
+    }
+
+    @GetMapping("/memo")
+    public String memo() {
+        return "memo";
     }
 
 
