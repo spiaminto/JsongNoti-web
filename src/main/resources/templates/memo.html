@@ -19,7 +19,12 @@
   <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css" rel="stylesheet"/>
   <!-- Core theme CSS (includes Bootstrap)-->
   <link href="/static/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
-  <link href="/static/css/custom.css" th:href="@{/css/custom.css}" rel="stylesheet"/>
+  <link href="/static/css/containers.css" th:href="@{/css/containers.css}" rel="stylesheet"/>
+  <link href="/static/css/header-text-size.css" th:href="@{/css/header-text-size.css}" rel="stylesheet"/>
+  <link href="/static/css/song-table.css" th:href="@{/css/song-table.css}" rel="stylesheet"/>
+  <link href="/static/css/modal.css" th:href="@{/css/modal.css}" rel="stylesheet"/>
+  <link href="/static/css/footer.css" th:href="@{/css/footer.css}" rel="stylesheet"/>
+  <link href="/static/css/memo.css" th:href="@{/css/memo.css}" rel="stylesheet"/>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-JFWLSXBEYR"></script>
   <script>
@@ -37,6 +42,8 @@
       #songSearchResultRow {
           display: none;
       }
+
+
   </style>
   <script src="https://code.jquery.com/jquery.min.js"></script>
   <script>
@@ -81,6 +88,16 @@
               }
           }
 
+// 컬랩스 클릭 -> 회전
+          $('.collapse-button').on('click', function () {
+              if ($(this).hasClass('collapse-button-open')) {
+                  $(this).removeClass('collapse-button-open')
+              } else {
+                  $(this).addClass('collapse-button-open')
+              }
+
+          })
+
 // 사용방법 바로가기 버튼 클릭 이벤트
           $('.usage-Button').click(function () {
               $('html, body').animate({
@@ -105,7 +122,7 @@
                       // 검색결과 추가
                       let songSearchResultRow = $('#songSearchResultRow .search-song-row');
                       $.each(data, function (index, song) {
-                          let songRow = songSearchResultRow.clone();
+                          let songRow = songSearchResultRow.clone(true); // 이벤트까지 복사
                           songRow.find('.song-number span').text(song.number);
                           songRow.find('.song-title-text').text(song.title);
                           songRow.find('.song-info-text').text(song.info);
@@ -124,8 +141,23 @@
                       alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
                   }
               });
-
           });
+
+// 검색 결과 누르면 폼에 입력
+          $('#songSearchResultRow .search-song-row .song-title').on('click', function () {
+              let songAddForm = $('#songAddForm');
+              let songRow = $(this).closest('.search-song-row');
+              console.log(songAddForm)
+              console.log(songRow)
+              songAddForm.find('.song-number span').text(songRow.find('.song-number span').text());
+              songAddForm.find('.song-title-text').text(songRow.find('.song-title-text').text());
+              songAddForm.find('.song-info-text').text(songRow.find('.song-info-text').text());
+              songAddForm.find('.song-singer').text(songRow.find('.song-singer').text());
+
+              if (!$('#addInfoTextCollapse').hasClass('show')) {
+                  $('#addInfoTextCollapseButton').click();
+              }
+          })
 
       })
   </script>
@@ -277,60 +309,72 @@
 
   <section class="add-memo-section bg-light text-center">
     <div id="addMemoContainer" class="container text-center">
-      <h2>메모하기</h2>
+      <h2>
+        <span>메모하기</span>
+        <button id="addInfoTextCollapseButton" class="btn btn-outline-secondary collapse-button rounded-circle"
+                type="button" data-bs-toggle="collapse"
+                data-bs-target="#addInfoTextCollapse" aria-expanded="false" aria-controls="addTextCollapse">
+          <i class="bi bi-caret-down-fill"></i>
+        </button>
+      </h2>
 
-      <div class="container">
-        <!--노래 추가 폼 -->
-        <form id="songAddForm">
-          <div class="song-content-border">
-            <table class="table">
-              <thead>
-              <tr>
-                <th>번호</th>
-                <th>제목</th>
-                <th>아티스트</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr class="search-song-row">
-                <td class="song-number">
-                  <span>00000</span>
-                </td>
-                <td class="song-title">
-                  <div class="song-title-text">
-                    <a>
+      <!--노래 추가 폼 -->
+      <form id="songAddForm">
+        <div class="song-content-border">
+          <table class="table">
+            <thead>
+            <tr>
+              <th>번호</th>
+              <th>제목</th>
+              <th>아티스트</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="add-song-row">
+              <td class="song-number">
+                <span>00000</span>
+              </td>
+              <td class="song-title">
+                <div>
+                    <span class="song-title-text">
                       아래에서 노래를 검색해주세요
-                    </a>
-                  </div>
-                  <div class="song-info-text">노래제목 또는 아티스트명을 한글 발음으로 검색할 수 있습니다
-                  </div>
-                </td>
-                <td class="song-singer">
-                </td>
-              </tr>
-              </tbody>
-            </table>
+                    </span>
+                </div>
+                <div>
+                  <span>추가텍스트: </span>
+                  <span class="song-info-text ms-1">노래제목 또는 아티스트명을 한글 발음으로 검색할 수 있습니다</span>
+                </div>
+              </td>
+              <td class="song-singer">
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 노래 추가 폼 - 추가 텍스트 부분 -->
+        <div class="collapse mt-3" id="addInfoTextCollapse">
+          <div>
+            <p>추가 텍스트를 입력할 수 있습니다. 비워둘 경우 노래의 기본값으로 등록됩니다.</p>
           </div>
-          <button class="btn btn-primary d-inline" type="button" data-bs-toggle="collapse"
-                  data-bs-target="#addInfoTextCollapse" aria-expanded="false" aria-controls="addTextCollapse">
-            보기
-          </button>
-          <!-- 노래 추가 폼 - 추가 텍스트 부분 -->
-          <div class="collapse" id="addInfoTextCollapse">
-            <div>
-              <p>추가 텍스트를 입력할 수 있습니다. 비워둘 경우 노래의 기본값으로 등록됩니다.</p>
-            </div>
-            <div class="input-group mb-3">
-              <input type="text" id="addInfoTextInput" class="form-control" placeholder="추가 텍스트"
-                     aria-label="추가텍스트" aria-describedby="">
-              <button class="btn btn-outline-primary" type="button" id="addSongButton">메모하기</button>
-            </div>
+          <div class="input-group mb-3">
+            <input type="text" id="addInfoTextInput" class="form-control" placeholder="추가 텍스트"
+                   aria-label="추가텍스트" aria-describedby="">
+            <button class="btn btn-outline-primary" type="button" id="addSongButton">메모하기</button>
           </div>
-        </form>
+        </div>
+      </form>
+
+      <div id="searchHintContainer" class="mt-4 text-start">
+        <p> 원어와 한국어로 모두 검색할 수 있습니다.</p>
+        <p> 한글 검색결과는 정확하지 않을 수 있으며 모든 결과를 포함하지 않을 수 있습니다.</p>
+        <p> 검색어는 띄어쓰기를 구분하며, 자세하게 입력할수록 결과가 정확해집니다.</p>
+        <p> 예시 (정확도 순) Official髭男dism, 오피셜 히게 단디즘, 히게단</p>
       </div>
 
+
       <!--노래 검색 폼-->
-      <form id="songSearchForm">
+      <form id="songSearchForm" class="my-4">
         <div class="form-check form-check-inline">
           <input class="form-check-input" type="radio" name="searchType" id="searchTypeArtist" value="SINGER" checked>
           <label class="form-check-label" for="searchTypeArtist">아티스트명</label>
@@ -339,7 +383,7 @@
           <input class="form-check-input" type="radio" name="searchType" id="searchTypeTitle" value="TITLE">
           <label class="form-check-label" for="searchTypeTitle">노래제목</label>
         </div>
-        <div class="input-group mb-3">
+        <div class="input-group mt-3">
           <input type="text" name="keyword" id="searchSongInput" class="form-control" placeholder="노래 제목 또는 아티스트명"
                  aria-label="노래 제목 또는 아티스트명" aria-describedby="">
           <button class="btn btn-outline-primary" type="submit" id="searchSongButton">검색하기</button>
@@ -347,20 +391,23 @@
       </form>
 
       <!--노래 검색 결과-->
-      <h3 class="d-inline-block">검색결과</h3>
-
-      <button class="btn btn-primary d-inline" id="songSearchResultCollapseButton" type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#songSearchResultCollapse" aria-expanded="false" aria-controls="collapseExample">
-        <i class="bi bi-arrow-up-circle"></i>
-      </button>
+      <h3>
+        <span>검색결과</span>
+        <button class="btn btn-outline-secondary rounded-circle collapse-button" id="songSearchResultCollapseButton"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#songSearchResultCollapse" aria-expanded="false" aria-controls="collapseExample">
+          <i class="bi bi-caret-down-fill"></i>
+        </button>
+      </h3>
 
       <div class="collapse" id="songSearchResultCollapse">
-        <div class="card card-body">
+        <div class="card card-body p-2">
           <div>
             노래 제목을 누르면 해당 노래가 폼에 자동으로 입력됩니다.
+            (한글 표시는 참고용으로 작성되었으며 정확하지 않습니다)
           </div>
-          <div class="song-content-border">
+          <div class="song-content-border mt-2">
             <table class="table" id="songSearchResultTable">
               <thead>
               <tr>
@@ -396,11 +443,14 @@
                 <a class="song-title-text">
                   노래 제목
                 </a>
-                <i class="song-title-hint ms-2">
+              </div>
+              <div>
+                <i class="song-title-hint">
                   한글 타이틀
                 </i>
-              </div>
-              <div class="song-info-text">정보 텍스트
+                <span class="song-info-text ms-2">
+                  정보 텍스트
+                </span>
               </div>
             </td>
             <td class="song-singer">가수명
