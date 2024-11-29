@@ -103,13 +103,14 @@
                       $('#songSearchResultTableBody').empty();
 
                       // 검색결과 추가
-                      let songSearchResultRow = $('.search-song-row');
+                      let songSearchResultRow = $('#songSearchResultRow .search-song-row');
                       $.each(data, function (index, song) {
                           let songRow = songSearchResultRow.clone();
                           songRow.find('.song-number span').text(song.number);
-                          songRow.find('.song-title a').text(song.title);
+                          songRow.find('.song-title-text').text(song.title);
                           songRow.find('.song-info-text').text(song.info);
                           songRow.find('.song-singer').text(song.singer);
+                          songRow.find('.song-title-hint').text(song.titleKorean);
                           songRow.show();
                           $('#songSearchResultTableBody').append(songRow);
                       });
@@ -348,7 +349,8 @@
       <!--노래 검색 결과-->
       <h3 class="d-inline-block">검색결과</h3>
 
-      <button class="btn btn-primary d-inline" id="songSearchResultCollapseButton" type="button" data-bs-toggle="collapse"
+      <button class="btn btn-primary d-inline" id="songSearchResultCollapseButton" type="button"
+              data-bs-toggle="collapse"
               data-bs-target="#songSearchResultCollapse" aria-expanded="false" aria-controls="collapseExample">
         <i class="bi bi-arrow-up-circle"></i>
       </button>
@@ -376,22 +378,37 @@
 
       <!--검색 결과 추가를 위한 빈 행-->
       <div id="songSearchResultRow">
-        <tr class="search-song-row">
-          <td class="song-number">
-            <span>12345</span>
-          </td>
-          <td class="song-title">
-            <div class="song-title-text">
-              <a>
-                노래 제목
-              </a>
-            </div>
-            <div class="song-info-text">정보 텍스트
-            </div>
-          </td>
-          <td class="song-singer">가수명
-          </td>
-        </tr>
+        <table>
+          <thead>
+          <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>아티스트</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr class="search-song-row">
+            <td class="song-number">
+              <span>12345</span>
+            </td>
+            <td class="song-title">
+              <div>
+                <a class="song-title-text">
+                  노래 제목
+                </a>
+                <i class="song-title-hint ms-2">
+                  한글 타이틀
+                </i>
+              </div>
+              <div class="song-info-text">정보 텍스트
+              </div>
+            </td>
+            <td class="song-singer">가수명
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
       </div>
 
     </div>

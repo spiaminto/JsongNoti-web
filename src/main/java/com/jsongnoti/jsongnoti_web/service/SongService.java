@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,67 +27,11 @@ import java.util.stream.Collectors;
 public class SongService {
 
     private final SongRepository songRepository;
-    private final SongKoreanRepository songKoreanRepository;
-
-    public List<Song> searchSongs(SongSearchCond searchCond) {
-        SongSearchType searchType = searchCond.getSearchType();
-        String keyword = searchCond.getKeyword();
-
-        List<Song> songSearchResults = new ArrayList<>();
-        List<SongKorean> songKoreans = new ArrayList<>();
-
-        // TODO 입력 분리 예정
-        switch (searchType) {
-            case TITLE -> {
-                songSearchResults = songRepository.findSongByTitleContaining(keyword);
-                if (songSearchResults.isEmpty()) {
-                    songSearchResults = songRepository.findSongByTitleSimilar(keyword);
-                }
-                if (songSearchResults.isEmpty()) {
-                    songKoreans = songKoreanRepository.findSongByTitleContaining(keyword);
-                    if (songKoreans.isEmpty()) {
-                        songKoreans = songKoreanRepository.findSongByTitleSimilar(keyword);
-                    }
-                    if (!songKoreans.isEmpty()) {
-                        for (SongKorean songKorean : songKoreans) {
-                            songSearchResults.add(songRepository.findById(songKorean.getSongId()).orElse(null));
-                        }
-                    }
-                }
-            }
-            case SINGER -> {
-                songSearchResults = songRepository.findSongBySingerContaining(keyword);
-                if (songSearchResults.isEmpty()) {
-                    songSearchResults = songRepository.findSongBySingerSimilar(keyword);
-                }
-                if (songSearchResults.isEmpty()) {
-                    songKoreans = songKoreanRepository.findSongBySingerContaining(keyword);
-                    if (songKoreans.isEmpty()) {
-                        songKoreans = songKoreanRepository.findSongBySingerSimilar(keyword);
-                    }
-                    if (!songKoreans.isEmpty()) {
-                        for (SongKorean songKorean : songKoreans) {
-                            songSearchResults.add(songRepository.findById(songKorean.getSongId()).orElse(null));
-                        }
-                    }
-                }
-            }
-            case INFO -> {
-                songSearchResults = songRepository.findSongByInfoContaining(keyword);
-                if (songSearchResults.isEmpty()) {
-                    songSearchResults = songRepository.findSongByInfoSimilar(keyword);
-                }
-            }
-            default -> {
-                songSearchResults = Collections.emptyList();
-            }
-        }
-        return songSearchResults;
-    }
 
     /**
      * 홈페이지용 통합된 메서드
      * 오늘부터 세달간의 노래를 DB 조회후 브랜드별 및 시간별(두 달)로 필터링하여 리턴
+     *
      * @return LatestAndLastSongsDto
      */
     public LatestAndLastSongsDto getLatestAndLastSongs() {

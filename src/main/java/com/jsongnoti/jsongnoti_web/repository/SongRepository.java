@@ -4,11 +4,9 @@ import com.jsongnoti.jsongnoti_web.domain.Brand;
 import com.jsongnoti.jsongnoti_web.domain.Song;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -27,28 +25,59 @@ public interface SongRepository extends JpaRepository<Song, Long> {
             "ORDER BY s.regDate DESC")
     List<Song> findSongsBetweenTime(LocalDate startDate, LocalDate endDate);
 
-    List<Song> findSongByTitleContaining(String keyword);
 
-    List<Song> findSongBySingerContaining(String keyword);
-
-    List<Song> findSongByInfoContaining(String keyword);
-
+    // 검색 =========================================================================================
     @Query(value =
-            "SELECT * FROM {h-schema} song " +
+            "SELECT s.id, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song " +
                     "WHERE title =% :keyword " +
                     "order by bigm_similarity(title, :keyword) desc", nativeQuery = true)
-    List<Song> findSongByTitleSimilar(String keyword);
+    List<SongSearchResultDto> findSongByTitleSimilar(String keyword);
 
     @Query(value =
-            "SELECT * FROM {h-schema} song " +
+            "SELECT s.id, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song " +
                     "WHERE singer =% :keyword " +
                     "order by bigm_similarity(singer, :keyword) desc", nativeQuery = true)
-    List<Song> findSongBySingerSimilar(String keyword);
+    List<SongSearchResultDto> findSongBySingerSimilar(String keyword);
 
     @Query(value =
-            "SELECT * FROM {h-schema} song " +
+            "SELECT s.id, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song " +
                     "WHERE info =% :keyword " +
                     "order by bigm_similarity(info, :keyword) desc", nativeQuery = true)
-    List<Song> findSongByInfoSimilar(String keyword);
+    List<SongSearchResultDto> findSongByInfoSimilar(String keyword);
+
+    @Query(value =
+            "SELECT s.id, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
+                    "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
+                    "WHERE sk.title =% :keyword " +
+                    "order by bigm_similarity(sk.title, :keyword) desc", nativeQuery = true)
+    List<SongSearchResultDto> findSongByKoreanTitleSimilar(String keyword);
+
+    @Query(value =
+            "SELECT s.id, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
+                    "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
+                    "WHERE sk.title_read =% :keyword " +
+                    "order by bigm_similarity(sk.title_read, :keyword) desc", nativeQuery = true)
+    List<SongSearchResultDto> findSongByKoreanTitleReadSimilar(String keyword);
+
+    @Query(value =
+            "SELECT s.id, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
+                    "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
+                    "WHERE sk.singer_read =% :keyword " +
+                    "order by bigm_similarity(sk.singer_read, :keyword) desc", nativeQuery = true)
+    List<SongSearchResultDto> findSongByKoreanSingerSimilar(String keyword);
+
+    @Query(value =
+            "SELECT s.id, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
+                    "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
+                    "WHERE sk.singer =% :keyword " +
+                    "order by bigm_similarity(sk.singer, :keyword) desc", nativeQuery = true)
+    List<SongSearchResultDto> findSongByKoreanSingerReadSimilar(String keyword);
+
+    @Query(value =
+            "SELECT s.id, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
+                    "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
+                    "WHERE sk.info =% :keyword " +
+                    "order by bigm_similarity(sk.info, :keyword) desc", nativeQuery = true)
+    List<SongSearchResultDto> findSongByKoreanInfoSimilar(String keyword);
 
 }
