@@ -1,9 +1,9 @@
 package com.jsongnoti.jsongnoti_web.auth;
 
 import com.jsongnoti.jsongnoti_web.domain.User;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -11,27 +11,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-@Data
+
 @Slf4j
 @RequiredArgsConstructor
+@Getter @EqualsAndHashCode @ToString
 /**
- * SpringSecurity 일반 유저와 OAuth2 유저 정보를 모두 담을수 있는 클래스.
  * Authentication - PrincipalDetails - User
  */
 public class PrincipalDetails implements OAuth2User {
 
     private final User user;
-    // OAuth2User.getAttributes() 로 받은 정보
-    private final Map<String, Object> attributes;
+    private final Map<String, Object> attributes; // OAuth2User.getAttributes() 로 받은 정보
 
-//    public PrincipalDetails(User member) {
-//        this.member = member;
+//    public PrincipalDetails(User user) {
+//        this.user = user;
 //        this.attributes = null;
 //    }
-    public PrincipalDetails(User user) {
-        this.user = user;
-        this.attributes = null;
-    }
 
     // 권한 리턴
     @Override
@@ -48,15 +43,21 @@ public class PrincipalDetails implements OAuth2User {
         return collection;
     }
 
+    public Long getUserId() { return user.getId(); }
+
     public String getUsername() {
         return user.getEmail();
     }
-
 
     public String getEmail() {
         return user.getEmail();
     }
 
+    /**
+     * AuthenticatedPrincipal.getName() 으로 표시할 Principal 의 이름. 
+     * 타임리프에서 #authenitcation을 통해 접근하여 표시하기 위해 user.id 를 노출
+     * @return userId
+     */
     @Override
     public String getName() {
         return user.getId() + "";

@@ -38,6 +38,9 @@ dependencies {
     // Spring Security starter
     implementation 'org.springframework.boot:spring-boot-starter-security:3.3.4'
 
+    // 타임리프에서 스프링시큐리티의 문법이나 형식을 지원하는 확장팩 라이브러리
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
     // Spring Security OAuth2 Client
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 

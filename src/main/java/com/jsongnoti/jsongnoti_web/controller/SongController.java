@@ -8,6 +8,7 @@ import com.jsongnoti.jsongnoti_web.service.dto.SongSearchCond;
 import com.jsongnoti.jsongnoti_web.service.dto.SongSearchResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +24,7 @@ public class SongController {
     private final SongSearchService songSearchService;
 
     @GetMapping("/songs")
-    public List<SongSearchResult> songs(@ModelAttribute SongSearchForm songSearchForm) {
+    public ResponseEntity<List<SongSearchResult>> songs(@ModelAttribute SongSearchForm songSearchForm) {
         log.info("songSearchForm: {}", songSearchForm);
 
         // form 검증
@@ -31,7 +32,7 @@ public class SongController {
         SongSearchCond songSearchCond = new SongSearchCond(songSearchForm.getSearchType(), songSearchForm.getKeyword());
         List<SongSearchResult> results = songSearchService.searchSongs(songSearchCond);
 
-        return results;
+        return ResponseEntity.ok().body(results);
     }
 
 

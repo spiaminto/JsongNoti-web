@@ -1,9 +1,6 @@
 package com.jsongnoti.jsongnoti_web.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import static lombok.AccessLevel.PROTECTED;
@@ -20,14 +17,18 @@ public class SongMemo {
     private Long id;
 
     private Long userId;
-    private String username;
 
+    @Enumerated(EnumType.STRING)
     private Brand brand;
     private int number;
     private String title;
     private String singer;
     private String info;
 
-    private int order; // 표시순서
+    private int presentOrder; // 표시순서, start from 0
+
+    public void setPresentOrder(int presentOrder) {
+        this.presentOrder = presentOrder;
+    }
 
 }

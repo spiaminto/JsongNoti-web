@@ -1,6 +1,8 @@
 package com.jsongnoti.jsongnoti_web.controller;
 
 import com.jsongnoti.jsongnoti_web.controller.dto.NewSongDto;
+import com.jsongnoti.jsongnoti_web.domain.SongMemo;
+import com.jsongnoti.jsongnoti_web.repository.SongMemoRepository;
 import com.jsongnoti.jsongnoti_web.service.dto.LatestAndLastSongsDto;
 import com.jsongnoti.jsongnoti_web.service.SongService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDate;
@@ -22,6 +25,7 @@ import java.util.Locale;
 public class IndexController {
 
     private final SongService songService;
+    private final SongMemoRepository songMemoRepository;
 
     @GetMapping("/health-check")
     @ResponseBody
@@ -73,8 +77,11 @@ public class IndexController {
         return "loginForm";
     }
 
-    @GetMapping("/memo")
-    public String memo() {
+    @GetMapping("/memos")
+    public String memo(@RequestParam("userId") Long userId, Model model) {
+        //TODO 임시구현
+        List<SongMemo> byUserId = songMemoRepository.findByUserIdOrderByPresentOrderAsc(userId);
+        model.addAttribute("tjLatestMonthSongs", byUserId);
         return "memo";
     }
 

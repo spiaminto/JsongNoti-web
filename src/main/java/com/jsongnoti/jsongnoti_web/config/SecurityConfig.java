@@ -27,6 +27,10 @@ public class SecurityConfig {
         // csrf 활성화
 
         http
+                .sessionManagement(sessionManagement ->
+                    sessionManagement.maximumSessions(1)
+                )
+
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 // resources
