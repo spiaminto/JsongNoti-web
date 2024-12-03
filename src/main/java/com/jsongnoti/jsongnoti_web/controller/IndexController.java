@@ -77,7 +77,7 @@ public class IndexController {
         return "loginForm";
     }
 
-    @GetMapping("/memos")
+    @GetMapping("/memo")
     public String memo(@RequestParam("userId") Long userId, Model model) {
         //TODO 임시구현
         List<SongMemo> byUserId = songMemoRepository.findByUserIdOrderByPresentOrderAsc(userId);

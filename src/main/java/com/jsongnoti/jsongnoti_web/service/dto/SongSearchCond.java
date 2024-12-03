@@ -1,5 +1,6 @@
 package com.jsongnoti.jsongnoti_web.service.dto;
 
+import com.jsongnoti.jsongnoti_web.domain.Brand;
 import com.jsongnoti.jsongnoti_web.domain.SongSearchType;
 import lombok.Data;
 
@@ -7,4 +8,5 @@ import lombok.Data;
 public class SongSearchCond {
     private final SongSearchType searchType;
     private final String keyword;
+    private final Brand brand;
 }

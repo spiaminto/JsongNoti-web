@@ -41,11 +41,6 @@
       gtag('config', 'G-JFWLSXBEYR');
   </script>
   <style>
-      #songSearchResultRow {
-          display: none;
-      }
-
-
   </style>
   <script src="https://code.jquery.com/jquery.min.js"></script>
   <script>
@@ -58,6 +53,7 @@
               $('#alertMessage').text('');
           }
 
+// 애니메이션 및 뷰 =========================================================================
 // 요소 페이드 인
           let fadeElements = $('.fade-in-element');
           $(window).on('scroll', onScroll);
@@ -75,6 +71,7 @@
               }
           }
 
+// 요소가 화면에 보이는지 여부 체크
           function checkElement() {
               // 뷰포트 88% 지점
               var viewportTop = $(window).scrollTop() * 1.12;
@@ -97,17 +94,56 @@
               } else {
                   $(this).addClass('collapse-button-open')
               }
-
           })
 
-// 사용방법 바로가기 버튼 클릭 이벤트
+// 사용방법 바로가기 버튼 클릭시 스크롤 이벤트
           $('.usage-Button').click(function () {
               $('html, body').animate({
                   scrollTop: $('.showcase').offset().top - 32 // 2rem 여유
               }, 1); // fade in 걸린 요소 때문에 애니메이션 이상해져서 1ms 로 줄임
           });
 
-// 검색 요청 보내기
+
+// 데이터 =========================================================================
+
+// TJ 메모 갱신 (개발용)
+          $('#refreshTJButton').click(function () {
+            let dataList = getMemoTableData('TJ');
+            let songTable = renderEmptySongTable(dataList);
+            songTable.addClass('table-tj');
+            $('.table-tj').replaceWith(songTable);
+          })
+
+// 서버에 메모테이블 데이터 요청
+          /**
+           * 서버에서 메모테이블 데이터를 가져와 반환
+           * @param brand 가져올 브랜드
+           * @returns {*} SongMemo 리스트 (order by presentOrder ASC)
+           */
+          function getMemoTableData(brand) {
+              let memoData;
+              $.ajax({
+                  type: "GET",
+                  url: "/memos",
+                  data: {
+                      brand: brand,
+                      presentType: 'presentOrder'
+                  },
+                  success: function (data) {
+                      console.log(data);
+                      memoData = data;
+                      return memoData;
+                  },
+                  error: function (request, status, error) {
+                      console.log(request)
+                      console.log(status)
+                      console.log(error)
+                      return null;
+                  }
+              })
+          }
+
+// 서버에 노래 검색 요청
           $("#songSearchForm").submit(function (event) {
               event.preventDefault();
 
@@ -116,25 +152,24 @@
                   url: "/songs",
                   data: $("#songSearchForm").serialize(),
                   success: function (data) {
-                      console.log(data);
-
+                      // console.log(data);
                       // 기존 검색 결과 초기화
-                      $('#songSearchResultTableBody').empty();
+                      let $songSearchResultTableBody = $('#songSearchResultTableBody');
+                      $songSearchResultTableBody.empty();
 
-                      // 검색결과 추가
-                      let songSearchResultRow = $('#songSearchResultRow .search-song-row');
+                      // 새로운 검색결과 테이블 생성 및 채우기
+                      let songTable = renderEmptySongTable(data);
+
+                      // 검색결과 후처리 - 한글타이틀 기입, 클릭시 폼입력 이벤트바인딩, data-id (songId) 추가
                       $.each(data, function (index, song) {
-                          let songRow = songSearchResultRow.clone(true); // 이벤트까지 복사
-                          songRow.find('.song-number').data('id', song.id);
-                          songRow.find('.song-number span').text(song.number);
-                          songRow.find('.song-title-text').text(song.title);
-                          songRow.find('.song-info-text').text(song.info);
-                          songRow.find('.song-singer').text(song.singer);
-                          songRow.find('.song-title-hint').text(song.titleKorean);
-                          songRow.find('.song-title').bind('click', fillSongAddFormWithSearchResult);
-                          songRow.show();
-                          $('#songSearchResultTableBody').append(songRow);
+                          let songTitleHint = song.titleKorean ? '<i class=\'song-title-korean ms-4\'>' + song.titleKorean + '</i>' : '';
+                          jQuery(songTable.find('.song-title-text')[index]).after(songTitleHint);
+                          jQuery(songTable.find('.song-title')[index]).on('click', fillSongAddFormWithSearchResult);
+                          jQuery(songTable.find('.song-number')[index]).attr('data-id', song.id);
                       });
+
+                      // 새로운 검색결과 테이블 바디에 아이디 붙이고 교체
+                      $songSearchResultTableBody.replaceWith(songTable.find('tbody').attr('id', 'songSearchResultTableBody'));
 
                       // 검색결과 collapse 안보일경우 보이게
                       if (!$("#songSearchResultCollapse").hasClass("show")) {
@@ -147,55 +182,69 @@
               });
           });
 
-// 검색 결과 누르면 폼에 입력
-          function fillSongAddFormWithSearchResult () {
+// 빈 테이블(.empty-song-table) 복사후 값 채움
+          /**
+           * .empty-song-table 을 복사한 뒤 dataList 의 값으로 채움
+           * @param dataList 서버에서 조회한 노래 데이터 리스트
+           * @returns {*|jQuery} 데이터를 채운 테이블
+           */
+          function renderEmptySongTable(dataList) {
+              if (dataList == null) {
+                  return;
+              }
+              let emptySongTable = $('.empty-song-table');
+              let resultTable = emptySongTable.clone();
+              resultTable.removeClass('empty-song-table');
+              let firstRow = resultTable.find('tbody tr:first-child');
+              $.each(dataList, function (index, song) {
+                  let row = firstRow.clone();
+                  row.find('.song-number span').text(song.number);
+                  row.find('.song-title-text').text(song.title);
+                  row.find('.song-info span').text(song.info);
+                  row.find('.song-singer').text(song.singer);
+                  firstRow.before(row); // after 가 아닌 before 로 붙여야 순서가 맞음
+              });
+              firstRow.remove();
+              return resultTable;
+          }
+
+// 검색 결과 누르면 폼에 입력 -> 검색결과의 .song-title 에 이벤트 연결
+          function fillSongAddFormWithSearchResult(event) {
+              event.preventDefault();
               let songAddForm = $('#songAddForm');
-              let songRow = $(this).closest('.search-song-row');
-              console.log(songAddForm)
-              console.log(songRow)
+
+              // 클릭한 노래의 정보를 폼에 입력
+              let songRow = $(this).closest('tr');
               songAddForm.find('.song-number span').text(songRow.find('.song-number span').text());
               songAddForm.find('.song-title-text').text(songRow.find('.song-title-text').text());
-              songAddForm.find('.song-info-text').text(songRow.find('.song-info-text').text());
+              songAddForm.find('.song-info-text').text(songRow.find('.song-info span').text());
               songAddForm.find('.song-singer').text(songRow.find('.song-singer').text());
+
+              // 폼 data 에 songId, brand 저장
               let brand = $('#songSearchForm input[name=brand]:checked').val()
               songAddForm.attr('data-brand', brand);
               songAddForm.attr('data-song-id', songRow.find('.song-number').data('id'));
 
+              // 메모 테이블 정보로 현재 순서 텍스트 갱신
               let songMemo = brand === 'TJ' ? $('.table-tj') : $('.table-ky');
               let lastPresentOrder = songMemo.find('tr:last-child .song-number').attr('data-present-order');
               $('#currentPresentOrder').text(Number(lastPresentOrder) + 2); // 순서가 0부터 시작
 
+              // 추가 텍스트 입력창 열기
               if (!$('#addInfoTextCollapse').hasClass('show')) {
                   $('#addInfoTextCollapseButton').click();
               }
           }
-          // $('#songSearchResultRow .search-song-row .song-title').on('click', function () {
-          //     let songAddForm = $('#songAddForm');
-          //     let songRow = $(this).closest('.search-song-row');
-          //     console.log(songAddForm)
-          //     console.log(songRow)
-          //     songAddForm.find('.song-number span').text(songRow.find('.song-number span').text());
-          //     songAddForm.find('.song-title-text').text(songRow.find('.song-title-text').text());
-          //     songAddForm.find('.song-info-text').text(songRow.find('.song-info-text').text());
-          //     songAddForm.find('.song-singer').text(songRow.find('.song-singer').text());
-          //
-          //     if (!$('#addInfoTextCollapse').hasClass('show')) {
-          //         $('#addInfoTextCollapseButton').click();
-          //     }
-          // });
 
 // 노래 순서 모달 버튼 클릭
           $('#presentOrderModalButton').click(function () {
-              let songAddForm = $('#songAddForm');
-              let brand = songAddForm.attr('data-brand');
+              // 순서 설정 테이블로 붙일 테이블 결정
+              let brand = $('#songAddForm').attr('data-brand');
               let memoTable = brand === 'TJ' ? $('.table-tj') : $('.table-ky');
-              console.log(memoTable)
-              console.log(memoTable.find('tbody'))
 
+              // 순서 설정 테이블 초기화 후 붙임
               let choosePresentOrderTable = $('#choosePresentOrderTable');
-              choosePresentOrderTable.find('tbody').empty();
-              choosePresentOrderTable.find('tbody').append(memoTable.find('tbody').html());
-              // $('#presentOrderModal').modal('show');
+              choosePresentOrderTable.find('tbody').empty().append(memoTable.find('tbody').html());
           })
 
 // 노래 순서 모달 노래 클릭
@@ -214,7 +263,7 @@
               $('#currentPresentOrder').text(Number(presentOrder) + 2); // 순서가 0부터 시작
           })
 
-// 노래 메모 폼 전송
+// 노래 메모 저장 폼 전송
           $('#songAddForm').submit(function (event) {
               event.preventDefault();
               let songId = $(this).attr('data-song-id');
@@ -230,10 +279,11 @@
                       infoText: infoTextInputVal,
                       presentOrder: presentOrder,
                       _csrf: csrfToken
-
                   },
                   success: function (data) {
                       console.log(data)
+                      alert('메모가 저장되었습니다.');
+                      $('#refreshTJButton').click();
                   },
                   error: function (request, status, error) {
                       console.log(request)
@@ -241,6 +291,90 @@
                       console.log(error)
                   }
               })
+          })
+
+// 순서 변경 버튼 클릭 이벤트
+          let isOrderSwitching = false;
+          $('#switchOrderTjButton').on('click', function () {
+              if (!isOrderSwitching) {
+                  isOrderSwitching = true;
+                  let songTable = $('.table-tj');
+                  let songRows = songTable.find('tbody tr');
+                  $.each(songRows, function (index, row) {
+                      $(row).toggleClass('song-row-will-switch song-row-switching');
+                      $('#switchOrderTjCompleteButton').show();
+                  });
+                  // 첫번째 요소로 추가 부분 추가
+                  let firstRow = $('.table-tj').find("tbody tr:first-child")
+                  let willFirstRow = firstRow.clone();
+                  willFirstRow.find('.song-number span').text('').end().find('.song-title-text').text('첫번째 순서로 추가').end().find('.song-info span').text('첫번째 순서로 추가하려면 클릭합니다.').end().find('.song-singer').text('');
+                  firstRow.before(willFirstRow)
+              } else {
+                // 순서 변경중에누를경우 아무일도 일어나지 않음
+              }
+          })
+
+// 순서 변경 할 tr 클릭 이벤트 (첫번째 클릭)
+          $('.table-tj').on('click', '.song-row-will-switch', function () {
+              if ($(this).find('.song-number span').text() === '') {
+                  return; // 첫클릭에서 첫번째 행은 무시함
+              }
+              $(this).addClass('song-row-will-switch-selected');
+              $(this).siblings().removeClass('song-row-will-switch').addClass('song-row-be-switched');
+          });
+
+// 순서 변경 당할 tr 클릭 이벤트 (두번째 클릭)
+          $('.table-tj').on('click', '.song-row-be-switched', function () {
+              $(this).addClass('song-row-be-switched-selected');
+              $(this).siblings().removeClass('song-row-be-switched')
+              let $willSwitchRow = $('.song-row-will-switch-selected');
+              let $beSwitchedRow = $('.song-row-be-switched-selected');
+              $beSwitchedRow.after($willSwitchRow)
+
+              $('.table-tj')
+                  .find('tbody tr')
+                  .removeClass('song-row-be-switched song-row-be-switched-selected song-row-will-switch song-row-will-switch-selected')
+                  .addClass('song-row-will-switch'); // 나머지 클래스 초기화
+          });
+
+// 순서 변경 완료 버튼 클릭 이벤트
+          $('#switchOrderTjCompleteButton').on('click', function () {
+              let songTable = $('.table-tj');
+              let songRows = songTable.find('tbody tr');
+              let brand = 'TJ';
+              let numbers = new Array();
+              $.each(songRows, function (index, row) {
+                  numbers.push($(row).find('.song-number span').text()); // 곡의 number 모음
+              });
+
+              $.ajax({
+                  type: "PATCH",
+                  async: false,
+                  url: "/memos/switch-order",
+                  data: {
+                      brand: brand,
+                      numbers: numbers,
+                      _csrf: $('#csrfToken').val()
+                  },
+                  success: function (data) {
+                      console.log(data)
+                      alert('순서가 변경되었습니다.');
+                  },
+                  error: function (request, status, error) {
+                      console.log(request)
+                      console.log(status)
+                      console.log(error)
+                  }
+              })
+
+              $.each(songRows, function (index, row) {
+                  $(row).toggleClass('song-row-will-switch song-row-switching');
+              });
+              $('.table-tj')
+                  .find('tbody tr:first-child').remove() // 첫번째 요소로 추가 자움
+              $('#switchOrderTjCompleteButton').hide();
+              $('#switchOrderTjButton').click();
+              isOrderSwitching = false;
           })
 
 
@@ -264,6 +398,40 @@
     </div>
   </nav>
 
+  <div class="d-none song-table-border">
+    <table class="empty-song-table song-table">
+      <thead>
+      <tr>
+        <th>번호</th>
+        <th>제목</th>
+        <th>아티스트</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td class="song-number">
+          <span>12345</span>
+        </td>
+        <td class="song-title">
+          <div>
+            <a class="song-title-text">
+              노래 제목
+            </a>
+          </div>
+          <div class="song-info">
+            <span>
+            정보 텍스트
+          </span>
+          </div>
+        </td>
+        <td class="song-singer">가수명
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 설정 모달 -->
   <div class="modal fade" id="settingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
        aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -276,22 +444,21 @@
           <form class="forms-unsubscribe forms" id="unsubscribeForm">
             <div>정렬방식</div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="sortType" id="sortTypeCheckboxByOrder" value="option1">
+              <input class="form-check-input" type="radio" name="sortType" id="sortTypeCheckboxByOrder" value="PRESENTORDER" checked>
               <label class="form-check-label" for="sortTypeCheckboxByOrder">순서대로</label>
             </div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="sortType" id="sortTypeCheckboxByArtist"
-                     value="option2">
+              <input class="form-check-input" type="radio" name="sortType" id="sortTypeCheckboxByArtist" value="ARTIST">
               <label class="form-check-label" for="sortTypeCheckboxByArtist">아티스트별</label>
             </div>
             <hr>
             <div>표시할 메모</div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="checkbox" name="showTjMemo" id="showTjCheckbox" value="true">
+              <input class="form-check-input" type="checkbox" name="showTjMemo" id="showTjCheckbox" value="true" checked>
               <label class="form-check-label" for="showTjCheckbox">TJ</label>
             </div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="checkbox" name="showKyMemo" id="showKyCheckbox" value="true">
+              <input class="form-check-input" type="checkbox" name="showKyMemo" id="showKyCheckbox" value="true" checked>
               <label class="form-check-label" for="showKyCheckbox">금영</label>
             </div>
           </form>
@@ -315,10 +482,28 @@
         <!-- 태진 -->
         <div class="col-lg-4 fade-in-element">
           <h2 class="song-header-text song-header-text-tj position-relative">
-            <span th:text="${tjLatestMonth + ' TJ 신곡'}">TJ 메모</span>
+            <span>TJ 메모</span>
+            <button class="btn btn-outline-dark btn-sm setting-Button" id="refreshTJButton">갱신
+            </button>
+            <button id="switchOrderTjButton" class="btn btn-sm btn-outline-secondary collapse-button-hide-when-expanded"
+                    type="button" data-bs-toggle="collapse"
+                    data-bs-target="#switchOrderTjCollapse" aria-expanded="false" aria-controls="switchOrderTjCollapse">
+              순서변경
+            </button>
+            <button id="switchOrderTjCompleteButton" class="btn btn-sm btn-outline-primary"
+                    type="button">
+              순서변경완료
+            </button>
           </h2>
-          <div class="song-content-border">
-            <table class="table-tj">
+          <div class="switch-order-hint-collapse collapse" id="switchOrderTjCollapse">
+            <span style="background-color: #fff3cd">처음 클릭한 곡</span>
+            이
+            <span style="background-color: #dddddd">두번째로 클릭한 곡</span>
+            바로 아래 순서로 변경됩니다.<br>
+            순서를 모두 변경한 뒤에는 반드시 순서를 저장해주세요.
+          </div>
+          <div class="song-table-border">
+            <table class="song-table table-tj">
               <thead>
               <tr>
                 <th>번호</th>
@@ -332,12 +517,15 @@
                   <span th:text="${song.number}">12345</span>
                 </td>
                 <td class="song-title">
-                  <div class="song-title-text">
-                    <a target="_blank" href="#" th:text="${song.title}">
+                  <div>
+                    <a class="song-title-text" target="_blank" href="#" th:text="${song.title}">
                       노래 제목
                     </a>
                   </div>
-                  <div class="song-info-text" th:text="${song.info}">정보 텍스트
+                  <div class="song-info">
+                    <span th:text="${song.info}">
+                      정보 텍스트
+                    </span>
                   </div>
                 </td>
                 <td class="song-singer" th:text="${song.singer}">가수명
@@ -350,10 +538,10 @@
         <!-- 금영 -->
         <div class="col-lg-4 fade-in-element">
           <h2 class="song-header-text song-header-text-ky">
-            <span th:text="${kyLatestMonth + ' 금영 신곡'}">금영 메모</span>
+            <span>금영 메모</span>
           </h2>
-          <div class="song-content-border">
-            <table class="table-ky">
+          <div class="song-table-border">
+            <table class="song-table table-ky">
               <thead>
               <tr>
                 <th>번호</th>
@@ -367,14 +555,15 @@
                   <span th:text="${song.number}" th:classappend="${song.latest} ? latest : ''">12345</span>
                 </td>
                 <td class="song-title">
-                  <div class="song-title-text">
-                    <a target="_blank" th:href="${song.searchUrl}"
-                       href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9"
-                       th:text="${song.title}">
+                  <div>
+                    <a class="song-title-text" target="_blank" href="#" th:text="${song.title}">
                       노래 제목
                     </a>
                   </div>
-                  <div class="song-info-text" th:text="${song.info}">정보 텍스트
+                  <div class="song-info">
+                    <span th:text="${song.info}">
+                      정보 텍스트
+                    </span>
                   </div>
                 </td>
                 <td class="song-singer" th:text="${song.singer}">가수명
@@ -404,8 +593,8 @@
       <!--노래 추가 폼 -->
       <form id="songAddForm">
         <input type="hidden" id="csrfToken" name="_csrf" th:value="${_csrf.token}"/>
-        <div class="song-content-border">
-          <table class="table">
+        <div class="song-table-border">
+          <table class="table song-table">
             <thead>
             <tr>
               <th>번호</th>
@@ -444,7 +633,7 @@
               <span>&nbsp;현재순서:&nbsp;</span><span id="currentPresentOrder">00</span>
             </div>
             <div class="col-auto">
-              <button type="button" id="presentOrderModalButton" class="btn btn-outline-secondary"
+              <button type="button" id="presentOrderModalButton" class="btn btn-outline-secondary btn-sm"
                       data-bs-toggle="modal"
                       data-bs-target="#presentOrderModal">순서 설정
               </button>
@@ -475,8 +664,8 @@
                 <div>
                   선택한 노래의 바로 다음 순서로 저장됩니다.<br>
                 </div>
-                <div class="song-content-border mt-2">
-                  <table class="table" id="choosePresentOrderTable">
+                <div class="song-table-border mt-2">
+                  <table class="table song-table" id="choosePresentOrderTable">
                     <thead>
                     <tr>
                       <th>번호</th>
@@ -549,8 +738,8 @@
             노래 제목을 누르면 해당 노래가 폼에 자동으로 입력됩니다.<br>
             (한글 표시는 참고용으로 작성되었으며 정확하지 않습니다)
           </div>
-          <div class="song-content-border mt-2">
-            <table class="table" id="songSearchResultTable">
+          <div class="song-table-border mt-2">
+            <table class="table-hover song-table" id="songSearchResultTable">
               <thead>
               <tr>
                 <th>번호</th>
@@ -564,45 +753,6 @@
           </div>
         </div>
       </div>
-
-      <!--검색 결과 추가를 위한 빈 행-->
-      <div id="songSearchResultRow">
-        <table>
-          <thead>
-          <tr>
-            <th>번호</th>
-            <th>제목</th>
-            <th>아티스트</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr class="search-song-row">
-            <td class="song-number">
-              <span>12345</span>
-            </td>
-            <td class="song-title">
-              <div>
-                <a class="song-title-text">
-                  노래 제목
-                </a>
-              </div>
-              <div>
-                <i class="song-title-hint">
-                  한글 타이틀
-                </i>
-                <span class="song-info-text ms-2">
-                  정보 텍스트
-                </span>
-              </div>
-            </td>
-            <td class="song-singer">가수명
-            </td>
-          </tr>
-          </tbody>
-        </table>
-
-      </div>
-
     </div>
   </section>
 

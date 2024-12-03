@@ -39,6 +39,9 @@ public class SongSearchService {
                         searchSongsByInfo(keyword);
             default -> log.error("Invalid search type: {}", searchType);
         }
+
+        // 브랜드 필터링
+        searchResults = searchResults.stream().filter(song -> song.getBrand() == searchCond.getBrand()).toList();
         return searchResults;
     }
 

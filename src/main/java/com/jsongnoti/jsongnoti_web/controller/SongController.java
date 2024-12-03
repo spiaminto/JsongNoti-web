@@ -29,7 +29,7 @@ public class SongController {
 
         // form 검증
 
-        SongSearchCond songSearchCond = new SongSearchCond(songSearchForm.getSearchType(), songSearchForm.getKeyword());
+        SongSearchCond songSearchCond = new SongSearchCond(songSearchForm.getSearchType(), songSearchForm.getKeyword(), songSearchForm.getBrand());
         List<SongSearchResult> results = songSearchService.searchSongs(songSearchCond);
 
         return ResponseEntity.ok().body(results);

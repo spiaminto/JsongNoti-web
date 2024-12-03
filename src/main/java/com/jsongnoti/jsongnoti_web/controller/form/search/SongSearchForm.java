@@ -1,5 +1,6 @@
 package com.jsongnoti.jsongnoti_web.controller.form.search;
 
+import com.jsongnoti.jsongnoti_web.domain.Brand;
 import com.jsongnoti.jsongnoti_web.domain.SongSearchType;
 import lombok.Data;
 
@@ -8,5 +9,6 @@ public class SongSearchForm {
 
     private String keyword;
     private SongSearchType searchType;
+    private Brand brand;
 
 }

@@ -23,8 +23,8 @@ public class SongMemo {
     private int number;
     private String title;
     private String singer;
-    private String info;
 
+    private String info;
     private int presentOrder; // 표시순서, start from 0
 
     public void setPresentOrder(int presentOrder) {

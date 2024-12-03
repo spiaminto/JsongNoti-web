@@ -28,56 +28,56 @@ public interface SongRepository extends JpaRepository<Song, Long> {
 
     // 검색 =========================================================================================
     @Query(value =
-            "SELECT s.id, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
+            "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
                     "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
                     "WHERE s.title =% :keyword " +
                     "order by bigm_similarity(s.title, :keyword) desc", nativeQuery = true)
     List<SongSearchResultDto> findSongByTitleSimilar(String keyword);
 
     @Query(value =
-            "SELECT s.id, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
+            "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
                     "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
                     "WHERE s.singer =% :keyword " +
                     "order by bigm_similarity(s.singer, :keyword) desc", nativeQuery = true)
     List<SongSearchResultDto> findSongBySingerSimilar(String keyword);
 
     @Query(value =
-            "SELECT s.id, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
+            "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
                     "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
                     "WHERE s.info =% :keyword " +
                     "order by bigm_similarity(s.info, :keyword) desc", nativeQuery = true)
     List<SongSearchResultDto> findSongByInfoSimilar(String keyword);
 
     @Query(value =
-            "SELECT s.id, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
+            "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
                     "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
                     "WHERE sk.title =% :keyword " +
                     "order by bigm_similarity(sk.title, :keyword) desc", nativeQuery = true)
     List<SongSearchResultDto> findSongByKoreanTitleSimilar(String keyword);
 
     @Query(value =
-            "SELECT s.id, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
+            "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
                     "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
                     "WHERE sk.title_read =% :keyword " +
                     "order by bigm_similarity(sk.title_read, :keyword) desc", nativeQuery = true)
     List<SongSearchResultDto> findSongByKoreanTitleReadSimilar(String keyword);
 
     @Query(value =
-            "SELECT s.id, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
+            "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
                     "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
                     "WHERE sk.singer_read =% :keyword " +
                     "order by bigm_similarity(sk.singer_read, :keyword) desc", nativeQuery = true)
     List<SongSearchResultDto> findSongByKoreanSingerSimilar(String keyword);
 
     @Query(value =
-            "SELECT s.id, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
+            "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
                     "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
                     "WHERE sk.singer =% :keyword " +
                     "order by bigm_similarity(sk.singer, :keyword) desc", nativeQuery = true)
     List<SongSearchResultDto> findSongByKoreanSingerReadSimilar(String keyword);
 
     @Query(value =
-            "SELECT s.id, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
+            "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
                     "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
                     "WHERE sk.info =% :keyword " +
                     "order by bigm_similarity(sk.info, :keyword) desc", nativeQuery = true)
