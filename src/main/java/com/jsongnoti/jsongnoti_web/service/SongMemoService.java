@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -79,7 +78,22 @@ public class SongMemoService {
                 memo.setPresentOrder(order);
             }
         });
+    }
 
+    @Transactional
+    public void deleteMemo(Long userId, int number, Brand brand) {
+        SongMemo songMemo = songMemoRepository.findByUserIdAndBrandAndNumber(userId, brand, number);
+        log.info("deleteMemo: {}", songMemo);
+        songMemoRepository.delete(songMemo);
+
+        syncPresentOrderWhenDelete(userId, songMemo.getPresentOrder());
+    }
+
+    public void syncPresentOrderWhenDelete(Long userId, int presentOrder) {
+        songMemoRepository.findByUserIdAndPresentOrderGreaterThanEqual(userId, presentOrder)
+                .forEach(memo -> {
+                    memo.setPresentOrder(memo.getPresentOrder() - 1);
+                });
     }
 
 

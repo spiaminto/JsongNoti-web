@@ -104,14 +104,32 @@
           });
 
 
+          function toggleSearchForm(command) {
+              if (command === 'on') {
+                  $('#songSearchForm input').prop('disabled', false);
+                  $('#songSearchForm button').prop('disabled', false);
+              } else if (command === 'off') {
+                  $('#songSearchForm input').prop('disabled', true);
+                  $('#songSearchForm button').prop('disabled', true);
+              }
+          }
+
 // 데이터 =========================================================================
 
 // TJ 메모 갱신 (개발용)
           $('#refreshTJButton').click(function () {
             let dataList = getMemoTableData('TJ');
+            console.log('dataList', dataList);
             let songTable = renderEmptySongTable(dataList);
-            songTable.addClass('table-tj');
-            $('.table-tj').replaceWith(songTable);
+            let songRows = songTable.find('tbody tr');
+
+            // presentOrder 복구
+            $.each(songRows, function (index, row) {
+                $(row).find('.song-number').attr('data-present-order', dataList[index].presentOrder);
+            });
+
+            $(songTable).addClass('table-tj');
+            $('.table-tj tbody').replaceWith($(songTable).find('tbody'));
           })
 
 // 서버에 메모테이블 데이터 요청
@@ -125,6 +143,7 @@
               $.ajax({
                   type: "GET",
                   url: "/memos",
+                  async: false, // 결과 반환을 위해 동기화
                   data: {
                       brand: brand,
                       presentType: 'presentOrder'
@@ -132,15 +151,15 @@
                   success: function (data) {
                       console.log(data);
                       memoData = data;
-                      return memoData;
+                      console.log('ajax', memoData);
                   },
                   error: function (request, status, error) {
                       console.log(request)
                       console.log(status)
                       console.log(error)
-                      return null;
                   }
               })
+              return memoData;
           }
 
 // 서버에 노래 검색 요청
@@ -189,12 +208,14 @@
            * @returns {*|jQuery} 데이터를 채운 테이블
            */
           function renderEmptySongTable(dataList) {
+              console.log('RENDER', dataList)
               if (dataList == null) {
                   return;
               }
               let emptySongTable = $('.empty-song-table');
               let resultTable = emptySongTable.clone();
               resultTable.removeClass('empty-song-table');
+
               let firstRow = resultTable.find('tbody tr:first-child');
               $.each(dataList, function (index, song) {
                   let row = firstRow.clone();
@@ -202,6 +223,7 @@
                   row.find('.song-title-text').text(song.title);
                   row.find('.song-info span').text(song.info);
                   row.find('.song-singer').text(song.singer);
+                  console.log('row', row);
                   firstRow.before(row); // after 가 아닌 before 로 붙여야 순서가 맞음
               });
               firstRow.remove();
@@ -302,8 +324,11 @@
                   let songRows = songTable.find('tbody tr');
                   $.each(songRows, function (index, row) {
                       $(row).toggleClass('song-row-will-switch song-row-switching');
-                      $('#switchOrderTjCompleteButton').show();
                   });
+                  $('#switchOrderTjCompleteButton').show();
+                  $('#deleteMemoTjButton').hide();
+                  toggleSearchForm('off');
+
                   // 첫번째 요소로 추가 부분 추가
                   let firstRow = $('.table-tj').find("tbody tr:first-child")
                   let willFirstRow = firstRow.clone();
@@ -331,6 +356,13 @@
               let $beSwitchedRow = $('.song-row-be-switched-selected');
               $beSwitchedRow.after($willSwitchRow)
 
+              // 바뀐 메모 하이라이트
+              $willSwitchRow.addClass('song-row-switched');
+              setTimeout(function () {
+                  $willSwitchRow.removeClass('song-row-switched');
+              }, 500);
+
+
               $('.table-tj')
                   .find('tbody tr')
                   .removeClass('song-row-be-switched song-row-be-switched-selected song-row-will-switch song-row-will-switch-selected')
@@ -346,6 +378,8 @@
               $.each(songRows, function (index, row) {
                   numbers.push($(row).find('.song-number span').text()); // 곡의 number 모음
               });
+              numbers = numbers.filter(Boolean) // 빈값 제거 (첫번째 행으로 추가 제거)
+
 
               $.ajax({
                   type: "PATCH",
@@ -370,11 +404,66 @@
               $.each(songRows, function (index, row) {
                   $(row).toggleClass('song-row-will-switch song-row-switching');
               });
-              $('.table-tj')
-                  .find('tbody tr:first-child').remove() // 첫번째 요소로 추가 자움
+              $('.table-tj').find('tbody tr:first-child').remove() // 첫번째 요소로 추가 자움
               $('#switchOrderTjCompleteButton').hide();
+              $('#deleteMemoTjButton').show();
               $('#switchOrderTjButton').click();
+              toggleSearchForm('on');
               isOrderSwitching = false;
+          })
+
+// 삭제하기 버튼 클릭 이벤트
+          $('#deleteMemoTjButton').on('click', function () {
+              let songTable = $('.table-tj');
+              let songRows = songTable.find('tbody tr');
+              $.each(songRows, function (index, row) {
+                  $(row).find('.song-title-text').on('click', deleteMemoEvent);
+                  $(row).addClass('song-row-deleting');
+              });
+              $('#deleteMemoTjCompleteButton').show();
+              $('#switchOrderTjButton').hide();
+          })
+
+// 실제 노래 삭제 버튼 클릭 이벤트
+
+          function deleteMemoEvent(event) {
+            event.preventDefault();
+
+            let songTitle = $(this).text();
+            if (!confirm('확인을 누르면 다음 곡이 삭제됩니다.\n' + songTitle)) return false; // 취소시 리턴
+
+            let brand = 'TJ';
+            let number = $(this).closest('tr').find('.song-number span').text();
+            let csrfToken = $('#csrfToken').val();
+
+            $.ajax({
+                type: "DELETE",
+                url: "/memos",
+                context: this, // ajax 내부에서 this 사용
+                data: {
+                    brand: brand,
+                    number: number,
+                    _csrf: csrfToken
+                },
+                success: function (data) {
+                    console.log(data)
+                    console.log($(this).closest());
+                    $(this).closest('tr').remove();
+                },
+                error: function (request, status, error) {
+                    console.log(request)
+                    console.log(status)
+                    console.log(error)
+                }
+            })
+          }
+
+// 삭제완료 버튼 클릭 이벤트
+          $('#deleteMemoTjCompleteButton').on('click', function() {
+              $('#deleteMemoTjButton').click();
+              $('#switchOrderTjButton').show();
+              $('.table-tj').find('tbody tr').removeClass('song-row-deleting');
+              $(this).hide();
           })
 
 
@@ -414,7 +503,7 @@
         </td>
         <td class="song-title">
           <div>
-            <a class="song-title-text">
+            <a class="song-title-text" href="#" onclick="return false;">
               노래 제목
             </a>
           </div>
@@ -494,13 +583,25 @@
                     type="button">
               순서변경완료
             </button>
+            <button id="deleteMemoTjButton" class="btn btn-sm btn-outline-danger collapse-button-hide-when-expanded"
+                    type="button" data-bs-toggle="collapse"
+                    data-bs-target="#deleteMemoTjCollapse" aria-expanded="false" aria-controls="deleteMemoTjCollapse">
+              메모삭제
+            </button>
+            <button id="deleteMemoTjCompleteButton" class="btn btn-sm btn-outline-danger"
+                    type="button">
+              삭제완료
+            </button>
           </h2>
           <div class="switch-order-hint-collapse collapse" id="switchOrderTjCollapse">
             <span style="background-color: #fff3cd">처음 클릭한 곡</span>
             이
             <span style="background-color: #dddddd">두번째로 클릭한 곡</span>
             바로 아래 순서로 변경됩니다.<br>
-            순서를 모두 변경한 뒤에는 반드시 순서를 저장해주세요.
+            변경한 순서는 '순서변경완료' 버튼을 눌러야 적용됩니다.
+          </div>
+          <div class="delete-memo-hint-collapse collapse" id="deleteMemoTjCollapse">
+            <span>삭제하려는 메모의 곡 제목을 클릭하면 삭제됩니다.</span>
           </div>
           <div class="song-table-border">
             <table class="song-table table-tj">
@@ -518,7 +619,7 @@
                 </td>
                 <td class="song-title">
                   <div>
-                    <a class="song-title-text" target="_blank" href="#" th:text="${song.title}">
+                    <a class="song-title-text" href="#" onclick="return false" th:text="${song.title}">
                       노래 제목
                     </a>
                   </div>

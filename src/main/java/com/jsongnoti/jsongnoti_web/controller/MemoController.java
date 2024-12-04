@@ -1,6 +1,7 @@
 package com.jsongnoti.jsongnoti_web.controller;
 
 import com.jsongnoti.jsongnoti_web.auth.PrincipalDetails;
+import com.jsongnoti.jsongnoti_web.controller.form.memo.DeleteMemoForm;
 import com.jsongnoti.jsongnoti_web.controller.form.memo.MemoAddForm;
 import com.jsongnoti.jsongnoti_web.controller.form.memo.MemoSearchForm;
 import com.jsongnoti.jsongnoti_web.controller.form.memo.SwitchOrderForm;
@@ -11,6 +12,7 @@ import com.jsongnoti.jsongnoti_web.service.dto.MemoSearchCond;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
@@ -71,6 +73,19 @@ public class MemoController {
 
 
         return ResponseEntity.ok("순서 변경됨");
+    }
+
+    @DeleteMapping("/memos")
+    public ResponseEntity<String> deleteMemo(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                             @ModelAttribute DeleteMemoForm deleteMemoForm) {
+        log.info("deleteMemo: {}", deleteMemoForm);
+//        Long userId = principalDetails.getUserId();
+        Long userId = 47L;
+        int number = deleteMemoForm.getNumber();
+        Brand brand = deleteMemoForm.getBrand();
+        songMemoService.deleteMemo(userId, number, brand);
+
+        return ResponseEntity.ok("삭제됨");
     }
 
 }
