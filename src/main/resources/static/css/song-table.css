@@ -1,0 +1,166 @@
+/**/
+
+.song-table-container {
+    padding-top: 2rem;
+}
+
+.song-table-border {
+    border: solid 1px #aaaaaa;
+    border-radius: 10px;
+    margin-top: 20px;
+    overflow: hidden;
+    box-shadow: lightgrey 2px 2px 2px;
+}
+
+/* 노래 테이블 페이드 인 */
+.fade-in-element {
+    opacity: 0;
+    transform: translateY(25px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-in-element.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.song-header-subtext {
+    font-size: calc(0.8rem + 0.2vw);
+    transform: translate(2%, -15%);
+    min-width: 100px;
+}
+
+@media (min-width: 992px) {
+    .song-header-subtext {
+        transform: translate(5%, -15%);
+    }
+}
+
+/* 노래 테이블 스타일 */
+.song-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: calc(1.1rem + 0.2vw);
+    border-style: hidden;
+    text-align: center;
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+
+.song-table th {
+    border: 1px solid #aaaaaa;
+    /*text-align: left;*/
+    padding: 8px;
+}
+
+/* 아티스트만 살짝 줄임 */
+.song-table th:last-child {
+    font-size: calc(1rem + 0.2vw);
+}
+
+.table-tj th {
+    background-color: #f95001;
+    color: white;
+}
+
+.table-ky th {
+    background-color: #6495ed;
+    color: white;
+}
+
+.song-number {
+    border: 1px solid #aaaaaa;
+    /*text-align: left;*/
+    padding: calc(0.3rem + 0.3vw);
+    width: 8%;
+    font-size: calc(0.95rem + 0.2vw);
+}
+
+/* 제일 최신 노래 하이라이트 */
+.latest {
+    background-color: #fff3cd;
+    font-weight: bold;
+    padding: 0.3rem 0.1rem;
+}
+
+mark, .mark {
+    padding: 0.3rem 0.1rem;  /* 0.1875em 이라 글씨크기에 영향받던거 수정 */
+}
+
+.song-title {
+    border: 1px solid #aaaaaa;
+    text-align: left;
+    padding: calc(0.5rem + 0.3vw);
+    width: 67%;
+}
+
+.song-info {
+    font-size: calc(0.9rem + 0.1vw);
+    color: #777;
+    text-indent: 0.5rem;
+}
+
+.song-singer {
+    border: 1px solid #aaaaaa;
+    text-align: left;
+    padding: calc(0.5rem + 0.3vw);
+    width: 25%;
+}
+
+/*.song-title-text > a {*/
+/*    display: block;*/
+/*    color: #111111;*/
+/*    font-weight: bold;*/
+/*    text-decoration: none;*/
+/*}*/
+
+.song-title-text {
+    display: block;
+    color: #111111;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.song-title-text > a:hover {
+    text-decoration: underline;
+}
+
+.song-header-text {
+    text-align: center;
+    /*margin-top: 2rem;*/
+}
+
+/* 모바일상에서 윗마진 줄임 */
+/*.song-header-text-tj {*/
+/*    margin-top: 1rem;*/
+/*}*/
+
+/*!* 양옆으로 펴질때 원래대로 *!*/
+/*@media (min-width: 992px) {*/
+/*    .song-header-text-tj {*/
+/*        margin-top: 2rem;*/
+/*    }*/
+/*}*/
+
+.collapsing {
+    transition: height 0.5s ease; /* 기본값 0.35s */
+}
+
+.last-month-show-button-wrapper {
+    margin-top: 1rem;
+}
+
+.last-month-show-button {
+    border-radius: 10px;
+    font-size: calc(0.8rem + 0.2vw);
+}
+
+/* 영역 분리 */
+
+.splitter {
+    border-style: dashed none none none;
+    border-width: thick;
+    border-color: #aaaaaa;
+    margin: 3rem auto;
+    width: 95%;
+}

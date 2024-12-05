@@ -1,0 +1,114 @@
+
+
+
+.collapse-button-open {
+    transform: rotate(180deg);
+}
+
+.collapse-button {
+    transition: 0.5s;
+    width: 1.6rem;
+    height: 1.6rem;
+    padding: 0;
+}
+
+.collapse-button i {
+    font-size: 1.2rem;
+}
+
+#memoAddForm {
+    width: 100%;
+}
+
+/* 노래 등록 폼 아래 마진 공백 생기는거 삭제 */
+#memoAddForm table {
+    margin-bottom: 0;
+}
+
+#searchHintContainer p {
+    margin-bottom: 0.25rem;
+}
+
+#songSearchResultTable .song-title-text {
+    display: inline; /* 한글 타이틀 표시를 위해 인라인 */
+}
+
+.selected {
+    background-color: #fff3cd;
+}
+
+.empty-song-table {
+    display: none;
+}
+
+.song-title-korean {
+    color: #777;
+}
+
+.song-row-switching {
+    background: repeating-linear-gradient(-45deg, #fff, #fff 3px, #efefef 0, #efefef 6px);
+    transition-duration: 0.5s;
+    transition-property: background-color;
+}
+
+.song-row-will-switch-selected {
+    background: #fff3cd none;
+}
+
+.song-row-be-switched-selected {
+    background: #dddddd none;
+}
+
+@media (hover: hover) and (pointer: fine) { /* 마우스에서만 호버 */
+    .song-row-will-switch:hover {
+        background: #fff3cd none;
+        cursor: pointer;
+    }
+
+    .song-row-be-switched:hover {
+        background: #dddddd none;
+        cursor: pointer;
+    }
+}
+
+.song-row-switched {
+    background: #dddddd none;
+}
+
+.switch-order-complete-button {
+    display: none;
+}
+
+.collapse-button-hide-when-expanded[aria-expanded="true"] {
+    display: none !important;
+}
+
+.song-row-deleting {
+    background: repeating-linear-gradient(-45deg, #ffeeee, #ffeeee 3px, #ffffff 0, #ffffff 6px);
+    transition-duration: 0.5s;
+    transition-property: background-color;
+}
+
+.delete-memo-complete-button {
+    display: none;
+}
+
+.add-song-row {
+    transition-duration: 0.3s;
+    transition-property: background-color;
+}
+
+
+/**
+나중에 공통부로 뺄것
+ */
+
+.btn-xsm {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.75rem;
+    border-radius: 0.25rem;
+}
+
+#song-container {
+    padding: 0;
+}

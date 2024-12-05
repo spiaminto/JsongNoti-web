@@ -1,0 +1,29 @@
+/* 헤더 텍스트 사이즈 보정 */
+
+h1 .navbar-brand {
+    font-size: calc(1.5rem + 0.6vw);
+}
+
+h1 {
+    margin-bottom: 0; /* 기본값 0으로 초기화 */
+}
+
+h2 { /* 외부헤더 (신곡목록, 사용방법 ...) */
+    font-size: calc(1.4rem + 0.6vw); /* calc(1.325rem + 0.9vw) */
+}
+
+h3 { /* 사용방법-구독하기, ... */
+    font-size: calc(1.35rem + 0.5vw); /* 1.3rem + 0.6vw */
+}
+
+h4 { /* 모달 헤더, 모달 하위헤더 */
+    font-size: calc(1rem + 0.3vw);
+}
+
+.lead {
+    font-size: calc(1rem + 0.3vw); /* 1.25rem */
+}
+
+.masthead .headerText { /* masthead 메인메시지 */
+    font-size: calc(1.375rem + 0.5vw); /* 1.25rem */
+}

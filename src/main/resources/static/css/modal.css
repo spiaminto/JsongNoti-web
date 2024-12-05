@@ -1,0 +1,13 @@
+.modal-dialog {
+    font-size: calc(0.9rem + 0.2vw);
+}
+
+@media (min-width: 1200px) {
+    .modal-dialog {
+        max-width: 600px;
+    }
+
+    .modal-dialog button {
+        font-size: calc(0.9rem + 0.2vw);
+    }
+}
