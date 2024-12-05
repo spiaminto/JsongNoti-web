@@ -2,7 +2,9 @@ package com.jsongnoti.jsongnoti_web.controller;
 
 import com.jsongnoti.jsongnoti_web.controller.dto.NewSongDto;
 import com.jsongnoti.jsongnoti_web.domain.SongMemo;
+import com.jsongnoti.jsongnoti_web.domain.User;
 import com.jsongnoti.jsongnoti_web.repository.SongMemoRepository;
+import com.jsongnoti.jsongnoti_web.service.UserService;
 import com.jsongnoti.jsongnoti_web.service.dto.LatestAndLastSongsDto;
 import com.jsongnoti.jsongnoti_web.service.SongService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class IndexController {
 
     private final SongService songService;
     private final SongMemoRepository songMemoRepository;
+    private final UserService userService;
 
     @GetMapping("/health-check")
     @ResponseBody
@@ -81,7 +84,13 @@ public class IndexController {
     public String memo(@RequestParam("userId") Long userId, Model model) {
         //TODO 임시구현
         List<SongMemo> byUserId = songMemoRepository.findByUserIdOrderByPresentOrderAsc(userId);
-        model.addAttribute("tjLatestMonthSongs", byUserId);
+        User user = userService.findUserById(userId);
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("memoPresentType", user.getMemoPresentType());
+        model.addAttribute("showMemoBrand", user.getShowMemoBrand());
+
+//        model.addAttribute("tjLatestMonthSongs", byUserId);
+
         return "memo";
     }
 

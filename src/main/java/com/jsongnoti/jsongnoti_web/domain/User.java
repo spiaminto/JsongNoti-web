@@ -1,9 +1,6 @@
 package com.jsongnoti.jsongnoti_web.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -28,7 +25,10 @@ public class User {
     private String password;
     private String role;
 
-    private String memoOrderType;
+    @Enumerated(EnumType.STRING)
+    private MemoPresentType memoPresentType;
+    @Enumerated(EnumType.STRING)
+    private Brand showMemoBrand;
 
     private String provider;
     private String providerId;

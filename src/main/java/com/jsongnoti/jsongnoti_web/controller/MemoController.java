@@ -1,6 +1,7 @@
 package com.jsongnoti.jsongnoti_web.controller;
 
 import com.jsongnoti.jsongnoti_web.auth.PrincipalDetails;
+import com.jsongnoti.jsongnoti_web.controller.dto.SongMemoResponse;
 import com.jsongnoti.jsongnoti_web.controller.form.memo.DeleteMemoForm;
 import com.jsongnoti.jsongnoti_web.controller.form.memo.MemoAddForm;
 import com.jsongnoti.jsongnoti_web.controller.form.memo.MemoSearchForm;
@@ -9,6 +10,7 @@ import com.jsongnoti.jsongnoti_web.domain.Brand;
 import com.jsongnoti.jsongnoti_web.domain.SongMemo;
 import com.jsongnoti.jsongnoti_web.service.SongMemoService;
 import com.jsongnoti.jsongnoti_web.service.dto.MemoSearchCond;
+import com.jsongnoti.jsongnoti_web.service.dto.SongMemoServiceResult;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,24 +31,24 @@ public class MemoController {
     private final SongMemoService songMemoService;
 
     @GetMapping("/memos")
-    public ResponseEntity<List<SongMemo>> memos(@Validated @ModelAttribute MemoSearchForm memoSearchForm,
+    public ResponseEntity<SongMemoResponse> memos(@Validated @ModelAttribute MemoSearchForm memoSearchForm,
                                                 BindingResult bindingResult) {
         log.info("memoSearchForm: {}", memoSearchForm);
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(null);
         }
 
-        List<SongMemo> songMemos = songMemoService.searchMemos(new MemoSearchCond(memoSearchForm.getBrand(), memoSearchForm.getPresentType()));
-        return ResponseEntity.ok().body(songMemos);
+        SongMemoServiceResult result = songMemoService.searchMemos(new MemoSearchCond(memoSearchForm.getBrand(), memoSearchForm.getPresentType()));
+        return ResponseEntity.ok().body(SongMemoResponse.withMessageAndSongMemos(result.getMessage(), result.getSongMemos()));
     }
 
     @PostMapping("/memos")
-    public ResponseEntity<String> addMemo(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                          @Validated  @ModelAttribute(name = "memoAddForm") MemoAddForm memoAddForm,
-                                          BindingResult bindingResult) {
+    public ResponseEntity<SongMemoResponse> addMemo(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                    @Validated  @ModelAttribute(name = "memoAddForm") MemoAddForm memoAddForm,
+                                                    BindingResult bindingResult) {
         log.info("addMemo: {}", memoAddForm);
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getFieldError().getDefaultMessage());
+            return ResponseEntity.badRequest().body(SongMemoResponse.withMessage(bindingResult.getFieldError().getDefaultMessage()));
         }
 
         //TODO 임시구현
@@ -55,9 +57,12 @@ public class MemoController {
         Long songId = memoAddForm.getSongId();
         int presentOrder = memoAddForm.getPresentOrder();
 
-        songMemoService.saveMemo(userId, songId, memoAddForm.getInfoText(), presentOrder);
+        SongMemoServiceResult result = songMemoService.saveMemo(userId, songId, memoAddForm.getInfoText(), presentOrder);
+        if (!result.isSuccess()) {
+            return ResponseEntity.status(409).body(SongMemoResponse.withMessage(result.getMessage()));
+        }
 
-        return ResponseEntity.ok("저장되었음.");
+        return ResponseEntity.ok(SongMemoResponse.withMessage(result.getMessage()));
     }
 
     @PatchMapping("/memos/switch-order")
@@ -69,10 +74,9 @@ public class MemoController {
         List<Integer> songNumbers = switchOrderForm.getNumbers();
         Brand brand = switchOrderForm.getBrand();
 
-        songMemoService.switchOrder(userId, songNumbers, brand);
+        SongMemoServiceResult result = songMemoService.switchOrder(userId, songNumbers, brand);
 
-
-        return ResponseEntity.ok("순서 변경됨");
+        return ResponseEntity.ok(result.getMessage());
     }
 
     @DeleteMapping("/memos")
@@ -83,9 +87,9 @@ public class MemoController {
         Long userId = 47L;
         int number = deleteMemoForm.getNumber();
         Brand brand = deleteMemoForm.getBrand();
-        songMemoService.deleteMemo(userId, number, brand);
+        SongMemoServiceResult result = songMemoService.deleteMemo(userId, number, brand);
 
-        return ResponseEntity.ok("삭제됨");
+        return ResponseEntity.ok(result.getMessage());
     }
 
 }

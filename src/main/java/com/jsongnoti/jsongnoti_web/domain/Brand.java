@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum Brand {
+    ALL("전체"), // 메모테이블에서 사용
     TJ("TJ"),
     KY("금영"),
     TEST("테스트");
