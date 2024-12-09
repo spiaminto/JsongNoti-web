@@ -68,6 +68,11 @@ public class IndexController {
         return "index";
     }
 
+    @GetMapping("/privacy-policy")
+    public String privacyPolicy() {
+        return "privacy-policy";
+    }
+
 
 
 }
