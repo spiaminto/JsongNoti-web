@@ -9,9 +9,10 @@ class MemoUtil {
         let dataList = this.getMemoTableData(brand); // 서버에서 데이터 가져옴
         let songTable = this.renderEmptySongTable(dataList); // 빈 테이블 복사후 데이터 채움
 
-        // presentOrder 복구
+        // memoId, presentOrder 붙임
         let songRows = songTable.find('tbody tr');
         $.each(songRows, function (index, row) {
+            $(row).find('.song-number').attr('data-memo-id', dataList[index].id);
             $(row).find('.song-number').attr('data-present-order', dataList[index].presentOrder);
         });
 
@@ -27,13 +28,14 @@ class MemoUtil {
      */
     getMemoTableData(brand) {
         let memoData;
+        let memoPresentType = $('#memoSettingForm input[name=memoPresentType]:checked').val();
         $.ajax({
             type: "GET",
             url: "/memos",
             async: false, // 결과 반환을 위해 동기화
             data: {
                 brand: brand,
-                presentType: 'presentOrder'
+                memoPresentType: memoPresentType
             },
             success: function (data) {
                 memoData = data.songMemos;
@@ -101,6 +103,22 @@ class MemoUtil {
         } else if (command === 'off') {
             $('.switch-order-button').prop('disabled', true).hide();
         }
+    }
+
+    /**
+     * jquery 객체를 받아서 해당 엘리먼트를 깜빡임
+     */
+    blinkElement(element) {
+        $(element).css({
+            transition: 'background-color 300ms linear',
+            backgroundColor: '#fff3cd'
+        });
+        setTimeout(function () {
+            $(element).css('background-color', '')
+        }, 250);
+        setTimeout(function () {
+            $(element).css('transition' , '')
+        }, 500);
     }
 
 }

@@ -66,7 +66,7 @@
           }
 
           function initializeMemoTable() {
-              let brand = $('#memoSettingForm').find('input[name=showBrand]:checked').val();
+              let brand = $('#memoSettingForm').find('input[name=showMemoBrand]:checked').val();
               switch (brand) {
                   case 'ALL':
                       MemoUtil.refreshMemoTable('TJ');
@@ -85,6 +85,19 @@
           }
           initializeMemoTable();
 
+          $('#memoSettingForm').submit(function (event) {
+              event.preventDefault();
+              let formData = $(this).serialize();
+              let userId = $('.memo-section-header').data('user-id');
+              $.ajax({
+                  url: '/users/' + userId,
+                  type: 'PATCH',
+                  data: formData,
+                  success: function () {
+                      initializeMemoTable();
+                  }
+              })
+          })
       })
   </script>
 </head>
@@ -153,31 +166,31 @@
           <form class="forms-memo-setting forms" id="memoSettingForm">
             <div>표시 방식</div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="presentType" id="presentTypeByPresentOrder"
+              <input class="form-check-input" type="radio" name="memoPresentType" id="memoPresentTypeByPresentOrder"
                      value="PRESENT_ORDER" th:checked="${memoPresentType.name().equals('PRESENT_ORDER')}">
-              <label class="form-check-label" for="presentTypeByPresentOrder">순서대로</label>
+              <label class="form-check-label" for="memoPresentTypeByPresentOrder">순서대로</label>
             </div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="presentType" id="presentTypeByArtist"
+              <input class="form-check-input" type="radio" name="memoPresentType" id="memoPresentTypeByArtist"
                      value="ARTIST" th:checked="${memoPresentType.name().equals('ARTIST')}">
-              <label class="form-check-label" for="presentTypeByArtist">아티스트별</label>
+              <label class="form-check-label" for="memoPresentTypeByArtist">아티스트별</label>
             </div>
             <hr>
             <div>표시할 메모</div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="showBrand" id="showBrandAll"
+              <input class="form-check-input" type="radio" name="showMemoBrand" id="showMemoBrandAll"
                      value="ALL" th:checked="${showMemoBrand.name().equals('ALL')}">
-              <label class="form-check-label" for="showBrandAll">모두</label>
+              <label class="form-check-label" for="showMemoBrandAll">모두</label>
             </div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="showBrand" id="showBrandTj"
+              <input class="form-check-input" type="radio" name="showMemoBrand" id="showMemoBrandTj"
                      value="TJ" th:checked="${showMemoBrand.name().equals('TJ')}">
-              <label class="form-check-label" for="showBrandTj">TJ</label>
+              <label class="form-check-label" for="showMemoBrandTj">TJ</label>
             </div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="showBrand" id="showBrandKy"
+              <input class="form-check-input" type="radio" name="showMemoBrand" id="showMemoBrandKy"
                      value="KY" th:checked="${showMemoBrand.name().equals('KY')}">
-              <label class="form-check-label" for="showBrandKy">금영</label>
+              <label class="form-check-label" for="showMemoBrandKy">금영</label>
             </div>
           </form>
         </div>
@@ -193,8 +206,8 @@
   <!-- 메모 테이블 -->
   <section class="memo-section bg-light text-center">
     <div id="song-container" class="container">
-      <div class="memo-section-header">
-        <p> 메모된 곡 목록입니다. </p>
+      <div class="memo-section-header" th:data-user-id="${userId}" }>
+        <p th:text="${username + '님 의 메모된 곡 목록입니다.'}"> 메모된 곡 목록입니다. </p>
       </div>
       <div class="row">
         <!-- 태진 -->
@@ -519,7 +532,7 @@
         <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
           <p id="footerText" class="text-muted small mb-4 mb-lg-0">&copy; JsongNoti by spiaminto. All Rights
             Reserved.</p>
-          <p id="footerTextCopyright" class="text-muted small mb-0">favicon Designed by Freepik</p>
+          <p id="footerTextCopyright" class="text-muted small mb-0">icons Designed by <a href="https://www.freepik.com/">Freepik</a></p>
           <p id="footerTextGoogleAnalytics" class="text-muted small mb-4 mb-lg-0">이 사이트는 구글 애널리틱스를 사용중입니다
             <button type="button" class="btn btn-outline-secondary google-analytics-button" data-bs-toggle="modal"
                     data-bs-target="#googleAnalyticsModal">

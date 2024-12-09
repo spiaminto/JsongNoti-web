@@ -1,5 +1,6 @@
 package com.jsongnoti.jsongnoti_web.domain;
 
+import com.jsongnoti.jsongnoti_web.service.dto.UserUpdateParam;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -40,6 +41,13 @@ public class User {
         this.email = email;
     }
 
-
+    // 의존관계 문제 있음.
+    public void updateUser(UserUpdateParam userUpdateParam) {
+        this.email = userUpdateParam.getEmail();
+        this.username = userUpdateParam.getUsername();
+        this.password = userUpdateParam.getPassword();
+        this.memoPresentType = userUpdateParam.getMemoPresentType();
+        this.showMemoBrand = userUpdateParam.getShowMemoBrand();
+    }
 
 }

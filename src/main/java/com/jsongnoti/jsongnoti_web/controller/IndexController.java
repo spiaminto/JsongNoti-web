@@ -85,6 +85,7 @@ public class IndexController {
         //TODO 임시구현
         List<SongMemo> byUserId = songMemoRepository.findByUserIdOrderByPresentOrderAsc(userId);
         User user = userService.findUserById(userId);
+        model.addAttribute("userId", userId);
         model.addAttribute("username", user.getUsername());
         model.addAttribute("memoPresentType", user.getMemoPresentType());
         model.addAttribute("showMemoBrand", user.getShowMemoBrand());

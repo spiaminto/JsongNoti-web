@@ -6,7 +6,8 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class SwitchOrderForm {
+public class ReorderForm {
+    Long userId;
     Brand brand;
-    List<Integer> numbers;
+    List<Long> memoIds;
 }

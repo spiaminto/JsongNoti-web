@@ -8,7 +8,7 @@ $(function () {
             return;
         } // 순서 변경중에 누르면 이 이벤트 무시
         isMemoDeleting = true;
-        let brand = $(this).closest('.memo-container').find('h2 span').text().indexOf('TJ') >= 0 ? 'TJ' : 'KY';
+        let brand = $(this).closest('.song-table-container').find('h2 span').text().indexOf('TJ') >= 0 ? 'TJ' : 'KY';
         startDeleteMemo(brand, event.target);
     })
 
@@ -37,20 +37,18 @@ $(function () {
         let songTitle = $target.text();
         if (!confirm('확인을 누르면 다음 곡이 삭제됩니다.\n' + songTitle)) return false; // 취소시 리턴
 
-        let number = $target.closest('tr').find('.song-number span').text();
+        let memoId = $target.closest('tr').find('.song-number').data('memo-id')
+        let userId = $('.memo-section-header').data('user-id');
         let csrfToken = $('#csrfToken').val();
 
         $.ajax({
             type: "DELETE",
-            url: "/memos",
+            url: "/memos/" + memoId,
             data: {
-                brand: brand,
-                number: number,
+                userId: userId,
                 _csrf: csrfToken
             },
             success: function (data) {
-                console.log(data)
-                console.log($(this).closest());
                 $target.closest('tr').remove();
             },
             error: function (xhr) {
@@ -61,7 +59,7 @@ $(function () {
 
 // 삭제완료 버튼 클릭 이벤트
     $('.delete-memo-complete-button').on('click', function (event) {
-        let brand = $(this).closest('.memo-container').find('h2 span').text().indexOf('TJ') >= 0 ? 'TJ' : 'KY';
+        let brand = $(this).closest('.song-table-container').find('h2 span').text().indexOf('TJ') >= 0 ? 'TJ' : 'KY';
         endDeleteMemo(brand, event.target);
     })
 
@@ -74,6 +72,7 @@ $(function () {
         $target.siblings('.delete-memo-button').click(); // 컬랩스 hide
         $target.hide();
 
+        isMemoDeleting = false;
         MemoUtil.toggleSwitchOrderButton('on');
         MemoUtil.toggleSearchForm('on');
     }

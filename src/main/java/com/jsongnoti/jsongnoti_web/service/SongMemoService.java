@@ -27,6 +27,7 @@ public class SongMemoService {
     private final SongRepository songRepository;
 
     public SongMemoServiceResult searchMemos(MemoSearchCond searchCond) {
+        // presentType 처리 필요
         List<SongMemo> songMemos = songMemoRepository.findByBrandOrderByPresentOrderAsc(searchCond.getBrand());
         return SongMemoServiceResult.successWithMemos("조회 성공", songMemos);
     }
@@ -64,12 +65,16 @@ public class SongMemoService {
     }
 
     @Transactional
-    public SongMemoServiceResult deleteMemo(Long userId, int number, Brand brand) {
-        SongMemo songMemo = songMemoRepository.findByUserIdAndBrandAndNumber(userId, brand, number);
-        log.info("deleteMemo: {}", songMemo);
-        songMemoRepository.delete(songMemo);
-
-        syncPresentOrder(userId, songMemo.getPresentOrder(), "delete");
+    public SongMemoServiceResult deleteMemo(Long userId, Long memoId) {
+        // 검증
+        SongMemo findMemo = songMemoRepository.findById(memoId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 메모입니다."));
+        if (!findMemo.getUserId().equals(userId)) {
+            return SongMemoServiceResult.fail("잘못된 요청입니다.");
+        }
+        // 작업
+        songMemoRepository.deleteById(memoId);
+        // 반환
+        syncPresentOrder(userId, findMemo.getPresentOrder(), "delete");
         return SongMemoServiceResult.success("메모가 삭제되었습니다.");
     }
 
@@ -90,18 +95,24 @@ public class SongMemoService {
     /**
      * 사용자의 순서변경을 통해 변경된 모든 순서 변경
      * @param userId
-     * @param numbers
+     * @param memoIds
      * @param brand
      */
     @Transactional
-    public SongMemoServiceResult switchOrder(Long userId, List<Integer> numbers, Brand brand) {
-        List<SongMemo> songMemos = songMemoRepository.findByUserIdAndBrand(userId, brand);
-        Map<Integer, Integer> numbersOrderMap = IntStream.range(0, numbers.size())
+    public SongMemoServiceResult reorder(Long userId, List<Long> memoIds, Brand brand) {
+        List<SongMemo> songMemos = songMemoRepository.findByUserIdAndBrand(userId, brand); // 메모의 갯수가 많아지면 memoIds 로 조회하도록 변경
+        // 검증
+        if (songMemos.size() != memoIds.size()) {
+            // 들어온 갯수와 실제 갯수가 다름 (다른 브랜드가 섞여들어옴 or 중복된 id 가 들어옴)
+            return SongMemoServiceResult.fail("잘못된 요청입니다."); 
+        }
+        // 순서 매핑
+        Map<Long, Integer> memoIdOrderMap = IntStream.range(0, memoIds.size())
                 .boxed()
-                .collect(Collectors.toMap(numbers::get, Function.identity())); // numbers 에 중복이 있을경우 key 중복으로 에러남
-        // 순서를 전부 재조정
+                .collect(Collectors.toMap(memoIds::get, Function.identity())); // numbers 에 중복이 있을경우 key 중복으로 에러남
+        // 순서를 전부 재조정 
         songMemos.forEach(memo -> {
-            Integer order = numbersOrderMap.get(memo.getNumber());
+            Integer order = memoIdOrderMap.get(memo.getId());
             if (order != null) {
                 memo.setPresentOrder(order);
             }

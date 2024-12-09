@@ -4,6 +4,7 @@ $(function () {
     $('#memoAddForm').submit(function (event) {
         event.preventDefault();
         // 데이터
+        let userId = $('.memo-section-header').data('user-id');
         let songId = $(this).attr('data-song-id');
         let infoTextInputVal = $(this).find('#addInfoTextInput').val();
         let presentOrder = Number($('#currentPresentOrder').text()) - 1; // 순서가 0부터 시작
@@ -15,6 +16,7 @@ $(function () {
             url: "/memos",
             context: this,
             data: {
+                userId: userId,
                 songId: songId,
                 infoText: infoTextInputVal,
                 presentOrder: presentOrder,
@@ -22,7 +24,12 @@ $(function () {
             },
             success: function (data) {
                 alert('메모가 저장되었습니다.');
-                MemoUtil.refreshMemoTable($(this).attr('data-brand'));
+                let brand = $(this).attr('data-brand');
+                MemoUtil.refreshMemoTable(brand);
+                let targetSelector = brand === 'TJ' ? '.table-tj' : '.table-ky';
+                let $songTable = $(targetSelector);
+                // 저장된 메모 하이라이트
+                MemoUtil.blinkElement($songTable.find('.song-number[data-present-order=' + presentOrder + ']').closest('tr'));
             },
             error: function (xhr) {
                 // console.log(xhr);

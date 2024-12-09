@@ -10,6 +10,9 @@ import lombok.Data;
 public class MemoAddForm {
 
     @NotNull
+    private Long userId;
+
+    @NotNull
     private Long songId;
 
     @NotNull

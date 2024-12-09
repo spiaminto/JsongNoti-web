@@ -1,4 +1,5 @@
 import MemoUtil from "./memo-util.js";
+import memoUtil from "./memo-util.js";
 $(function () {
 
     // 서버에 노래 검색 요청
@@ -78,10 +79,7 @@ $(function () {
             }
             $('#addInfoTextInput').focus();
             // 입력폼 하이라이트
-            $('.add-song-row').css('background-color', '#fff3cd');
-            setTimeout(function () {
-                $('.add-song-row').css('background-color', '');
-            }, 300);
+            memoUtil.blinkElement($('.add-song-row'));
         });
     }
 })

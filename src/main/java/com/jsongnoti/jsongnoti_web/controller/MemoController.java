@@ -5,22 +5,20 @@ import com.jsongnoti.jsongnoti_web.controller.dto.SongMemoResponse;
 import com.jsongnoti.jsongnoti_web.controller.form.memo.DeleteMemoForm;
 import com.jsongnoti.jsongnoti_web.controller.form.memo.MemoAddForm;
 import com.jsongnoti.jsongnoti_web.controller.form.memo.MemoSearchForm;
-import com.jsongnoti.jsongnoti_web.controller.form.memo.SwitchOrderForm;
+import com.jsongnoti.jsongnoti_web.controller.form.memo.ReorderForm;
 import com.jsongnoti.jsongnoti_web.domain.Brand;
-import com.jsongnoti.jsongnoti_web.domain.SongMemo;
 import com.jsongnoti.jsongnoti_web.service.SongMemoService;
 import com.jsongnoti.jsongnoti_web.service.dto.MemoSearchCond;
 import com.jsongnoti.jsongnoti_web.service.dto.SongMemoServiceResult;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.naming.Binding;
 import java.util.List;
 
 @RestController
@@ -32,24 +30,28 @@ public class MemoController {
 
     @GetMapping("/memos")
     public ResponseEntity<SongMemoResponse> memos(@Validated @ModelAttribute MemoSearchForm memoSearchForm,
-                                                BindingResult bindingResult) {
+                                                  BindingResult bindingResult) {
         log.info("memoSearchForm: {}", memoSearchForm);
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(null);
         }
 
-        SongMemoServiceResult result = songMemoService.searchMemos(new MemoSearchCond(memoSearchForm.getBrand(), memoSearchForm.getPresentType()));
+        SongMemoServiceResult result = songMemoService.searchMemos(new MemoSearchCond(memoSearchForm.getBrand(), memoSearchForm.getMemoPresentType()));
         return ResponseEntity.ok().body(SongMemoResponse.withMessageAndSongMemos(result.getMessage(), result.getSongMemos()));
     }
 
     @PostMapping("/memos")
     public ResponseEntity<SongMemoResponse> addMemo(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                    @Validated  @ModelAttribute(name = "memoAddForm") MemoAddForm memoAddForm,
+                                                    @Validated @ModelAttribute(name = "memoAddForm") MemoAddForm memoAddForm,
                                                     BindingResult bindingResult) {
         log.info("addMemo: {}", memoAddForm);
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(SongMemoResponse.withMessage(bindingResult.getFieldError().getDefaultMessage()));
         }
+
+//        if (!userId.equals(memoAddForm.getUserId())) {
+//            return ResponseEntity.badRequest().body(SongMemoResponse.withMessage("잘못된 요청입니다."));
+//        }
 
         //TODO 임시구현
 //        Long userId = principalDetails.getUserId();
@@ -65,29 +67,43 @@ public class MemoController {
         return ResponseEntity.ok(SongMemoResponse.withMessage(result.getMessage()));
     }
 
-    @PatchMapping("/memos/switch-order")
+    @PostMapping("/memos/reorder")
     public ResponseEntity<String> switchOrder(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                              @ModelAttribute SwitchOrderForm switchOrderForm) {
-        log.info("switchOrder: {}", switchOrderForm);
+                                              @ModelAttribute ReorderForm reorderForm) {
+
+        log.info("switchOrder: {}", reorderForm);
 //        Long userId = principalDetails.getUserId();
+
+        // 로그인 된 유저인지 확인
+//        if (userId.equals(reorderForm.getUserId())) {
+//            return ResponseEntity.badRequest().body("잘못된 요청입니다.");
+//        }
+
         Long userId = 47L;
-        List<Integer> songNumbers = switchOrderForm.getNumbers();
-        Brand brand = switchOrderForm.getBrand();
+        List<Long> memoIds = reorderForm.getMemoIds();
+        Brand brand = reorderForm.getBrand();
 
-        SongMemoServiceResult result = songMemoService.switchOrder(userId, songNumbers, brand);
+        SongMemoServiceResult result = songMemoService.reorder(userId, memoIds, brand);
+        int status = result.isSuccess() ? 200 : 409;
 
-        return ResponseEntity.ok(result.getMessage());
+        return ResponseEntity.status(status).body(result.getMessage());
     }
 
-    @DeleteMapping("/memos")
-    public ResponseEntity<String> deleteMemo(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    @DeleteMapping("/memos/{memoId}")
+    public ResponseEntity<String> deleteMemo(@PathVariable(name = "memoId") Long memoId,
+                                             @AuthenticationPrincipal PrincipalDetails principalDetails,
                                              @ModelAttribute DeleteMemoForm deleteMemoForm) {
         log.info("deleteMemo: {}", deleteMemoForm);
 //        Long userId = principalDetails.getUserId();
         Long userId = 47L;
-        int number = deleteMemoForm.getNumber();
-        Brand brand = deleteMemoForm.getBrand();
-        SongMemoServiceResult result = songMemoService.deleteMemo(userId, number, brand);
+        Long inputUserId = deleteMemoForm.getUserId();
+
+        // 로그인 된 유저인지 확인
+//        if (!userId.equals(inputUserId)) {
+//            return ResponseEntity.badRequest().body("잘못된 요청입니다.");
+//        }
+
+        SongMemoServiceResult result = songMemoService.deleteMemo(userId, memoId);
 
         return ResponseEntity.ok(result.getMessage());
     }

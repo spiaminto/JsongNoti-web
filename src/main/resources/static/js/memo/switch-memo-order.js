@@ -8,7 +8,8 @@ $(function () {
             return; // 순서 변경중에 누르면 이 이벤트 무시
         }
         isOrderSwitching = true;
-        let brand = $(this).closest('.memo-container').find('h2 span').text().indexOf('TJ') >= 0 ? 'TJ' : 'KY';
+        let brand = $(this).closest('.song-table-container').find('h2 span').text().indexOf('TJ') >= 0 ? 'TJ' : 'KY';
+        console.log(brand)
         startSwitchOrder(brand, this);
     })
 
@@ -28,12 +29,12 @@ $(function () {
         // 빈 '첫번째 요소로 추가' 행 추가
         let $firstRow = $songTable.find("tbody tr:first-child");
         let $emptyFirstRow = $firstRow.clone();
-        $emptyFirstRow.find('.song-number span').text('').end().find('.song-title-text').text('첫번째 순서로 추가').end().find('.song-info span').text('첫번째 순서로 추가하려면 클릭합니다.').end().find('.song-singer').text('');
+        $emptyFirstRow.find('.song-number').data('memo-id', '').data('present-order', '').end().find('.song-number span').text('').end().find('.song-title-text').text('첫번째 순서로 추가').end().find('.song-info span').text('첫번째 순서로 추가하려면 클릭합니다.').end().find('.song-singer').text('');
         $firstRow.before($emptyFirstRow);
     }
 
 // 순서 변경 할 tr 클릭 이벤트 (첫번째 클릭)
-    $('.table-tj').on('click', '.song-row-will-switch', function () {
+    $('.memo-section .song-table').on('click', '.song-row-will-switch', function () {
         if ($(this).find('.song-number span').text() === '') {
             return;
         } // 첫클릭에서 첫번째 행은 무시함
@@ -42,7 +43,7 @@ $(function () {
     });
 
 // 순서 변경 당할 tr 클릭 이벤트 (두번째 클릭)
-    $('.table-tj').on('click', '.song-row-be-switched', function () {
+    $('.memo-section .song-table').on('click', '.song-row-be-switched', function () {
         $(this).addClass('song-row-be-switched-selected');
         let $willSwitchRow = $('.song-row-will-switch-selected');
         let $beSwitchedRow = $('.song-row-be-switched-selected');
@@ -62,7 +63,7 @@ $(function () {
 
 // 메모 순서변경 완료 버튼 클릭 이벤트 타겟 테이블을 h2 의 span 으로 찾음.
     $('.switch-order-complete-button').on('click', function (event) {
-        let brand = $(this).closest('.memo-container').find('h2 span').text().indexOf('TJ') >= 0 ? 'TJ' : 'KY';
+        let brand = $(this).closest('.song-table-container').find('h2 span').text().indexOf('TJ') >= 0 ? 'TJ' : 'KY';
         endSwitchOrder(brand, event.target);
         isOrderSwitching = false;
     })
@@ -72,19 +73,21 @@ $(function () {
         let targetSelector = brand === 'TJ' ? '.table-tj' : '.table-ky';
         let $songTable = $(targetSelector);
         let $songRows = $songTable.find('tbody tr');
-        let numbers = new Array();
+        let memoIds = new Array();
+        let userId = $('.memo-section-header').data('user-id');
         $.each($songRows, function (index, row) {
-            numbers.push($(row).find('.song-number span').text()); // 곡의 number 모음
+            memoIds.push($(row).find('.song-number').data('memo-id')); // 곡의 number 모음
         });
-        numbers = numbers.filter(Boolean) // 빈값 제거 (첫번째 행으로 추가 제거)
+        memoIds = memoIds.filter(Boolean) // 빈값 제거 (첫번째 행으로 추가 제거)
 
         $.ajax({
-            type: "PATCH",
+            type: "POST",
             async: false,
-            url: "/memos/switch-order",
+            url: "/memos/reorder",
             data: {
+                userId: userId,
                 brand: brand,
-                numbers: numbers,
+                memoIds: memoIds,
                 _csrf: $('#csrfToken').val()
             },
             success: function (data) {
