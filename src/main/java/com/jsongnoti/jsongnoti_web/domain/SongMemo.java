@@ -27,7 +27,7 @@ public class SongMemo {
     private String info;
     private int presentOrder; // 표시순서, start from 0
 
-    public void setPresentOrder(int presentOrder) {
+    public void updatePresentOrder(int presentOrder) {
         this.presentOrder = presentOrder;
     }
 

@@ -52,6 +52,7 @@
   <script src="/static/js/memo/memo-page-style-util.js" th:src="@{/js/memo/memo-page-style-util.js}"
           type="text/javascript"></script>
   <script src="/static/js/memo/save-memo.js" th:src="@{/js/memo/save-memo.js}" type="module"></script>
+  <script src="/static/js/memo/change-setting.js" th:src="@{/js/memo/change-setting.js}" type="module"></script>
   <script src="/static/js/memo/memo-util.js" th:src="@{/js/memo/memo-util.js}" type="module"></script>
   <script type="module">
       // import MemoUtil from '/static/js/memo/memo-util.js'; // 로컬
@@ -65,39 +66,7 @@
               $('#alertMessage').text('');
           }
 
-          function initializeMemoTable() {
-              let brand = $('#memoSettingForm').find('input[name=showMemoBrand]:checked').val();
-              switch (brand) {
-                  case 'ALL':
-                      MemoUtil.refreshMemoTable('TJ');
-                      MemoUtil.refreshMemoTable('KY');
-                      break;
-                  case 'TJ':
-                      MemoUtil.refreshMemoTable('TJ');
-                      $('.song-table-container').last().remove();
-                      break;
-                  case 'KY':
-                      MemoUtil.refreshMemoTable('KY');
-                      $('.song-table-container').first().remove();
-                      break;
-                  default: break;
-              }
-          }
-          initializeMemoTable();
-
-          $('#memoSettingForm').submit(function (event) {
-              event.preventDefault();
-              let formData = $(this).serialize();
-              let userId = $('.memo-section-header').data('user-id');
-              $.ajax({
-                  url: '/users/' + userId,
-                  type: 'PATCH',
-                  data: formData,
-                  success: function () {
-                      initializeMemoTable();
-                  }
-              })
-          })
+          MemoUtil.initializeMemoTable();
       })
   </script>
 </head>
@@ -112,8 +81,8 @@
         <a class="navbar-brand" href="/memo">노래방 일본곡 메모장</a>
       </h1>
       <div class="col-auto">
-        <button class="btn btn-outline-dark btn-sm setting-Button" id="settingButton" data-bs-toggle="modal"
-                data-bs-target="#settingModal">설정
+        <button class="btn btn-outline-dark btn-sm setting-Button" id="changeSettingButton" data-bs-toggle="modal"
+                data-bs-target="#changeSettingModal">설정
         </button>
       </div>
     </div>
@@ -154,7 +123,7 @@
   </div>
 
   <!-- 설정 모달 -->
-  <div class="modal fade" id="settingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  <div class="modal fade" id="changeSettingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
        aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -163,7 +132,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form class="forms-memo-setting forms" id="memoSettingForm">
+          <form class="forms-memo-setting forms" id="changeSettingForm">
             <div>표시 방식</div>
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" name="memoPresentType" id="memoPresentTypeByPresentOrder"
@@ -195,7 +164,10 @@
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" id="unsubscribeModalCloseButton" class="btn btn-outline-secondary"
+          <button type="submit" form="changeSettingForm" id="submitChangeSettingButton" class="btn btn-outline-primary">
+            변경
+          </button>
+          <button type="button" id="changeSettingModalCloseButton" class="ms-2 btn btn-outline-secondary"
                   data-bs-dismiss="modal">닫기
           </button>
         </div>
@@ -532,7 +504,8 @@
         <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
           <p id="footerText" class="text-muted small mb-4 mb-lg-0">&copy; JsongNoti by spiaminto. All Rights
             Reserved.</p>
-          <p id="footerTextCopyright" class="text-muted small mb-0">icons Designed by <a href="https://www.freepik.com/">Freepik</a></p>
+          <p id="footerTextCopyright" class="text-muted small mb-0">icons Designed by <a
+              href="https://www.freepik.com/">Freepik</a></p>
           <p id="footerTextGoogleAnalytics" class="text-muted small mb-4 mb-lg-0">이 사이트는 구글 애널리틱스를 사용중입니다
             <button type="button" class="btn btn-outline-secondary google-analytics-button" data-bs-toggle="modal"
                     data-bs-target="#googleAnalyticsModal">

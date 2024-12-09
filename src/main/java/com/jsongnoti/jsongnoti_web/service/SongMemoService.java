@@ -88,7 +88,7 @@ public class SongMemoService {
         int orderModifier = action.equals("save") ? 1 : -1;
         songMemoRepository.findByUserIdAndPresentOrderGreaterThanEqual(userId, presentOrder)
                 .forEach(memo -> {
-                    memo.setPresentOrder(memo.getPresentOrder() + orderModifier);
+                    memo.updatePresentOrder(memo.getPresentOrder() + orderModifier);
                 });
     }
 
@@ -114,7 +114,7 @@ public class SongMemoService {
         songMemos.forEach(memo -> {
             Integer order = memoIdOrderMap.get(memo.getId());
             if (order != null) {
-                memo.setPresentOrder(order);
+                memo.updatePresentOrder(order);
             }
         });
         return SongMemoServiceResult.success("순서가 변경되었습니다.");

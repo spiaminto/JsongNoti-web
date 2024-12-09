@@ -1,6 +1,33 @@
 class MemoUtil {
 
     // Table Utils ============================================================
+
+    initializeMemoTable() {
+        let brand = $('#changeSettingForm').find('input[name=showMemoBrand]:checked').val();
+        let $tjContainer = $('.song-table-container').first();
+        let $kyContainer = $('.song-table-container').last();
+        switch (brand) {
+            case 'ALL':
+                this.refreshMemoTable('TJ');
+                this.refreshMemoTable('KY');
+                $tjContainer.slideDown(500);
+                $kyContainer.slideDown(500);
+                break;
+            case 'TJ':
+                this.refreshMemoTable('TJ');
+                $tjContainer.slideDown(500);
+                $kyContainer.hide();
+                break;
+            case 'KY':
+                this.refreshMemoTable('KY');
+                $tjContainer.hide();
+                $kyContainer.slideDown(500);
+                break;
+            default:
+                break;
+        }
+    }
+
     /**
      * 메모테이블 갱신
      * @param brand 'TJ', 'KY'
