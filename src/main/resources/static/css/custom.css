@@ -607,6 +607,15 @@ footer.footer {
   color: #6c757d ;
 }
 
+#footerTextLinkWrapper a {
+  text-decoration: none;
+  color: #6c757d;
+}
+
+#footerTextLinkWrapper a:hover {
+  text-decoration: underline;
+}
+
 /* 모달 영역 ================================================================ */
 .modal-dialog {
   font-size: calc(0.9rem + 0.2vw);

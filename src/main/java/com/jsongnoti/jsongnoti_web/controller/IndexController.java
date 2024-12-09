@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
@@ -70,9 +69,12 @@ public class IndexController {
 
     @GetMapping("/privacy-policy")
     public String privacyPolicy() {
-        return "privacy-policy";
+        return "privacyPolicy";
     }
 
-
+    @GetMapping("/terms-of-service")
+    public String termsOfService() {
+        return "termsOfService";
+    }
 
 }
