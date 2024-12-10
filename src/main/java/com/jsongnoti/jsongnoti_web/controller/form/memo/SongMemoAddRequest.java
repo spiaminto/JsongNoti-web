@@ -1,13 +1,11 @@
 package com.jsongnoti.jsongnoti_web.controller.form.memo;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class MemoAddForm {
+public class SongMemoAddRequest {
 
     @NotNull
     private Long userId;

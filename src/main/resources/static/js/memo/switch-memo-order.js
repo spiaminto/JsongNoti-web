@@ -1,4 +1,5 @@
 import MemoUtil from "./memo-util.js";
+
 $(function () {
 
     // 순서 변경 버튼 클릭 이벤트
@@ -84,15 +85,19 @@ $(function () {
             type: "POST",
             async: false,
             url: "/memos/reorder",
-            data: {
+            contentType: "application/json",
+            headers: {
+                'X-CSRF-TOKEN': $('#csrfToken').val()
+            },
+            data: JSON.stringify({
                 userId: userId,
                 brand: brand,
                 memoIds: memoIds,
-                _csrf: $('#csrfToken').val()
-            },
+            }),
             success: function (data) {
-                console.log(data)
-                alert('순서가 변경되었습니다.');
+                // console.log(data)
+                let message = data.message;
+                alert(message);
             },
             error: function (xhr) {
                 console.log(xhr);

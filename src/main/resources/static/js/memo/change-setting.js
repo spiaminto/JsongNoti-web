@@ -10,11 +10,14 @@ $(function () {
         $.ajax({
             url: '/users/' + userId,
             type: 'PATCH',
-            data: {
-                memoPresentType: memoPresentType,
-                showMemoBrand: showMemoBrand,
-                _csrf: csrfToken
+            contentType: 'application/json',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
             },
+            data: JSON.stringify({
+                memoPresentType: memoPresentType,
+                showMemoBrand: showMemoBrand
+            }),
             success: function (data) {
                 console.log(data);
                 alert(data.message);

@@ -15,13 +15,16 @@ $(function () {
             type: "POST",
             url: "/memos",
             context: this,
-            data: {
+            contentType: "application/json",
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            data: JSON.stringify({
                 userId: userId,
                 songId: songId,
                 infoText: infoTextInputVal,
                 presentOrder: presentOrder,
-                _csrf: csrfToken
-            },
+            }),
             success: function (data) {
                 alert('메모가 저장되었습니다.');
                 let brand = $(this).attr('data-brand');

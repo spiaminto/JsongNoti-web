@@ -55,7 +55,8 @@ class MemoUtil {
      */
     getMemoTableData(brand) {
         let memoData;
-        let memoPresentType = $('#memoSettingForm input[name=memoPresentType]:checked').val();
+        let memoPresentType = $('#changeSettingForm input[name=memoPresentType]:checked').val();
+        console.log(memoPresentType)
         $.ajax({
             type: "GET",
             url: "/memos",
@@ -144,7 +145,7 @@ class MemoUtil {
             $(element).css('background-color', '')
         }, 250);
         setTimeout(function () {
-            $(element).css('transition' , '')
+            $(element).css('transition', '')
         }, 500);
     }
 

@@ -1,24 +1,17 @@
 package com.jsongnoti.jsongnoti_web.service;
 
-import com.jsongnoti.jsongnoti_web.domain.Brand;
 import com.jsongnoti.jsongnoti_web.domain.Song;
-import com.jsongnoti.jsongnoti_web.domain.SongKorean;
-import com.jsongnoti.jsongnoti_web.domain.SongSearchType;
-import com.jsongnoti.jsongnoti_web.repository.SongKoreanRepository;
+import com.jsongnoti.jsongnoti_web.domain.enums.Brand;
 import com.jsongnoti.jsongnoti_web.repository.SongRepository;
 import com.jsongnoti.jsongnoti_web.service.dto.LatestAndLastSongsDto;
-import com.jsongnoti.jsongnoti_web.service.dto.SongSearchCond;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service

@@ -1,18 +1,21 @@
 package com.jsongnoti.jsongnoti_web.controller;
 
-import com.jsongnoti.jsongnoti_web.controller.dto.*;
+import com.jsongnoti.jsongnoti_web.controller.dto.SubscriptionResponse;
 import com.jsongnoti.jsongnoti_web.controller.form.subscription.SubscriptionForm;
 import com.jsongnoti.jsongnoti_web.controller.form.subscription.UnsubscriptionForm;
 import com.jsongnoti.jsongnoti_web.controller.form.subscription.VerifySubscriptionForm;
 import com.jsongnoti.jsongnoti_web.controller.form.subscription.VerifyUnsubscriptionForm;
-import com.jsongnoti.jsongnoti_web.service.dto.SubscriptionServiceResult;
 import com.jsongnoti.jsongnoti_web.service.SubscriptionService;
+import com.jsongnoti.jsongnoti_web.service.result.SubscriptionServiceResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j

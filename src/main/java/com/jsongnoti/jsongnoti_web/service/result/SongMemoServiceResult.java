@@ -1,4 +1,4 @@
-package com.jsongnoti.jsongnoti_web.service.dto;
+package com.jsongnoti.jsongnoti_web.service.result;
 
 import com.jsongnoti.jsongnoti_web.domain.SongMemo;
 import lombok.AccessLevel;

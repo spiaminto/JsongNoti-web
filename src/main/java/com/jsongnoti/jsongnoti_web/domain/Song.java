@@ -1,5 +1,6 @@
 package com.jsongnoti.jsongnoti_web.domain;
 
+import com.jsongnoti.jsongnoti_web.domain.enums.Brand;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

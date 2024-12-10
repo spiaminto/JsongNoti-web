@@ -1,7 +1,6 @@
 package com.jsongnoti.jsongnoti_web.repository;
 
-import com.jsongnoti.jsongnoti_web.domain.Brand;
-import com.jsongnoti.jsongnoti_web.domain.Song;
+import com.jsongnoti.jsongnoti_web.domain.enums.Brand;
 
 public interface SongSearchResultDto {
     Long getId();

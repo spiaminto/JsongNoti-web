@@ -1,4 +1,4 @@
-package com.jsongnoti.jsongnoti_web.domain;
+package com.jsongnoti.jsongnoti_web.domain.enums;
 
 import lombok.Getter;
 

@@ -1,12 +1,12 @@
 package com.jsongnoti.jsongnoti_web.service;
 
-import com.jsongnoti.jsongnoti_web.domain.Brand;
 import com.jsongnoti.jsongnoti_web.domain.Song;
 import com.jsongnoti.jsongnoti_web.domain.SongMemo;
+import com.jsongnoti.jsongnoti_web.domain.enums.Brand;
 import com.jsongnoti.jsongnoti_web.repository.SongMemoRepository;
 import com.jsongnoti.jsongnoti_web.repository.SongRepository;
 import com.jsongnoti.jsongnoti_web.service.dto.MemoSearchCond;
-import com.jsongnoti.jsongnoti_web.service.dto.SongMemoServiceResult;
+import com.jsongnoti.jsongnoti_web.service.result.SongMemoServiceResult;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

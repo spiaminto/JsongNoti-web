@@ -1,6 +1,6 @@
 package com.jsongnoti.jsongnoti_web.service.dto;
 
-import com.jsongnoti.jsongnoti_web.domain.Brand;
+import com.jsongnoti.jsongnoti_web.domain.enums.Brand;
 import com.jsongnoti.jsongnoti_web.repository.SongSearchResultDto;
 import com.jsongnoti.jsongnoti_web.util.RegexPatterns;
 import lombok.AccessLevel;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Setter(AccessLevel.PROTECTED)
-public class SongSearchResult {
+public class SongSearchDto {
 
     private Long id;
     private Brand brand;
@@ -21,8 +21,8 @@ public class SongSearchResult {
     private String info;
     private String titleKorean;
 
-    public static SongSearchResult from(SongSearchResultDto dto) {
-        SongSearchResult result = new SongSearchResult();
+    public static SongSearchDto from(SongSearchResultDto dto) {
+        SongSearchDto result = new SongSearchDto();
         result.setId(dto.getId());
         result.setBrand(dto.getBrand());
         result.setNumber(dto.getNumber());

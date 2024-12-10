@@ -1,16 +1,25 @@
 import MemoUtil from "./memo-util.js";
 import memoUtil from "./memo-util.js";
+
 $(function () {
 
     // 서버에 노래 검색 요청
     $("#songSearchForm").submit(function (event) {
         event.preventDefault();
+        let brand = $('#songSearchForm input[name=brand]:checked').val();
+        let searchType = $('#songSearchForm input[name=searchType]:checked').val();
+        let keyword = $('#songSearchForm input[name=keyword]').val();
         $.ajax({
             type: "GET",
             url: "/songs",
-            data: $("#songSearchForm").serialize(),
+            data: {
+                brand: brand,
+                searchType: searchType,
+                keyword: keyword
+            },
             success: function (data) {
-                songSearchPostProcess(data);
+                let searchResults = data.songs;
+                songSearchPostProcess(searchResults);
             },
             error: function (xhr) {
                 console.log(xhr);

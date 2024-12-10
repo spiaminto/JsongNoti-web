@@ -1,4 +1,5 @@
 import MemoUtil from "./memo-util.js";
+
 $(function () {
 
 // 삭제하기 버튼 클릭 이벤트리스너
@@ -44,10 +45,13 @@ $(function () {
         $.ajax({
             type: "DELETE",
             url: "/memos/" + memoId,
-            data: {
-                userId: userId,
-                _csrf: csrfToken
+            contentType: "application/json",
+            headers:{
+                'X-CSRF-TOKEN': csrfToken
             },
+            data: JSON.stringify({
+                userId: userId,
+            }),
             success: function (data) {
                 $target.closest('tr').remove();
             },

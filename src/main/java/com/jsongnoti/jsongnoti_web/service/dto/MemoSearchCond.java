@@ -1,7 +1,7 @@
 package com.jsongnoti.jsongnoti_web.service.dto;
 
-import com.jsongnoti.jsongnoti_web.domain.Brand;
-import com.jsongnoti.jsongnoti_web.domain.MemoPresentType;
+import com.jsongnoti.jsongnoti_web.domain.enums.Brand;
+import com.jsongnoti.jsongnoti_web.domain.enums.MemoPresentType;
 import lombok.Data;
 
 @Data
