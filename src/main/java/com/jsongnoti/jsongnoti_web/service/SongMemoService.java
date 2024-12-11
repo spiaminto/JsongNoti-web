@@ -28,8 +28,15 @@ public class SongMemoService {
 
     public SongMemoServiceResult searchMemos(MemoSearchCond searchCond) {
         // presentType 처리 필요
-        List<SongMemo> songMemos = songMemoRepository.findByBrandOrderByPresentOrderAsc(searchCond.getBrand());
-        return SongMemoServiceResult.successWithMemos("조회 성공", songMemos);
+        List<SongMemo> searchResults = switch (searchCond.getPresentType()) {
+            case PRESENT_ORDER ->
+                    songMemoRepository.findByUserIdAndBrandOrderByPresentOrderAsc(searchCond.getUserId(), searchCond.getBrand());
+            case ARTIST ->
+                    songMemoRepository.findByUserIdAndBrandOrderBySingerAsc(searchCond.getUserId(), searchCond.getBrand());
+            default ->
+                throw new IllegalArgumentException("잘못된 타입 입니다. MemoSearchType =  " + searchCond.getPresentType());
+        };
+        return SongMemoServiceResult.successWithMemos("조회 성공", searchResults);
     }
 
     @Transactional

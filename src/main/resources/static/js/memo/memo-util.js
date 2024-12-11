@@ -56,12 +56,14 @@ class MemoUtil {
     getMemoTableData(brand) {
         let memoData;
         let memoPresentType = $('#changeSettingForm input[name=memoPresentType]:checked').val();
+        let userId = $('.memo-section-header').data('user-id');
         console.log(memoPresentType)
         $.ajax({
             type: "GET",
             url: "/memos",
             async: false, // 결과 반환을 위해 동기화
             data: {
+                userId: userId,
                 brand: brand,
                 memoPresentType: memoPresentType
             },

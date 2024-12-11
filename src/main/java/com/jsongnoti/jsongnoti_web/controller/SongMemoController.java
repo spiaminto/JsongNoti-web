@@ -10,11 +10,11 @@ import com.jsongnoti.jsongnoti_web.domain.enums.Brand;
 import com.jsongnoti.jsongnoti_web.service.SongMemoService;
 import com.jsongnoti.jsongnoti_web.service.dto.MemoSearchCond;
 import com.jsongnoti.jsongnoti_web.service.result.SongMemoServiceResult;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,26 +28,18 @@ public class SongMemoController {
     private final SongMemoService songMemoService;
 
     @GetMapping("/memos")
-    public ResponseEntity<SongMemoResponse> memos(@ModelAttribute SongMemoSearchRequest songMemoSearchRequest,
-                                                  BindingResult bindingResult) {
+    public ResponseEntity<SongMemoResponse> memos(@Valid @ModelAttribute SongMemoSearchRequest songMemoSearchRequest) {
         log.info("memoSearchForm: {}", songMemoSearchRequest);
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(null);
-        }
 
-        SongMemoServiceResult result = songMemoService.searchMemos(new MemoSearchCond(songMemoSearchRequest.getBrand(), songMemoSearchRequest.getMemoPresentType()));
+        SongMemoServiceResult result = songMemoService.searchMemos(new MemoSearchCond(songMemoSearchRequest.getUserId(), songMemoSearchRequest.getBrand(), songMemoSearchRequest.getMemoPresentType()));
         return ResponseEntity.ok().body(SongMemoResponse.builder()
                 .songMemos(result.getSongMemos()).message(result.getMessage()).build());
     }
 
     @PostMapping("/memos")
     public ResponseEntity<SongMemoResponse> addMemo(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                    @Validated @RequestBody SongMemoAddRequest songMemoAddRequest,
-                                                    BindingResult bindingResult) {
+                                                    @Validated @RequestBody SongMemoAddRequest songMemoAddRequest) {
         log.info("addMemo: {}", songMemoAddRequest);
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(SongMemoResponse.withMessage(bindingResult.getFieldError().getDefaultMessage()));
-        }
 
 //        if (!userId.equals(memoAddForm.getUserId())) {
 //            return ResponseEntity.badRequest().body(SongMemoResponse.withMessage("잘못된 요청입니다."));
@@ -69,7 +61,7 @@ public class SongMemoController {
 
     @PostMapping("/memos/reorder")
     public ResponseEntity<SongMemoResponse> reorder(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                    @RequestBody SongMemosReorderRequest songMemosReorderRequest) {
+                                                    @Validated @RequestBody SongMemosReorderRequest songMemosReorderRequest) {
 
         log.info("switchOrder: {}", songMemosReorderRequest);
 //        Long userId = principalDetails.getUserId();
@@ -92,7 +84,7 @@ public class SongMemoController {
     @DeleteMapping("/memos/{memoId}")
     public ResponseEntity<SongMemoResponse> deleteMemo(@PathVariable(name = "memoId") Long memoId,
                                              @AuthenticationPrincipal PrincipalDetails principalDetails,
-                                             @RequestBody SongMemoDeleteRequest songMemoDeleteRequest) {
+                                             @Validated @RequestBody SongMemoDeleteRequest songMemoDeleteRequest) {
         log.info("deleteMemo: {}", songMemoDeleteRequest);
 //        Long userId = principalDetails.getUserId();
         Long userId = 47L;

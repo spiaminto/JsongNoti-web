@@ -16,7 +16,7 @@ public class SongMemoAddRequest {
     @NotNull
     private int presentOrder;
 
-    @NotNull @Size(max = 50, message = "${Size.infoText}")
+    @Size(max = 50)
     private String infoText;
 
 }

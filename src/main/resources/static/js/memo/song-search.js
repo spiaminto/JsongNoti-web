@@ -23,6 +23,8 @@ $(function () {
             },
             error: function (xhr) {
                 console.log(xhr);
+                let message = xhr.responseJSON.message;
+                alert(message);
             }
         });
     });

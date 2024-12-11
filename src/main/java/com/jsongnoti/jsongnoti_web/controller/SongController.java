@@ -5,6 +5,7 @@ import com.jsongnoti.jsongnoti_web.controller.form.search.SongSearchRequest;
 import com.jsongnoti.jsongnoti_web.service.SongSearchService;
 import com.jsongnoti.jsongnoti_web.service.dto.SongSearchCond;
 import com.jsongnoti.jsongnoti_web.service.result.SongSearchResult;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class SongController {
     private final SongSearchService songSearchService;
 
     @GetMapping("/songs")
-    public ResponseEntity<SongSearchResponse> songs(@ModelAttribute SongSearchRequest songSearchRequest) {
+    public ResponseEntity<SongSearchResponse> songs(@Valid @ModelAttribute SongSearchRequest songSearchRequest) {
         log.info("songSearchForm: {}", songSearchRequest);
 
         // form 검증

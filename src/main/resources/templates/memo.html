@@ -386,8 +386,8 @@
           <p class="mb-2">추가 텍스트를 입력할 수 있습니다. 비워둘 경우 노래의 기본값으로 등록됩니다.</p>
         </div>
         <div class="input-group mb-3">
-            <textarea type="text" id="addInfoTextInput" class="form-control" placeholder="추가 텍스트"
-                      aria-label="추가텍스트" aria-describedby=""></textarea>
+            <textarea type="text" id="addInfoTextInput" class="form-control" placeholder="추가 텍스트 (최대 50자)"
+                      aria-label="추가텍스트" aria-describedby="" maxlength="50"></textarea>
           <button class="btn btn-outline-primary" type="submit" id="addSongButton">메모하기</button>
         </div>
       </div>
@@ -457,8 +457,8 @@
         <label class="form-check-label" for="searchTypeTitle">노래제목</label>
       </div>
       <div class="input-group mt-3">
-        <input type="text" name="keyword" id="searchSongInput" class="form-control" placeholder="노래 제목 또는 아티스트명"
-               aria-label="노래 제목 또는 아티스트명" aria-describedby="">
+        <input type="text" name="keyword" id="searchSongInput" class="form-control" placeholder="노래 제목 또는 아티스트명 (최소 2자)"
+               aria-label="노래 제목 또는 아티스트명" aria-describedby="" minlength="2" maxlength="20">
         <button class="btn btn-outline-primary" type="submit" id="searchSongButton">검색하기</button>
       </div>
     </form>

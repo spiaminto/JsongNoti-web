@@ -8,7 +8,6 @@ import com.jsongnoti.jsongnoti_web.service.result.UserServiceResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,12 +23,8 @@ public class UserController {
 
     @PatchMapping("/users/{userId}")
     public ResponseEntity<UserResponse> updateUser(@PathVariable(name = "userId") Long userId,
-                                                   @Validated @RequestBody UserUpdateRequest userUpdateRequest,
-                                                   BindingResult bindingResult) {
+                                                   @Validated @RequestBody UserUpdateRequest userUpdateRequest) {
         log.info("updateUser userUpdateForm: {}", userUpdateRequest);
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(UserResponse.withMessage(bindingResult.getFieldError().getDefaultMessage()));
-        }
 
         UserUpdateParam userUpdateParam = UserUpdateParam.builder()
                 .email(userUpdateRequest.getEmail())

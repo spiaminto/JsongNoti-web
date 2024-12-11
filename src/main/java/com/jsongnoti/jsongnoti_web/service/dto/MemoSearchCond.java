@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class MemoSearchCond {
+    private final Long userId;
     private final Brand brand;
     private final MemoPresentType presentType;
 }
