@@ -1,0 +1,49 @@
+.memo-button-wrapper {
+    position: absolute;
+    right: 0.5rem;
+}
+
+.song-search-section {
+    background-color: white;
+    border-radius: 20px;
+    padding: 1rem;
+}
+
+#songSearchForm .input-wrapper {
+    text-align: left;
+}
+
+#searchHintContainer {
+    text-align: left;
+}
+
+@media (min-width: 768px) {
+    #searchHintContainer {
+        text-align: center;
+    }
+
+    #songSearchForm .input-wrapper {
+        text-align: center;
+    }
+}
+
+#searchHintContainer p {
+    margin-bottom: 0.25rem;
+}
+
+#songSearchResultCollapse {
+    max-width: 768px;
+    margin: 0 auto;
+}
+
+#songSearchResultTable .song-title-text {
+    display: inline; /* 한글 타이틀 표시를 위해 인라인 */
+}
+
+.song-title-korean {
+    color: #777;
+}
+
+
+
+

@@ -1,5 +1,5 @@
-import MemoUtil from "./memo-util.js";
-import memoUtil from "./memo-util.js";
+import SongTableUtil from "../song-table-util.js";
+import CommonUtil from "../common-util.js";
 
 $(function () {
 
@@ -39,7 +39,7 @@ $(function () {
         $songSearchResultTableBody.empty();
 
         // 새로운 검색결과 테이블 생성 및 채우기
-        let songTable = MemoUtil.renderEmptySongTable(data);
+        let songTable = SongTableUtil.renderEmptySongTable(data);
 
         // 검색결과 후처리 - 한글타이틀 기입, 클릭시 폼입력 이벤트바인딩, data-id (songId) 추가
         $.each(data, function (index, song) {
@@ -78,7 +78,9 @@ $(function () {
         // 메모 테이블 정보로 현재 순서 텍스트 갱신
         let songMemo = brand === 'TJ' ? $('.table-tj') : $('.table-ky');
         let lastPresentOrder = songMemo.find('tr:last-child .song-number').attr('data-present-order');
+        lastPresentOrder = lastPresentOrder ? lastPresentOrder : -1; // 메모가 없을 경우 -1
         $('#currentPresentOrder').text(Number(lastPresentOrder) + 2); // 순서가 0부터 시작
+
 
         // 메모 추가폼으로 스크롤
         $('html, body').animate({
@@ -90,7 +92,7 @@ $(function () {
             }
             $('#addInfoTextInput').focus();
             // 입력폼 하이라이트
-            memoUtil.blinkElement($('.add-song-row'));
+            CommonUtil.blinkElement($('.add-song-row'));
         });
     }
 })

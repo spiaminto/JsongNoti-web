@@ -1,8 +1,18 @@
 /**/
+#song-container {
+    background-color: white;
+    border-radius: 20px;
+}
 
 .song-table-container {
-    padding-top: 2rem;
+    padding : 2rem 0 0;
 }
+@media (min-width: 992px) {
+    .song-table-container {
+        padding: 0 0.5rem;
+    }
+}
+
 
 .song-table-border {
     border: solid 1px #aaaaaa;

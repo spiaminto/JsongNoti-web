@@ -1,19 +1,18 @@
 
-
-
-.collapse-button-open {
-    transform: rotate(180deg);
+.memo-section {
+    /* #songContainer 에 padding 1rem, color white 있음 */
 }
 
-.collapse-button {
-    transition: 0.5s;
-    width: 1.6rem;
-    height: 1.6rem;
+/* 메모 등록 */
+.add-memo-section {
+    padding: 1rem;
+    background: white;
+    border-radius: 20px;
+}
+
+.memo-add-form-container {
     padding: 0;
-}
-
-.collapse-button i {
-    font-size: 1.2rem;
+    max-width: 768px;
 }
 
 #memoAddForm {
@@ -41,10 +40,7 @@
     display: none;
 }
 
-.song-title-korean {
-    color: #777;
-}
-
+/* 순서변경 및 삭제 */
 .song-row-switching {
     background: repeating-linear-gradient(-45deg, #fff, #fff 3px, #efefef 0, #efefef 6px);
     transition-duration: 0.5s;
@@ -93,32 +89,16 @@
     display: none;
 }
 
-.add-song-row {
-    transition-duration: 0.3s;
-    transition-property: background-color;
+
+.splitter {
+    margin: 2rem auto;
 }
 
-
-/**
-나중에 공통부로 뺄것
- */
-
+/* 필요한 경우 공통부로 뺄 것*/
 .btn-xsm {
-    padding: 0.35rem 0.6rem;
-    font-size: 0.75rem;
+    padding: calc(0.3rem + 0.1vw) calc(0.5rem + 0.1vw);
+    font-size: calc(0.7rem + 0.1vw);
     border-radius: 0.25rem;
 }
 
-#song-container {
-    padding: 0;
-}
 
-.blink {
-    animation: blinker 1s linear infinite;
-}
-
-@keyframes blinker {
-    50% {
-        background-color: #fff3cd;
-    }
-}

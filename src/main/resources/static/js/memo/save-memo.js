@@ -1,4 +1,5 @@
 import MemoUtil from "./memo-util.js";
+import CommonUtil from "../common-util.js";
 
 $(function () {
     $('#memoAddForm').submit(function (event) {
@@ -32,7 +33,7 @@ $(function () {
                 let targetSelector = brand === 'TJ' ? '.table-tj' : '.table-ky';
                 let $songTable = $(targetSelector);
                 // 저장된 메모 하이라이트
-                MemoUtil.blinkElement($songTable.find('.song-number[data-present-order=' + presentOrder + ']').closest('tr'));
+                CommonUtil.blinkElement($songTable.find('.song-number[data-present-order=' + presentOrder + ']').closest('tr'));
             },
             error: function (xhr) {
                 // console.log(xhr);

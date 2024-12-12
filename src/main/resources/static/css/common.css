@@ -1,0 +1,91 @@
+/* 삼각 화살표 컬랩스 */
+.arrow-collapse-button-open {
+    transform: rotate(180deg);
+}
+
+.arrow-collapse-button {
+    transition: 0.5s;
+    width: 1.6rem;
+    height: 1.6rem;
+    padding: 0;
+}
+
+.arrow-collapse-button i {
+    font-size: 1.2rem;
+}
+
+/* 모달 */
+.modal-dialog {
+    font-size: calc(0.9rem + 0.2vw);
+}
+
+@media (min-width: 1200px) {
+    .modal-dialog {
+        max-width: 600px;
+    }
+
+    .modal-dialog button {
+        font-size: calc(0.9rem + 0.2vw);
+    }
+}
+
+/* 아이콘 버튼 */
+.icon-button {
+    margin-left: 0.5rem;
+    position: relative;
+    background: no-repeat center center;
+    background-size: cover;
+    width: 40px;
+    height: 40px;
+}
+
+.icon-button-label {
+    position: absolute;
+    font-size: 0.8rem;
+    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -20%;
+}
+
+@media (min-width: 992px) {
+    .icon-button {
+        width: 45px;
+        height: 45px;
+    }
+
+    .icon-button-label {
+        font-size: 0.9rem;
+        bottom: -25%;
+    }
+}
+
+/* 공통 border-radius */
+footer {
+    border-radius: 20px;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.form-control {
+    border-radius: 10px;
+}
+
+.btn {
+    border-radius: 10px;
+}
+
+/* 크기제한 */
+.text-input {
+    max-width: 500px;
+}
+
+
+/* styles.css 초기화 */
+.navbar-brand {
+    margin-right: 0;
+}
+
+

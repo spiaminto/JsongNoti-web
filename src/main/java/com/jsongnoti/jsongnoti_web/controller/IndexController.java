@@ -1,5 +1,6 @@
 package com.jsongnoti.jsongnoti_web.controller;
 
+import com.jsongnoti.jsongnoti_web.auth.PrincipalDetails;
 import com.jsongnoti.jsongnoti_web.controller.dto.NewSongDto;
 import com.jsongnoti.jsongnoti_web.domain.User;
 import com.jsongnoti.jsongnoti_web.repository.SongMemoRepository;
@@ -9,10 +10,10 @@ import com.jsongnoti.jsongnoti_web.service.dto.LatestAndLastSongsDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDate;
@@ -74,14 +75,23 @@ public class IndexController {
         return "index";
     }
 
+    @GetMapping("/search")
+    public String search() {
+        return "search";
+    }
+
     @GetMapping("/login")
     public String login() {
         return "search";
     }
 
     @GetMapping("/memo")
-    public String memo(@RequestParam("userId") Long userId, Model model) {
-        //TODO 임시구현
+    public String memo(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                       Model model) {
+        if (principalDetails == null) {
+            return "redirect:/login";
+        }
+        Long userId = principalDetails.getUserId();
         User user = userService.findUserById(userId);
         model.addAttribute("userId", userId);
         model.addAttribute("username", user.getUsername());

@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>노래방 일본 신곡 알림이 메모장</title>
+  <title>메모장</title>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name=”title” content="노래방 일본 신곡 알림이 메모장"/>
@@ -21,12 +20,13 @@
   <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css" rel="stylesheet"/>
   <!-- Core theme CSS (includes Bootstrap)-->
   <link href="/static/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
+  <link href="/static/css/common.css" th:href="@{/css/common.css}" rel="stylesheet"/>
   <link href="/static/css/containers.css" th:href="@{/css/containers.css}" rel="stylesheet"/>
-  <link href="/static/css/header-text-size.css" th:href="@{/css/header-text-size.css}" rel="stylesheet"/>
-  <link href="/static/css/song-table.css" th:href="@{/css/song-table.css}" rel="stylesheet"/>
-  <link href="/static/css/modal.css" th:href="@{/css/modal.css}" rel="stylesheet"/>
+  <link href="/static/css/header-text.css" th:href="@{/css/header-text.css}" rel="stylesheet"/>
   <link href="/static/css/footer.css" th:href="@{/css/footer.css}" rel="stylesheet"/>
-  <link href="/static/css/memo.css" th:href="@{/css/memo.css}" rel="stylesheet"/>
+  <link href="/static/css/song-table.css" th:href="@{/css/song-table.css}" rel="stylesheet"/>
+  <link href="/static/css/song-search.css" th:href="@{/css/song-search.css}" rel="stylesheet"/>
+  <link href="/static/css/page/memo.css" th:href="@{/css/page/memo.css}" rel="stylesheet"/>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-JFWLSXBEYR"></script>
   <script>
@@ -49,12 +49,19 @@
   <script src="/static/js/memo/fade-in.js" th:src="@{/js/memo/fade-in.js}" type="text/javascript"></script>
   <script src="/static/js/memo/switch-memo-order.js" th:src="@{/js/memo/switch-memo-order.js}" type="module"></script>
   <script src="/static/js/memo/delete-memo.js" th:src="@{/js/memo/delete-memo.js}" type="module"></script>
-  <script src="/static/js/memo/memo-page-style-util.js" th:src="@{/js/memo/memo-page-style-util.js}"
-          type="text/javascript"></script>
   <script src="/static/js/memo/save-memo.js" th:src="@{/js/memo/save-memo.js}" type="module"></script>
   <script src="/static/js/memo/change-setting.js" th:src="@{/js/memo/change-setting.js}" type="module"></script>
   <script src="/static/js/memo/memo-util.js" th:src="@{/js/memo/memo-util.js}" type="module"></script>
+  <script src="/static/js/song-table-util.js" th:src="@{/js/song-table-util.js}" type="module"></script>
+  <script src="/static/js/common-util.js" th:src="@{/js/common-util.js}" type="module"></script>
   <script type="module">
+
+      //init
+      let isLoggedIn = localStorage.getItem('isLoggedIn'); // null or 'true'
+      if (!isLoggedIn) {
+          localStorage.setItem('isLoggedIn', 'true');
+      }
+
       // import MemoUtil from '/static/js/memo/memo-util.js'; // 로컬
       import MemoUtil from '/js/memo/memo-util.js';
 
@@ -67,6 +74,11 @@
           }
 
           MemoUtil.initializeMemoTable();
+
+          // 화살표 컬랩스 버튼 이벤트리스너
+          $('.arrow-collapse-button').on('click', function () {
+              $(this).toggleClass('arrow-collapse-button-open');
+          })
       })
   </script>
 </head>
@@ -75,17 +87,29 @@
 
 <div id="container">
   <!-- Navigation-->
-  <nav class="navbar navbar-light bg-light static-top">
-    <div class="container">
-      <h1>
-        <a class="navbar-brand" href="/memo">노래방 일본곡 메모장</a>
-      </h1>
-      <div class="col-auto">
-        <button class="btn btn-outline-dark btn-sm setting-Button" id="changeSettingButton" data-bs-toggle="modal"
-                data-bs-target="#changeSettingModal">설정
-        </button>
-      </div>
+  <nav class="navbar static-top">
+    <h1>
+      <a class="navbar-brand" href="/">
+        제이노티
+      </a>
+      <a class="ms-1 navbar-brand" href="/memo">
+        메모장
+      </a>
+      <img src="/static/assets/icon/memo_256.png" th:src="@{'/assets/icon/memo_256.png'}" alt="메모아이콘" width="35px">
+    </h1>
+    <div class="change-setting-button-wrapper">
+      <button id="changeSettingButton" class="change-setting-button icon-button btn"
+              data-bs-toggle="modal" data-bs-target="#changeSettingModal"
+              style="background-image: url('/static/assets/icon/setting_512.png')"
+              th:style="'background-image: url(/assets/icon/setting_512.png)'">
+        <span class="icon-button-label"><b>설정</b></span>
+      </button>
     </div>
+<!--    <div class="col-auto">-->
+<!--      <button class="btn btn-outline-dark btn-sm setting-Button" id="changeSettingButton" data-bs-toggle="modal"-->
+<!--              data-bs-target="#changeSettingModal">설정-->
+<!--      </button>-->
+<!--    </div>-->
   </nav>
 
   <!--빈 테이블-->
@@ -133,7 +157,7 @@
         </div>
         <div class="modal-body">
           <form class="forms-memo-setting forms" id="changeSettingForm">
-            <div>표시 방식</div>
+            <div class="mb-2"><mark>표시 방식</mark></div>
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" name="memoPresentType" id="memoPresentTypeByPresentOrder"
                      value="PRESENT_ORDER" th:checked="${memoPresentType.name().equals('PRESENT_ORDER')}">
@@ -145,10 +169,10 @@
               <label class="form-check-label" for="memoPresentTypeByArtist">아티스트별</label>
             </div>
             <hr>
-            <div>표시할 메모</div>
+            <div class="mb-2"><mark>표시할 메모</mark></div>
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" name="showMemoBrand" id="showMemoBrandAll"
-                     value="ALL" th:checked="${showMemoBrand.name().equals('ALL')}">
+                     value="ALL" th:checked="${showMemoBrand.name().equals('ALL')}" disabled>
               <label class="form-check-label" for="showMemoBrandAll">모두</label>
             </div>
             <div class="form-check form-check-inline">
@@ -158,8 +182,8 @@
             </div>
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" name="showMemoBrand" id="showMemoBrandKy"
-                     value="KY" th:checked="${showMemoBrand.name().equals('KY')}">
-              <label class="form-check-label" for="showMemoBrandKy">금영</label>
+                     value="KY" th:checked="${showMemoBrand.name().equals('KY')}" disabled>
+              <label class="form-check-label" for="showMemoBrandKy" >금영</label>
             </div>
           </form>
         </div>
@@ -176,7 +200,7 @@
   </div>
 
   <!-- 메모 테이블 -->
-  <section class="memo-section bg-light text-center">
+  <section class="memo-section text-center">
     <div id="song-container" class="container">
       <div class="memo-section-header" th:data-user-id="${userId}" }>
         <p th:text="${username + '님 의 메모된 곡 목록입니다.'}"> 메모된 곡 목록입니다. </p>
@@ -324,10 +348,10 @@
 
   <div class="splitter"></div>
 
-  <section class="add-memo-section bg-light text-center">
+  <section class="add-memo-section text-center">
     <h2>
       <span>메모하기</span>
-      <button id="addInfoTextCollapseButton" class="btn btn-outline-secondary collapse-button rounded-circle"
+      <button id="addInfoTextCollapseButton" class="btn btn-outline-secondary arrow-collapse-button rounded-circle"
               type="button" data-bs-toggle="collapse"
               data-bs-target="#addInfoTextCollapse" aria-expanded="false" aria-controls="addTextCollapse">
         <i class="bi bi-caret-down-fill"></i>
@@ -335,63 +359,67 @@
     </h2>
 
     <!--메모 추가 폼 -->
-    <form id="memoAddForm">
-      <input type="hidden" id="csrfToken" name="_csrf" th:value="${_csrf.token}"/>
-      <div class="song-table-border">
-        <table class="table song-table">
-          <thead>
-          <tr>
-            <th>번호</th>
-            <th>제목</th>
-            <th>아티스트</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr class="add-song-row">
-            <td class="song-number">
-              <span>00000</span>
-            </td>
-            <td class="song-title">
-              <div>
+    <div class="row justify-content-center">
+      <div class="col memo-add-form-container">
+        <form id="memoAddForm">
+          <input type="hidden" id="csrfToken" name="_csrf" th:value="${_csrf.token}"/>
+          <div class="song-table-border">
+            <table class="table song-table">
+              <thead>
+              <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>아티스트</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr class="add-song-row">
+                <td class="song-number">
+                  <span>00000</span>
+                </td>
+                <td class="song-title">
+                  <div>
                     <span class="song-title-text">
                       노래를 검색해주세요
                     </span>
-              </div>
-              <div class="song-info">
-                <span>추가텍스트: </span>
-                <span class="ms-1">여기에 추가텍스트가 표시됩니다.</span>
-              </div>
-            </td>
-            <td class="song-singer">
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
+                  </div>
+                  <div class="song-info">
+                    <span>추가텍스트: </span>
+                    <span class="ms-1">여기에 추가텍스트가 표시됩니다.</span>
+                  </div>
+                </td>
+                <td class="song-singer">
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
 
-      <!-- 노래 추가 폼 - 추가 텍스트 부분 -->
-      <div class="collapse mt-3" id="addInfoTextCollapse">
-        <div class="row align-items-center justify-content-center mb-2">
-          <div class="col-auto">
-            <span>현재 저장 순서:&nbsp;</span><span id="currentPresentOrder">00</span>
-          </div>
-          <div class="col-auto">
-            <button type="button" id="presentOrderModalButton" class="btn btn-outline-success btn-sm"
-                    data-bs-toggle="modal"
-                    data-bs-target="#presentOrderModal">저장 순서 변경
-            </button>
-          </div>
-        </div>
-        <div>
-          <p class="mb-2">추가 텍스트를 입력할 수 있습니다. 비워둘 경우 노래의 기본값으로 등록됩니다.</p>
-        </div>
-        <div class="input-group mb-3">
+          <!-- 노래 추가 폼 - 추가 텍스트 부분 -->
+          <div class="collapse mt-3" id="addInfoTextCollapse">
+            <div class="row align-items-center justify-content-center mb-2">
+              <div class="col-auto">
+                <span>현재 저장 순서:&nbsp;</span><span id="currentPresentOrder">00</span>
+              </div>
+              <div class="col-auto">
+                <button type="button" id="presentOrderModalButton" class="btn btn-outline-success btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#presentOrderModal">저장 순서 변경
+                </button>
+              </div>
+            </div>
+            <div>
+              <p class="mb-2">추가 텍스트를 입력할 수 있습니다. 비워둘 경우 노래의 기본값으로 등록됩니다.</p>
+            </div>
+            <div class="input-group mb-3">
             <textarea type="text" id="addInfoTextInput" class="form-control" placeholder="추가 텍스트 (최대 50자)"
                       aria-label="추가텍스트" aria-describedby="" maxlength="50"></textarea>
-          <button class="btn btn-outline-primary" type="submit" id="addSongButton">메모하기</button>
-        </div>
+              <button class="btn btn-outline-primary" type="submit" id="addSongButton">메모하기</button>
+            </div>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
 
     <!-- 저장 순서 모달 -->
     <div class="modal fade" id="presentOrderModal" tabindex="-1" aria-labelledby="presentOrderModal"
@@ -430,34 +458,37 @@
       </div>
     </div>
 
-    <div id="searchHintContainer" class="mt-4 text-start">
+    <div id="searchHintContainer" class="mt-3">
       <p> 원어와 한국어로 모두 검색할 수 있습니다.</p>
-      <p> 한글 검색결과는 정확하지 않을 수 있으며 모든 결과를 포함하지 않을 수 있습니다.</p>
-      <p> 검색어는 띄어쓰기를 구분하며, 자세하게 입력할수록 결과가 정확해집니다.</p>
-      <p> 예시 (정확도 순) Official髭男dism, 오피셜 히게 단디즘, 히게단</p>
+      <p> 한글 검색결과는 정확하지 않을 수 있으며 <b>모든 결과를 포함하지 않을 수 있습니다.</b></p>
+      <p> 검색어는 <b>띄어쓰기를 구분하며</b>, 자세하게 입력할수록 결과가 정확해집니다.</p>
+      <p> <em class="text-muted">예시 (정확도 순) : Official髭男dism, 오피셜 히게 단디즘, 히게단</em></p>
     </div>
 
     <!--노래 검색 폼-->
-    <form id="songSearchForm" class="my-4">
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="brand" id="searchBrandTj" value="TJ" checked>
-        <label class="form-check-label" for="searchBrandTj">TJ</label>
+    <form id="songSearchForm" class="my-3">
+      <div class="brand-check-wrapper input-wrapper mb-2">
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="brand" id="searchBrandTj" value="TJ" checked>
+          <label class="form-check-label" for="searchBrandTj">TJ</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="brand" id="searchBrandKy" value="KY" disabled>
+          <label class="form-check-label" for="searchBrandKy">금영</label>
+        </div>
       </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="brand" id="searchBrandKy" value="KY">
-        <label class="form-check-label" for="searchBrandKy">금영</label>
+      <div class="search-type-check-wrapper input-wrapper mb-2">
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="searchType" id="searchTypeArtist" value="SINGER" checked>
+          <label class="form-check-label" for="searchTypeArtist">아티스트명</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="searchType" id="searchTypeTitle" value="TITLE">
+          <label class="form-check-label" for="searchTypeTitle">노래제목</label>
+        </div>
       </div>
-      <span class="ms-5 me-5">|</span>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="searchType" id="searchTypeArtist" value="SINGER" checked>
-        <label class="form-check-label" for="searchTypeArtist">아티스트명</label>
-      </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="searchType" id="searchTypeTitle" value="TITLE">
-        <label class="form-check-label" for="searchTypeTitle">노래제목</label>
-      </div>
-      <div class="input-group mt-3">
-        <input type="text" name="keyword" id="searchSongInput" class="form-control" placeholder="노래 제목 또는 아티스트명 (최소 2자)"
+      <div class="input-group justify-content-center">
+        <input type="text" name="keyword" id="searchSongInput" class="form-control text-input" placeholder="노래 제목 또는 아티스트명 (최소 2자)"
                aria-label="노래 제목 또는 아티스트명" aria-describedby="" minlength="2" maxlength="20">
         <button class="btn btn-outline-primary" type="submit" id="searchSongButton">검색하기</button>
       </div>
@@ -466,7 +497,7 @@
     <!--노래 검색 결과-->
     <h3>
       <span>검색결과</span>
-      <button class="btn btn-outline-secondary rounded-circle collapse-button" id="songSearchResultCollapseButton"
+      <button class="btn btn-outline-secondary rounded-circle arrow-collapse-button" id="songSearchResultCollapseButton"
               type="button"
               data-bs-toggle="collapse"
               data-bs-target="#songSearchResultCollapse" aria-expanded="false" aria-controls="collapseExample">
@@ -502,15 +533,12 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
-          <p id="footerText" class="text-muted small mb-4 mb-lg-0">&copy; JsongNoti by spiaminto. All Rights
+          <p id="footerText" class="text-muted small mb-4 mb-lg-0">&copy; 제이노티 by JsongNoti. All Rights
             Reserved.</p>
-          <p id="footerTextCopyright" class="text-muted small mb-0">icons Designed by <a
-              href="https://www.freepik.com/">Freepik</a></p>
-          <p id="footerTextGoogleAnalytics" class="text-muted small mb-4 mb-lg-0">이 사이트는 구글 애널리틱스를 사용중입니다
-            <button type="button" class="btn btn-outline-secondary google-analytics-button" data-bs-toggle="modal"
-                    data-bs-target="#googleAnalyticsModal">
-              [ 자세히 ]
-            </button>
+          <p id="footerTextCopyright" class="small mb-0">icons Designed by
+            <a class="text-muted text-decoration-none" href="https://www.freepik.com/">Freepik</a>
+          </p>
+          <p id="footerTextPrivacyPolicy" class="small mb-4 mb-lg-0"><a class="text-muted text-decoration-none" href="/privacy-policy"><b>개인정보처리방침</b></a>
           </p>
         </div>
         <div class="col-lg-6 h-100 text-center text-lg-end my-auto">
@@ -535,32 +563,6 @@
       </div>
     </div>
   </footer>
-
-  <!-- agreement Modal -->
-  <div class="modal fade" id="googleAnalyticsModal" tabindex="-1" aria-labelledby="googleAnalyticsModal"
-       aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title" id="googleAnalyticsModalHeaderText">구글 애널리틱스</h4>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="modal-body-content">
-            <p><h4>구글 애널리틱스 개인정보 처리 방침</h4> <br>
-            노래방 일본 신곡 알림이는 보다 나은 서비스의 제공을 위하여 구글(Google)에서 제공하는 웹로그 분석 도구인 구글 애널리틱스를 이용하고 있습니다. <br>
-            구글 애널리틱스는 쿠키(Cookie)를 통하여 현재 웹사이트 이용자의 행태정보를 수집하게 되며, 이 경우 이용자 개인을 식별할 수 없는 비식별정보 만이 수집됩니다. <br>
-            그럼에도 이용자는 Google 애널리틱스 차단 브라우저 부가기능의 설치(https://tools.google.com/dlpage/gaoptout) 또는 웹브라우저의 쿠키 설정 거부를 통해 구글
-            애널리틱스 이용을 거부할 수 있습니다.
-            </p>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">확인</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
 </div> <!-- #container -->
 <!-- Bootstrap core JS-->

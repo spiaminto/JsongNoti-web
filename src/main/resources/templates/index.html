@@ -19,12 +19,12 @@
   <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css" rel="stylesheet"/>
   <!-- Core theme CSS (includes Bootstrap)-->
   <link href="/static/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
+  <link href="/static/css/common.css" th:href="@{/css/common.css}" rel="stylesheet"/>
   <link href="/static/css/containers.css" th:href="@{/css/containers.css}" rel="stylesheet"/>
-  <link href="/static/css/header-text-size.css" th:href="@{/css/header-text-size.css}" rel="stylesheet"/>
+  <link href="/static/css/header-text.css" th:href="@{/css/header-text.css}" rel="stylesheet"/>
   <link href="/static/css/song-table.css" th:href="@{/css/song-table.css}" rel="stylesheet"/>
-  <link href="/static/css/modal.css" th:href="@{/css/modal.css}" rel="stylesheet"/>
   <link href="/static/css/footer.css" th:href="@{/css/footer.css}" rel="stylesheet"/>
-  <link href="/static/css/custom.css" th:href="@{/css/custom.css}" rel="stylesheet"/>
+  <link href="/static/css/page/index.css" th:href="@{/css/page/index.css}" rel="stylesheet"/>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-JFWLSXBEYR"></script>
   <script>
@@ -87,6 +87,18 @@
                   scrollTop: $('.showcase').offset().top - 16 // 2rem 여유
               }, 500);
           });
+
+// 메모 버튼 클릭
+          $('#memoButton').click(function () {
+              let isLoggedIn = localStorage.getItem("isLoggedIn"); // null or 'true'
+              if (!isLoggedIn) {
+                  if (!confirm("메모 기능 사용을 위해 구글 로그인이 필요합니다. \n " +
+                      "확인 버튼을 누르면 구글 로그인을 진행합니다.")) {
+                      return;
+                  }
+              }
+              location.href = '/oauth2/authorization/google';
+          })
 
 // 구독하기 폼 전송
           let subscriptionId = 0;
@@ -235,20 +247,37 @@
 <div id="alertMessage" th:text="${alertMessage}" style="width: 0; height: 0; display: none"></div>
 <div id="container">
   <!-- Navigation-->
-  <nav class="navbar navbar-light bg-light static-top">
-    <div class="container">
-      <h1><a class="navbar-brand" href="/">노래방 일본 신곡 알림이</a></h1>
-      <div class="col-auto">
-        <button id="goToUsageButtonNav" class="btn btn-outline-dark btn-lg usage-Button"> 사용 방법</button>
-      </div>
-      <div class="col-auto">
-        <button id="loginButton" onclick="location.href = '/login'" class="btn btn-outline-dark btn usage-Button">로그인</button>
-      </div>
+  <nav class="navbar navbar-light static-top">
+    <h1>
+      <a class="navbar-brand" href="/">
+        제이노티
+      </a>
+      <a class="ms-1 navbar-brand" href="/">
+        신곡알림
+      </a>
+      <img src="/static/assets/icon/mike_512.png" th:src="@{'/assets/icon/mike_512.png'}" alt="로고아이콘" width="35px">
+    </h1>
+    <div class="col">
+      <button id="goToUsageButtonNav" class="btn btn-outline-dark btn-lg usage-Button"> 사용 방법</button>
+    </div>
+    <div class="">
+      <button id="searchButton" onclick="location.href = '/search'" class="memo-button icon-button btn"
+              style="background-image: url('/static/assets/icon/search_512.png')"
+              th:style="'background-image: url(/assets/icon/search_512.png)'">
+        <span class="icon-button-label"><b>검색</b></span>
+      </button>
+    </div>
+    <div class="">
+      <button id="memoButton" class="memo-button icon-button btn "
+              style="background-image: url('/static/assets/icon/memo_256.png')"
+              th:style="'background-image: url(/assets/icon/memo_256.png)'">
+        <span class="icon-button-label"><b>메모</b></span>
+      </button>
     </div>
   </nav>
   <!-- Masthead-->
   <header class="masthead">
-<!--    <button class="btn btn-primary" onclick="document.getElementById('verifyEmailCollapseButton').click()">test</button>-->
+    <!--    <button class="btn btn-primary" onclick="document.getElementById('verifyEmailCollapseButton').click()">test</button>-->
     <div class="masthead-background" style="background-image: url('/static/assets/img/karaoke.jpg')"
          th:style="'background-image:url(/assets/img/karaoke.jpg)'">
       <div class="container position-relative masthead-content-wrapper">
@@ -347,10 +376,13 @@
   </div>
 
   <!-- 신곡 일람 표 -->
-  <section class="new-song-section bg-light text-center">
+  <section class="new-song-section text-center">
     <div id="song-container" class="container text-center">
       <div class="new-song-section-header">
-        <p> 최근 신곡 목록입니다. 노래 제목을 클릭하시면 구글 검색으로 이동합니다.</p>
+        <p>
+          최근 신곡 목록입니다. <br>
+          노래 제목을 클릭하시면 구글 검색으로 이동합니다.
+        </p>
       </div>
       <div class="row">
         <!-- 태진 -->
@@ -535,7 +567,7 @@
             노래방 일본 신곡 알림이 구독하기 동영상
           </video>
         </div>
-        <div class="col-lg-6 order-lg-1 my-auto showcase-text">
+        <div class="col-lg-6 order-lg-1 showcase-text">
           <h3>구독하기</h3>
           <p class="lead mb-3">
             이메일을 입력한 후 구독하기 버튼을 누릅니다. <br>
@@ -555,7 +587,7 @@
             노래방 일본 신곡 알림이 이메일 수신 동영상
           </video>
         </div>
-        <div class="col-lg-6 my-auto showcase-text">
+        <div class="col-lg-6 showcase-text">
           <h3>이메일 수신</h3>
           <p class="lead mb-3">
             노래방에 일본 신곡이 추가되면 오전 10시에 등록된 이메일로 알려드립니다.<br>
@@ -569,12 +601,13 @@
       <div class="row g-0 fade-in-element">
         <div class="showcase-img-wrapper">
           <video autoplay muted loop playsinline>
-            <source src="/static/assets/mov/unsubscribe.webm" th:src="@{/assets/mov/unsubscribe.webm}" type="video/webm">
+            <source src="/static/assets/mov/unsubscribe.webm" th:src="@{/assets/mov/unsubscribe.webm}"
+                    type="video/webm">
             <source src="/static/assets/mov/unsubscribe.mp4" th:src="@{/assets/mov/unsubscribe.mp4}" type="video/mp4">
             노래방 일본 신곡 알림이 구독취소 동영상
           </video>
         </div>
-        <div class="col-lg-6 order-lg-1 my-auto showcase-text">
+        <div class="col-lg-6 order-lg-1 showcase-text">
           <h3>구독 취소</h3>
           <p class="lead mb-0">
             구독 취소는 홈페이지 맨 아래의 구독취소 버튼을 눌러 할 수 있습니다.<br>
@@ -588,7 +621,7 @@
                style="background-image: url('/static/assets/img/bg-showcase-3.jpg')"
                th:style="'background-image: url(/assets/img/bg-showcase-3.jpg)'"></div>
         </div>
-        <div class="col-lg-6 order-lg-1 my-auto showcase-text">
+        <div class="col-lg-6 order-lg-1 showcase-text">
           <h3>문의사항</h3>
           <p class="lead mb-0">
             문의사항은 jsongnoti+cs@gmail.com 으로 문의 부탁드립니다. <br>
@@ -620,11 +653,14 @@
             <!-- Email address input-->
             <div class="row">
               <div class="col">
-                <input class="form-control forms-email-input" id="unsubscribeEmailInput" type="email" placeholder="이메일 입력"
+                <input class="form-control forms-email-input" id="unsubscribeEmailInput" type="email"
+                       placeholder="이메일 입력"
                        required/>
               </div>
               <div class="col-auto">
-                <button class="btn btn-outline-danger btn forms-submit-button" id="unsubscribeButton" type="submit">구독취소</button>
+                <button class="btn btn-outline-danger btn forms-submit-button" id="unsubscribeButton" type="submit">
+                  구독취소
+                </button>
                 <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
               </div>
             </div>
@@ -666,10 +702,13 @@
                   data-bs-target="#unsubscribeModal">
             구독 취소
           </button>
-          <p id="footerText" class="text-muted small mb-4 mb-lg-0">&copy; JsongNoti by spiaminto. All Rights
+          <p id="footerText" class="text-muted small mb-4 mb-lg-0">&copy; 제이노티 by JsongNoti. All Rights
             Reserved.</p>
-          <p id="footerTextCopyright" class="text-muted small mb-0">icons Designed by <a href="https://www.freepik.com/">Freepik</a></p>
-          <p id="footerTextPrivacyPolicy" class="text-muted small mb-4 mb-lg-0"><a href="/privacy-policy">개인정보처리방침</a></p>
+          <p id="footerTextCopyright" class="small mb-0">icons Designed by
+            <a class="text-muted text-decoration-none" href="https://www.freepik.com/">Freepik</a>
+          </p>
+          <p id="footerTextPrivacyPolicy" class="small mb-4 mb-lg-0"><a class="text-muted text-decoration-none" href="/privacy-policy"><b>개인정보처리방침</b></a>
+          </p>
         </div>
         <div class="col-lg-6 h-100 text-center text-lg-end my-auto">
           <ul class="list-inline mb-0">
@@ -693,32 +732,6 @@
       </div>
     </div>
   </footer>
-
-  <!-- agreement Modal -->
-  <div class="modal fade" id="googleAnalyticsModal" tabindex="-1" aria-labelledby="googleAnalyticsModal"
-       aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title" id="googleAnalyticsModalHeaderText">구글 애널리틱스</h4>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="modal-body-content">
-            <p><h4>구글 애널리틱스 개인정보 처리 방침</h4> <br>
-            노래방 일본 신곡 알림이는 보다 나은 서비스의 제공을 위하여 구글(Google)에서 제공하는 웹로그 분석 도구인 구글 애널리틱스를 이용하고 있습니다. <br>
-            구글 애널리틱스는 쿠키(Cookie)를 통하여 현재 웹사이트 이용자의 행태정보를 수집하게 되며, 이 경우 이용자 개인을 식별할 수 없는 비식별정보 만이 수집됩니다. <br>
-            그럼에도 이용자는 Google 애널리틱스 차단 브라우저 부가기능의 설치(https://tools.google.com/dlpage/gaoptout) 또는 웹브라우저의 쿠키 설정 거부를 통해 구글
-            애널리틱스 이용을 거부할 수 있습니다.
-            </p>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">확인</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
 </div> <!-- #container -->
 <!-- Bootstrap core JS-->

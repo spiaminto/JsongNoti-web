@@ -1,14 +1,19 @@
-/* 바디, 컨테이너, 섹션 ====================================================== */
+/* 바디, 컨테이너, section, nav, header ====================================================== */
 
 body {
     font-family: 'NanumSquareRound', sans-serif;
-    background-color: #f8f9fa;
+    background-color: whitesmoke;
+    /*background-color: #f8f9fa;*/
 
     min-width: 360px;
 }
 
 section {
     margin-top: 1.5rem;
+}
+
+section:first-of-type {
+    margin-top: 0;
 }
 
 @media (min-width: 992px) {
@@ -34,3 +39,12 @@ section {
         padding: 0 calc(1rem + 10vw); /* 양옆 10% 씩 패딩 */
     }
 }
+
+#container nav {
+    padding: 0.7rem 0;
+}
+
+#song-container {
+    padding: 1rem;
+}
+

@@ -1,0 +1,335 @@
+@charset "UTF-8";
+
+/*
+  media
+  최소치 360px
+  @media (min-width: 576px)
+  @media (min-width: 768px)
+  @media (min-width: 992px)
+  // 여기서 부터 레이아웃 가로로 확장
+  @media (min-width: 1200px)
+*/
+
+
+/* 네비바 영역 ============================================================== */
+
+.navbar {
+    padding-bottom: 4px; /* 원본 8px */
+}
+
+@media (min-width: 992px) {
+    .navbar {
+        padding: 0.7rem;
+    }
+}
+
+#goToUsageButtonNav {
+    font-size: calc(1.05rem + 0.3vw);
+    font-weight: bold;
+    border-radius: 20px;
+    padding: 0.75rem 1rem;
+    border-style: none;
+    transition: all 0.3s ease;
+    display: none;
+}
+
+@media (min-width: 992px) {
+    #goToUsageButtonNav {
+        /*padding: 12px 24px;*/
+        display: block;
+    }
+}
+
+h1 .navbar-brand {
+    font-weight: bold;
+    text-indent: 0.5rem;
+}
+
+@media (min-width: 768px) {
+    h1 .navbar-brand {
+        text-indent: 2rem;
+    }
+}
+
+/* .masthead 영역 ========================================================== */
+
+header.masthead {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.masthead-background {
+    position: relative;
+    background: no-repeat center center;
+    background-size: cover;
+    border-radius: 20px;
+    width: 100%;
+    margin: 0 auto;
+    box-shadow: darkgrey 5px 5px 5px;
+}
+
+.masthead-background:before {
+    content: "";
+    position: absolute;
+    background-color: #1c375e;
+    border-radius: 20px;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0.5;
+}
+
+.masthead-content-wrapper {
+    padding-top: 5rem; /* 8 -> 5 */
+    padding-bottom: 5rem;
+}
+
+@media (min-width: 768px) {
+    .masthead-content-wrapper {
+        padding-top: 8rem; /* 12 -> 8 */
+        padding-bottom: 8rem;
+    }
+}
+
+/* PC 화면에서 헤더 글자 줄바꿈 틀어지는거 교정*/
+@media (min-width: 1200px) {
+    .masthead .col-xl-6 {
+        width: 100%;
+        max-width: 75%; /* 원래 width:50% 여서 순간적으로 가로 길이가 좁아져 줄바꿈 되었음 */
+    }
+
+    .masthead .forms {
+        max-width: 900px /* 입력 폼의 크기는 너무 길지 않게 유지. */;
+        margin: 0 auto;
+    }
+}
+
+.headerText {
+    font-weight: normal;
+    text-shadow: 1px 1px 1px dimgray;
+}
+
+@media (min-width: 768px) {
+    .br-mobile {
+        display: none;
+    }
+}
+
+.form-check {
+    margin-top: 1rem;
+}
+
+.form-check .form-check-input {
+    float: none;
+}
+
+.forms .col {
+    padding: 0;
+}
+
+.forms .row {
+    margin: 0; /* col 전체를 다 바꾸면 표도 영향 받으니 이곳만 수정 */
+}
+
+.forms .col-auto {
+    padding: 0;
+}
+
+.forms .forms-submit-button {
+    margin-left: 0.5rem;
+}
+
+.forms-verify {
+    padding-top: 1rem;
+}
+
+
+/* 모바일 폼 크기 조정 - 이메일입력, 구독버튼 */
+@media (min-width: 768px) {
+
+    .forms .col {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .forms .forms-email-input {
+        /*from bootstrap .form-control-lg */
+        min-height: calc(1.5em + 2rem + 2px);
+        padding: 1rem 1.25rem;
+        font-size: calc(1.05rem + 0.5vw); /* calc(1.15rem + 0.3vw);*/
+        border-radius: 10px;
+    }
+
+    .forms .col-auto {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .forms .forms-submit-button {
+        /*from bootstrap .form-control-lg */
+        min-height: calc(1.5em + 2rem + 2px);
+        padding: 1rem 1.25rem;
+        font-size: calc(1.05rem + 0.5vw); /* calc(1.15rem + 0.3vw);*/
+        border-radius: 10px;
+    }
+}
+
+.agreement-wrapper {
+    font-size: calc(0.8rem + 0.5vw);
+}
+
+.agreement-btn {
+    font-size: calc(0.8rem + 0.5vw);
+    border: 0;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 0;
+    color: #cccccc;
+}
+
+#verifyEmailCollapseButton {
+    display: none;
+}
+
+#verifyDeleteCollapseButton {
+    display: none;
+}
+
+#verifyEmailCollapse {
+    color: black;
+}
+
+#goToUsageButtonWrapper {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+#goToUsageButton {
+    padding: 8px 15px; /*10 20*/
+    font-size: calc(0.9rem + 0.4vw);
+    border-radius: 20px;
+    /*transition: all 0.3s ease;*/
+    animation: bounce 0.6s cubic-bezier(0, 0, 0.18, 0.99) infinite alternate;
+}
+
+@media (min-width: 768px) {
+    #goToUsageButtonWrapper {
+        bottom: 2rem;
+    }
+
+    #goToUsageButton {
+        padding: 10px 20px;
+    }
+}
+
+@keyframes bounce {
+    to {
+        transform: translateY(-10px);
+    }
+}
+
+#goToUsageButton:hover {
+    background-color: #fff;
+    color: #1c375e;
+}
+
+
+/* 신곡 테이블 영역 ======================================================= */
+
+#container .new-song-section {
+    margin-top: 1rem;
+}
+
+.new-song-section-header {
+    font-size: calc(0.9rem + 0.3vw);
+}
+
+@media (min-width: 992px) {
+    .new-song-section-header {
+        margin-bottom: 2rem;
+    }
+}
+
+
+/* .showcase 사용 방법 및 주의 사항 영역 ========================================== */
+
+.showcase #showCaseHeaderText {
+    text-align: center;
+    padding: 1rem 2rem;
+    /*margin: 1rem auto;*/
+    /*box-shadow: lightgrey 0px 3px 3px 3px;*/
+    /*width: 80%;*/
+    /*border-radius: 25px;*/
+}
+
+.showcase-img-wrapper {
+    text-align: center;
+}
+
+.showcase-img {
+    width: 93%;
+    max-width: 500px;
+    border-radius: 20px;
+    margin: 0 auto;
+    box-shadow: lightgrey 2px 2px 2px;
+    aspect-ratio: 1.5 / 1;
+}
+
+video {
+    object-fit: fill;
+    width: 95%;
+    max-width: 500px;
+    border-radius: 20px;
+    border: #aaaaaa 1px solid;
+    box-shadow: lightgrey 3px 3px 3px;
+}
+
+/* 사용방법 및 주의사항 양옆으로 펼쳐질때 보정 */
+@media (min-width: 992px) {
+
+    video {
+        width: 95%;
+        max-width: 550px;
+    }
+
+    .showcase-img-wrapper {
+        width: 50%;
+        min-height: 30rem;
+    }
+
+    .showcase .showcase-img {
+        min-height: 25rem;
+        max-width: 550px;
+    }
+
+    .showcase .row {
+        padding: 1rem;
+    }
+}
+
+/* 지나치게 큰 크기에서 showcase-img 의 aspect-ratio 로 인해 이미지 꽉차는거 보정 */
+@media (min-width: 1400px) {
+    .showcase .row {
+        margin-top: 2rem;
+    }
+}
+
+.showcase .showcase-text {
+    background-color: white;
+    border-radius: 20px;
+    margin: 1rem auto;
+    padding: 1.5rem;
+    width: 95%;
+}
+
+@media (min-width: 992px) {
+    .showcase .showcase-text {
+        /*padding: calc(2rem + 0.5vw) calc(2rem + 3vw) calc(2rem + 0.5vw) calc(0.5rem + 0.1vw);*/
+        padding: 2rem;
+        width: 50%;
+        margin: auto auto;
+    }
+}
