@@ -73,7 +73,7 @@ public class SubscriptionService {
             processedSubscription = subscriptionRepository.save(subscription);
         }
 
-        gmailSender.sendVerifyMail(processedSubscription.getEmail(), processedSubscription.getAuthenticationToken());
+        gmailSender.sendVerifyMail(processedSubscription.getEmail(), processedSubscription.getAuthenticationToken(), GmailSender.VerifyMailType.SUBSCRIBE);
         return SubscriptionServiceResult.success("이메일 인증 메일이 발송되었습니다. 확인해주세요.", processedSubscription.getId());
     }
 
@@ -126,7 +126,7 @@ public class SubscriptionService {
         // 인증 토큰, 토큰만료시간 갱신
         findSubscription.setAuth();
 
-        gmailSender.sendDeleteMail(findSubscription.getEmail(), findSubscription.getAuthenticationToken());
+        gmailSender.sendVerifyMail(findSubscription.getEmail(), findSubscription.getAuthenticationToken(), GmailSender.VerifyMailType.UNSUBSCRIBE);
 
         return SubscriptionServiceResult.success("구독취소 인증 메일이 발송되었습니다. 확인해주세요.", findSubscription.getId());
     }

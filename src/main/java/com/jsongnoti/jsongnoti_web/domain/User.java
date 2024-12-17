@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 
 import static lombok.AccessLevel.PROTECTED;
@@ -35,6 +36,11 @@ public class User {
     private String provider;
     private String providerId;
 
+    // 이탈퇴 인증 시 사용
+    private String authenticationToken;
+    private LocalDateTime authenticationTimestamp;
+    private int authenticationRetry; // 최대 3
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -45,6 +51,24 @@ public class User {
     public void updateMemoSetting(MemoPresentType memoPresentType, Brand showMemoBrand) {
         this.memoPresentType = memoPresentType;
         this.showMemoBrand = showMemoBrand;
+    }
+
+    /**
+     * User 의 인증 토큰과 인증토큰 만료시간, 재시도 횟수를 갱신합니다.
+     */
+    public void setAuth() {
+        String authenticationToken = new SecureRandom().nextInt(1000, 10000) + "";
+        LocalDateTime authenticationTimestamp = LocalDateTime.now();
+        this.authenticationToken = authenticationToken;
+        this.authenticationTimestamp = authenticationTimestamp;
+        this.authenticationRetry = 0;
+    }
+
+    /**
+     * User 가 인증에 실패하여 재시도 횟수를 증가시킵니다.
+     */
+    public void verificationFailed() {
+        this.authenticationRetry++;
     }
 
 }

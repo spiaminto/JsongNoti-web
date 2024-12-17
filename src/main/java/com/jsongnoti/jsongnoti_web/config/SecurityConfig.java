@@ -1,20 +1,26 @@
 package com.jsongnoti.jsongnoti_web.config;
 
-import com.jsongnoti.jsongnoti_web.auth.oauth.PrincipalOauth2UserService;
+import com.jsongnoti.jsongnoti_web.auth.PrincipalDetails;
+import com.jsongnoti.jsongnoti_web.auth.oauth.oauth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
+
+import java.util.function.Supplier;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final PrincipalOauth2UserService principalOauth2UserService;
+    private final oauth2UserService oauth2UserService;
 
     @Bean
     BCryptPasswordEncoder passwordEncoder() {
@@ -28,30 +34,33 @@ public class SecurityConfig {
 
         http
                 .sessionManagement(sessionManagement ->
-                    sessionManagement.maximumSessions(1)
+                        sessionManagement.maximumSessions(1)
                 )
 
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
+//                                .requestMatchers("/memo").authenticated()
+                                .requestMatchers("/users/{userId}").access((authentication, context) ->
+                                        new AuthorizationDecision(decideUsersAuthentication(authentication, context)))
                                 // resources
                                 .requestMatchers("/static/**", "/assets/**", "/css/**", "/js/**").permitAll()
                                 // healthcheck
                                 .requestMatchers("/health-check").permitAll()
-                                .requestMatchers("/", "/users/**").permitAll()
+                                // home
+                                .requestMatchers("/").permitAll()
                                 .anyRequest().permitAll()
                 )
 
                 .formLogin(formLogin ->
                         formLogin
-                                .loginPage("/login")
+                                .loginPage("/")
                 )
 
                 .logout(logout ->
                         logout
                                 .permitAll()
                                 .logoutUrl("/logout")
-                                .logoutSuccessUrl("/login")
-                                .deleteCookies("JSESSIONID")
+                                .logoutSuccessUrl("/")
                                 .invalidateHttpSession(true)
                                 .clearAuthentication(true))
 
@@ -64,8 +73,22 @@ public class SecurityConfig {
                                 .loginPage("/login")
                                 .defaultSuccessUrl("/memo")
                                 .userInfoEndpoint(userInfoEndpoint ->
-                                        userInfoEndpoint.userService(principalOauth2UserService)));
+                                        userInfoEndpoint.userService(oauth2UserService)));
         return http.build();
+    }
+
+    /**
+     * /users/{userId} 요청에 대한 인증 처리 분리
+     * 인증여부 (Authentication 의 Principal 존재여부) 와 pathVariable 의 userId 일치여부를 확인
+     *
+     * @param authentication access(authentication, context) 에서 제공된 Supplier<Authentication>
+     * @param context        access(authentication, context) 에서 제공된 RequestAuthorizationContext
+     * @return boolean 인증여부
+     */
+    private boolean decideUsersAuthentication(Supplier<Authentication> authentication, RequestAuthorizationContext context) {
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.get().getPrincipal();
+        String pathVariable = context.getVariables().get("userId");
+        return principalDetails != null && pathVariable != null && pathVariable.equals(principalDetails.getUserId().toString());
     }
 
 }

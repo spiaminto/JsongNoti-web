@@ -4,15 +4,23 @@
     border-radius: 20px;
 }
 
+/* 노래 테이블 간 간격및 패딩 */
 .song-table-container {
-    padding : 2rem 0 0;
+    margin : 2rem 0 0; /* 확장 전 상하 */
+    padding: 0 0.3rem; /* row>* 패딩 초기화, */
 }
 @media (min-width: 992px) {
-    .song-table-container {
-        padding: 0 0.5rem;
+    /* 확장 후 좌우 - margin 하면 100% 넘어서 padding 으로 대체.*/
+    .song-container .song-table-container:first-child {
+        padding-right: 0.5rem;
+        padding-left: 0.3rem;
+    }
+
+    .song-container .song-table-container:last-child {
+        padding-left: 0.5rem;
+        padding-right: 0.3rem;
     }
 }
-
 
 .song-table-border {
     border: solid 1px #aaaaaa;
@@ -20,18 +28,6 @@
     margin-top: 20px;
     overflow: hidden;
     box-shadow: lightgrey 2px 2px 2px;
-}
-
-/* 노래 테이블 페이드 인 */
-.fade-in-element {
-    opacity: 0;
-    transform: translateY(25px);
-    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-}
-
-.fade-in-element.is-visible {
-    opacity: 1;
-    transform: translateY(0);
 }
 
 .song-header-subtext {

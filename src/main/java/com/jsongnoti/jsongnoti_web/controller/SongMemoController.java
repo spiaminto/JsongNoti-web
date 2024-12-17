@@ -40,38 +40,31 @@ public class SongMemoController {
     public ResponseEntity<SongMemoResponse> addMemo(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                     @Validated @RequestBody SongMemoAddRequest songMemoAddRequest) {
         log.info("addMemo: {}", songMemoAddRequest);
-
-//        if (!userId.equals(memoAddForm.getUserId())) {
-//            return ResponseEntity.badRequest().body(SongMemoResponse.withMessage("잘못된 요청입니다."));
-//        }
-
-        //TODO 임시구현
-//        Long userId = principalDetails.getUserId();
-        Long userId = 47L;
+        Long userId = songMemoAddRequest.getUserId();
+        // 폼 userId 값 검증
+        if (!userId.equals(principalDetails.getUserId())) {
+            return ResponseEntity.badRequest().body(SongMemoResponse.withMessage("잘못된 메모추가 요청입니다."));
+        }
+        
         Long songId = songMemoAddRequest.getSongId();
         int presentOrder = songMemoAddRequest.getPresentOrder();
 
         SongMemoServiceResult result = songMemoService.saveMemo(userId, songId, songMemoAddRequest.getInfoText(), presentOrder);
-        if (!result.isSuccess()) {
-            return ResponseEntity.status(409).body(SongMemoResponse.withMessage(result.getMessage()));
-        }
+        int status = result.isSuccess() ? 200 : 409;
 
-        return ResponseEntity.ok(SongMemoResponse.withMessage(result.getMessage()));
+        return ResponseEntity.status(status).body(SongMemoResponse.withMessage(result.getMessage()));
     }
 
     @PostMapping("/memos/reorder")
     public ResponseEntity<SongMemoResponse> reorder(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                     @Validated @RequestBody SongMemosReorderRequest songMemosReorderRequest) {
-
         log.info("switchOrder: {}", songMemosReorderRequest);
-//        Long userId = principalDetails.getUserId();
+        Long userId = songMemosReorderRequest.getUserId();
+        // 폼 userId 값 검증
+        if (userId.equals(principalDetails.getUserId())) {
+            return ResponseEntity.badRequest().body(SongMemoResponse.withMessage("잘못된 순서변경 요청입니다."));
+        }
 
-        // 로그인 된 유저인지 확인
-//        if (userId.equals(reorderForm.getUserId())) {
-//            return ResponseEntity.badRequest().body("잘못된 요청입니다.");
-//        }
-
-        Long userId = 47L;
         List<Long> memoIds = songMemosReorderRequest.getMemoIds();
         Brand brand = songMemosReorderRequest.getBrand();
 
@@ -86,18 +79,16 @@ public class SongMemoController {
                                              @AuthenticationPrincipal PrincipalDetails principalDetails,
                                              @Validated @RequestBody SongMemoDeleteRequest songMemoDeleteRequest) {
         log.info("deleteMemo: {}", songMemoDeleteRequest);
-//        Long userId = principalDetails.getUserId();
-        Long userId = 47L;
-        Long inputUserId = songMemoDeleteRequest.getUserId();
-
-        // 로그인 된 유저인지 확인
-//        if (!userId.equals(inputUserId)) {
-//            return ResponseEntity.badRequest().body("잘못된 요청입니다.");
-//        }
+        Long userId = songMemoDeleteRequest.getUserId();
+        // 폼 userId 값 검증
+        if (userId.equals(principalDetails.getUserId())) {
+            return ResponseEntity.badRequest().body(SongMemoResponse.withMessage("잘못된 메모삭제 요청입니다."));
+        }
 
         SongMemoServiceResult result = songMemoService.deleteMemo(userId, memoId);
-
-        return ResponseEntity.ok(SongMemoResponse.withMessage(result.getMessage()));
+        int status = result.isSuccess() ? 200 : 409;
+        
+        return ResponseEntity.status(status).body(SongMemoResponse.withMessage(result.getMessage()));
     }
 
 }

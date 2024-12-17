@@ -11,11 +11,14 @@ import com.jsongnoti.jsongnoti_web.domain.enums.MemoPresentType;
 import com.jsongnoti.jsongnoti_web.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
 import java.util.Map;
 import java.util.Optional;
@@ -26,8 +29,9 @@ import java.util.Optional;
 /**
  * OAuth2 유저 인증 처리 클래스
  */
-public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
+public class oauth2UserService extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
+    private final RestClient restClient;
 
     /**
      * OAuth2UserRequest 를 가공한 뒤 Authentication 객체에 저장할 멤버 정보를 담은 PrincipalDetails 반환
@@ -37,8 +41,6 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
     public PrincipalDetails loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         // 유저 로드
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        log.info("OAuth2User.loadUser() userRequest = {}, oAuth2User={}", userRequest, oAuth2User);
-
         // provider 에 따라 가져온 유저정보
         OAuth2UserInfo oAuthUserInfo = getOAuthUserInfo(userRequest, oAuth2User);
 
@@ -105,10 +107,25 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
             processedUser = newUser;
         }
 
+        // attribute 매핑
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> oauth2Attributes = objectMapper.convertValue(oAuth2UserInfo, new TypeReference<>() {});
 
         return new PrincipalDetails(processedUser, oauth2Attributes);
+    }
+
+    /**
+     * google api 서버에 AccessToken 취소요청
+     * @param accessToken
+     * @return boolean AccessToken 취소 성공시 true
+     */
+    public boolean revokeAccessToken(String accessToken) {
+        ResponseEntity<String> revokeTokenResponse = restClient.post()
+                .uri("https://oauth2.googleapis.com/revoke?token=" + accessToken)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .toEntity(String.class);
+        return revokeTokenResponse.getStatusCode().is2xxSuccessful();
     }
 
 }

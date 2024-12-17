@@ -3,7 +3,6 @@ package com.jsongnoti.jsongnoti_web.controller;
 import com.jsongnoti.jsongnoti_web.auth.PrincipalDetails;
 import com.jsongnoti.jsongnoti_web.controller.dto.NewSongDto;
 import com.jsongnoti.jsongnoti_web.domain.User;
-import com.jsongnoti.jsongnoti_web.repository.SongMemoRepository;
 import com.jsongnoti.jsongnoti_web.service.SongService;
 import com.jsongnoti.jsongnoti_web.service.UserService;
 import com.jsongnoti.jsongnoti_web.service.dto.LatestAndLastSongsDto;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.format.TextStyle;
@@ -27,7 +27,6 @@ import java.util.Locale;
 public class IndexController {
 
     private final SongService songService;
-    private final SongMemoRepository songMemoRepository;
     private final UserService userService;
 
     @GetMapping("/health-check")
@@ -81,16 +80,18 @@ public class IndexController {
     }
 
     @GetMapping("/login")
-    public String login() {
-        return "search";
+    public String login(RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("alertMessage", "로그인이 필요합니다.");
+        return "redirect:/";
     }
 
     @GetMapping("/memo")
     public String memo(@AuthenticationPrincipal PrincipalDetails principalDetails,
                        Model model) {
-        if (principalDetails == null) {
-            return "redirect:/login";
+        if (principalDetails == null || principalDetails.getUserId() == null) {
+            return "redirect:/oauth2/authorization/google";
         }
+
         Long userId = principalDetails.getUserId();
         User user = userService.findUserById(userId);
         model.addAttribute("userId", userId);

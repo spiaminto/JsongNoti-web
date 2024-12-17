@@ -4,7 +4,7 @@ body {
     font-family: 'NanumSquareRound', sans-serif;
     background-color: whitesmoke;
     /*background-color: #f8f9fa;*/
-
+    font-size: calc(0.9rem + 0.3vw);
     min-width: 360px;
 }
 
@@ -41,10 +41,12 @@ section:first-of-type {
 }
 
 #container nav {
-    padding: 0.7rem 0;
+    padding: 0.5rem 0;
 }
 
-#song-container {
+.song-container {
     padding: 1rem;
+    background-color: white;
+    border-radius: 20px;
 }
 

@@ -14,9 +14,21 @@
     font-size: 1.2rem;
 }
 
+/* 페이드 인 */
+.fade-in-element {
+    opacity: 0;
+    transform: translateY(25px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-in-element.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 /* 모달 */
 .modal-dialog {
-    font-size: calc(0.9rem + 0.2vw);
+    font-size: calc(0.9rem + 0.3vw);
 }
 
 @media (min-width: 1200px) {
@@ -25,7 +37,7 @@
     }
 
     .modal-dialog button {
-        font-size: calc(0.9rem + 0.2vw);
+        font-size: calc(0.9rem + 0.3vw);
     }
 }
 
@@ -37,6 +49,7 @@
     background-size: cover;
     width: 40px;
     height: 40px;
+    vertical-align: text-bottom;
 }
 
 .icon-button-label {
@@ -45,7 +58,7 @@
     width: 100%;
     left: 50%;
     transform: translateX(-50%);
-    bottom: -20%;
+    bottom: -40%;
 }
 
 @media (min-width: 992px) {
@@ -56,7 +69,7 @@
 
     .icon-button-label {
         font-size: 0.9rem;
-        bottom: -25%;
+        bottom: -40%;
     }
 }
 
@@ -80,6 +93,10 @@ footer {
 /* 크기제한 */
 .text-input {
     max-width: 500px;
+}
+
+.text-input::placeholder {
+    font-size: calc(0.8rem + 0.3vw);
 }
 
 

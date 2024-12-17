@@ -28,16 +28,33 @@
 }
 
 #searchHintContainer p {
-    margin-bottom: 0.25rem;
+    font-size: calc(0.8rem + 0.5vw);
+    margin-bottom: 0.2rem;
+}
+
+.song-search-result-collapse-wrapper {
+    display: flex;
+    flex-wrap: wrap;
 }
 
 #songSearchResultCollapse {
+    width: calc(100% + 1rem);
+    margin: 0 0 0 -0.5rem;
     max-width: 768px;
-    margin: 0 auto;
 }
 
 #songSearchResultTable .song-title-text {
     display: inline; /* 한글 타이틀 표시를 위해 인라인 */
+}
+
+.song-search-result-header {
+    font-size: calc(0.7rem + 0.3vw);
+}
+
+@media (min-width: 768px) {
+    .song-search-result-header {
+        font-size: 1rem;
+    }
 }
 
 .song-title-korean {

@@ -4,6 +4,10 @@ class MemoUtil {
 
     // Table Utils ============================================================
 
+    /**
+     * 메모테이블 초기화
+     * 브랜드에 따라 렌더링 여부 및 스타일 결정
+     */
     initializeMemoTable() {
         let brand = $('#changeSettingForm').find('input[name=showMemoBrand]:checked').val();
         let $tjContainer = $('.song-table-container').first();
@@ -14,15 +18,21 @@ class MemoUtil {
                 this.refreshMemoTable('KY');
                 $tjContainer.slideDown(500);
                 $kyContainer.slideDown(500);
+                $tjContainer.removeClass('expand-for-single-memo');
+                $kyContainer.removeClass('expand-for-single-memo');
                 break;
             case 'TJ':
                 this.refreshMemoTable('TJ');
-                $tjContainer.slideDown(500);
                 $kyContainer.hide();
+                $tjContainer.addClass('expand-for-single-memo');
+                $kyContainer.removeClass('expand-for-single-memo');
+                $tjContainer.slideDown(500);
                 break;
             case 'KY':
                 this.refreshMemoTable('KY');
                 $tjContainer.hide();
+                $tjContainer.removeClass('expand-for-single-memo');
+                $kyContainer.addClass('expand-for-single-memo');
                 $kyContainer.slideDown(500);
                 break;
             default:
@@ -59,7 +69,6 @@ class MemoUtil {
         let memoData;
         let memoPresentType = $('#changeSettingForm input[name=memoPresentType]:checked').val();
         let userId = $('.memo-section-header').data('user-id');
-        console.log(memoPresentType)
         $.ajax({
             type: "GET",
             url: "/memos",

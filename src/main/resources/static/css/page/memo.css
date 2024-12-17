@@ -3,6 +3,18 @@
     /* #songContainer 에 padding 1rem, color white 있음 */
 }
 
+.expand-for-single-memo { /* .song-container 하나일경우 추가로 붙는 클래스 */
+    width: 100%;
+    max-width: 768px;
+    padding: 0 0.3rem !important;
+}
+
+@media (min-width: 992px) {
+    .expand-for-single-memo {
+        padding: 0 0.5rem !important;
+    }
+}
+
 /* 메모 등록 */
 .add-memo-section {
     padding: 1rem;
@@ -11,7 +23,7 @@
 }
 
 .memo-add-form-container {
-    padding: 0;
+    padding: 0 0.3rem;
     max-width: 768px;
 }
 
@@ -22,10 +34,6 @@
 /* 노래 등록 폼 아래 마진 공백 생기는거 삭제 */
 #memoAddForm table {
     margin-bottom: 0;
-}
-
-#searchHintContainer p {
-    margin-bottom: 0.25rem;
 }
 
 #songSearchResultTable .song-title-text {
@@ -99,6 +107,61 @@
     padding: calc(0.3rem + 0.1vw) calc(0.5rem + 0.1vw);
     font-size: calc(0.7rem + 0.1vw);
     border-radius: 0.25rem;
+}
+
+#verifyDeleteUserCollapseButton {
+    display: none;
+}
+
+/* 회원 탈퇴 모달 폼 관련 설정 (나중에 index 랑 통합) */
+
+.forms .col {
+    padding: 0;
+}
+
+.forms .row {
+    margin: 0; /* col 전체를 다 바꾸면 표도 영향 받으니 이곳만 수정 */
+}
+
+.forms .col-auto {
+    padding: 0;
+}
+
+.forms .forms-submit-button {
+    margin-left: 0.5rem;
+}
+
+.forms-verify {
+    padding-top: 1rem;
+}
+
+/* 모바일 폼 크기 조정 - 이메일입력, 구독버튼 */
+@media (min-width: 768px) {
+    .forms .col {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .forms .forms-email-input {
+        /*from bootstrap .form-control-lg */
+        min-height: calc(1.5em + 2rem + 2px);
+        padding: 1rem 1.25rem;
+        font-size: calc(1.05rem + 0.5vw); /* calc(1.15rem + 0.3vw);*/
+        border-radius: 10px;
+    }
+
+    .forms .col-auto {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .forms .forms-submit-button {
+        /*from bootstrap .form-control-lg */
+        min-height: calc(1.5em + 2rem + 2px);
+        padding: 1rem 1.25rem;
+        font-size: calc(1.05rem + 0.5vw); /* calc(1.15rem + 0.3vw);*/
+        border-radius: 10px;
+    }
 }
 
 

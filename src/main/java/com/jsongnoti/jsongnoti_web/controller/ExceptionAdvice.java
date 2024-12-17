@@ -22,30 +22,37 @@ public class ExceptionAdvice {
 
     private final MessageSource messageSource;
 
+    // RuntimeException 예외 전역처리
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ExceptionResponse> handleException(RuntimeException e) {
+        log.error("error: {}, message = {}", e.getClass().getName(), e.getMessage());
+        return ResponseEntity.internalServerError().body(ExceptionResponse.withMessage("내부 오류가 발생했습니다."));
+    }
+
     // DB 예외 전역처리
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ExceptionResponse> handleException(Exception e) {
-        log.error("error: {}", e.getMessage());
+        log.error("error: {}, message = {}", e.getClass().getName(), e.getMessage());
         return ResponseEntity.internalServerError().body(ExceptionResponse.withMessage("내부 데이터 오류가 발생했습니다."));
     }
 
     // NullPointerException 예외 전역처리
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<ExceptionResponse> handleException(NullPointerException e) {
-        log.error("error: {}", e.getMessage());
+        log.error("error: {}, message = {}", e.getClass().getName(), e.getMessage());
         return ResponseEntity.internalServerError().body(ExceptionResponse.withMessage("내부 오류가 발생했습니다."));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ExceptionResponse> handleException(IllegalArgumentException e) {
-        log.error("error: {}", e.getMessage());
+        log.error("error: {}, message = {}", e.getClass().getName(), e.getMessage());
         return ResponseEntity.badRequest().body(ExceptionResponse.withMessage(e.getMessage()));
     }
 
     // @Valid 예외 처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponse> handleValidationException(MethodArgumentNotValidException ex) {
-        log.error("error: {}", ex.getMessage());
+        log.error("error: {}, message = {}", ex.getClass().getName(), ex.getMessage());
         StringBuilder messageBuilder = new StringBuilder();
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             String errorMessage = getErrorMessage(messageSource, error).orElse("입력값 오류입니다.");
