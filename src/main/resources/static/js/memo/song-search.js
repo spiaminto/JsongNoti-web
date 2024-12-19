@@ -43,7 +43,7 @@ $(function () {
 
         // 검색결과 후처리 - 한글타이틀 기입, 클릭시 폼입력 이벤트바인딩, data-id (songId) 추가
         $.each(data, function (index, song) {
-            let songTitleHint = song.titleKorean ? '<i class=\'song-title-korean ms-4\'>' + song.titleKorean + '</i>' : '';
+            let songTitleHint = song.titleKorean ? '<i class=\'song-title-korean\'>' + song.titleKorean + '</i>' : '';
             jQuery(songTable.find('.song-title-text')[index]).after(songTitleHint);
             jQuery(songTable.find('.song-title')[index]).on('click', fillMemoAddFormWithSearchResult);
             jQuery(songTable.find('.song-number')[index]).attr('data-id', song.id);
@@ -92,7 +92,7 @@ $(function () {
             }
             $('#addInfoTextInput').focus();
             // 입력폼 하이라이트
-            CommonUtil.blinkElement($('.add-song-row'));
+            CommonUtil.blinkElement($('.add-song-row'), $('.add-song-row').css('background'));
         });
     }
 })

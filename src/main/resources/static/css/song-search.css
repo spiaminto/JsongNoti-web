@@ -1,10 +1,11 @@
+
+
 .memo-button-wrapper {
     position: absolute;
     right: 0.5rem;
 }
 
 .song-search-section {
-    background-color: white;
     border-radius: 20px;
     padding: 1rem;
 }
@@ -32,15 +33,11 @@
     margin-bottom: 0.2rem;
 }
 
-.song-search-result-collapse-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-#songSearchResultCollapse {
-    width: calc(100% + 1rem);
-    margin: 0 0 0 -0.5rem;
+.song-search-result-collapse {
+    width: 100%;
+    margin: 0 auto;
     max-width: 768px;
+    padding: 0 0.5rem;
 }
 
 #songSearchResultTable .song-title-text {
@@ -59,6 +56,8 @@
 
 .song-title-korean {
     color: #777;
+    margin-left: 1rem;
+    display: inline-block;
 }
 
 

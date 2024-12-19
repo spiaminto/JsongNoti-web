@@ -32,8 +32,10 @@ $(function () {
                 MemoUtil.refreshMemoTable(brand);
                 let targetSelector = brand === 'TJ' ? '.table-tj' : '.table-ky';
                 let $songTable = $(targetSelector);
+
                 // 저장된 메모 하이라이트
-                CommonUtil.blinkElement($songTable.find('.song-number[data-present-order=' + presentOrder + ']').closest('tr'));
+                let $savedMemo = $songTable.find('.song-number[data-present-order=' + presentOrder + ']').closest('tr');
+                CommonUtil.blinkElement($savedMemo, $savedMemo.css('background'));
             },
             error: function (xhr) {
                 // console.log(xhr);

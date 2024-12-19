@@ -1,30 +1,35 @@
 <!DOCTYPE html>
+<!--<html lang="ko" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">-->
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-  <title>노래방 일본 신곡 알림이</title>
+  <title>제이노티 신곡알림</title>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name=”title” content="노래방 일본 신곡 알림이"/>
-  <meta name="description" content="노래방 일본 신곡 알림이 에서 TJ, 금영 노래방에 등록되는 일본 신곡을 확인하고, 신곡 등록 정보를 메일로 받아보세요."/>
+  <meta name="description" content="제이노티 에서 TJ, 금영 노래방에 등록되는 일본 신곡을 확인하고, 신곡 등록 정보를 메일로 받아보세요."/>
   <meta name="keywords" content="노래방, 일본 노래, 신곡"/>
   <meta name="google-site-verification" content="00_l8httzNCkM1xkzw0ksQyJ0uhLb2ZFP2POJnLB-Mk"/>
   <meta name="naver-site-verification" content="81d3e8c9dfbb40001d6dfddf06db7c3546ac03cd"/>
-  <!--  <meta name="author" content=""/>-->
-  <!-- Favicon-->
   <link rel="icon" type="image/x-icon" href="/static/assets/favicon_32.png" th:href="@{/assets/favicon_32.png}"/>
-  <!-- Bootstrap icons-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet"
         type="text/css"/>
-  <!-- nanum fonts-->
   <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css" rel="stylesheet"/>
-  <!-- Core theme CSS (includes Bootstrap)-->
-  <link href="/static/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
   <link href="/static/css/common.css" th:href="@{/css/common.css}" rel="stylesheet"/>
   <link href="/static/css/containers.css" th:href="@{/css/containers.css}" rel="stylesheet"/>
   <link href="/static/css/header-text.css" th:href="@{/css/header-text.css}" rel="stylesheet"/>
   <link href="/static/css/song-table.css" th:href="@{/css/song-table.css}" rel="stylesheet"/>
   <link href="/static/css/footer.css" th:href="@{/css/footer.css}" rel="stylesheet"/>
   <link href="/static/css/page/index.css" th:href="@{/css/page/index.css}" rel="stylesheet"/>
+  <script>
+      // dark mode 인라인
+      if (localStorage.getItem('darkMode') === 'true') {
+          document.documentElement.setAttribute('data-bs-theme', 'dark');
+      } else {
+          document.documentElement.setAttribute('data-bs-theme', '');
+      }
+  </script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-JFWLSXBEYR"></script>
   <script>
@@ -35,7 +40,6 @@
       }
 
       gtag('js', new Date());
-
       gtag('config', 'G-JFWLSXBEYR');
   </script>
   <script src="https://code.jquery.com/jquery.min.js"></script>
@@ -62,7 +66,7 @@
       })
   </script>
 </head>
-<body>
+<body class="outer-element">
 <div id="alertMessage" th:text="${alertMessage}" style="width: 0; height: 0; display: none"></div>
 <div id="container">
   <!-- Navigation-->
@@ -71,22 +75,17 @@
       <a class="navbar-brand" href="/">
         제이노티
       </a>
-      <a class="ms-1 navbar-brand" href="/">
+      <a class="navbar-brand" href="/">
         신곡알림
       </a>
       <img src="/static/assets/icon/mike_512.png" th:src="@{'/assets/icon/mike_512.png'}" alt="로고아이콘" width="35px">
     </h1>
-    <div class="col">
-      <button id="goToUsageButtonNav" class="btn btn-outline-dark btn-lg usage-Button"> 사용 방법</button>
-    </div>
-    <div class="">
+    <div class="button-wrapper">
       <button id="searchButton" onclick="location.href = '/search'" class="memo-button icon-button btn"
               style="background-image: url('/static/assets/icon/search_512.png')"
               th:style="'background-image: url(/assets/icon/search_512.png)'">
         <span class="icon-button-label"><b>검색</b></span>
       </button>
-    </div>
-    <div class="">
       <button id="memoButton" class="memo-button icon-button btn "
               style="background-image: url('/static/assets/icon/memo_256.png')"
               th:style="'background-image: url(/assets/icon/memo_256.png)'">
@@ -97,7 +96,7 @@
   <!-- Masthead-->
   <header class="masthead">
     <!--    <button class="btn btn-primary" onclick="document.getElementById('verifyEmailCollapseButton').click()">test</button>-->
-    <div class="masthead-background" style="background-image: url('/static/assets/img/karaoke.jpg')"
+    <div class="masthead-background box-shadow" style="background-image: url('/static/assets/img/karaoke.jpg')"
          th:style="'background-image:url(/assets/img/karaoke.jpg)'">
       <div class="container position-relative masthead-content-wrapper">
         <div class="row justify-content-center">
@@ -108,18 +107,15 @@
                   class="br-mobile">알림 메일을 보내드립니다</h2>
               <form class="forms-subscribe forms" id="subscribeForm">
                 <!-- Email address input-->
-                <div class="row">
-                  <div class="col">
-                    <input class="form-control forms-email-input" id="emailInput" type="email"
-                           placeholder="이메일 입력"
-                           required>
-                  </div>
-                  <div class="col-auto">
-                    <button class="btn btn-outline-light btn forms-submit-button" id="submitButton" type="submit">구독하기
-                    </button>
-                    <input type="hidden" id="csrfToken" name="_csrf" th:value="${_csrf.token}"/>
-                  </div>
+                <div class="input-group justify-content-center">
+                  <input class="form-control form-control-lg text-input" id="emailInput" type="email"
+                         placeholder="이메일 입력"
+                         required>
+                  <button class="btn btn-lg btn-outline-light forms-submit-button" id="submitButton" type="submit">
+                    구독하기
+                  </button>
                 </div>
+                <input type="hidden" id="csrfToken" name="_csrf" th:value="${_csrf.token}"/>
                 <div class="row agreement-wrapper">
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
@@ -140,17 +136,13 @@
               </button>
               <form class="forms forms-verify" id="verifySubscriptionForm">
                 <div class="collapse" id="verifyEmailCollapse">
-                  <div class="row">
-                    <div class="col">
-                      <input class="form-control forms-email-input" id="verifyCodeInput" type="number"
-                             placeholder="4자리 인증 코드 입력"
-                             required>
-                    </div>
-                    <div class="col-auto">
-                      <button class="btn btn-outline-light btn forms-submit-button" id="verifySubmitButton"
-                              type="submit">인증하기
-                      </button>
-                    </div>
+                  <div class="input-group justify-content-center">
+                    <input class="form-control form-control-lg text-input" id="verifyCodeInput" type="number"
+                           placeholder="4자리 인증 코드 입력"
+                           required>
+                    <button class="btn btn-outline-light btn-lg" id="verifySubmitButton"
+                            type="submit">인증하기
+                    </button>
                   </div>
                 </div>
               </form>
@@ -173,7 +165,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title" id="agreementModalHeaderText">이메일 수집 동의</h4>
+          <h3 class="modal-title" id="agreementModalHeaderText">이메일 수집 동의</h3>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -195,7 +187,7 @@
   </div>
 
   <!-- 신곡 일람 표 -->
-  <section class="new-song-section text-center">
+  <section class="new-song-section text-center inner-element">
     <div id="newSongContainer" class="song-container">
       <div class="new-song-section-header">
         <p>
@@ -205,13 +197,13 @@
       </div>
       <div class="row">
         <!-- 태진 -->
-        <div class="col-lg-4 fade-in-element song-table-container">
+        <div class="fade-in-element song-table-container">
           <h2 class="song-header-text position-relative">
             <span th:text="${tjLatestMonth + ' TJ 신곡'}">11월 TJ 신곡</span>
-            <mark class="position-absolute song-header-subtext" th:text="${tjLatestDateStr + ' 추가됨'}">00/00(요) 추가됨
+            <mark class="position-absolute song-header-subtext" th:text="${tjLatestDateStr + ' 추가'}">00/00(요) 추가
             </mark>
           </h2>
-          <div class="song-table-border">
+          <div class="song-table-border box-shadow-sm">
             <table class="table-tj song-table">
               <thead>
               <tr>
@@ -244,7 +236,7 @@
           </div>
           <!-- TJ 저번달 -->
           <div class="last-month-show-button-wrapper">
-            <button class="btn btn-sm btn-outline-secondary last-month-show-button" type="button"
+            <button class="btn btn-outline-secondary last-month-show-button" type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#tjLastMonthSongContentBorder" aria-expanded="false"
                     aria-controls="tjLastMonthSongContentBorder"
@@ -252,7 +244,7 @@
               저번달 신곡 목록
             </button>
           </div>
-          <div class="song-table-border collapse" id="tjLastMonthSongContentBorder">
+          <div class="song-table-border box-shadow-sm collapse" id="tjLastMonthSongContentBorder">
             <table class="table-tj song-table">
               <thead>
               <tr>
@@ -285,13 +277,13 @@
 
         </div>
         <!-- 금영 -->
-        <div class="col-lg-4 fade-in-element song-table-container">
+        <div class="fade-in-element song-table-container">
           <h2 class="song-header-text">
             <span th:text="${kyLatestMonth + ' 금영 신곡'}">11월 금영 신곡</span>
-            <mark class="position-absolute song-header-subtext" th:text="${kyLatestDateStr + ' 추가됨'}">00/00(0) 추가됨
+            <mark class="position-absolute song-header-subtext" th:text="${kyLatestDateStr + ' 추가'}">00/00(0) 추가
             </mark>
           </h2>
-          <div class="song-table-border">
+          <div class="song-table-border box-shadow-sm">
             <table class="table-ky song-table">
               <thead>
               <tr>
@@ -324,7 +316,7 @@
           </div>
           <!-- 금영 저번달 목록 -->
           <div class="last-month-show-button-wrapper">
-            <button class="btn btn-sm btn-outline-secondary last-month-show-button" type="button"
+            <button class="btn btn-outline-secondary last-month-show-button" type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#kyLastMonthSongContentBorder" aria-expanded="false"
                     aria-controls="kyLastMonthSongContentBorder"
@@ -332,7 +324,7 @@
               저번달 신곡 목록
             </button>
           </div>
-          <div class="song-table-border collapse" id="kyLastMonthSongContentBorder">
+          <div class="song-table-border box-shadow-sm collapse" id="kyLastMonthSongContentBorder">
             <table class="song-table table-ky">
               <thead>
               <tr>
@@ -374,19 +366,20 @@
   <section class="showcase">
     <div class="container-fluid p-0">
       <div class="row g-0 fade-in-element">
-        <h2 id="showCaseHeaderText">
+        <h2 id="showCaseHeaderText" class="">
           사용 방법
         </h2>
       </div>
       <div class="row g-0 fade-in-element">
         <div class="showcase-img-wrapper">
-          <video autoplay muted loop playsinline>
+          <video autoplay muted loop playsinline class="box-shadow">
             <source src="/static/assets/mov/subscribe.webm" th:src="@{/assets/mov/subscribe.webm}" type="video/webm">
             <source src="/static/assets/mov/subscribe.mp4" th:src="@{/assets/mov/subscribe.mp4}" type="video/mp4">
             노래방 일본 신곡 알림이 구독하기 동영상
           </video>
+          <div class="video-shadow dark-mode-element"></div>
         </div>
-        <div class="col-lg-6 order-lg-1 showcase-text">
+        <div class="col-lg-6 order-lg-1 showcase-text inner-element">
           <h3>구독하기</h3>
           <p class="lead mb-3">
             이메일을 입력한 후 구독하기 버튼을 누릅니다. <br>
@@ -400,13 +393,14 @@
       </div>
       <div class="row g-0 fade-in-element">
         <div class="showcase-img-wrapper">
-          <video autoplay muted loop playsinline>
+          <video autoplay muted loop playsinline class="box-shadow">
             <source src="/static/assets/mov/noti.webm" th:src="@{/assets/mov/noti.webm}" type="video/webm">
             <source src="/static/assets/mov/noti.mp4" th:src="@{/assets/mov/noti.mp4}" type="video/mp4">
             노래방 일본 신곡 알림이 이메일 수신 동영상
           </video>
+          <div class="video-shadow dark-mode-element"></div>
         </div>
-        <div class="col-lg-6 showcase-text">
+        <div class="col-lg-6 showcase-text inner-element">
           <h3>이메일 수신</h3>
           <p class="lead mb-3">
             노래방에 일본 신곡이 추가되면 오전 10시에 등록된 이메일로 알려드립니다.<br>
@@ -419,14 +413,15 @@
       </div>
       <div class="row g-0 fade-in-element">
         <div class="showcase-img-wrapper">
-          <video autoplay muted loop playsinline>
+          <video autoplay muted loop playsinline class="box-shadow">
             <source src="/static/assets/mov/unsubscribe.webm" th:src="@{/assets/mov/unsubscribe.webm}"
                     type="video/webm">
             <source src="/static/assets/mov/unsubscribe.mp4" th:src="@{/assets/mov/unsubscribe.mp4}" type="video/mp4">
             노래방 일본 신곡 알림이 구독취소 동영상
           </video>
+          <div class="video-shadow dark-mode-element"></div>
         </div>
-        <div class="col-lg-6 order-lg-1 showcase-text">
+        <div class="col-lg-6 order-lg-1 showcase-text inner-element">
           <h3>구독 취소</h3>
           <p class="lead mb-0">
             구독 취소는 홈페이지 맨 아래의 구독취소 버튼을 눌러 할 수 있습니다.<br>
@@ -436,11 +431,12 @@
       </div>
       <div class="row g-0 fade-in-element">
         <div class="showcase-img-wrapper">
-          <div class="col-lg-6 order-lg-2 text-white showcase-img"
+          <div class="col-lg-6 order-lg-2 text-white showcase-img box-shadow"
                style="background-image: url('/static/assets/img/bg-showcase-3.jpg')"
                th:style="'background-image: url(/assets/img/bg-showcase-3.jpg)'"></div>
+          <div class="video-shadow dark-mode-element"></div>
         </div>
-        <div class="col-lg-6 order-lg-1 showcase-text">
+        <div class="col-lg-6 order-lg-1 showcase-text inner-element">
           <h3>문의사항</h3>
           <p class="lead mb-0">
             문의사항은 jsongnoti+cs@gmail.com 으로 문의 부탁드립니다. <br>
@@ -464,48 +460,38 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title" id="unsubscribeModalHeaderText">구독 취소하기</h4>
+          <h3 class="modal-title" id="unsubscribeModalHeaderText">구독 취소하기</h3>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <form class="forms-unsubscribe forms" id="unsubscribeForm">
             <!-- Email address input-->
-            <div class="row">
-              <div class="col">
-                <input class="form-control forms-email-input" id="unsubscribeEmailInput" type="email"
-                       placeholder="이메일 입력"
-                       required>
-              </div>
-              <div class="col-auto">
-                <button class="btn btn-outline-danger btn forms-submit-button" id="unsubscribeButton" type="submit">
-                  구독취소
-                </button>
-                <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
-              </div>
+            <div class="input-group justify-content-center">
+              <input class="form-control form-control-lg text-input" id="unsubscribeEmailInput" type="email"
+                     placeholder="이메일 입력" required>
+              <button class="btn btn-outline-danger btn-lg" id="unsubscribeButton" type="submit">
+                구독취소
+              </button>
             </div>
+            <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
           </form>
           <button id="verifyDeleteCollapseButton" type="button" data-bs-toggle="collapse"
                   data-bs-target="#verifyDeleteCollapse" aria-expanded="false" aria-controls="verifyDeleteCollapse">
           </button>
           <form class="forms forms-verify" id="verifyUnsubscriptionForm">
             <div class="collapse" id="verifyDeleteCollapse">
-              <div class="row">
-                <div class="col">
-                  <input class="form-control forms-email-input" id="verifyDeleteCodeInput" type="number"
-                         placeholder="4자리 인증 코드 입력"
-                         required>
-                </div>
-                <div class="col-auto">
-                  <button class="btn btn-outline-secondary btn forms-submit-button" id="verifyDeleteSubmitButton"
-                          type="submit">인증하기
-                  </button>
-                </div>
+              <div class="input-group justify-content-center">
+                <input class="form-control form-control-lg text-input" id="verifyDeleteCodeInput" type="number"
+                       placeholder="4자리 인증 코드 입력" required>
+                <button class="btn btn-outline-secondary btn-lg" id="verifyDeleteSubmitButton"
+                        type="submit">인증하기
+                </button>
               </div>
             </div>
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" id="unsubscribeModalCloseButton" class="btn btn-outline-secondary"
+          <button type="button" id="unsubscribeModalCloseButton" class="btn btn-lg btn-outline-secondary"
                   data-bs-dismiss="modal">닫기
           </button>
         </div>
@@ -513,11 +499,11 @@
     </div>
   </div>
   <!-- Footer-->
-  <footer class="footer bg-light">
+  <footer class="footer mt-4 inner-element">
     <div class="container">
       <div class="row">
         <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
-          <button type="button" class="btn btn-danger btn-sm" id="unsubscribeModalButton" data-bs-toggle="modal"
+          <button type="button" class="btn btn-danger" id="unsubscribeModalButton" data-bs-toggle="modal"
                   data-bs-target="#unsubscribeModal">
             구독 취소
           </button>
@@ -527,26 +513,41 @@
             <a class="text-muted text-decoration-none" href="https://www.freepik.com/">Freepik</a>
           </p>
           <div id="footerTextLinkWrapper" class="mb-4">
-            <p id="footerTextTermsOfService" class="d-inline-block small mb-0"><a class="text-muted text-decoration-none" href="/terms-of-service">이용약관</a></p>
-            <p id="footerTextPrivacyPolicy" class="d-inline-block small mb-0 ms-2"><a class="text-muted text-decoration-none" href="/privacy-policy"><b>개인정보처리방침</b></a></p>
+            <p id="footerTextTermsOfService" class="d-inline-block small mb-0"><a
+                class="text-muted text-decoration-none" href="/terms-of-service">이용약관</a></p>
+            <p id="footerTextPrivacyPolicy" class="d-inline-block small mb-0 ms-2"><a
+                class="text-muted text-decoration-none" href="/privacy-policy"><b>개인정보처리방침</b></a></p>
           </div>
         </div>
         <div class="col-lg-6 h-100 text-center text-lg-end my-auto">
           <ul class="list-inline mb-0">
-            <li class="list-inline-item me-4">
-              Github &nbsp;
-              <a href="https://github.com/spiaminto/JsongNoti-web"><i class="bi-github fs-3"></i></a>
+            <li class="list-inline-item me-4">&nbsp;
+              <a class="text-primary-emphasis text-decoration-none" href="https://github.com/spiaminto/JsongNoti-web">
+                Github
+                <i class="bi-github fs-3"></i>
+              </a>
             </li>
-            <li class="list-inline-item contact-mail-pc">
-              Contact
-              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=jsongnoti%2Bcs@gmail.com&su=일본 신곡 알림이 문의"
-                 target="_blank"><i
-                  class="bi-envelope fs-3"></i></a>
+            <li class="list-inline-item contact-mail-pc me-4">
+              <a class="text-primary-emphasis text-decoration-none"
+                 href="https://mail.google.com/mail/?view=cm&fs=1&to=jsongnoti%2Bcs@gmail.com&su=일본 신곡 알림이 문의"
+                 target="_blank">
+                Contact
+                <i class="bi-envelope fs-3"></i>
+              </a>
             </li>
-            <li class="list-inline-item contact-mail-mobile">
-              Contact
-              <a href="mailto:jsongnoti+cs@gmail.com?subject=일본 신곡 알림이 문의"><i
-                  class="bi-envelope fs-3"></i></a>
+            <li class="list-inline-item contact-mail-mobile me-4">
+              <a class="text-primary-emphasis text-decoration-none"
+                 href="mailto:jsongnoti+cs@gmail.com?subject=일본 신곡 알림이 문의">
+                Contact
+                <i class="bi-envelope fs-3"></i>
+              </a>
+            </li>
+            <li class="list-inline-item dark-mode-button">
+              <a class="text-primary-emphasis text-decoration-none"
+                 href="">
+                다크모드
+                <i class="bi bi-moon-fill fs-3"></i>
+              </a>
             </li>
           </ul>
         </div>
@@ -556,6 +557,6 @@
 
 </div> <!-- #container -->
 <!-- Bootstrap core JS-->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

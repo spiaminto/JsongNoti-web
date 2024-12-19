@@ -1,9 +1,14 @@
 /* 헤더텍스트 추가 설정 */
 #container nav h1 {
     padding: 0.5rem 0.5rem;
-    background-color: #fff3cd;
+    background-color: var(--bs-highlight-bg);
     border-radius: 10px;
     /*box-shadow:  0 0 10px 10px #fff3cd;*/
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--bs-emphasis-color);
+    font-weight: bold;
 }
 
 h2, h3 {
@@ -24,11 +29,11 @@ h2 { /* 외부헤더 (신곡목록, 사용방법 ...) */
     font-size: calc(1.425rem + 0.7vw); /* calc(1.325rem + 0.9vw) */
 }
 
-h3 { /* 사용방법-구독하기, ... */
+h3 { /* 사용방법-구독하기, 모달헤더 ... */
     font-size: calc(1.35rem + 0.5vw); /* 1.3rem + 0.6vw */
 }
 
-h4 { /* 모달 헤더, 모달 하위헤더 */
+h4 { /* 모달 하위헤더 */
     font-size: calc(1.05rem + 0.5vw);
 }
 

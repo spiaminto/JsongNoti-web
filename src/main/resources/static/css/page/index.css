@@ -1,15 +1,5 @@
 @charset "UTF-8";
 
-/*
-  media
-  최소치 360px
-  @media (min-width: 576px)
-  @media (min-width: 768px)
-  @media (min-width: 992px)
-  // 여기서 부터 레이아웃 가로로 확장
-  @media (min-width: 1200px)
-*/
-
 
 /* 네비바 영역 ============================================================== */
 
@@ -20,34 +10,6 @@
 @media (min-width: 992px) {
     .navbar {
         padding: 0.7rem;
-    }
-}
-
-#goToUsageButtonNav {
-    font-size: calc(1.05rem + 0.3vw);
-    font-weight: bold;
-    border-radius: 20px;
-    padding: 0.75rem 1rem;
-    border-style: none;
-    transition: all 0.3s ease;
-    display: none;
-}
-
-@media (min-width: 992px) {
-    #goToUsageButtonNav {
-        /*padding: 12px 24px;*/
-        display: block;
-    }
-}
-
-h1 .navbar-brand {
-    font-weight: bold;
-    text-indent: 0.5rem;
-}
-
-@media (min-width: 768px) {
-    h1 .navbar-brand {
-        text-indent: 2rem;
     }
 }
 
@@ -65,7 +27,6 @@ header.masthead {
     border-radius: 20px;
     width: 100%;
     margin: 0 auto;
-    box-shadow: darkgrey 5px 5px 5px;
 }
 
 .masthead-background:before {
@@ -106,8 +67,9 @@ header.masthead {
 }
 
 .headerText {
-    font-weight: normal;
-    text-shadow: 1px 1px 1px dimgray;
+    font-weight: bold;
+    color: var(--bs-light);
+    /*text-shadow: var(--bs-dark-bg-subtle) 1px 1px 1px;*/
 }
 
 @media (min-width: 768px) {
@@ -124,63 +86,16 @@ header.masthead {
     float: none;
 }
 
-.forms .col {
-    padding: 0;
-}
-
-.forms .row {
-    margin: 0; /* col 전체를 다 바꾸면 표도 영향 받으니 이곳만 수정 */
-}
-
-.forms .col-auto {
-    padding: 0;
-}
-
-.forms .forms-submit-button {
-    margin-left: 0.5rem;
-}
-
 .forms-verify {
-    padding-top: 1rem;
-}
-
-
-/* 모바일 폼 크기 조정 - 이메일입력, 구독버튼 */
-@media (min-width: 768px) {
-
-    .forms .col {
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-    }
-
-    .forms .forms-email-input {
-        /*from bootstrap .form-control-lg */
-        min-height: calc(1.5em + 2rem + 2px);
-        padding: 1rem 1.25rem;
-        font-size: calc(1.05rem + 0.5vw); /* calc(1.15rem + 0.3vw);*/
-        border-radius: 10px;
-    }
-
-    .forms .col-auto {
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-    }
-
-    .forms .forms-submit-button {
-        /*from bootstrap .form-control-lg */
-        min-height: calc(1.5em + 2rem + 2px);
-        padding: 1rem 1.25rem;
-        font-size: calc(1.05rem + 0.5vw); /* calc(1.15rem + 0.3vw);*/
-        border-radius: 10px;
-    }
+    margin-top: 1rem;
 }
 
 .agreement-wrapper {
-    font-size: calc(0.8rem + 0.5vw);
+    font-size: calc(0.75rem + 0.3vw);
 }
 
 .agreement-btn {
-    font-size: calc(0.8rem + 0.5vw);
+    font-size: calc(0.75rem + 0.3vw);
     border: 0;
     background-color: transparent;
     cursor: pointer;
@@ -209,9 +124,8 @@ header.masthead {
 
 #goToUsageButton {
     padding: 8px 15px; /*10 20*/
-    font-size: calc(0.9rem + 0.4vw);
+    font-size: calc(0.8rem + 0.3vw);
     border-radius: 20px;
-    /*transition: all 0.3s ease;*/
     animation: bounce 0.6s cubic-bezier(0, 0, 0.18, 0.99) infinite alternate;
 }
 
@@ -244,7 +158,7 @@ header.masthead {
 }
 
 .new-song-section-header {
-    font-size: calc(0.9rem + 0.3vw);
+    font-size: calc(0.8rem + 0.3vw);
 }
 
 @media (min-width: 992px) {
@@ -259,14 +173,11 @@ header.masthead {
 .showcase #showCaseHeaderText {
     text-align: center;
     padding: 1rem 2rem;
-    /*margin: 1rem auto;*/
-    /*box-shadow: lightgrey 0px 3px 3px 3px;*/
-    /*width: 80%;*/
-    /*border-radius: 25px;*/
 }
 
 .showcase-img-wrapper {
     text-align: center;
+    position: relative;
 }
 
 .showcase-img {
@@ -274,8 +185,9 @@ header.masthead {
     max-width: 500px;
     border-radius: 20px;
     margin: 0 auto;
-    box-shadow: lightgrey 2px 2px 2px;
     aspect-ratio: 1.5 / 1;
+    min-height: 30rem;
+    background-size: cover;
 }
 
 video {
@@ -284,13 +196,32 @@ video {
     max-width: 500px;
     border-radius: 20px;
     border: #aaaaaa 1px solid;
-    box-shadow: lightgrey 3px 3px 3px;
+    position: relative;
+    z-index: -1;
+}
+
+.video-shadow {
+    margin: 0 auto;
+    width: 95%;
+    max-width: 500px;
+    border-radius: 20px;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: inline;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0;
 }
 
 /* 사용방법 및 주의사항 양옆으로 펼쳐질때 보정 */
 @media (min-width: 992px) {
 
     video {
+        width: 95%;
+        max-width: 550px;
+    }
+    .video-shadow {
         width: 95%;
         max-width: 550px;
     }
@@ -318,18 +249,18 @@ video {
 }
 
 .showcase .showcase-text {
-    background-color: white;
     border-radius: 20px;
     margin: 1rem auto;
     padding: 1.5rem;
     width: 95%;
+    max-width: 600px;
 }
 
 @media (min-width: 992px) {
     .showcase .showcase-text {
-        /*padding: calc(2rem + 0.5vw) calc(2rem + 3vw) calc(2rem + 0.5vw) calc(0.5rem + 0.1vw);*/
         padding: 2rem;
         width: 50%;
+        max-width: 700px;
         margin: auto auto;
     }
 }

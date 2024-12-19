@@ -61,7 +61,7 @@ public class SongMemoController {
         log.info("switchOrder: {}", songMemosReorderRequest);
         Long userId = songMemosReorderRequest.getUserId();
         // 폼 userId 값 검증
-        if (userId.equals(principalDetails.getUserId())) {
+        if (!userId.equals(principalDetails.getUserId())) {
             return ResponseEntity.badRequest().body(SongMemoResponse.withMessage("잘못된 순서변경 요청입니다."));
         }
 
@@ -81,7 +81,7 @@ public class SongMemoController {
         log.info("deleteMemo: {}", songMemoDeleteRequest);
         Long userId = songMemoDeleteRequest.getUserId();
         // 폼 userId 값 검증
-        if (userId.equals(principalDetails.getUserId())) {
+        if (!userId.equals(principalDetails.getUserId())) {
             return ResponseEntity.badRequest().body(SongMemoResponse.withMessage("잘못된 메모삭제 요청입니다."));
         }
 

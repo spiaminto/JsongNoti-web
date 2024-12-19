@@ -2,9 +2,6 @@ $(function () {
     // 구독 취소 폼 전송
     $('#unsubscribeForm').submit(function (event) {
         event.preventDefault();
-        if (!confirm('정말 구독을 취소하시겠습니까?')) {
-            return;
-        }
 
         let email = $('#unsubscribeEmailInput').val();
         let csrf = $('#csrfToken').val();
@@ -35,6 +32,9 @@ $(function () {
 // 구독 취소 인증코드 전송
     $('#verifyUnsubscriptionForm').submit(function (event) {
         event.preventDefault();
+        if (!confirm('정말 구독을 취소하시겠습니까?')) {
+            return;
+        }
         $(this).prop('disabled', true);
 
         let code = $('#verifyDeleteCodeInput').val();

@@ -18,7 +18,6 @@
 /* 메모 등록 */
 .add-memo-section {
     padding: 1rem;
-    background: white;
     border-radius: 20px;
 }
 
@@ -36,12 +35,20 @@
     margin-bottom: 0;
 }
 
+#presentOrderModal .modal-body {
+    padding: 0.5rem;
+}
+
+#presentOrderModalButton {
+    vertical-align: super;
+}
+
 #songSearchResultTable .song-title-text {
     display: inline; /* 한글 타이틀 표시를 위해 인라인 */
 }
 
 .selected {
-    background-color: #fff3cd;
+    background-color: var(--bs-highlight-bg);
 }
 
 .empty-song-table {
@@ -50,33 +57,39 @@
 
 /* 순서변경 및 삭제 */
 .song-row-switching {
-    background: repeating-linear-gradient(-45deg, #fff, #fff 3px, #efefef 0, #efefef 6px);
+    background: repeating-linear-gradient(-45deg, var(--bs-secondary-bg), var(--bs-secondary-bg) 3px, var(--bs-tertiary-bg) 0, var(--bs-tertiary-bg) 6px);
+    /*background-color: var(--bs-secondary-bg);*/
     transition-duration: 0.5s;
     transition-property: background-color;
 }
 
 .song-row-will-switch-selected {
-    background: #fff3cd none;
+    background: var(--bs-highlight-bg) none;
 }
 
 .song-row-be-switched-selected {
-    background: #dddddd none;
+    background: var(--bs-secondary-border-subtle) none;
 }
 
 @media (hover: hover) and (pointer: fine) { /* 마우스에서만 호버 */
     .song-row-will-switch:hover {
-        background: #dddddd none;
+        background: var(--bs-highlight-bg) none;
         cursor: pointer;
     }
 
     .song-row-be-switched:hover {
-        background: #dddddd none;
+        background: var(--bs-secondary-border-subtle) none;
+        cursor: pointer;
+    }
+
+    .song-row-deleting:hover {
+        background: var(--bs-danger-bg-subtle) none;
         cursor: pointer;
     }
 }
 
 .song-row-switched {
-    background: #dddddd none;
+    background: var(--bs-secondary-border-subtle) none;
 }
 
 .switch-order-complete-button {
@@ -88,7 +101,7 @@
 }
 
 .song-row-deleting {
-    background: repeating-linear-gradient(-45deg, #ffeeee, #ffeeee 3px, #ffffff 0, #ffffff 6px);
+    background: repeating-linear-gradient(-45deg, var(--bs-danger-bg-subtle), var(--bs-danger-bg-subtle) 3px, var(--bs-tertiary-bg) 0, var(--bs-tertiary-bg) 6px);
     transition-duration: 0.5s;
     transition-property: background-color;
 }
@@ -96,7 +109,6 @@
 .delete-memo-complete-button {
     display: none;
 }
-
 
 .splitter {
     margin: 2rem auto;
@@ -106,62 +118,16 @@
 .btn-xsm {
     padding: calc(0.3rem + 0.1vw) calc(0.5rem + 0.1vw);
     font-size: calc(0.7rem + 0.1vw);
-    border-radius: 0.25rem;
+    border-radius: 10px;
 }
 
 #verifyDeleteUserCollapseButton {
     display: none;
 }
 
-/* 회원 탈퇴 모달 폼 관련 설정 (나중에 index 랑 통합) */
-
-.forms .col {
-    padding: 0;
-}
-
-.forms .row {
-    margin: 0; /* col 전체를 다 바꾸면 표도 영향 받으니 이곳만 수정 */
-}
-
-.forms .col-auto {
-    padding: 0;
-}
-
-.forms .forms-submit-button {
-    margin-left: 0.5rem;
-}
-
 .forms-verify {
     padding-top: 1rem;
 }
 
-/* 모바일 폼 크기 조정 - 이메일입력, 구독버튼 */
-@media (min-width: 768px) {
-    .forms .col {
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-    }
-
-    .forms .forms-email-input {
-        /*from bootstrap .form-control-lg */
-        min-height: calc(1.5em + 2rem + 2px);
-        padding: 1rem 1.25rem;
-        font-size: calc(1.05rem + 0.5vw); /* calc(1.15rem + 0.3vw);*/
-        border-radius: 10px;
-    }
-
-    .forms .col-auto {
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-    }
-
-    .forms .forms-submit-button {
-        /*from bootstrap .form-control-lg */
-        min-height: calc(1.5em + 2rem + 2px);
-        padding: 1rem 1.25rem;
-        font-size: calc(1.05rem + 0.5vw); /* calc(1.15rem + 0.3vw);*/
-        border-radius: 10px;
-    }
-}
 
 

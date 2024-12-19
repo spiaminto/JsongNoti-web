@@ -1,4 +1,5 @@
 import MemoUtil from "./memo-util.js";
+import CommonUtil from "../common-util.js";
 
 $(function () {
 
@@ -30,7 +31,7 @@ $(function () {
         // 빈 '첫번째 요소로 추가' 행 추가
         let $firstRow = $songTable.find("tbody tr:first-child");
         let $emptyFirstRow = $firstRow.clone();
-        $emptyFirstRow.find('.song-number').data('memo-id', '').data('present-order', '').end().find('.song-number span').text('').end().find('.song-title-text').text('첫번째 순서로 추가').end().find('.song-info span').text('첫번째 순서로 추가하려면 클릭합니다.').end().find('.song-singer').text('');
+        $emptyFirstRow.find('.song-number').data('memo-id', '').data('present-order', '').end().find('.song-number span').text('').end().find('.song-title-text').text('첫번째 순서로 추가').end().find('.song-info span').text('첫번째 순서로 추가하려면 클릭').end().find('.song-singer').text('');
         $firstRow.before($emptyFirstRow);
     }
 
@@ -48,18 +49,15 @@ $(function () {
         $(this).addClass('song-row-be-switched-selected');
         let $willSwitchRow = $('.song-row-will-switch-selected');
         let $beSwitchedRow = $('.song-row-be-switched-selected');
-        $beSwitchedRow.after($willSwitchRow)
-
-        // 바뀐 메모 하이라이트
-        $willSwitchRow.addClass('song-row-switched');
-        setTimeout(function () {
-            $willSwitchRow.removeClass('song-row-switched');
-        }, 500);
+        $beSwitchedRow.after($willSwitchRow);
 
         // 클래스 초기화
         $('.table-tj').find('tbody tr')
             .removeClass('song-row-be-switched song-row-be-switched-selected song-row-will-switch song-row-will-switch-selected')
             .addClass('song-row-will-switch');
+
+        // 하이라이트
+        CommonUtil.blinkElement($willSwitchRow, $willSwitchRow.css('background'));
     });
 
 // 메모 순서변경 완료 버튼 클릭 이벤트 타겟 테이블을 h2 의 span 으로 찾음.

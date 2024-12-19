@@ -6,8 +6,14 @@ $(function () {
         let memoTable = brand === 'TJ' ? $('.table-tj') : $('.table-ky');
 
         // 순서 설정 테이블 초기화 후 붙임
-        let choosePresentOrderTable = $('#choosePresentOrderTable');
-        choosePresentOrderTable.find('tbody').empty().append(memoTable.find('tbody').html());
+        let $choosePresentOrderTable = $('#choosePresentOrderTable');
+        $choosePresentOrderTable.find('tbody').empty().append(memoTable.find('tbody').html());
+
+        // 빈 '첫번째 요소로 추가' 행 추가
+        let $firstRow = $choosePresentOrderTable.find("tbody tr:first-child");
+        let $emptyFirstRow = $firstRow.clone();
+        $emptyFirstRow.find('.song-number').attr('data-present-order', '-1').end().find('.song-number span').text('').end().find('.song-title-text').text('첫번째 순서로 추가').end().find('.song-info span').text('첫번째 순서로 추가하려면 클릭').end().find('.song-singer').text('');
+        $firstRow.before($emptyFirstRow);
     })
 
 // 노래 순서 모달 노래 클릭

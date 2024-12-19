@@ -43,14 +43,19 @@
 
 /* 아이콘 버튼 */
 .icon-button {
-    margin-left: 0.5rem;
+    margin-left: calc(0.1rem + 0.5vw);
     position: relative;
     background: no-repeat center center;
     background-size: cover;
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     vertical-align: text-bottom;
 }
+
+.icon-button:first-child {
+    margin-left: 0;
+}
+
 
 .icon-button-label {
     position: absolute;
@@ -58,7 +63,19 @@
     width: 100%;
     left: 50%;
     transform: translateX(-50%);
-    bottom: -40%;
+    bottom: -45%;
+}
+
+.icon-button:first-child .icon-button-label {
+    bottom: -43%; /* 이상하게 홈화면에서 검색 아이콘의 라벨이 쳐저 보여서 올림 */
+}
+
+/* 360px 맞추기 위해 어쩔수 없이 사용 */
+@media (min-width: 390px) {
+    .icon-button {
+        width: 40px;
+        height: 40px;
+    }
 }
 
 @media (min-width: 992px) {
@@ -69,7 +86,7 @@
 
     .icon-button-label {
         font-size: 0.9rem;
-        bottom: -40%;
+        bottom: -45%;
     }
 }
 
@@ -103,6 +120,48 @@ footer {
 /* styles.css 초기화 */
 .navbar-brand {
     margin-right: 0;
+}
+
+.box-shadow-sm {
+    /* color x y blur spread */
+    box-shadow: var(--bs-dark-bg-subtle) 1px 2px 4px 0px;
+}
+
+.box-shadow {
+    box-shadow: var(--bs-dark-bg-subtle) 1px 3px 5px 3px;
+}
+
+
+/* 부트스트랩 공통부 수정*/
+.btn-lg {
+    font-size: 1rem; /* 원본 1.25rem*/
+}
+
+.form-control-lg {
+    font-size: 1rem;
+}
+
+tbody, td, tfoot, thead, th, tr {
+    border-width: 1px;
+}
+
+@media(min-width: 768px) {
+    .form-control-lg {
+        padding: 0.75rem 1rem; /* 원본 0.5rem 1rem*/
+        font-size: 1.25rem; /* 원본으로 복구 */
+    }
+
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    :root {
+        scroll-behavior: unset;
+    }
+}
+
+/* 유틸리티 */
+.row-for-expand-padding {
+    /* 부모 요소의 padding 을 먹기위한 row 표시용 */
 }
 
 

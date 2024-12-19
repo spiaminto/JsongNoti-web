@@ -1,5 +1,0 @@
-/* search 페이지 한정으로 검색 결과창 크기 더 크게 키우기 */
-#songSearchResultCollapse {
-    width: calc(100% + 1.5rem);
-    margin-left: -0.75rem;
-}
