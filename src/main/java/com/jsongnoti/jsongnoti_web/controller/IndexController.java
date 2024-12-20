@@ -75,6 +75,7 @@ public class IndexController {
         return "index";
     }
 
+
     @GetMapping("/search")
     public String search() {
         return "search";
@@ -116,7 +117,5 @@ public class IndexController {
         if (date == null) { date = "241220"; }
         return "/terms-of-use/" + date;
     }
-
-
 
 }
