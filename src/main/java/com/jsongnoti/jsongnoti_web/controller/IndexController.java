@@ -108,14 +108,14 @@ public class IndexController {
     public String privacyPolicy(@RequestParam(value = "date", required = false) String date) {
         log.info("date: {}", date);
         if (date == null) { date = "241220"; }
-        return "/privacy-policy/" + date;
+        return "privacy/" + date;
     }
 
     @GetMapping("/terms-of-use")
     public String termsOfUse(@RequestParam(value = "date", required = false) String date) {
         log.info("date: {}", date);
         if (date == null) { date = "241220"; }
-        return "/terms-of-use/" + date;
+        return "terms/" + date;
     }
 
 }

@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class VerifySubscriptionForm {
 
-    @Size(min = 4, max = 4, message = "{Size.code}")
+    @Size(min = 4, max = 4)
     private String code;
 
 }

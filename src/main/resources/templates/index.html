@@ -43,8 +43,8 @@
       gtag('config', 'G-JFWLSXBEYR');
   </script>
   <script src="https://code.jquery.com/jquery.min.js"></script>
-  <script src="/static/js/fade-in.js" th:src="@{/js/fade-in.js}" type="text/javascript"></script>
   <script src="/static/js/common-handlers.js" th:src="@{/js/common-handlers.js}" type="text/javascript"></script>
+  <script src="/static/js/fade-in.js" th:src="@{/js/fade-in.js}" type="text/javascript"></script>
   <script src="/static/js/index/subscribe.js" th:src="@{/js/index/subscribe.js}" type="text/javascript"></script>
   <script src="/static/js/index/unsubscribe.js" th:src="@{/js/index/unsubscribe.js}" type="text/javascript"></script>
   <script>
@@ -170,18 +170,17 @@
         </div>
         <div class="modal-body">
           <div class="modal-body-content">
-            <p><h4>개인정보 수집 및 이용 안내 동의</h4> <br>
-            '노래방 일본 신곡 알림이'는 서비스 제공을 위해 다음과 같은 개인정보를 수집하고 있습니다.<br>
+            <h4>개인정보 수집 및 이용 안내 동의</h4> <br>
+            제이노티는 알림메일 서비스 제공을 위해 다음과 같은 개인정보를 수집하고 있습니다.<br>
             개인정보 수집을 거부하는 경우 메일 서비스 이용에 제한이 될 수 있습니다.<br>
             ▪ 수집하고자 하는 항목: 이메일 주소<br>
-            ▪ 개인정보 수집 목적: 신곡 알림 및 공지 메일 발송<br>
+            ▪ 개인정보 수집 목적: 알림메일 서비스 제공 및 회원 관리, 문의처리<br>
             ▪ 보유 및 이용 기간: 수집일로부터 1년 보유. 구독 취소시 48시간 이내 삭제. 구독 취소시 이메일 인증이 어려운 경우 7일간 보관 후 삭제.<br>
             자세한 내용은 개인정보처리방침을 참고해주세요.
-            </p>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">확인</button>
+          <button type="button" class="btn btn-lg btn-outline-primary" data-bs-dismiss="modal">확인</button>
         </div>
       </div>
     </div>
@@ -465,6 +464,9 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+          <p>
+            구독시 입력한 이메일을 인증하여 구독취소를 진행합니다.<br>
+          </p>
           <form class="forms-unsubscribe forms" id="unsubscribeForm">
             <!-- Email address input-->
             <div class="input-group justify-content-center">

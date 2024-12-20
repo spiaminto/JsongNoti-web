@@ -82,7 +82,7 @@ class MemoUtil {
                 memoData = data.songMemos;
             },
             error: function (xhr) {
-                console.log(xhr);
+                // console.log(xhr);
                 memoData = null;
                 // let message = xhr.responseJSON.message;
             }
@@ -116,6 +116,14 @@ class MemoUtil {
             $('.switch-order-button').prop('disabled', false).show();
         } else if (command === 'off') {
             $('.switch-order-button').prop('disabled', true).hide();
+        }
+    }
+
+    toggleSaveMemoButton(command) {
+        if (command === 'on') {
+            $('#addSongButton').prop('disabled', false).show();
+        } else if (command === 'off') {
+            $('#addSongButton').prop('disabled', true).hide();
         }
     }
 

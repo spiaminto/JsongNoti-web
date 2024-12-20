@@ -20,7 +20,7 @@ $(function () {
 
         $.each(songRows, function (index, row) {
             // 삭제 이벤트 연결
-            $(row).find('.song-title-text').on('click', function (event) {
+            $(row).find('.song-title').on('click', function (event) {
                 event.preventDefault();
                 deleteMemoEvent(brand, event.target);
             });
@@ -29,13 +29,14 @@ $(function () {
 
         $(target).siblings('.delete-memo-complete-button').show();
         MemoUtil.toggleSwitchOrderButton('off');
+        MemoUtil.toggleSaveMemoButton('off');
         MemoUtil.toggleSearchForm('off');
     }
 
 // 실제 노래 삭제 버튼 클릭 이벤트
     function deleteMemoEvent(brand, target) {
         let $target = $(target);
-        let songTitle = $target.text();
+        let songTitle = $target.find('.song-title-text').text();
         if (!confirm('확인을 누르면 다음 곡이 삭제됩니다.\n' + songTitle)) return false; // 취소시 리턴
 
         let memoId = $target.closest('tr').find('.song-number').data('memo-id')
@@ -56,7 +57,7 @@ $(function () {
                 $target.closest('tr').remove();
             },
             error: function (xhr) {
-                console.log(xhr);
+                // console.log(xhr);
             }
         })
     }
@@ -79,5 +80,6 @@ $(function () {
         isMemoDeleting = false;
         MemoUtil.toggleSwitchOrderButton('on');
         MemoUtil.toggleSearchForm('on');
+        MemoUtil.toggleSaveMemoButton('on');
     }
 });

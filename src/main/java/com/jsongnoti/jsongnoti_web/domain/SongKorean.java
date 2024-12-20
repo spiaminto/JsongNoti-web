@@ -31,6 +31,8 @@ public class SongKorean {
     private String singerOrigin;
     private String singerRead;
 
+    private String singerPrior;
+
     private String model;
 
 }
