@@ -19,7 +19,6 @@ $(function () {
                 showMemoBrand: showMemoBrand
             }),
             success: function (data) {
-                console.log(data);
                 alert(data.message);
                 $('#changeSettingModalCloseButton').click();
                 MemoUtil.initializeMemoTable();

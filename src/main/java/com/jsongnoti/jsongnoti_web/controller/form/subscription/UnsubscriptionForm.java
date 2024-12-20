@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class UnsubscriptionForm {
 
-    @Email @NotBlank @Size(max = 40, message = "{Size.email}")
+    @Email @NotBlank @Size(max = 40)
     private String email;
 
 }

@@ -22,7 +22,7 @@ $(function () {
                 songSearchPostProcess(searchResults);
             },
             error: function (xhr) {
-                console.log(xhr);
+                // console.log(xhr);
                 let message = xhr.responseJSON.message;
                 alert(message);
             }
@@ -44,9 +44,9 @@ $(function () {
         // 검색결과 후처리 - 한글타이틀 기입, 클릭시 폼입력 이벤트바인딩, data-id (songId) 추가
         $.each(data, function (index, song) {
             let songTitleHint = song.titleKorean ? '<i class=\'song-title-korean\'>' + song.titleKorean + '</i>' : '';
-            jQuery(songTable.find('.song-title-text')[index]).after(songTitleHint);
-            jQuery(songTable.find('.song-title')[index]).on('click', fillMemoAddFormWithSearchResult);
-            jQuery(songTable.find('.song-number')[index]).attr('data-id', song.id);
+            $(songTable.find('.song-title-text')[index]).after(songTitleHint);
+            $(songTable.find('.song-title')[index]).on('click', fillMemoAddFormWithSearchResult);
+            $(songTable.find('.song-number')[index]).attr('data-id', song.id);
         });
 
         // 새로운 검색결과 테이블 바디에 아이디 붙이고 교체
@@ -61,6 +61,7 @@ $(function () {
 // 검색 결과 누르면 폼에 입력 -> 검색결과의 .song-title 에 이벤트 연결
     function fillMemoAddFormWithSearchResult(event) {
         let memoAddForm = $('#memoAddForm');
+        if (memoAddForm.length === 0) { return; } // 메모 추가폼이 없으면 리턴
         $('#addInfoTextInput').val(''); // 메모 입력창 초기화 뒤에서 하면 거슬림
 
         // 클릭한 노래의 정보를 폼에 입력

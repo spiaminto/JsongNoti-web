@@ -49,7 +49,7 @@ public class ExceptionAdvice {
         return ResponseEntity.badRequest().body(ExceptionResponse.withMessage(e.getMessage()));
     }
 
-    // @Valid 예외 처리
+    // Controller 검증 예외 처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponse> handleValidationException(MethodArgumentNotValidException ex) {
         log.error("error: {}, message = {}", ex.getClass().getName(), ex.getMessage());

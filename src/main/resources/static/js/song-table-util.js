@@ -7,7 +7,7 @@ class SongTableUtil {
      */
     renderEmptySongTable(dataList) {
         if (dataList == null) {
-            console.log('dataList is null');
+            // console.log('dataList is null');
             return;
         }
         let emptySongTable = $('.empty-song-table');

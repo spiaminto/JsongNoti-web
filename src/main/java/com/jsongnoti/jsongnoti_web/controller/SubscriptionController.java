@@ -7,11 +7,10 @@ import com.jsongnoti.jsongnoti_web.controller.form.subscription.VerifySubscripti
 import com.jsongnoti.jsongnoti_web.controller.form.subscription.VerifyUnsubscriptionForm;
 import com.jsongnoti.jsongnoti_web.service.SubscriptionService;
 import com.jsongnoti.jsongnoti_web.service.result.SubscriptionServiceResult;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,9 +24,7 @@ public class SubscriptionController {
     private final SubscriptionService subscriptionService;
 
     @PostMapping("/subscriptions")
-    public ResponseEntity<SubscriptionResponse> addUser(@Validated @ModelAttribute SubscriptionForm subscriptionForm,
-                                                        BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) { return ResponseEntity.badRequest().body(SubscriptionResponse.withMessage(bindingResult.getFieldError().getDefaultMessage())); }
+    public ResponseEntity<SubscriptionResponse> addUser(@Valid @ModelAttribute SubscriptionForm subscriptionForm) {
 
         String email = subscriptionForm.getEmail();
         log.debug("email: {}", email);
@@ -41,9 +38,7 @@ public class SubscriptionController {
 
     @PostMapping("/subscriptions/{subscriptionId}/verify-add")
     public ResponseEntity<SubscriptionResponse> verifyAddUser(@PathVariable(name = "subscriptionId") Long subscriptionId,
-                                                              @Validated @ModelAttribute VerifySubscriptionForm verifySubscriptionForm,
-                                                              BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) { return ResponseEntity.badRequest().body(SubscriptionResponse.withMessage(bindingResult.getFieldError().getDefaultMessage())); }
+                                                              @Valid @ModelAttribute VerifySubscriptionForm verifySubscriptionForm) {
 
         String authenticationToken = verifySubscriptionForm.getCode();
         log.debug("subscriptionId: {}, token: {}", subscriptionId, authenticationToken);
@@ -56,9 +51,7 @@ public class SubscriptionController {
     }
 
     @PostMapping("/subscriptions/delete")
-    public ResponseEntity<SubscriptionResponse> deleteUser(@Validated @ModelAttribute UnsubscriptionForm unsubscriptionForm,
-                                                           BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) { return ResponseEntity.badRequest().body(SubscriptionResponse.withMessage(bindingResult.getFieldError().getDefaultMessage())); }
+    public ResponseEntity<SubscriptionResponse> deleteUser(@Valid @ModelAttribute UnsubscriptionForm unsubscriptionForm) {
 
         String email = unsubscriptionForm.getEmail();
         log.debug("email: {}", email);
@@ -72,9 +65,7 @@ public class SubscriptionController {
 
     @PostMapping("/subscriptions/{subscriptionId}/verify-delete")
     public ResponseEntity<SubscriptionResponse> verifyDeleteUser(@PathVariable(name = "subscriptionId") Long subscriptionId,
-                                                                 @Validated @ModelAttribute VerifyUnsubscriptionForm verifyUnsubscriptionForm,
-                                                                 BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) { return ResponseEntity.badRequest().body(SubscriptionResponse.withMessage(bindingResult.getFieldError().getDefaultMessage())); }
+                                                                 @Valid @ModelAttribute VerifyUnsubscriptionForm verifyUnsubscriptionForm) {
 
         String authenticationToken = verifyUnsubscriptionForm.getCode();
         log.debug("subscriptionId: {}, token: {}", subscriptionId, authenticationToken);

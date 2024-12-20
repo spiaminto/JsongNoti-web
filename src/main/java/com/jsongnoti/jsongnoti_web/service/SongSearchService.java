@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -30,14 +31,14 @@ public class SongSearchService {
         boolean keywordHasKorean = RegexPatterns.hasKorean(keyword);
         switch (searchType) {
             case TITLE -> songSearchDtos = keywordHasKorean ?
-                        searchSongsByKoreanTitle(keyword) :
-                        searchSongsByTitle(keyword);
+                    searchSongsByKoreanTitle(keyword) :
+                    searchSongsByTitle(keyword);
             case SINGER -> songSearchDtos = keywordHasKorean ?
-                        searchSongsByKoreanSinger(keyword) :
-                        searchSongsBySinger(keyword);
+                    searchSongsByKoreanSinger(keyword) :
+                    searchSongsBySinger(keyword);
             case INFO -> songSearchDtos = keywordHasKorean ?
-                        searchSongsByKoreanInfo(keyword) :
-                        searchSongsByInfo(keyword);
+                    searchSongsByKoreanInfo(keyword) :
+                    searchSongsByInfo(keyword);
             default -> log.error("Invalid search type: {}", searchType);
         }
 
@@ -49,7 +50,6 @@ public class SongSearchService {
 
     // 원어 검색 ============================================================================
     private List<SongSearchDto> searchSongsByTitle(String title) {
-
         return songRepository.findSongByTitleSimilar(title).stream().map(SongSearchDto::from).toList();
     }
 
@@ -74,12 +74,23 @@ public class SongSearchService {
     }
 
     private List<SongSearchDto> searchSongsByKoreanSinger(String koreanSinger) {
-        List<SongSearchResultDto>findDtos = songRepository.findSongByKoreanSingerSimilar(koreanSinger);
+        // 수기 입력 - likequery 로 찾기
+        List<SongSearchResultDto> findPriorDtos = songRepository.findSongBySingerPrior(koreanSinger);
+        // 자동 입력 - 유사도로 찾기
+        List<SongSearchResultDto> findDtos = songRepository.findSongByKoreanSingerSimilar(koreanSinger);
         if (findDtos.isEmpty()) {
             findDtos = songRepository.findSongByKoreanSingerReadSimilar(koreanSinger);
         }
-        List<SongSearchDto> searchResults = new ArrayList<>();
-        searchResults = findDtos.stream().map(SongSearchDto::from).toList();
+        // interface 를 dto 로 변환
+        List<SongSearchDto> priorDtos = findPriorDtos.stream().map(SongSearchDto::from).collect(Collectors.toList());
+        List<SongSearchDto> dtos =findDtos.stream().map(SongSearchDto::from).collect(Collectors.toList());
+
+        // 자동입력 값을 유사도로 찾은 결과에서 수기입력 값을 likeQuery 찾읁 결과를 제외 (중복제거)
+        dtos.removeAll(priorDtos);
+        // 수기입력 값을 likeQuery 로 찾은 결과 뒤에 자동입력 값을 유사도로 찾은 결과를 붙임
+        priorDtos.addAll(dtos);
+
+        List<SongSearchDto> searchResults = priorDtos;
         log.info("searchResults = {}", searchResults);
         return searchResults;
     }

@@ -37,20 +37,6 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     @Query(value =
             "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
                     "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
-                    "WHERE s.singer =% :keyword " +
-                    "order by bigm_similarity(s.singer, :keyword) desc", nativeQuery = true)
-    List<SongSearchResultDto> findSongBySingerSimilar(String keyword);
-
-    @Query(value =
-            "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
-                    "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
-                    "WHERE s.info =% :keyword " +
-                    "order by bigm_similarity(s.info, :keyword) desc", nativeQuery = true)
-    List<SongSearchResultDto> findSongByInfoSimilar(String keyword);
-
-    @Query(value =
-            "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
-                    "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
                     "WHERE sk.title =% :keyword " +
                     "order by bigm_similarity(sk.title, :keyword) desc", nativeQuery = true)
     List<SongSearchResultDto> findSongByKoreanTitleSimilar(String keyword);
@@ -65,16 +51,37 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     @Query(value =
             "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
                     "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
-                    "WHERE sk.singer_read =% :keyword " +
-                    "order by bigm_similarity(sk.singer_read, :keyword) desc", nativeQuery = true)
-    List<SongSearchResultDto> findSongByKoreanSingerSimilar(String keyword);
+                    "WHERE s.singer =% :keyword " +
+                    "order by bigm_similarity(s.singer, :keyword) desc", nativeQuery = true)
+    List<SongSearchResultDto> findSongBySingerSimilar(String keyword);
+
+    @Query(value =
+            "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
+                    "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
+                    "WHERE sk.singer_prior LIKE likequery(:keyword) " +
+                    "order by s.reg_date desc", nativeQuery = true)
+    List<SongSearchResultDto> findSongBySingerPrior(String keyword);
 
     @Query(value =
             "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
                     "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
                     "WHERE sk.singer =% :keyword " +
                     "order by bigm_similarity(sk.singer, :keyword) desc", nativeQuery = true)
+    List<SongSearchResultDto> findSongByKoreanSingerSimilar(String keyword);
+
+    @Query(value =
+            "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
+                    "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
+                    "WHERE sk.singer_read =% :keyword " +
+                    "order by bigm_similarity(sk.singer_read, :keyword) desc", nativeQuery = true)
     List<SongSearchResultDto> findSongByKoreanSingerReadSimilar(String keyword);
+
+    @Query(value =
+            "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
+                    "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
+                    "WHERE s.info =% :keyword " +
+                    "order by bigm_similarity(s.info, :keyword) desc", nativeQuery = true)
+    List<SongSearchResultDto> findSongByInfoSimilar(String keyword);
 
     @Query(value =
             "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +

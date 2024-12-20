@@ -11,7 +11,6 @@ $(function () {
         }
         isOrderSwitching = true;
         let brand = $(this).closest('.song-table-container').find('h2 span').text().indexOf('TJ') >= 0 ? 'TJ' : 'KY';
-        console.log(brand)
         startSwitchOrder(brand, this);
     })
 
@@ -27,6 +26,7 @@ $(function () {
         $target.siblings('.switch-order-complete-button').show();
         MemoUtil.toggleDeleteMemoButton('off');
         MemoUtil.toggleSearchForm('off');
+        MemoUtil.toggleSaveMemoButton('off');
 
         // 빈 '첫번째 요소로 추가' 행 추가
         let $firstRow = $songTable.find("tbody tr:first-child");
@@ -98,7 +98,7 @@ $(function () {
                 alert(message);
             },
             error: function (xhr) {
-                console.log(xhr);
+                // console.log(xhr);
             }
         })
 
@@ -113,6 +113,7 @@ $(function () {
         $target.hide();
         $target.siblings('.switch-order-button').click(); // 컬랩스 hide
         MemoUtil.toggleSearchForm('on');
+        MemoUtil.toggleSaveMemoButton('on');
         MemoUtil.toggleDeleteMemoButton('on');
     }
 })
