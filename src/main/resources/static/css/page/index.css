@@ -1,0 +1,266 @@
+@charset "UTF-8";
+
+
+/* 네비바 영역 ============================================================== */
+
+.navbar {
+    padding-bottom: 4px; /* 원본 8px */
+}
+
+@media (min-width: 992px) {
+    .navbar {
+        padding: 0.7rem;
+    }
+}
+
+/* .masthead 영역 ========================================================== */
+
+header.masthead {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.masthead-background {
+    position: relative;
+    background: no-repeat center center;
+    background-size: cover;
+    border-radius: 20px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.masthead-background:before {
+    content: "";
+    position: absolute;
+    background-color: #1c375e;
+    border-radius: 20px;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0.5;
+}
+
+.masthead-content-wrapper {
+    padding-top: 5rem; /* 8 -> 5 */
+    padding-bottom: 5rem;
+}
+
+@media (min-width: 768px) {
+    .masthead-content-wrapper {
+        padding-top: 8rem; /* 12 -> 8 */
+        padding-bottom: 8rem;
+    }
+}
+
+/* PC 화면에서 헤더 글자 줄바꿈 틀어지는거 교정*/
+@media (min-width: 1200px) {
+    .masthead .col-xl-6 {
+        width: 100%;
+        max-width: 75%; /* 원래 width:50% 여서 순간적으로 가로 길이가 좁아져 줄바꿈 되었음 */
+    }
+
+    .masthead .forms {
+        max-width: 900px /* 입력 폼의 크기는 너무 길지 않게 유지. */;
+        margin: 0 auto;
+    }
+}
+
+.headerText {
+    font-weight: bold;
+    color: var(--bs-light);
+    /*text-shadow: var(--bs-dark-bg-subtle) 1px 1px 1px;*/
+}
+
+@media (min-width: 768px) {
+    .br-mobile {
+        display: none;
+    }
+}
+
+.form-check {
+    margin-top: 1rem;
+}
+
+.form-check .form-check-input {
+    float: none;
+}
+
+.forms-verify {
+    margin-top: 1rem;
+}
+
+.agreement-wrapper {
+    font-size: calc(0.75rem + 0.3vw);
+}
+
+.agreement-btn {
+    font-size: calc(0.75rem + 0.3vw);
+    border: 0;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 0;
+    color: #cccccc;
+}
+
+#verifyEmailCollapseButton {
+    display: none;
+}
+
+#verifyDeleteCollapseButton {
+    display: none;
+}
+
+#verifyEmailCollapse {
+    color: black;
+}
+
+#goToUsageButtonWrapper {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+#goToUsageButton {
+    padding: 8px 15px; /*10 20*/
+    font-size: calc(0.8rem + 0.3vw);
+    border-radius: 20px;
+    animation: bounce 0.6s cubic-bezier(0, 0, 0.18, 0.99) infinite alternate;
+}
+
+@media (min-width: 768px) {
+    #goToUsageButtonWrapper {
+        bottom: 2rem;
+    }
+
+    #goToUsageButton {
+        padding: 10px 20px;
+    }
+}
+
+@keyframes bounce {
+    to {
+        transform: translateY(-10px);
+    }
+}
+
+#goToUsageButton:hover {
+    background-color: #fff;
+    color: #1c375e;
+}
+
+
+/* 신곡 테이블 영역 ======================================================= */
+
+#container .new-song-section {
+    margin-top: 1rem;
+}
+
+.new-song-section-header {
+    font-size: calc(0.8rem + 0.3vw);
+}
+
+@media (min-width: 992px) {
+    .new-song-section-header {
+        margin-bottom: 2rem;
+    }
+}
+
+
+/* .showcase 사용 방법 및 주의 사항 영역 ========================================== */
+
+.showcase #showCaseHeaderText {
+    text-align: center;
+    padding: 1rem 2rem;
+}
+
+.showcase-img-wrapper {
+    text-align: center;
+    position: relative;
+}
+
+.showcase-img {
+    width: 93%;
+    max-width: 500px;
+    border-radius: 20px;
+    margin: 0 auto;
+    aspect-ratio: 1.5 / 1;
+    min-height: 30rem;
+    background-size: cover;
+}
+
+video {
+    object-fit: fill;
+    width: 95%;
+    max-width: 500px;
+    border-radius: 20px;
+    border: #aaaaaa 1px solid;
+    position: relative;
+    z-index: -1;
+}
+
+.video-shadow {
+    margin: 0 auto;
+    width: 95%;
+    max-width: 500px;
+    border-radius: 20px;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: inline;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0;
+}
+
+/* 사용방법 및 주의사항 양옆으로 펼쳐질때 보정 */
+@media (min-width: 992px) {
+
+    video {
+        width: 95%;
+        max-width: 550px;
+    }
+    .video-shadow {
+        width: 95%;
+        max-width: 550px;
+    }
+
+    .showcase-img-wrapper {
+        width: 50%;
+        min-height: 30rem;
+    }
+
+    .showcase .showcase-img {
+        min-height: 25rem;
+        max-width: 550px;
+    }
+
+    .showcase .row {
+        padding: 1rem;
+    }
+}
+
+/* 지나치게 큰 크기에서 showcase-img 의 aspect-ratio 로 인해 이미지 꽉차는거 보정 */
+@media (min-width: 1400px) {
+    .showcase .row {
+        margin-top: 2rem;
+    }
+}
+
+.showcase .showcase-text {
+    border-radius: 20px;
+    margin: 1rem auto;
+    padding: 1.5rem;
+    width: 95%;
+    max-width: 600px;
+}
+
+@media (min-width: 992px) {
+    .showcase .showcase-text {
+        padding: 2rem;
+        width: 50%;
+        max-width: 700px;
+        margin: auto auto;
+    }
+}

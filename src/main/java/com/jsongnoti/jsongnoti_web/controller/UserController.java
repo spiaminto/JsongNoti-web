@@ -1,85 +1,71 @@
 package com.jsongnoti.jsongnoti_web.controller;
 
-import com.jsongnoti.jsongnoti_web.controller.dto.*;
-import com.jsongnoti.jsongnoti_web.service.UserServiceResult;
+import com.jsongnoti.jsongnoti_web.controller.dto.UserResponse;
+import com.jsongnoti.jsongnoti_web.controller.form.subscription.VerifyUnsubscriptionForm;
+import com.jsongnoti.jsongnoti_web.controller.form.user.UserDeleteRequest;
+import com.jsongnoti.jsongnoti_web.controller.form.user.UserUpdateRequest;
 import com.jsongnoti.jsongnoti_web.service.UserService;
+import com.jsongnoti.jsongnoti_web.service.dto.UserUpdateParam;
+import com.jsongnoti.jsongnoti_web.service.result.UserServiceResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
 @Slf4j
+@RestController
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/users")
-    public ResponseEntity<UserResponse> addUser(@Validated @ModelAttribute AddUserForm addUserForm,
-                                                BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) { return ResponseEntity.badRequest().body(UserResponse.withMessage(bindingResult.getFieldError().getDefaultMessage())); }
+    @PatchMapping("/users/{userId}")
+    public ResponseEntity<UserResponse> updateUser(@PathVariable(name = "userId") Long userId,
+                                                   @Validated @RequestBody UserUpdateRequest userUpdateRequest) {
+        log.info("updateUser userUpdateForm: {}", userUpdateRequest);
 
-        String email = addUserForm.getEmail();
-        log.debug("email: {}", email);
+        UserUpdateParam userUpdateParam = UserUpdateParam.builder()
+                .email(userUpdateRequest.getEmail())
+                .username(userUpdateRequest.getUsername())
+                .password(userUpdateRequest.getPassword())
+                .memoPresentType(userUpdateRequest.getMemoPresentType())
+                .showMemoBrand(userUpdateRequest.getShowMemoBrand())
+                .build();
+        UserServiceResult userServiceResult = userService.updateUser(userId, userUpdateParam);
+        int status = userServiceResult.isSuccess() ? 200 : 409;
 
-        UserServiceResult userServiceResult = userService.addUser(email);
-        int statusCode = userServiceResult.isHasError() ? 409 : 200; // 검증실패시 409 Conflict
-
-        return ResponseEntity.status(statusCode)
-                .body(UserResponse.withMessageAndUserId(userServiceResult.getMessage(), userServiceResult.getUserId()));
-    }
-
-    @PostMapping("/users/{userId}/verify-add")
-    public ResponseEntity<UserResponse> verifyAddUser(@PathVariable(name = "userId") Long userId,
-                                                      @Validated @ModelAttribute VerifyAddUserForm verifyAddUserForm,
-                                                      BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) { return ResponseEntity.badRequest().body(UserResponse.withMessage(bindingResult.getFieldError().getDefaultMessage())); }
-
-        String authenticationToken = verifyAddUserForm.getCode();
-        log.debug("userId: {}, token: {}", userId, authenticationToken);
-
-        UserServiceResult userServiceResult = userService.verifyAddUser(userId, authenticationToken);
-        int statusCode = userServiceResult.isHasError() ? 409 : 200;
-
-        return ResponseEntity.status(statusCode)
+        return ResponseEntity.status(status)
                 .body(UserResponse.withMessage(userServiceResult.getMessage()));
     }
 
-    @PostMapping("/users/delete")
-    public ResponseEntity<UserResponse> deleteUser(@Validated @ModelAttribute DeleteUserForm deleteUserForm,
-                                                   BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) { return ResponseEntity.badRequest().body(UserResponse.withMessage(bindingResult.getFieldError().getDefaultMessage())); }
-
-        String email = deleteUserForm.getEmail();
-        log.debug("email: {}", email);
-
-        UserServiceResult userServiceResult = userService.deleteUser(email);
-        int statusCode = userServiceResult.isHasError() ? 409 : 200;
+    @PostMapping("/users/{userId}/delete")
+    public ResponseEntity<UserResponse> deleteUser(@PathVariable(name = "userId") Long userId,
+                                                   @Validated @RequestBody UserDeleteRequest userDeleteRequest) {
+        log.info("deleteUser userId: {}, userDeleteRequest: {}", userId, userDeleteRequest);
+        String email = userDeleteRequest.getEmail();
+        UserServiceResult userServiceResult = userService.requestDeleteUser(userId, email);
+        int statusCode = userServiceResult.isSuccess() ? 200 : 409;
 
         return ResponseEntity.status(statusCode)
-                .body(UserResponse.withMessageAndUserId(userServiceResult.getMessage(), userServiceResult.getUserId()));
+                .body(UserResponse.withMessage(userServiceResult.getMessage()));
     }
 
     @PostMapping("/users/{userId}/verify-delete")
     public ResponseEntity<UserResponse> verifyDeleteUser(@PathVariable(name = "userId") Long userId,
-                                                         @Validated @ModelAttribute VerifyDeleteUserForm verifyDeleteUserForm,
-                                                         BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) { return ResponseEntity.badRequest().body(UserResponse.withMessage(bindingResult.getFieldError().getDefaultMessage())); }
+                                                         @Validated @RequestBody VerifyUnsubscriptionForm verifyUnsubscriptionForm,
+                                                         @RegisteredOAuth2AuthorizedClient("google") OAuth2AuthorizedClient oauth2Client) {
+        String authenticationToken = verifyUnsubscriptionForm.getCode();
 
-        String authenticationToken = verifyDeleteUserForm.getCode();
-        log.debug("userId: {}, token: {}", userId, authenticationToken);
+        String oauth2AccessToken = oauth2Client.getAccessToken().getTokenValue();
 
-        UserServiceResult userServiceResult = userService.verifyDeleteUser(userId, authenticationToken);
-        int statusCode = userServiceResult.isHasError() ? 409 : 200;
+        UserServiceResult userServiceResult = userService.verifyDeleteUser(userId, authenticationToken, oauth2AccessToken);
+        int statusCode = userServiceResult.isSuccess() ? 200 : 409;
 
         return ResponseEntity.status(statusCode)
                 .body(UserResponse.withMessage(userServiceResult.getMessage()));
     }
-
-
 
 }

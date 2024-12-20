@@ -1,0 +1,156 @@
+/**/
+#song-container {
+    border-radius: 20px;
+}
+
+/* 노래 테이블 간 간격및 패딩 */
+.song-table-container {
+    margin-top: 2rem;
+    padding: 0 0.3rem;
+}
+
+.song-table-container:first-child {
+    margin-top: 0;
+}
+
+@media (min-width: 992px) {
+    .song-table-container {
+        width: 50%;
+        margin-top: 2rem;
+    }
+
+    .song-table-container:first-child {
+        margin-top: 2rem;
+    }
+}
+
+.song-table-border {
+    /*border: solid 1px var(--bs-secondary-border-subtle);*/
+    border: solid 1px var(--bs-light-border-subtle);
+    border-radius: 10px;
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+.song-header-subtext {
+    font-size: calc(0.7rem + 0.3vw);
+    transform: translate(2%, -15%);
+    min-width: 90px;
+}
+
+@media (min-width: 992px) {
+    .song-header-subtext {
+        transform: translate(5%, -15%);
+    }
+}
+
+/* 노래 테이블 스타일 */
+.song-table {
+    table-layout: fixed;
+    width: 100%;
+    font-size: calc(1rem + 0.3vw);
+    border-style: hidden;
+    text-align: center;
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+
+.song-table>thead>tr>th:first-child {
+    width: 16%;
+}
+.song-table>thead>tr>th:nth-child(2) {
+    width: 59%;
+}
+.song-table>thead>tr>th:nth-child(3) {
+    width: 25%;
+}
+
+.song-table th {
+    padding: 8px;
+}
+
+/* 아티스트만 살짝 줄임 */
+.song-table th:last-child {
+    font-size: calc(0.85rem + 0.3vw);
+}
+
+.table-tj th {
+    background-color: #f95001;
+    color: white;
+}
+
+.table-ky th {
+    background-color: #6495ed;
+    color: white;
+}
+
+.song-number {
+    font-size: calc(0.85rem + 0.3vw);
+}
+
+/* 제일 최신 노래 하이라이트 */
+.latest {
+    background-color: var(--bs-highlight-bg);
+    font-weight: bold;
+    padding: 0.3rem 0.1rem;
+}
+
+mark, .mark {
+    padding: 0.3rem 0.1rem;  /* 0.1875em 이라 글씨크기에 영향받던거 수정 */
+}
+
+.song-title {
+    text-align: left;
+    padding: calc(0.5rem + 0.3vw);
+}
+
+.song-info {
+    font-size: calc(0.8rem + 0.3vw);
+    color: var(--bs-tertiary-color);
+    text-indent: 0.5rem;
+}
+
+
+.song-singer {
+    text-align: left;
+    padding: calc(0.5rem + 0.3vw);
+}
+
+.song-title-text {
+    display: block;
+    color: var(--bs-body-color);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.song-title-text > a:hover {
+    text-decoration: underline;
+}
+
+.song-header-text {
+    text-align: center;
+    /*margin-top: 2rem;*/
+}
+
+.collapsing {
+    transition: height 0.5s ease; /* 기본값 0.35s */
+}
+
+.last-month-show-button-wrapper {
+    margin-top: 1rem;
+}
+
+.last-month-show-button {
+    border-radius: 10px;
+    font-size: calc(0.8rem + 0.3vw);
+}
+
+/* 영역 분리 */
+
+.splitter {
+    border-style: dashed none none none;
+    border-width: thick;
+    border-color: #aaaaaa;
+    margin: 3rem auto;
+    width: 95%;
+}

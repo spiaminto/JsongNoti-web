@@ -1,0 +1,71 @@
+/* 바디, 컨테이너, section, nav, header ====================================================== */
+/*
+  media
+  최소치 360px
+  @media (min-width: 576px)
+  @media (min-width: 768px)
+  @media (min-width: 992px) // 여기서 부터 레이아웃 가로로 확장
+  @media (min-width: 1200px)
+*/
+
+body {
+    font-family: 'NanumSquareRound', sans-serif;
+    font-size: calc(0.9rem + 0.3vw);
+    min-width: 360px;
+}
+
+section {
+    margin-top: 1.5rem;
+}
+
+section:first-of-type {
+    margin-top: 0;
+}
+
+@media (min-width: 992px) {
+    section {
+        margin-top: 3rem;
+    }
+}
+
+/* .container width px 설정값 무시 */
+#container .container {
+    max-width: 100%;
+}
+
+/* .container 의 maxwidth 가 px 단위로 맞춰져있는걸 수정 */
+#container {
+    max-width: 95%;
+    margin: 0 auto;
+
+}
+
+/* 바디가 패딩 늘려 크기 보정 */
+@media (min-width: 1400px) {
+    #container {
+        max-width: 1280px; /* 최대크기 */
+    }
+}
+
+#container nav {
+    padding: 0.5rem 0;
+}
+
+.song-container {
+    padding: 1rem 0;
+    border-radius: 20px;
+}
+
+/* UI 는 외부엘리먼트 (바디) 와 내부엘리먼트 로 구성된다. */
+.outer-element { /* 배경 (사실상 바디)*/
+    background-color: var(--bs-secondary-bg);
+}
+
+.inner-element { /* 하얀색으로 뜨는 엘리먼트 */
+    /*background-color: var(--bs-light-bg-subtle);*/
+    background-color: var(--bs-tertiary-bg);
+    border-radius: 20px;
+    padding: 1rem;
+}
+
+

@@ -1,4 +1,4 @@
-package com.jsongnoti.jsongnoti_web.service;
+package com.jsongnoti.jsongnoti_web.service.dto;
 
 import com.jsongnoti.jsongnoti_web.domain.Song;
 import lombok.*;

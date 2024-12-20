@@ -1,14 +1,21 @@
 package com.jsongnoti.jsongnoti_web.controller;
 
-import com.jsongnoti.jsongnoti_web.service.LatestAndLastSongsDto;
+import com.jsongnoti.jsongnoti_web.auth.PrincipalDetails;
+import com.jsongnoti.jsongnoti_web.controller.dto.NewSongDto;
+import com.jsongnoti.jsongnoti_web.domain.User;
 import com.jsongnoti.jsongnoti_web.service.SongService;
+import com.jsongnoti.jsongnoti_web.service.UserService;
+import com.jsongnoti.jsongnoti_web.service.dto.LatestAndLastSongsDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.format.TextStyle;
@@ -21,6 +28,7 @@ import java.util.Locale;
 public class IndexController {
 
     private final SongService songService;
+    private final UserService userService;
 
     @GetMapping("/health-check")
     @ResponseBody
@@ -67,14 +75,47 @@ public class IndexController {
         return "index";
     }
 
-    @GetMapping("/privacy-policy")
-    public String privacyPolicy() {
-        return "privacyPolicy";
+
+    @GetMapping("/search")
+    public String search() {
+        return "search";
     }
 
-    @GetMapping("/terms-of-service")
-    public String termsOfService() {
-        return "termsOfService";
+    @GetMapping("/login")
+    public String login(RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("alertMessage", "로그인이 필요합니다.");
+        return "redirect:/";
+    }
+
+    @GetMapping("/memo")
+    public String memo(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                       Model model) {
+        if (principalDetails == null || principalDetails.getUserId() == null) {
+            return "redirect:/oauth2/authorization/google";
+        }
+
+        Long userId = principalDetails.getUserId();
+        User user = userService.findUserById(userId);
+        model.addAttribute("userId", userId);
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("memoPresentType", user.getMemoPresentType());
+        model.addAttribute("showMemoBrand", user.getShowMemoBrand());
+
+        return "memo";
+    }
+
+    @GetMapping("/privacy-policy")
+    public String privacyPolicy(@RequestParam(value = "date", required = false) String date) {
+        log.info("date: {}", date);
+        if (date == null) { date = "241220"; }
+        return "/privacy-policy/" + date;
+    }
+
+    @GetMapping("/terms-of-use")
+    public String termsOfUse(@RequestParam(value = "date", required = false) String date) {
+        log.info("date: {}", date);
+        if (date == null) { date = "241220"; }
+        return "/terms-of-use/" + date;
     }
 
 }

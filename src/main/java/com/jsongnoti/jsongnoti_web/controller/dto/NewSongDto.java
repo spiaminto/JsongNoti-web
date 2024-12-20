@@ -1,4 +1,4 @@
-package com.jsongnoti.jsongnoti_web.controller;
+package com.jsongnoti.jsongnoti_web.controller.dto;
 
 import com.jsongnoti.jsongnoti_web.domain.Song;
 import lombok.*;

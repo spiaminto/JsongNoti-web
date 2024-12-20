@@ -1,0 +1,133 @@
+
+.memo-section {
+    /* #songContainer 에 padding 1rem, color white 있음 */
+}
+
+.expand-for-single-memo { /* .song-container 하나일경우 추가로 붙는 클래스 */
+    width: 100%;
+    max-width: 768px;
+    padding: 0 0.3rem !important;
+}
+
+@media (min-width: 992px) {
+    .expand-for-single-memo {
+        padding: 0 0.5rem !important;
+    }
+}
+
+/* 메모 등록 */
+.add-memo-section {
+    padding: 1rem;
+    border-radius: 20px;
+}
+
+.memo-add-form-container {
+    padding: 0 0.3rem;
+    max-width: 768px;
+}
+
+#memoAddForm {
+    width: 100%;
+}
+
+/* 노래 등록 폼 아래 마진 공백 생기는거 삭제 */
+#memoAddForm table {
+    margin-bottom: 0;
+}
+
+#presentOrderModal .modal-body {
+    padding: 0.5rem;
+}
+
+#presentOrderModalButton {
+    vertical-align: super;
+}
+
+#songSearchResultTable .song-title-text {
+    display: inline; /* 한글 타이틀 표시를 위해 인라인 */
+}
+
+.selected {
+    background-color: var(--bs-highlight-bg);
+}
+
+.empty-song-table {
+    display: none;
+}
+
+/* 순서변경 및 삭제 */
+.song-row-switching {
+    background: repeating-linear-gradient(-45deg, var(--bs-secondary-bg), var(--bs-secondary-bg) 3px, var(--bs-tertiary-bg) 0, var(--bs-tertiary-bg) 6px);
+    /*background-color: var(--bs-secondary-bg);*/
+    transition-duration: 0.5s;
+    transition-property: background-color;
+}
+
+.song-row-will-switch-selected {
+    background: var(--bs-highlight-bg) none;
+}
+
+.song-row-be-switched-selected {
+    background: var(--bs-secondary-border-subtle) none;
+}
+
+@media (hover: hover) and (pointer: fine) { /* 마우스에서만 호버 */
+    .song-row-will-switch:hover {
+        background: var(--bs-highlight-bg) none;
+        cursor: pointer;
+    }
+
+    .song-row-be-switched:hover {
+        background: var(--bs-secondary-border-subtle) none;
+        cursor: pointer;
+    }
+
+    .song-row-deleting:hover {
+        background: var(--bs-danger-bg-subtle) none;
+        cursor: pointer;
+    }
+}
+
+.song-row-switched {
+    background: var(--bs-secondary-border-subtle) none;
+}
+
+.switch-order-complete-button {
+    display: none;
+}
+
+.collapse-button-hide-when-expanded[aria-expanded="true"] {
+    display: none !important;
+}
+
+.song-row-deleting {
+    background: repeating-linear-gradient(-45deg, var(--bs-danger-bg-subtle), var(--bs-danger-bg-subtle) 3px, var(--bs-tertiary-bg) 0, var(--bs-tertiary-bg) 6px);
+    transition-duration: 0.5s;
+    transition-property: background-color;
+}
+
+.delete-memo-complete-button {
+    display: none;
+}
+
+.splitter {
+    margin: 2rem auto;
+}
+
+/* 필요한 경우 공통부로 뺄 것*/
+.btn-xsm {
+    padding: calc(0.3rem + 0.1vw) calc(0.5rem + 0.1vw);
+    font-size: calc(0.7rem + 0.1vw);
+    border-radius: 10px;
+}
+
+#verifyDeleteUserCollapseButton {
+    display: none;
+}
+
+.forms-verify {
+    padding-top: 1rem;
+}
+
+
+
