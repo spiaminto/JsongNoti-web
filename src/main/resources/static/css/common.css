@@ -1,0 +1,167 @@
+/* 삼각 화살표 컬랩스 */
+.arrow-collapse-button-open {
+    transform: rotate(180deg);
+}
+
+.arrow-collapse-button {
+    transition: 0.5s;
+    width: 1.6rem;
+    height: 1.6rem;
+    padding: 0;
+}
+
+.arrow-collapse-button i {
+    font-size: 1.2rem;
+}
+
+/* 페이드 인 */
+.fade-in-element {
+    opacity: 0;
+    transform: translateY(25px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-in-element.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 모달 */
+.modal-dialog {
+    font-size: calc(0.9rem + 0.3vw);
+}
+
+@media (min-width: 1200px) {
+    .modal-dialog {
+        max-width: 600px;
+    }
+
+    .modal-dialog button {
+        font-size: calc(0.9rem + 0.3vw);
+    }
+}
+
+/* 아이콘 버튼 */
+.icon-button {
+    margin-left: calc(0.1rem + 0.5vw);
+    position: relative;
+    background: no-repeat center center;
+    background-size: cover;
+    width: 35px;
+    height: 35px;
+    vertical-align: text-bottom;
+}
+
+.icon-button:first-child {
+    margin-left: 0;
+}
+
+
+.icon-button-label {
+    position: absolute;
+    font-size: 0.8rem;
+    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -45%;
+}
+
+.icon-button:first-child .icon-button-label {
+    bottom: -43%; /* 이상하게 홈화면에서 검색 아이콘의 라벨이 쳐저 보여서 올림 */
+}
+
+/* 360px 맞추기 위해 어쩔수 없이 사용 */
+@media (min-width: 390px) {
+    .icon-button {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+@media (min-width: 992px) {
+    .icon-button {
+        width: 45px;
+        height: 45px;
+    }
+
+    .icon-button-label {
+        font-size: 0.9rem;
+        bottom: -45%;
+    }
+}
+
+/* 공통 border-radius */
+footer {
+    border-radius: 20px;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.form-control {
+    border-radius: 10px;
+}
+
+.btn {
+    border-radius: 10px;
+}
+
+/* 크기제한 */
+.text-input {
+    max-width: 500px;
+}
+
+.text-input::placeholder {
+    font-size: calc(0.8rem + 0.3vw);
+}
+
+
+/* styles.css 초기화 */
+.navbar-brand {
+    margin-right: 0;
+}
+
+.box-shadow-sm {
+    /* color x y blur spread */
+    box-shadow: var(--bs-dark-bg-subtle) 1px 2px 4px 0px;
+}
+
+.box-shadow {
+    box-shadow: var(--bs-dark-bg-subtle) 1px 3px 5px 3px;
+}
+
+
+/* 부트스트랩 공통부 수정*/
+.btn-lg {
+    font-size: 1rem; /* 원본 1.25rem*/
+}
+
+.form-control-lg {
+    font-size: 1rem;
+}
+
+tbody, td, tfoot, thead, th, tr {
+    border-width: 1px;
+}
+
+@media(min-width: 768px) {
+    .form-control-lg {
+        padding: 0.75rem 1rem; /* 원본 0.5rem 1rem*/
+        font-size: 1.25rem; /* 원본으로 복구 */
+    }
+
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    :root {
+        scroll-behavior: unset;
+    }
+}
+
+/* 유틸리티 */
+.row-for-expand-padding {
+    /* 부모 요소의 padding 을 먹기위한 row 표시용 */
+}
+
+

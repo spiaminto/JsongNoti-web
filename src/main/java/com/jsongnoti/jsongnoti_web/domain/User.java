@@ -1,5 +1,7 @@
 package com.jsongnoti.jsongnoti_web.domain;
 
+import com.jsongnoti.jsongnoti_web.domain.enums.Brand;
+import com.jsongnoti.jsongnoti_web.domain.enums.MemoPresentType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -18,28 +20,37 @@ import static lombok.AccessLevel.PROTECTED;
 @ToString
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String email;
-    private boolean verified;   // 이메일 인증 여부
+    private String username; // email 에서 @ 제외한 나머지로 임의생성
+    private String password;
+    private String role;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+    @Enumerated(EnumType.STRING)
+    private MemoPresentType memoPresentType;
+    @Enumerated(EnumType.STRING)
+    private Brand showMemoBrand;
 
-    // 이메일 인증 및 탈퇴 인증 시 사용
+    private String provider;
+    private String providerId;
+
+    // 이탈퇴 인증 시 사용
     private String authenticationToken;
     private LocalDateTime authenticationTimestamp;
     private int authenticationRetry; // 최대 3
 
-    /**
-     * User 의 이메일 인증을 완료합니다.<br>
-     * 인증이 완료되면 authenticationToken, authenticationTimestamp 를 null 로 초기화하고 verified 를 true 로 설정합니다.
-     */
-    public void verify() {
-        this.authenticationToken = null;
-        this.authenticationTimestamp = null;
-        this.verified = true;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    public void updateOauth2Email(String email) {
+        this.email = email;
+    }
+
+    public void updateMemoSetting(MemoPresentType memoPresentType, Brand showMemoBrand) {
+        this.memoPresentType = memoPresentType;
+        this.showMemoBrand = showMemoBrand;
     }
 
     /**
@@ -59,4 +70,5 @@ public class User {
     public void verificationFailed() {
         this.authenticationRetry++;
     }
+
 }

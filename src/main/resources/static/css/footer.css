@@ -1,0 +1,41 @@
+footer.footer {
+    padding: 2rem 0; /* 원본 4rem */
+}
+
+#footerText {
+    margin-top: 1rem;
+    margin-bottom: 0 !important;
+}
+
+@media (min-width: 992px) {
+    #unsubscribeModalButton {
+        font-size: calc(1rem + 0.2vw);
+    }
+}
+
+.contact-mail-mobile {
+    display: inline-block;
+}
+
+.contact-mail-pc {
+    display: none;
+}
+
+@media (min-width: 992px) {
+    .contact-mail-mobile {
+        display: none;
+    }
+
+    .contact-mail-pc {
+        display: inline-block;
+    }
+}
+
+.google-analytics-button {
+    font-size: 1em;
+    border: 0;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 0.1rem;
+    color: #6c757d ;
+}

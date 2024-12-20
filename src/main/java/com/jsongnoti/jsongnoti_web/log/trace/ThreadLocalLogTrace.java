@@ -9,7 +9,9 @@ import org.springframework.stereotype.Component;
 public class ThreadLocalLogTrace implements LogTrace {
 
     private static final String START_PREFIX = "->";
+    private static final String START_MESSAGE = "===START===";
     private static final String COMPLETE_PREFIX = "<-";
+    private static final String COMPLETE_MESSAGE = "===COMPLETE===";
     private static final String EX_PREFIX = "X";
 
     @Value("${log.trace.complete-enabled}")
@@ -27,6 +29,9 @@ public class ThreadLocalLogTrace implements LogTrace {
         syncTraceId();
 
         TraceId traceId = traceIdHolder.get();
+        if (traceId.isFirstLevel()) {
+            log.info("[{}] {}", traceId.getId(), START_MESSAGE);
+        } else
         log.info("[{}] {}{}", traceId.getId(), addSpace(START_PREFIX, traceId.getLevel()), message);
 
         return new TraceStatus(traceId, message);
@@ -50,6 +55,9 @@ public class ThreadLocalLogTrace implements LogTrace {
         if (e == null && completeEnabled) {
 //             완료 로그 출력 여부가 true 이면 완료 로그만 출력
             log.info("[{}] {}{}", traceId.getId(), addSpace(COMPLETE_PREFIX, traceId.getLevel()), status.getMessage());
+            if (traceId.isFirstLevel()) {
+                log.info("[{}] {}", traceId.getId(), COMPLETE_MESSAGE);
+            }
         } else {
             // exception 발생 시 파라미터를 같이 출력
             StringBuilder sb = new StringBuilder();
