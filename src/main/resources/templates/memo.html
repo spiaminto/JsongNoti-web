@@ -35,9 +35,11 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-JFWLSXBEYR"></script>
   <script>
       window.dataLayer = window.dataLayer || [];
+
       function gtag() {
           dataLayer.push(arguments);
       }
+
       gtag('js', new Date());
       gtag('config', 'G-JFWLSXBEYR');
   </script>
@@ -177,7 +179,8 @@
           </form>
         </div>
         <div class="modal-footer">
-          <button type="submit" form="changeSettingForm" id="submitChangeSettingButton" class="btn btn-lg btn-outline-primary">
+          <button type="submit" form="changeSettingForm" id="submitChangeSettingButton"
+                  class="btn btn-lg btn-outline-primary">
             변경
           </button>
           <button type="button" id="changeSettingModalCloseButton" class="ms-2 btn btn-lg btn-outline-secondary"
@@ -533,8 +536,8 @@
           <p id="footerTextCopyright" class="small mb-0">icons Designed by
             <a class="text-muted text-decoration-none" href="https://www.freepik.com/">Freepik</a>
           <div id="footerTextLinkWrapper" class="mb-4">
-            <p id="footerTextTermsOfService" class="d-inline-block small mb-0"><a
-                class="text-muted text-decoration-none" href="/terms-of-service">이용약관</a></p>
+            <p id="footerTextTermsOfUse" class="d-inline-block small mb-0"><a
+                class="text-muted text-decoration-none" href="/terms-of-use">이용약관</a></p>
             <p id="footerTextPrivacyPolicy" class="d-inline-block small mb-0 ms-2"><a
                 class="text-muted text-decoration-none" href="/privacy-policy"><b>개인정보처리방침</b></a></p>
           </div>
@@ -592,12 +595,12 @@
           <form class="forms-unsubscribe forms" id="deleteUserForm">
             <!-- Email address input-->
             <div class="input-group justify-content-center">
-                <input class="form-control form-control-lg text-input" id="deleteUserEmailInput" type="email"
-                       placeholder="이메일 입력" required>
-                <button class="btn btn-lg btn-outline-danger" id="deleteUserSubmitButton"
-                        type="submit">
-                  탈퇴요청
-                </button>
+              <input class="form-control form-control-lg text-input" id="deleteUserEmailInput" type="email"
+                     placeholder="이메일 입력" required>
+              <button class="btn btn-lg btn-outline-danger" id="deleteUserSubmitButton"
+                      type="submit">
+                탈퇴요청
+              </button>
             </div>
           </form>
           <button id="verifyDeleteUserCollapseButton" type="button" data-bs-toggle="collapse"
@@ -607,11 +610,11 @@
           <form class="forms forms-verify" id="verifyDeleteUserForm">
             <div class="collapse" id="verifyDeleteUserCollapse">
               <div class="input-group justify-content-center">
-                  <input class="form-control form-control-lg text-input" id="verifyDeleteUserCodeInput" type="number"
-                         placeholder="4자리 인증 코드 입력" required>
-                  <button class="btn btn-lg btn-outline-secondary btn" id="verifyDeleteUserSubmitButton"
-                          type="submit">회원탈퇴
-                  </button>
+                <input class="form-control form-control-lg text-input" id="verifyDeleteUserCodeInput" type="number"
+                       placeholder="4자리 인증 코드 입력" required>
+                <button class="btn btn-lg btn-outline-secondary btn" id="verifyDeleteUserSubmitButton"
+                        type="submit">회원탈퇴
+                </button>
               </div>
             </div>
           </form>
