@@ -1,38 +1,38 @@
 import SongTableUtil from "../song-table-util.js";
 
-class MemoUtil {
+class FavoriteSongUtil {
 
     // Table Utils ============================================================
 
     /**
-     * 메모테이블 초기화
+     * 애창곡 테이블 초기화
      * 브랜드에 따라 렌더링 여부 및 스타일 결정
      */
-    initializeMemoTable() {
-        let brand = $('#changeSettingForm').find('input[name=showMemoBrand]:checked').val();
+    initializeFavoriteSongTable() {
+        let brand = $('#changeSettingForm').find('input[name=favoriteSongPresentBrand]:checked').val();
         let $tjContainer = $('.song-table-container').first();
         let $kyContainer = $('.song-table-container').last();
         switch (brand) {
             case 'ALL':
-                this.refreshMemoTable('TJ');
-                this.refreshMemoTable('KY');
+                this.refreshFavoriteSongTable('TJ');
+                this.refreshFavoriteSongTable('KY');
                 $tjContainer.slideDown(500);
                 $kyContainer.slideDown(500);
-                $tjContainer.removeClass('expand-for-single-memo');
-                $kyContainer.removeClass('expand-for-single-memo');
+                $tjContainer.removeClass('expand-for-single-favorite-song');
+                $kyContainer.removeClass('expand-for-single-favorite-song');
                 break;
             case 'TJ':
-                this.refreshMemoTable('TJ');
+                this.refreshFavoriteSongTable('TJ');
                 $kyContainer.hide();
-                $tjContainer.addClass('expand-for-single-memo');
-                $kyContainer.removeClass('expand-for-single-memo');
+                $tjContainer.addClass('expand-for-single-favorite-song');
+                $kyContainer.removeClass('expand-for-single-favorite-song');
                 $tjContainer.slideDown(500);
                 break;
             case 'KY':
-                this.refreshMemoTable('KY');
+                this.refreshFavoriteSongTable('KY');
                 $tjContainer.hide();
-                $tjContainer.removeClass('expand-for-single-memo');
-                $kyContainer.addClass('expand-for-single-memo');
+                $tjContainer.removeClass('expand-for-single-favorite-song');
+                $kyContainer.addClass('expand-for-single-favorite-song');
                 $kyContainer.slideDown(500);
                 break;
             default:
@@ -41,17 +41,17 @@ class MemoUtil {
     }
 
     /**
-     * 메모테이블 갱신
+     * 애창곡 테이블 갱신
      * @param brand 'TJ', 'KY'
      */
-    refreshMemoTable(brand) {
-        let dataList = this.getMemoTableData(brand); // 서버에서 데이터 가져옴
+    refreshFavoriteSongTable(brand) {
+        let dataList = this.getFavoriteSongTableData(brand); // 서버에서 데이터 가져옴
         let songTable = SongTableUtil.renderEmptySongTable(dataList); // 빈 테이블 복사후 데이터 채움
 
-        // memoId, presentOrder 붙임
+        // favoriteSongId, presentOrder 붙임
         let songRows = songTable.find('tbody tr');
         $.each(songRows, function (index, row) {
-            $(row).find('.song-number').attr('data-memo-id', dataList[index].id);
+            $(row).find('.song-number').attr('data-favorite-song-id', dataList[index].id);
             $(row).find('.song-number').attr('data-present-order', dataList[index].presentOrder);
         });
 
@@ -61,33 +61,33 @@ class MemoUtil {
     }
 
     /**
-     * 서버에서 메모테이블 데이터를 가져와 반환
+     * 서버에서 에창곡 데이터를 가져와 반환
      * @param brand 가져올 브랜드
-     * @returns {*} SongMemo 리스트 (order by presentOrder ASC)
+     * @returns {*} SongFavoriteSong 리스트 (order by presentOrder ASC)
      */
-    getMemoTableData(brand) {
-        let memoData;
-        let memoPresentType = $('#changeSettingForm input[name=memoPresentType]:checked').val();
-        let userId = $('.memo-section-header').data('user-id');
+    getFavoriteSongTableData(brand) {
+        let favoriteSongData;
+        let favoriteSongPresentType = $('#changeSettingForm input[name=favoriteSongPresentType]:checked').val();
+        let userId = $('.favorite-song-section-header').data('user-id');
         $.ajax({
             type: "GET",
-            url: "/memos",
+            url: "/favorite-songs",
             async: false, // 결과 반환을 위해 동기화
             data: {
                 userId: userId,
                 brand: brand,
-                memoPresentType: memoPresentType
+                favoriteSongPresentType: favoriteSongPresentType
             },
             success: function (data) {
-                memoData = data.songMemos;
+                favoriteSongData = data.favoriteSongs;
             },
             error: function (xhr) {
                 // console.log(xhr);
-                memoData = null;
+                favoriteSongData = null;
                 // let message = xhr.responseJSON.message;
             }
         })
-        return memoData;
+        return favoriteSongData;
     }
 
     // Element Utils ==========================================================
@@ -102,11 +102,11 @@ class MemoUtil {
         }
     }
 
-    toggleDeleteMemoButton(command) {
+    toggleDeleteFavoriteSongButton(command) {
         if (command === 'on') {
-            $('.delete-memo-button').prop('disabled', false).show();
+            $('.delete-favorite-song-button').prop('disabled', false).show();
         } else if (command === 'off') {
-            $('.delete-memo-button').prop('disabled', true).hide();
+            $('.delete-favorite-song-button').prop('disabled', true).hide();
         }
     }
 
@@ -119,7 +119,7 @@ class MemoUtil {
         }
     }
 
-    toggleSaveMemoButton(command) {
+    toggleSaveFavoriteSongButton(command) {
         if (command === 'on') {
             $('#addSongButton').prop('disabled', false).show();
         } else if (command === 'off') {
@@ -129,5 +129,5 @@ class MemoUtil {
 
 }
 
-const memoUtil = new MemoUtil();
-export default memoUtil;
+const favoriteSongUtil = new FavoriteSongUtil();
+export default favoriteSongUtil;

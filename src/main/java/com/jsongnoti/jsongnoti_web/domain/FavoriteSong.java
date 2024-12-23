@@ -12,7 +12,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Builder
 @Getter
 @EqualsAndHashCode
-public class SongMemo {
+public class FavoriteSong {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

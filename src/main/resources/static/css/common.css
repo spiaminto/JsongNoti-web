@@ -1,3 +1,8 @@
+/* 다크모드 엘레먼트 */
+#container .dark-mode-element {
+    display: none;
+}
+
 /* 삼각 화살표 컬랩스 */
 .arrow-collapse-button-open {
     transform: rotate(180deg);
@@ -31,9 +36,30 @@
     font-size: calc(0.9rem + 0.3vw);
 }
 
+.modal-image-wrapper {
+    position: relative;
+    max-width: 450px;
+    margin: 0 auto 1rem;
+}
+
+.modal-image-wrapper .video-shadow {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.modal-image-wrapper>img{
+    width: 100%;
+    border-radius: 20px;
+}
+
 @media (min-width: 1200px) {
     .modal-dialog {
         max-width: 600px;
+    }
+
+    .modal-image-wrapper {
+        max-width: 500px;
+        margin: 0 auto
     }
 
     .modal-dialog button {
@@ -47,8 +73,8 @@
     position: relative;
     background: no-repeat center center;
     background-size: cover;
-    width: 35px;
-    height: 35px;
+    width: 35px; /* 360px 기준*/
+    height: 35px; /* 360px 기준*/
     vertical-align: text-bottom;
 }
 
@@ -59,15 +85,15 @@
 
 .icon-button-label {
     position: absolute;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     width: 100%;
     left: 50%;
     transform: translateX(-50%);
-    bottom: -45%;
+    bottom: -40%;
 }
 
-.icon-button:first-child .icon-button-label {
-    bottom: -43%; /* 이상하게 홈화면에서 검색 아이콘의 라벨이 쳐저 보여서 올림 */
+.icon-button .search-icon-label {
+    bottom: -38%; /* 이상하게 홈화면에서 검색 아이콘의 라벨이 쳐저 보여서 올림 */
 }
 
 /* 360px 맞추기 위해 어쩔수 없이 사용 */
@@ -86,7 +112,6 @@
 
     .icon-button-label {
         font-size: 0.9rem;
-        bottom: -45%;
     }
 }
 

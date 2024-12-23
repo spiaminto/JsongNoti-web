@@ -1,7 +1,7 @@
 package com.jsongnoti.jsongnoti_web.domain;
 
 import com.jsongnoti.jsongnoti_web.domain.enums.Brand;
-import com.jsongnoti.jsongnoti_web.domain.enums.MemoPresentType;
+import com.jsongnoti.jsongnoti_web.domain.enums.FavoriteSongPresentType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -29,9 +29,9 @@ public class User {
     private String role;
 
     @Enumerated(EnumType.STRING)
-    private MemoPresentType memoPresentType;
+    private FavoriteSongPresentType favoriteSongPresentType;
     @Enumerated(EnumType.STRING)
-    private Brand showMemoBrand;
+    private Brand favoriteSongPresentBrand;
 
     private String provider;
     private String providerId;
@@ -48,9 +48,9 @@ public class User {
         this.email = email;
     }
 
-    public void updateMemoSetting(MemoPresentType memoPresentType, Brand showMemoBrand) {
-        this.memoPresentType = memoPresentType;
-        this.showMemoBrand = showMemoBrand;
+    public void updateMemoSetting(FavoriteSongPresentType favoriteSongPresentType, Brand showMemoBrand) {
+        this.favoriteSongPresentType = favoriteSongPresentType;
+        this.favoriteSongPresentBrand = showMemoBrand;
     }
 
     /**

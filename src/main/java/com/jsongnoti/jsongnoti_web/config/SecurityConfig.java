@@ -71,7 +71,7 @@ public class SecurityConfig {
                                 .redirectionEndpoint(redirectionEndpoint ->
                                         redirectionEndpoint.baseUri("/oauth2/code/**"))
                                 .loginPage("/login")
-                                .defaultSuccessUrl("/memo")
+                                .defaultSuccessUrl("/favorite-song")
                                 .userInfoEndpoint(userInfoEndpoint ->
                                         userInfoEndpoint.userService(oauth2UserService)));
         return http.build();

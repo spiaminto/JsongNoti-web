@@ -36,9 +36,9 @@ public class SongSearchService {
             case SINGER -> songSearchDtos = keywordHasKorean ?
                     searchSongsByKoreanSinger(keyword) :
                     searchSongsBySinger(keyword);
-            case INFO -> songSearchDtos = keywordHasKorean ?
-                    searchSongsByKoreanInfo(keyword) :
-                    searchSongsByInfo(keyword);
+//            case INFO -> songSearchDtos = keywordHasKorean ?
+//                    searchSongsByKoreanInfo(keyword) :
+//                    searchSongsByInfo(keyword);
             default -> log.error("Invalid search type: {}", searchType);
         }
 
@@ -95,8 +95,8 @@ public class SongSearchService {
         return searchResults;
     }
 
-    private List<SongSearchDto> searchSongsByKoreanInfo(String koreanInfo) {
-        return songRepository.findSongByKoreanInfoSimilar(koreanInfo).stream().map(SongSearchDto::from).toList();
-    }
+//    private List<SongSearchDto> searchSongsByKoreanInfo(String koreanInfo) {
+//        return songRepository.findSongByKoreanInfoSimilar(koreanInfo).stream().map(SongSearchDto::from).toList();
+//    }
 
 }

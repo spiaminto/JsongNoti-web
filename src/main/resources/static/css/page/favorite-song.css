@@ -1,32 +1,29 @@
 
-.memo-section {
-    /* #songContainer 에 padding 1rem, color white 있음 */
-}
 
-.expand-for-single-memo { /* .song-container 하나일경우 추가로 붙는 클래스 */
+.expand-for-single-favorite-song { /* .song-container 하나일경우 추가로 붙는 클래스 */
     width: 100%;
     max-width: 768px;
     padding: 0 0.3rem !important;
 }
 
 @media (min-width: 992px) {
-    .expand-for-single-memo {
+    .expand-for-single-favorite-song {
         padding: 0 0.5rem !important;
     }
 }
 
 /* 메모 등록 */
-.memo-add-form-container {
+.favorite-song-add-form-container {
     padding: 0 0.3rem;
     max-width: 768px;
 }
 
-#memoAddForm {
+#favoriteSongAddForm {
     width: 100%;
 }
 
 /* 노래 등록 폼 아래 마진 공백 생기는거 삭제 */
-#memoAddForm table {
+#favoriteSongAddForm table {
     margin-bottom: 0;
 }
 
@@ -101,7 +98,7 @@
     transition-property: background-color;
 }
 
-.delete-memo-complete-button {
+.delete-favorite-song-complete-button {
     display: none;
 }
 

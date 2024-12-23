@@ -43,7 +43,7 @@
   <script src="/static/js/common-util.js" th:src="@{/js/common-util.js}" type="module"></script>
   <script src="/static/js/song-table-util.js" th:src="@{/js/song-table-util.js}" type="module"></script>
   <script src="/static/js/common-handlers.js" th:src="@{/js/common-handlers.js}" type="module"></script>
-  <script src="/static/js/memo/song-search.js" th:src="@{/js/memo/song-search.js}" type="module"></script>
+  <script src="/js/song-search.js" th:src="@{/js/song-search.js}" type="module"></script>
 </head>
 <body class="outer-element">
 <div id="container">
@@ -60,13 +60,41 @@
       <img src="/static/assets/icon/search_512.png" th:src="@{'/assets/icon/search_512.png'}" alt="검색아이콘" width="35px">
     </h1>
     <div class="memo-button-wrapper">
-      <button id="memoButton" class="memo-button icon-button btn"
-              style="background-image: url('/static/assets/icon/memo_256.png')"
-              th:style="'background-image: url(/assets/icon/memo_256.png)'">
-        <span class="icon-button-label"><b>메모</b></span>
+      <button id="favoriteSongButton" class="icon-button btn "
+              style="background-image: url('/static/assets/icon/favorite_song_512.png')"
+              th:style="'background-image: url(/assets/icon/favorite_song_512.png)'"
+              data-bs-toggle="modal" data-bs-target="#favoriteLoginModal">
+        <span class="icon-button-label"><b>애창곡</b></span>
       </button>
     </div>
   </nav>
+
+  <!-- 로그인 안내 모달 -->
+  <div class="modal fade" id="favoriteLoginModal" tabindex="-1" aria-labelledby="favoriteLoginModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">애창곡 로그인 안내</h3>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-body-content">
+            <div class="modal-image-wrapper">
+              <img src="/static/assets/img/favorite-hint.png" th:src="@{/assets/img/favorite-hint.png}">
+            </div>
+            <p class="px-3 mb-0">
+              애창곡의 정보를 추가메모와 함께 저장할 수 있습니다. <br>
+              서비스 이용을 위해 구글 로그인이 필요합니다.
+            </p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">닫기</button>
+          <button type="button" class="btn btn-lg btn-outline-primary favorite-login-button" data-bs-dismiss="modal"><i class="bi bi-google"></i><span class="ms-1">구글 로그인</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <section class="song-search-section inner-element">
     <h2 class="text-center">노래 검색</h2>

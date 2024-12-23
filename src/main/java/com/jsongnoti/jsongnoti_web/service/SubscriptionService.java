@@ -96,13 +96,13 @@ public class SubscriptionService {
         Subscription findSubscription = findUserOptional.get();
         if (!findSubscription.getAuthenticationToken().equals(authenticationToken)) {
             findSubscription.verificationFailed();
-            return SubscriptionServiceResult.fail("인증 토큰이 일치하지 않습니다. 3회 이상 실패하면 다시 인증요청 해야합니다. " + "(" + findSubscription.getAuthenticationRetry() + "회 실패" + ")", userId);
+            return SubscriptionServiceResult.fail("인증코드가 일치하지 않습니다. 3회 이상 실패하면 다시 인증요청 해야합니다. " + "(" + findSubscription.getAuthenticationRetry() + "회 실패" + ")", userId);
         }
 
         // 인증
         findSubscription.verify();
 
-        return SubscriptionServiceResult.success("이메일 인증이 완료되었습니다. 이제 신곡이 등록되면 알림 메일을 받아보실 수 있습니다.", userId);
+        return SubscriptionServiceResult.success("이메일 인증이 완료되었습니다. \n이제 신곡이 등록되면 알림 메일을 받아보실 수 있습니다.", userId);
     }
 
     /**
@@ -150,7 +150,7 @@ public class SubscriptionService {
         Subscription findSubscription = findUserOptional.get();
         if (!findSubscription.getAuthenticationToken().equals(authenticationToken)) {
             findSubscription.verificationFailed();
-            return SubscriptionServiceResult.fail("인증 토큰이 일치하지 않습니다. 실패횟수가 3회를 초과하면 다시 인증요청 해야합니다." + "(" + findSubscription.getAuthenticationRetry() + "회 실패" + ")", userId);
+            return SubscriptionServiceResult.fail("인증코드가 일치하지 않습니다. 실패횟수가 3회를 초과하면 다시 인증요청 해야합니다." + "(" + findSubscription.getAuthenticationRetry() + "회 실패" + ")", userId);
         }
 
         // 삭제

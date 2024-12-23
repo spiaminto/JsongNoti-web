@@ -1,5 +1,5 @@
-import SongTableUtil from "../song-table-util.js";
-import CommonUtil from "../common-util.js";
+import SongTableUtil from "./song-table-util.js";
+import CommonUtil from "./common-util.js";
 
 $(function () {
 
@@ -60,21 +60,21 @@ $(function () {
 
 // 검색 결과 누르면 폼에 입력 -> 검색결과의 .song-title 에 이벤트 연결
     function fillMemoAddFormWithSearchResult(event) {
-        let memoAddForm = $('#memoAddForm');
-        if (memoAddForm.length === 0) { return; } // 메모 추가폼이 없으면 리턴
+        let favoriteSongAddForm = $('#favoriteSongAddForm');
+        if (favoriteSongAddForm.length === 0) { return; } // 메모 추가폼이 없으면 리턴
         $('#addInfoTextInput').val(''); // 메모 입력창 초기화 뒤에서 하면 거슬림
 
         // 클릭한 노래의 정보를 폼에 입력
         let songRow = $(this).closest('tr');
-        memoAddForm.find('.song-number span').text(songRow.find('.song-number span').text());
-        memoAddForm.find('.song-title-text').text(songRow.find('.song-title-text').text());
-        memoAddForm.find('.song-info-text').text(songRow.find('.song-info span').text());
-        memoAddForm.find('.song-singer').text(songRow.find('.song-singer').text());
+        favoriteSongAddForm.find('.song-number span').text(songRow.find('.song-number span').text());
+        favoriteSongAddForm.find('.song-title-text').text(songRow.find('.song-title-text').text());
+        favoriteSongAddForm.find('.song-info-text').text(songRow.find('.song-info span').text());
+        favoriteSongAddForm.find('.song-singer').text(songRow.find('.song-singer').text());
 
         // 폼 data 에 songId, brand 저장
         let brand = $('#songSearchForm input[name=brand]:checked').val()
-        memoAddForm.attr('data-brand', brand);
-        memoAddForm.attr('data-song-id', songRow.find('.song-number').data('id'));
+        favoriteSongAddForm.attr('data-brand', brand);
+        favoriteSongAddForm.attr('data-song-id', songRow.find('.song-number').data('id'));
 
         // 메모 테이블 정보로 현재 순서 텍스트 갱신
         let songMemo = brand === 'TJ' ? $('.table-tj') : $('.table-ky');
@@ -85,7 +85,7 @@ $(function () {
 
         // 메모 추가폼으로 스크롤
         $('html, body').animate({
-            scrollTop: $('#memoAddForm').offset().top - 16 // 2rem 여유
+            scrollTop: $('#favoriteSongAddForm').offset().top - 16 // 2rem 여유
         }, 500, function () {
             // 추가 텍스트 입력창 열기 및 포커스
             if (!$('#addInfoTextCollapse').hasClass('show')) {

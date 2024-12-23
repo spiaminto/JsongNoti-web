@@ -7,7 +7,7 @@ import com.jsongnoti.jsongnoti_web.auth.oauth.provider.GoogleUserInfo;
 import com.jsongnoti.jsongnoti_web.auth.oauth.provider.OAuth2UserInfo;
 import com.jsongnoti.jsongnoti_web.domain.User;
 import com.jsongnoti.jsongnoti_web.domain.enums.Brand;
-import com.jsongnoti.jsongnoti_web.domain.enums.MemoPresentType;
+import com.jsongnoti.jsongnoti_web.domain.enums.FavoriteSongPresentType;
 import com.jsongnoti.jsongnoti_web.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -99,8 +99,8 @@ public class oauth2UserService extends DefaultOAuth2UserService {
                     .role("ROLE_USER")
                     .provider(oAuth2UserInfo.getProvider())
                     .providerId(oAuth2UserInfo.getProviderId())
-                    .memoPresentType(MemoPresentType.PRESENT_ORDER)
-                    .showMemoBrand(Brand.TJ) //TODO 나중에 금영 구현하면 ALL 로 수정
+                    .favoriteSongPresentType(FavoriteSongPresentType.PRESENT_ORDER)
+                    .favoriteSongPresentBrand(Brand.TJ) //TODO 나중에 금영 구현하면 ALL 로 수정
                     .build();
 
             userRepository.save(newUser);

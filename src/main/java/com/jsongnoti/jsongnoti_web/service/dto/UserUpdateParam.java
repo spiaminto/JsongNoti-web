@@ -1,7 +1,7 @@
 package com.jsongnoti.jsongnoti_web.service.dto;
 
 import com.jsongnoti.jsongnoti_web.domain.enums.Brand;
-import com.jsongnoti.jsongnoti_web.domain.enums.MemoPresentType;
+import com.jsongnoti.jsongnoti_web.domain.enums.FavoriteSongPresentType;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,7 +13,7 @@ public class UserUpdateParam {
     private String username;
     private String password;
 
-    private MemoPresentType memoPresentType;
-    private Brand showMemoBrand;
+    private FavoriteSongPresentType favoriteSongPresentType;
+    private Brand favoriteSongPresentBrand;
 
 }

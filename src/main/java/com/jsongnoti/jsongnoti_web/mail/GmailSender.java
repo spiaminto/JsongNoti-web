@@ -49,7 +49,7 @@ public class GmailSender {
             helper.setTo(email);
             helper.setSubject(verifyMailType.getSubjectWithTime());
 
-            String content = templateEngine.process("verifyEmail", context);
+            String content = templateEngine.process("verify-email", context);
             helper.setText(content, true);
         };
 

@@ -39,16 +39,6 @@
     display: inline; /* 한글 타이틀 표시를 위해 인라인 */
 }
 
-.song-search-result-header {
-    font-size: calc(0.7rem + 0.3vw);
-}
-
-@media (min-width: 768px) {
-    .song-search-result-header {
-        font-size: 1rem;
-    }
-}
-
 .song-title-korean {
     color: #777;
     margin-left: 1rem;

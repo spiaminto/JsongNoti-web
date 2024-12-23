@@ -31,8 +31,8 @@ public class UserController {
                 .email(userUpdateRequest.getEmail())
                 .username(userUpdateRequest.getUsername())
                 .password(userUpdateRequest.getPassword())
-                .memoPresentType(userUpdateRequest.getMemoPresentType())
-                .showMemoBrand(userUpdateRequest.getShowMemoBrand())
+                .favoriteSongPresentType(userUpdateRequest.getFavoriteSongPresentType())
+                .favoriteSongPresentBrand(userUpdateRequest.getFavoriteSongPresentBrand())
                 .build();
         UserServiceResult userServiceResult = userService.updateUser(userId, userUpdateParam);
         int status = userServiceResult.isSuccess() ? 200 : 409;

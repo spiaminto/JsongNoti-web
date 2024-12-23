@@ -69,6 +69,7 @@
 <body class="outer-element">
 <div id="alertMessage" th:text="${alertMessage}" style="width: 0; height: 0; display: none"></div>
 <div id="container">
+
   <!-- Navigation-->
   <nav class="navbar navbar-light static-top">
     <h1>
@@ -81,18 +82,48 @@
       <img src="/static/assets/icon/logo_512.png" th:src="@{'/assets/icon/logo_512.png'}" alt="로고아이콘" width="35px">
     </h1>
     <div class="button-wrapper">
-      <button id="searchButton" onclick="location.href = '/search'" class="memo-button icon-button btn"
+      <button id="searchButton" onclick="location.href = '/search'" class="icon-button btn"
               style="background-image: url('/static/assets/icon/search_512.png')"
               th:style="'background-image: url(/assets/icon/search_512.png)'">
-        <span class="icon-button-label"><b>검색</b></span>
+        <span class="icon-button-label search-icon-label"><b>검색</b></span>
       </button>
-      <button id="memoButton" class="memo-button icon-button btn "
-              style="background-image: url('/static/assets/icon/memo_256.png')"
-              th:style="'background-image: url(/assets/icon/memo_256.png)'">
-        <span class="icon-button-label"><b>메모</b></span>
+      <button id="favoriteSongButton" class="icon-button btn "
+              style="background-image: url('/static/assets/icon/favorite_song_512.png')"
+              th:style="'background-image: url(/assets/icon/favorite_song_512.png)'"
+              data-bs-toggle="modal" data-bs-target="#favoriteLoginModal">
+        <span class="icon-button-label"><b>애창곡</b></span>
       </button>
     </div>
   </nav>
+
+  <!-- 로그인 안내 모달 -->
+  <div class="modal fade" id="favoriteLoginModal" tabindex="-1" aria-labelledby="favoriteLoginModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">애창곡 로그인 안내</h3>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-body-content">
+            <div class="modal-image-wrapper">
+              <img src="/static/assets/img/favorite-hint.png" th:src="@{/assets/img/favorite-hint.png}">
+              <div class="video-shadow dark-mode-element"></div>
+            </div>
+            <p class="px-3 mb-0">
+              애창곡의 정보를 추가메모와 함께 저장할 수 있습니다. <br>
+              서비스 이용을 위해 구글 로그인이 필요합니다.
+            </p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">닫기</button>
+          <button type="button" class="btn btn-lg btn-outline-primary favorite-login-button" data-bs-dismiss="modal"><i class="bi bi-google"></i><span class="ms-1">구글 로그인</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Masthead-->
   <header class="masthead">
     <!--    <button class="btn btn-primary" onclick="document.getElementById('verifyEmailCollapseButton').click()">test</button>-->
@@ -501,59 +532,60 @@
       </div>
     </div>
   </div>
+
   <!-- Footer-->
   <footer class="footer inner-element">
-      <div class="row">
-        <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
-          <button type="button" class="btn btn-danger" id="unsubscribeModalButton" data-bs-toggle="modal"
-                  data-bs-target="#unsubscribeModal">
-            구독 취소
-          </button>
-          <p id="footerText" class="text-muted small">&copy; 제이노티 by JsongNoti. All Rights
-            Reserved.</p>
-          <p id="footerTextCopyright" class="small mb-0">icons Designed by
-            <a class="text-muted text-decoration-none" href="https://www.freepik.com/">Freepik</a>
-          </p>
-          <div id="footerTextLinkWrapper" class="">
-            <p id="footerTextTermsOfUse" class="d-inline-block small mb-0"><a
-                class="text-muted text-decoration-none" href="/terms-of-use">이용약관</a></p>
-            <p id="footerTextPrivacyPolicy" class="d-inline-block small mb-0 ms-2"><a
-                class="text-muted text-decoration-none" href="/privacy-policy"><b>개인정보처리방침</b></a></p>
-          </div>
-        </div>
-        <div class="footer-icon-container col-lg-6  text-center text-lg-end">
-          <ul class="list-inline mb-0">
-            <li class="list-inline-item me-4">&nbsp;
-              <a class="text-primary-emphasis text-decoration-none" href="https://github.com/spiaminto/JsongNoti-web">
-                Github
-                <i class="bi-github fs-3"></i>
-              </a>
-            </li>
-            <li class="list-inline-item contact-mail-pc me-4">
-              <a class="text-primary-emphasis text-decoration-none"
-                 href="https://mail.google.com/mail/?view=cm&fs=1&to=jsongnoti%2Bcs@gmail.com&su=일본 신곡 알림이 문의"
-                 target="_blank">
-                Contact
-                <i class="bi-envelope fs-3"></i>
-              </a>
-            </li>
-            <li class="list-inline-item contact-mail-mobile me-4">
-              <a class="text-primary-emphasis text-decoration-none"
-                 href="mailto:jsongnoti+cs@gmail.com?subject=일본 신곡 알림이 문의">
-                Contact
-                <i class="bi-envelope fs-3"></i>
-              </a>
-            </li>
-            <li class="list-inline-item dark-mode-button">
-              <a class="text-primary-emphasis text-decoration-none"
-                 href="">
-                다크모드
-                <i class="bi bi-moon-fill fs-3"></i>
-              </a>
-            </li>
-          </ul>
+    <div class="row">
+      <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
+        <button type="button" class="btn btn-danger" id="unsubscribeModalButton" data-bs-toggle="modal"
+                data-bs-target="#unsubscribeModal">
+          구독 취소
+        </button>
+        <p id="footerText" class="text-muted small">&copy; 제이노티 by JsongNoti. All Rights
+          Reserved.</p>
+        <p id="footerTextCopyright" class="small mb-0">icons Designed by
+          <a class="text-muted text-decoration-none" href="https://www.freepik.com/">Freepik</a>
+        </p>
+        <div id="footerTextLinkWrapper" class="">
+          <p id="footerTextTermsOfUse" class="d-inline-block small mb-0"><a
+              class="text-muted text-decoration-none" href="/terms-of-use">이용약관</a></p>
+          <p id="footerTextPrivacyPolicy" class="d-inline-block small mb-0 ms-2"><a
+              class="text-muted text-decoration-none" href="/privacy-policy"><b>개인정보처리방침</b></a></p>
         </div>
       </div>
+      <div class="footer-icon-container col-lg-6  text-center text-lg-end">
+        <ul class="list-inline mb-0">
+          <li class="list-inline-item me-4">&nbsp;
+            <a class="text-primary-emphasis text-decoration-none" href="https://github.com/spiaminto/JsongNoti-web">
+              Github
+              <i class="bi-github fs-3"></i>
+            </a>
+          </li>
+          <li class="list-inline-item contact-mail-pc me-4">
+            <a class="text-primary-emphasis text-decoration-none"
+               href="https://mail.google.com/mail/?view=cm&fs=1&to=jsongnoti%2Bcs@gmail.com&su=일본 신곡 알림이 문의"
+               target="_blank">
+              Contact
+              <i class="bi-envelope fs-3"></i>
+            </a>
+          </li>
+          <li class="list-inline-item contact-mail-mobile me-4">
+            <a class="text-primary-emphasis text-decoration-none"
+               href="mailto:jsongnoti+cs@gmail.com?subject=일본 신곡 알림이 문의">
+              Contact
+              <i class="bi-envelope fs-3"></i>
+            </a>
+          </li>
+          <li class="list-inline-item dark-mode-button">
+            <a class="text-primary-emphasis text-decoration-none"
+               href="">
+              다크모드
+              <i class="bi bi-moon-fill fs-3"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
   </footer>
 
 </div> <!-- #container -->

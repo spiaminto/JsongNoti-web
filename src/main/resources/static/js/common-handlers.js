@@ -52,15 +52,14 @@ $(function () {
         })
     });
 
-    // 메모 버튼 클릭
-    $('#memoButton').click(function () {
-        let isLoggedIn = localStorage.getItem("isLoggedIn"); // null or 'true'
-        if (!isLoggedIn) {
-            if (!confirm("메모 기능 사용을 위해 구글 로그인이 필요합니다. \n " +
-                "확인 버튼을 누르면 구글 로그인을 진행합니다.")) {
-                return;
-            }
+    $('#favoriteSongButton').on('click', function (e) {
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            location.href = '/favorite-song';
         }
-        location.href = '/memo';
+    });
+
+    // 메모 버튼 클릭
+    $('.favorite-login-button').click(function () {
+        location.href = '/favorite-song';
     })
 })

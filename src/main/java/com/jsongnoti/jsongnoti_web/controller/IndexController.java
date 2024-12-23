@@ -87,7 +87,7 @@ public class IndexController {
         return "redirect:/";
     }
 
-    @GetMapping("/memo")
+    @GetMapping("/favorite-song")
     public String memo(@AuthenticationPrincipal PrincipalDetails principalDetails,
                        Model model) {
         if (principalDetails == null || principalDetails.getUserId() == null) {
@@ -98,24 +98,24 @@ public class IndexController {
         User user = userService.findUserById(userId);
         model.addAttribute("userId", userId);
         model.addAttribute("username", user.getUsername());
-        model.addAttribute("memoPresentType", user.getMemoPresentType());
-        model.addAttribute("showMemoBrand", user.getShowMemoBrand());
+        model.addAttribute("favoriteSongPresentType", user.getFavoriteSongPresentType());
+        model.addAttribute("favoriteSongPresentBrand", user.getFavoriteSongPresentBrand());
 
-        return "memo";
+        return "favorite-songs";
     }
 
     @GetMapping("/privacy-policy")
     public String privacyPolicy(@RequestParam(value = "date", required = false) String date) {
         log.info("date: {}", date);
-        if (date == null) { date = "241220"; }
-        return "privacy/" + date;
+        if (date == null) { date = "241223"; }
+        return "privacy/privacy-" + date;
     }
 
     @GetMapping("/terms-of-use")
     public String termsOfUse(@RequestParam(value = "date", required = false) String date) {
         log.info("date: {}", date);
-        if (date == null) { date = "241220"; }
-        return "terms/" + date;
+        if (date == null) { date = "241223"; }
+        return "terms/terms-" + date;
     }
 
 }

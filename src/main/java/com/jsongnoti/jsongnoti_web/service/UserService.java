@@ -38,13 +38,13 @@ public class UserService {
     @Transactional
     protected UserServiceResult updateMemoSetting(Long userId, UserUpdateParam updateParam) {
         // 검증
-        if (updateParam.getMemoPresentType() == null || updateParam.getShowMemoBrand() == null) {
+        if (updateParam.getFavoriteSongPresentType() == null || updateParam.getFavoriteSongPresentBrand() == null) {
             return UserServiceResult.fail("메모 설정을 변경할 수 없습니다.");
         }
 
         // 메모 설정 업데이트
         User user = findUserById(userId);
-        user.updateMemoSetting(updateParam.getMemoPresentType(), updateParam.getShowMemoBrand());
+        user.updateMemoSetting(updateParam.getFavoriteSongPresentType(), updateParam.getFavoriteSongPresentBrand());
         return UserServiceResult.success("메모 설정이 변경되었습니다.");
     }
 
@@ -96,7 +96,7 @@ public class UserService {
         // 인증 코드 확인
         if (!findUser.getAuthenticationToken().equals(authenticationToken)) {
             findUser.verificationFailed();
-            return UserServiceResult.fail("인증 토큰이 일치하지 않습니다. 실패횟수가 3회를 초과하면 다시 인증요청 해야합니다." + "(" + findUser.getAuthenticationRetry() + "회 실패" + ")");
+            return UserServiceResult.fail("인증코드가 일치하지 않습니다. 실패횟수가 3회를 초과하면 다시 인증요청 해야합니다." + "(" + findUser.getAuthenticationRetry() + "회 실패" + ")");
         }
 
         // accessToken revoke

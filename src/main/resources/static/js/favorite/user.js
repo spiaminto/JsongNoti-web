@@ -1,11 +1,14 @@
 $(function () {
-    // 유저 탈퇴 폼 전송
+
+    // 탈퇴 ================================================================================
+
+// 유저 탈퇴 폼 전송
     $('#deleteUserForm').submit(function (event) {
         event.preventDefault();
 
         let email = $('#deleteUserEmailInput').val();
         let csrf = $('#csrfToken').val();
-        let userId = $('.memo-section-header').data('user-id');
+        let userId = $('.favorite-song-section-header').data('user-id');
         $.ajax({
             type: 'POST',
             url: '/users' + '/' + userId + '/delete',
@@ -42,7 +45,7 @@ $(function () {
 
         let code = $('#verifyDeleteUserCodeInput').val();
         let csrf = $('#csrfToken').val();
-        let userId = $('.memo-section-header').data('user-id');
+        let userId = $('.favorite-song-section-header').data('user-id');
         $.ajax({
             type: 'POST',
             url: '/users' + '/' + userId + '/verify-delete',
