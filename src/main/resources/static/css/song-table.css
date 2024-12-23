@@ -9,6 +9,11 @@
     padding: 0 0.3rem;
 }
 
+.song-table-container-last-month {
+    margin-top: 0;
+    padding-top: 2rem;
+}
+
 .song-table-container:first-child {
     margin-top: 0;
 }
@@ -28,7 +33,6 @@
     /*border: solid 1px var(--bs-secondary-border-subtle);*/
     border: solid 1px var(--bs-light-border-subtle);
     border-radius: 10px;
-    margin-top: 20px;
     overflow: hidden;
 }
 
@@ -138,6 +142,7 @@ mark, .mark {
 
 .last-month-show-button-wrapper {
     margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 .last-month-show-button {

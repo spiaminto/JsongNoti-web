@@ -10,17 +10,8 @@
         crossorigin="anonymous">
   <!-- Favicon-->
   <link rel="icon" type="image/x-icon" href="/static/assets/favicon_32.png" th:href="@{/assets/favicon_32.png}"/>
-  <!-- Bootstrap icons-->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet"
-        type="text/css"/>
   <!-- nanum fonts-->
   <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css" rel="stylesheet"/>
-  <link href="/static/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
-  <link href="/static/css/containers.css" th:href="@{/css/containers.css}" rel="stylesheet"/>
-  <link href="/css/header-text.css" th:href="@{/css/header-text.css}" rel="stylesheet"/>
-  <link href="/static/css/song-table.css" th:href="@{/css/song-table.css}" rel="stylesheet"/>
-  <link href="/static/css/modal.css" th:href="@{/css/modal.css}" rel="stylesheet"/>
-  <link href="/static/css/footer.css" th:href="@{/css/footer.css}" rel="stylesheet"/>
   <style>
       #container {
           max-width: 800px;
@@ -32,14 +23,39 @@
 <body>
 <div id="container" class="container">
 
-  <h2>제이노티 개인정보 처리방침</h2>
-  <p> 제이노티는 이용자의 이메일을 수집하여 신곡정보를 메일로 보내드리는 '알림 메일' 서비스와 노래방 곡을 검색하여 메모(저장) 할 수 있는 '메모' 기능을 위해 별도로 사용자 정보를 수집, 처리하고
-    있습니다.</p>
+  <h2>개인정보 처리방침</h2>
+
+  <p>제이노티의 '알림 메일' 서비스의 경우 다른 서비스와 별도로 개인정보를 수집, 이용하고 있습니다. 해당 내용은 '2. 알림 메일 개인정보 처리방침' 에서 확인할 수 있습니다.</p>
+
+  <h3>1. 제이노티 개인정보 처리방침</h3>
+  <p>제이노티는 서비스를 제공하기 위해 구글 로그인 서비스를 사용하며 구글로 부터 제공받은 이용자의 정보 중 다음과 같은 개인정보를 수집, 이용하고 있습니다.</p>
+  <ol class="list-group list-group-numbered">
+    <li class="list-group-item d-flex justify-content-between align-items-start">
+      <div class="ms-2 me-auto">
+        <div class="fw-bold">수집하는 개인정보 항목</div>
+        필수 : 이메일
+        <br>
+        선택 : (해당 없음)
+      </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-start">
+      <div class="ms-2 me-auto">
+        <div class="fw-bold">개인정보 이용 목적</div>
+        서비스 제공 및 회원 관리, 문의 처리
+      </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-start">
+      <div class="ms-2 me-auto">
+        <div class="fw-bold">개인정보 보유 및 이용기간</div>
+        회원 탈퇴시 까지 보유합니다. 회원 탈퇴시 48시간 이내 삭제합니다. 회원 탈퇴시 이메일 인증이 어려운 경우 7일간 보관 후 삭제.
+      </div>
+    </li>
+  </ol>
 
   <br>
 
-  <h3>1. 알림 메일 개인정보 처리방침</h3>
-  <p>제이노티는 알림 메일 서비스를 제공하기 위해 이용자로부터 다음과 같은 개인정보를 수집, 이용하고 있습니다.</p>
+  <h3>2. 알림 메일 개인정보 처리방침</h3>
+  <p>제이노티는 알림 메일 서비스를 제공하기 위해 이용자의 정보 중 다음과 같은 개인정보를 수집, 이용하고 있습니다.</p>
   <ol class="list-group list-group-numbered">
     <li class="list-group-item d-flex justify-content-between align-items-start">
       <div class="ms-2 me-auto">
@@ -59,33 +75,6 @@
       <div class="ms-2 me-auto">
         <div class="fw-bold">개인정보 보유 및 이용기간</div>
         수집일로부터 1년간 보유합니다. 구독 취소시 48시간 이내 삭제합니다. 구독 취소시 이메일 인증이 어려운 경우 7일간 보관 후 삭제합니다.
-      </div>
-    </li>
-  </ol>
-
-  <br>
-
-  <h3>2. 메모 개인정보 처리방침</h3>
-  <p>제이노티는 메모 서비스를 제공하기 위해 구글 로그인 서비스를 사용하며 구글로 부터 제공받은 이용자의 정보 중 다음과 같은 개인정보를 수집, 이용하고 있습니다.</p>
-  <ol class="list-group list-group-numbered">
-    <li class="list-group-item d-flex justify-content-between align-items-start">
-      <div class="ms-2 me-auto">
-        <div class="fw-bold">수집하는 개인정보 항목</div>
-        필수 : 이메일
-        <br>
-        선택 : (해당 없음)
-      </div>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-start">
-      <div class="ms-2 me-auto">
-        <div class="fw-bold">개인정보 이용 목적</div>
-        메모 서비스 제공 및 회원 관리, 문의 처리
-      </div>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-start">
-      <div class="ms-2 me-auto">
-        <div class="fw-bold">개인정보 보유 및 이용기간</div>
-        회원 탈퇴시 까지 보유합니다. 회원 탈퇴시 48시간 이내 삭제합니다. 회원 탈퇴시 이메일 인증이 어려운 경우 7일간 보관 후 삭제.
       </div>
     </li>
   </ol>

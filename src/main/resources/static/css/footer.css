@@ -1,17 +1,34 @@
-footer.footer {
-    padding: 2rem 0; /* 원본 4rem */
+.footer {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
 }
 
-#footerText {
-    margin-top: 1rem;
-    margin-bottom: 0 !important;
+.footer p {
+    margin-bottom: 0; /* 1rem 이던거 초기화 */
+}
+
+.footer .btn-danger {
+    margin-bottom: 1rem;
 }
 
 @media (min-width: 992px) {
-    #unsubscribeModalButton {
-        font-size: calc(1rem + 0.2vw);
+    .footer .btn-danger {
+        font-size: calc(0.9rem + 0.3vw);
     }
 }
+
+.footer-icon-container {
+    margin-top: 1rem;
+}
+
+@media (min-width: 992px) {
+    .footer-icon-container {
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+}
+
+
 
 .contact-mail-mobile {
     display: inline-block;

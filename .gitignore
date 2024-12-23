@@ -2,6 +2,8 @@
 application-*.properties
 .Memo/**
 src/main/resources/static/assets/**
+src/main/resources/templates/privacy/**
+src/main/resources/templates/terms/**
 
 
 HELP.md

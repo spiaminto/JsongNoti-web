@@ -16,11 +16,6 @@
 }
 
 /* 메모 등록 */
-.add-memo-section {
-    padding: 1rem;
-    border-radius: 20px;
-}
-
 .memo-add-form-container {
     padding: 0 0.3rem;
     max-width: 768px;

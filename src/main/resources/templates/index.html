@@ -78,7 +78,7 @@
       <a class="navbar-brand" href="/">
         신곡알림
       </a>
-      <img src="/static/assets/icon/mike_512.png" th:src="@{'/assets/icon/mike_512.png'}" alt="로고아이콘" width="35px">
+      <img src="/static/assets/icon/logo_512.png" th:src="@{'/assets/icon/logo_512.png'}" alt="로고아이콘" width="35px">
     </h1>
     <div class="button-wrapper">
       <button id="searchButton" onclick="location.href = '/search'" class="memo-button icon-button btn"
@@ -502,27 +502,26 @@
     </div>
   </div>
   <!-- Footer-->
-  <footer class="footer mt-4 inner-element">
-    <div class="container">
+  <footer class="footer inner-element">
       <div class="row">
         <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
           <button type="button" class="btn btn-danger" id="unsubscribeModalButton" data-bs-toggle="modal"
                   data-bs-target="#unsubscribeModal">
             구독 취소
           </button>
-          <p id="footerText" class="text-muted small mb-4 mb-lg-0">&copy; 제이노티 by JsongNoti. All Rights
+          <p id="footerText" class="text-muted small">&copy; 제이노티 by JsongNoti. All Rights
             Reserved.</p>
           <p id="footerTextCopyright" class="small mb-0">icons Designed by
             <a class="text-muted text-decoration-none" href="https://www.freepik.com/">Freepik</a>
           </p>
-          <div id="footerTextLinkWrapper" class="mb-4">
+          <div id="footerTextLinkWrapper" class="">
             <p id="footerTextTermsOfUse" class="d-inline-block small mb-0"><a
                 class="text-muted text-decoration-none" href="/terms-of-use">이용약관</a></p>
             <p id="footerTextPrivacyPolicy" class="d-inline-block small mb-0 ms-2"><a
                 class="text-muted text-decoration-none" href="/privacy-policy"><b>개인정보처리방침</b></a></p>
           </div>
         </div>
-        <div class="col-lg-6 h-100 text-center text-lg-end my-auto">
+        <div class="footer-icon-container col-lg-6  text-center text-lg-end">
           <ul class="list-inline mb-0">
             <li class="list-inline-item me-4">&nbsp;
               <a class="text-primary-emphasis text-decoration-none" href="https://github.com/spiaminto/JsongNoti-web">
@@ -555,7 +554,6 @@
           </ul>
         </div>
       </div>
-    </div>
   </footer>
 
 </div> <!-- #container -->

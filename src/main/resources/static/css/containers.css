@@ -51,11 +51,6 @@ section:first-of-type {
     padding: 0.5rem 0;
 }
 
-.song-container {
-    padding: 1rem 0;
-    border-radius: 20px;
-}
-
 /* UI 는 외부엘리먼트 (바디) 와 내부엘리먼트 로 구성된다. */
 .outer-element { /* 배경 (사실상 바디)*/
     background-color: var(--bs-secondary-bg);
@@ -65,7 +60,7 @@ section:first-of-type {
     /*background-color: var(--bs-light-bg-subtle);*/
     background-color: var(--bs-tertiary-bg);
     border-radius: 20px;
-    padding: 1rem;
+    padding: 1.5rem 1rem;
 }
 
 
