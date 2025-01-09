@@ -4,6 +4,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -30,9 +33,10 @@ public class SongKorean {
     private String singer;
     private String singerOrigin;
     private String singerRead;
-
     private String singerPrior;
 
     private String model;
 
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 }

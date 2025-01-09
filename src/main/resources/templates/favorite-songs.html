@@ -159,7 +159,7 @@
             </div>
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" name="favoriteSongPresentBrand" id="favoriteSongPresentBrandAll"
-                     value="ALL" th:checked="${favoriteSongPresentBrand.name().equals('ALL')}" disabled>
+                     value="ALL" th:checked="${favoriteSongPresentBrand.name().equals('ALL')}">
               <label class="form-check-label" for="favoriteSongPresentBrandAll">모두</label>
             </div>
             <div class="form-check form-check-inline">
@@ -169,7 +169,7 @@
             </div>
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" name="favoriteSongPresentBrand" id="favoriteSongPresentBrandKy"
-                     value="KY" th:checked="${favoriteSongPresentBrand.name().equals('KY')}" disabled>
+                     value="KY" th:checked="${favoriteSongPresentBrand.name().equals('KY')}">
               <label class="form-check-label" for="favoriteSongPresentBrandKy">금영</label>
             </div>
           </form>
@@ -387,12 +387,12 @@
           <div class="collapse" id="addInfoTextCollapse">
             <div class="row align-items-center justify-content-center mb-2">
               <div class="col-auto">
-                <span>현재 저장 순서:&nbsp;</span><span id="currentPresentOrder">00</span>
+                <span>추가 순서:&nbsp;</span><span id="currentPresentOrder">00</span><span> 번째</span>
               </div>
               <div class="col-auto">
                 <button type="button" id="presentOrderModalButton" class="btn btn-outline-success btn-sm"
                         data-bs-toggle="modal"
-                        data-bs-target="#presentOrderModal">저장 순서 변경
+                        data-bs-target="#presentOrderModal">추가 순서 설정
                 </button>
               </div>
             </div>
@@ -402,7 +402,7 @@
             <div class="input-group justify-content-center mb-3">
             <textarea type="text" id="addInfoTextInput" class="form-control text-input" placeholder="비워둘 경우 노래의 기본값 으로 저장됩니다"
                       aria-label="추가텍스트" aria-describedby="" maxlength="50"></textarea>
-              <button class="btn btn-outline-primary" type="submit" id="addSongButton">메모하기</button>
+              <button class="btn btn-outline-primary" type="submit" id="addSongButton">추가하기</button>
             </div>
           </div>
         </form>
@@ -424,7 +424,7 @@
           <label class="form-check-label" for="searchBrandTj">TJ</label>
         </div>
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="brand" id="searchBrandKy" value="KY" disabled>
+          <input class="form-check-input" type="radio" name="brand" id="searchBrandKy" value="KY">
           <label class="form-check-label" for="searchBrandKy">금영</label>
         </div>
       </div>
@@ -488,13 +488,13 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h3 class="modal-title">저장 순서 변경</h3>
+          <h3 class="modal-title">추가 순서 설정</h3>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="modal-body-content">
             <div class="text-center">
-              선택한 노래의 바로 다음 순서로 저장됩니다.<br>
+              선택한 노래의 바로 다음 순서로 추가됩니다.<br>
             </div>
             <div class="song-table-border mt-2">
               <table class="song-table" id="choosePresentOrderTable">

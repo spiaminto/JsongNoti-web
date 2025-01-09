@@ -54,7 +54,7 @@ public class FavoriteSongService {
         // 순서 미리 변경
         long favoriteSongCount = favoriteSongRepository.countByUserId(userId);
         if (favoriteSongCount != presentOrder) {
-            syncPresentOrder(userId, presentOrder, "save");
+            syncPresentOrder(userId, presentOrder, song.getBrand(), "save");
         }
 
         FavoriteSong favoriteSong = FavoriteSong.builder()
@@ -81,7 +81,7 @@ public class FavoriteSongService {
         // 작업
         favoriteSongRepository.deleteById(favoriteSongId);
         // 반환
-        syncPresentOrder(userId, findFavoriteSong.getPresentOrder(), "delete");
+        syncPresentOrder(userId, findFavoriteSong.getPresentOrder(), findFavoriteSong.getBrand(), "delete");
         return FavoriteSongServiceResult.success("애창곡이 삭제되었습니다.");
     }
 
@@ -91,9 +91,9 @@ public class FavoriteSongService {
      * @param presentOrder
      * @param action "save" or "delete"
      */
-    private void syncPresentOrder(Long userId, int presentOrder, String action) {
+    private void syncPresentOrder(Long userId, int presentOrder, Brand brand, String action) {
         int orderModifier = action.equals("save") ? 1 : -1;
-        favoriteSongRepository.findByUserIdAndPresentOrderGreaterThanEqual(userId, presentOrder)
+        favoriteSongRepository.findByUserIdAndBrandAndPresentOrderGreaterThanEqual(userId, brand, presentOrder)
                 .forEach(favoriteSong -> {
                     favoriteSong.updatePresentOrder(favoriteSong.getPresentOrder() + orderModifier);
                 });

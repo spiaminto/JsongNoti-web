@@ -1,6 +1,6 @@
 package com.jsongnoti.jsongnoti_web.service;
 
-import com.jsongnoti.jsongnoti_web.auth.oauth.oauth2UserService;
+import com.jsongnoti.jsongnoti_web.auth.oauth.Oauth2UserService;
 import com.jsongnoti.jsongnoti_web.domain.User;
 import com.jsongnoti.jsongnoti_web.mail.GmailSender;
 import com.jsongnoti.jsongnoti_web.repository.UserRepository;
@@ -20,7 +20,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final GmailSender gmailSender;
-    private final oauth2UserService oauth2UserService;
+    private final Oauth2UserService oauth2UserService;
 
 
     public User findUserById(Long id) {

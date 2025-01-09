@@ -54,7 +54,14 @@ public class SongSearchService {
     }
 
     private List<SongSearchDto> searchSongsBySinger(String singer) {
-        return songRepository.findSongBySingerSimilar(singer).stream().map(SongSearchDto::from).toList();
+        // 수기입력
+        List<SongSearchDto> findPriorDtos = songRepository.findSongBySingerPrior(singer).stream().map(SongSearchDto::from).collect(Collectors.toList());
+        // 원어
+        List<SongSearchDto> findOriginDtos = songRepository.findSongBySingerSimilar(singer).stream().map(SongSearchDto::from).collect(Collectors.toList());
+        // 수기입력 값과 원어 값 중복제거 후 합치기
+        findOriginDtos.removeAll(findPriorDtos);
+        findPriorDtos.addAll(findOriginDtos);
+        return findPriorDtos;
     }
 
     private List<SongSearchDto> searchSongsByInfo(String info) {
@@ -63,12 +70,14 @@ public class SongSearchService {
 
     // 한글 검색 ============================================================================
     private List<SongSearchDto> searchSongsByKoreanTitle(String koreanTitle) {
-        List<SongSearchResultDto> findDtos = songRepository.findSongByKoreanTitleSimilar(koreanTitle);
-        if (findDtos.isEmpty()) {
-            findDtos = songRepository.findSongByKoreanTitleReadSimilar(koreanTitle);
-        }
+        List<SongSearchDto> titleSimilarDtos = songRepository.findSongByKoreanTitleSimilar(koreanTitle).stream().map(SongSearchDto::from).collect(Collectors.toList());
+        List<SongSearchDto> titleReadSimilarDtos = songRepository.findSongByKoreanTitleReadSimilar(koreanTitle).stream().map(SongSearchDto::from).collect(Collectors.toList());
+
+        titleSimilarDtos.removeAll(titleReadSimilarDtos);
+        titleReadSimilarDtos.addAll(titleSimilarDtos);
+
         List<SongSearchDto> searchResults = new ArrayList<>();
-        searchResults = findDtos.stream().map(SongSearchDto::from).toList();
+        searchResults = titleSimilarDtos;
         log.info("searchResults = {}", searchResults);
         return searchResults;
     }

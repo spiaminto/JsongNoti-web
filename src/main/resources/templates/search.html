@@ -4,6 +4,8 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <title>노래 검색</title>
+  <meta name="description" content="제이노티 에서 TJ, 금영 노래방에 등록된 일본곡을 검색할 수 있습니다."/>
+  <meta name="keywords" content="노래방, 일본 노래, 검색"/>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="/static/assets/favicon_32.png" th:href="@{/assets/favicon_32.png}"/>
@@ -113,7 +115,7 @@
             <label class="form-check-label" for="searchBrandTj">TJ</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="brand" id="searchBrandKy" value="KY" disabled>
+            <input class="form-check-input" type="radio" name="brand" id="searchBrandKy" value="KY">
             <label class="form-check-label" for="searchBrandKy">금영</label>
           </div>
         </div>

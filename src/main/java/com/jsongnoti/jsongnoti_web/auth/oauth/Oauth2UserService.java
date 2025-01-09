@@ -11,8 +11,10 @@ import com.jsongnoti.jsongnoti_web.domain.enums.FavoriteSongPresentType;
 import com.jsongnoti.jsongnoti_web.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -29,9 +31,12 @@ import java.util.Optional;
 /**
  * OAuth2 유저 인증 처리 클래스
  */
-public class oauth2UserService extends DefaultOAuth2UserService {
+public class Oauth2UserService extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
     private final RestClient restClient;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+    @Value("${jsongnoti.oauth2.secret}")
+    private String oauth2Password;
 
     /**
      * OAuth2UserRequest 를 가공한 뒤 Authentication 객체에 저장할 멤버 정보를 담은 PrincipalDetails 반환
@@ -95,12 +100,12 @@ public class oauth2UserService extends DefaultOAuth2UserService {
             User newUser = User.builder()
                     .email(oAuth2UserInfo.getEmail())
                     .username(forOauth2UserUsername)
-                    .password("forOauth2UserPassword")
+                    .password(bCryptPasswordEncoder.encode(oauth2Password))
                     .role("ROLE_USER")
                     .provider(oAuth2UserInfo.getProvider())
                     .providerId(oAuth2UserInfo.getProviderId())
                     .favoriteSongPresentType(FavoriteSongPresentType.PRESENT_ORDER)
-                    .favoriteSongPresentBrand(Brand.TJ) //TODO 나중에 금영 구현하면 ALL 로 수정
+                    .favoriteSongPresentBrand(Brand.ALL)
                     .build();
 
             userRepository.save(newUser);

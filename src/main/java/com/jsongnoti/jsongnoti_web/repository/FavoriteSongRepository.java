@@ -28,7 +28,7 @@ public interface FavoriteSongRepository extends JpaRepository<FavoriteSong, Long
     /**
      * 순서 바꿀때 사용, presentOrder 이상인 것들 조회
      */
-    List<FavoriteSong> findByUserIdAndPresentOrderGreaterThanEqual(Long userId, int presentOrder);
+    List<FavoriteSong> findByUserIdAndBrandAndPresentOrderGreaterThanEqual(Long userId, Brand brand, int presentOrder);
 
     /**
      * 저장 전 중복확인용
