@@ -77,7 +77,7 @@ public class SongSearchService {
         titleReadSimilarDtos.addAll(titleSimilarDtos);
 
         List<SongSearchDto> searchResults = new ArrayList<>();
-        searchResults = titleSimilarDtos;
+        searchResults = titleReadSimilarDtos;
         log.info("searchResults = {}", searchResults);
         return searchResults;
     }

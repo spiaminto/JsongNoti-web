@@ -28,7 +28,9 @@ public class SecurityConfig {
 
         http
                 .sessionManagement(sessionManagement ->
-                        sessionManagement.maximumSessions(1)
+                        sessionManagement
+                                .sessionFixation().changeSessionId().invalidSessionUrl("/")
+                                .maximumSessions(1).maxSessionsPreventsLogin(false).expiredUrl("/") // invalid 우선적용
                 )
 
                 .authorizeHttpRequests(authorizeRequests ->
