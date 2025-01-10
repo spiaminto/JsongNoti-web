@@ -39,13 +39,13 @@ public class UserService {
     protected UserServiceResult updateMemoSetting(Long userId, UserUpdateParam updateParam) {
         // 검증
         if (updateParam.getFavoriteSongPresentType() == null || updateParam.getFavoriteSongPresentBrand() == null) {
-            return UserServiceResult.fail("메모 설정을 변경할 수 없습니다.");
+            return UserServiceResult.fail("애창곡 설정을 변경할 수 없습니다.");
         }
 
         // 메모 설정 업데이트
         User user = findUserById(userId);
         user.updateMemoSetting(updateParam.getFavoriteSongPresentType(), updateParam.getFavoriteSongPresentBrand());
-        return UserServiceResult.success("메모 설정이 변경되었습니다.");
+        return UserServiceResult.success("애창곡 설정이 변경되었습니다.");
     }
 
     /**

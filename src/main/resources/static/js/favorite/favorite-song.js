@@ -134,7 +134,7 @@ $(function () {
         $beSwitchedRow.after($willSwitchRow);
 
         // 클래스 초기화
-        $('.table-tj').find('tbody tr')
+        $(this).closest('.song-table').find('tbody tr')
             .removeClass('song-row-be-switched song-row-be-switched-selected song-row-will-switch song-row-will-switch-selected')
             .addClass('song-row-will-switch');
 
@@ -217,7 +217,7 @@ $(function () {
             // 삭제 이벤트 연결
             $(row).find('.song-title').on('click', function (event) {
                 event.preventDefault();
-                deleteFavoriteSongEvent(brand, event.target);
+                deleteFavoriteSongEvent(brand, event.currentTarget);
             });
             $(row).addClass('song-row-deleting');
         });
@@ -232,7 +232,10 @@ $(function () {
     function deleteFavoriteSongEvent(brand, target) {
         let $target = $(target);
         let songTitle = $target.find('.song-title-text').text();
-        if (!confirm('확인을 누르면 다음 곡이 삭제됩니다.\n' + songTitle)) return false; // 취소시 리턴
+        let songSinger = $target.closest('tr').find('.song-singer').text();
+        console.log($target)
+        console.log(songTitle);
+        if (!confirm('확인을 누르면 다음 곡이 삭제됩니다.\n' + songSinger + ' - ' + songTitle)) return false; // 취소시 리턴
 
         let favoriteSongId = $target.closest('tr').find('.song-number').data('favorite-song-id')
         let userId = $('.favorite-song-section-header').data('user-id');

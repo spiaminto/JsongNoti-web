@@ -39,6 +39,10 @@
     display: inline; /* 한글 타이틀 표시를 위해 인라인 */
 }
 
+#songSearchResultTable .song-title:hover {
+    cursor: pointer;
+}
+
 .song-title-korean {
     color: #777;
     margin-left: 1rem;
