@@ -106,6 +106,7 @@ $(function () {
 
         let $target = $(target);
         $target.siblings('.switch-order-complete-button').show();
+        FavoriteSongUtil.toggleSwitchOrderButton('off');
         FavoriteSongUtil.toggleDeleteFavoriteSongButton('off');
         FavoriteSongUtil.toggleSearchForm('off');
         FavoriteSongUtil.toggleSaveFavoriteSongButton('off');
@@ -146,11 +147,11 @@ $(function () {
     $('.switch-order-complete-button').on('click', function (event) {
         let brand = $(this).closest('.song-table-container').find('h2 span').text().indexOf('TJ') >= 0 ? 'TJ' : 'KY';
         endSwitchOrder(brand, event.target);
-        isOrderSwitching = false;
     })
 
 // 순서 변경 완료 버튼 클릭 이벤트
     function endSwitchOrder(brand, target) {
+        if ($('.favorite-song-section .collapsing').length > 0) { return; } // 컬랩스 애니메이션 중에는 이벤트 무시
         let targetSelector = brand === 'TJ' ? '.table-tj' : '.table-ky';
         let $songTable = $(targetSelector);
         let $songRows = $songTable.find('tbody tr');
@@ -183,16 +184,16 @@ $(function () {
                 // console.log(xhr);
             }
         })
-        
-        // 후처리
-        FavoriteSongUtil.refreshFavoriteSongTable(brand);
 
-        let $target = $(target);
-        $target.hide();
-        $target.siblings('.switch-order-button').click(); // 컬랩스 hide
+        // 후처리
         FavoriteSongUtil.toggleSearchForm('on');
         FavoriteSongUtil.toggleSaveFavoriteSongButton('on');
         FavoriteSongUtil.toggleDeleteFavoriteSongButton('on');
+        FavoriteSongUtil.toggleSwitchOrderButton('on');
+        $(target).siblings('.switch-order-button').click().end().hide(); // 컬랩스, 완료버튼 hide
+        isOrderSwitching = false; // .switch-order-button 클릭시 이벤트 재실행을 막기위해 클릭 이후 변경
+
+        FavoriteSongUtil.refreshFavoriteSongTable(brand);
     }
 
     // 삭제 ======================================================================================
@@ -223,6 +224,7 @@ $(function () {
         });
 
         $(target).siblings('.delete-favorite-song-complete-button').show();
+        FavoriteSongUtil.toggleDeleteFavoriteSongButton('off');
         FavoriteSongUtil.toggleSwitchOrderButton('off');
         FavoriteSongUtil.toggleSaveFavoriteSongButton('off');
         FavoriteSongUtil.toggleSearchForm('off');
@@ -267,17 +269,16 @@ $(function () {
     })
 
     function endDeleteFavoriteSong(brand, target) {
-        // let $songTable = brand === 'TJ' ? $('.table-tj') : $('.table-ky');
-        FavoriteSongUtil.refreshFavoriteSongTable(brand);
-        // $songTable.find('tbody tr').removeClass('song-row-deleting');
+        if ($('.favorite-song-section .collapsing').length > 0) { return; } // 컬랩스 애니메이션 중에는 이벤트 무시
 
-        let $target = $(target);
-        $target.siblings('.delete-favorite-song-button').click(); // 컬랩스 hide
-        $target.hide();
-
-        isFavoriteSongDeleting = false;
+        FavoriteSongUtil.toggleDeleteFavoriteSongButton('on');
         FavoriteSongUtil.toggleSwitchOrderButton('on');
         FavoriteSongUtil.toggleSearchForm('on');
         FavoriteSongUtil.toggleSaveFavoriteSongButton('on');
+        $(target).hide(); // 완료 버튼 숨기기
+        $(target).siblings('.delete-favorite-song-button').click().end().hide(); // 컬랩스, 완료버튼 hide
+        isFavoriteSongDeleting = false; // .delete-favorite-song-button 클릭시 이벤트 재실행을 막기위해 클릭 이후에 변경
+
+        FavoriteSongUtil.refreshFavoriteSongTable(brand); // 테이블 갱신
     }
 });

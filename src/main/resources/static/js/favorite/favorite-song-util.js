@@ -102,20 +102,21 @@ class FavoriteSongUtil {
         }
     }
 
+// 삭제 버튼 on / off
     toggleDeleteFavoriteSongButton(command) {
         if (command === 'on') {
-            $('.delete-favorite-song-button').prop('disabled', false).show();
+            $('.delete-favorite-song-button').show();
         } else if (command === 'off') {
-            $('.delete-favorite-song-button').prop('disabled', true).hide();
+            $('.delete-favorite-song-button').hide();
         }
     }
 
-// 버튼 on off
+// 순서 변경 버튼 on / off
     toggleSwitchOrderButton(command) {
         if (command === 'on') {
-            $('.switch-order-button').prop('disabled', false).show();
+            $('.switch-order-button').show();
         } else if (command === 'off') {
-            $('.switch-order-button').prop('disabled', true).hide();
+            $('.switch-order-button').hide();
         }
     }
 

@@ -88,9 +88,9 @@
     display: none;
 }
 
-.collapse-button-hide-when-expanded[aria-expanded="true"] {
-    display: none !important;
-}
+/*.collapse-button-hide-when-expanded[aria-expanded="true"] {*/
+/*    display: none !important;*/
+/*}*/
 
 .song-row-deleting {
     background: repeating-linear-gradient(-45deg, var(--bs-danger-bg-subtle), var(--bs-danger-bg-subtle) 3px, var(--bs-tertiary-bg) 0, var(--bs-tertiary-bg) 6px);

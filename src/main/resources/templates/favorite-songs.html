@@ -83,7 +83,8 @@
       <a class="navbar-brand" href="/favorite-song">
         애창곡
       </a>
-      <img src="/static/assets/icon/favorite_song_512.png" th:src="@{'/assets/icon/favorite_song_512.png'}" alt="애창곡아이콘" width="35px">
+      <img src="/static/assets/icon/favorite_song_512.png" th:src="@{'/assets/icon/favorite_song_512.png'}" alt="애창곡아이콘"
+           width="35px">
     </h1>
     <div class="change-setting-button-wrapper">
       <button id="changeSettingButton" class="change-setting-button icon-button btn"
@@ -144,12 +145,14 @@
               <mark>표시 방식</mark>
             </div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="favoriteSongPresentType" id="favoriteSongPresentTypeByPresentOrder"
+              <input class="form-check-input" type="radio" name="favoriteSongPresentType"
+                     id="favoriteSongPresentTypeByPresentOrder"
                      value="PRESENT_ORDER" th:checked="${favoriteSongPresentType.name().equals('PRESENT_ORDER')}">
               <label class="form-check-label" for="favoriteSongPresentTypeByPresentOrder">순서대로</label>
             </div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="favoriteSongPresentType" id="favoriteSongPresentTypeByArtist"
+              <input class="form-check-input" type="radio" name="favoriteSongPresentType"
+                     id="favoriteSongPresentTypeByArtist"
                      value="ARTIST" th:checked="${favoriteSongPresentType.name().equals('ARTIST')}">
               <label class="form-check-label" for="favoriteSongPresentTypeByArtist">아티스트별</label>
             </div>
@@ -158,17 +161,20 @@
               <mark>표시할 애창곡</mark>
             </div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="favoriteSongPresentBrand" id="favoriteSongPresentBrandAll"
+              <input class="form-check-input" type="radio" name="favoriteSongPresentBrand"
+                     id="favoriteSongPresentBrandAll"
                      value="ALL" th:checked="${favoriteSongPresentBrand.name().equals('ALL')}">
               <label class="form-check-label" for="favoriteSongPresentBrandAll">모두</label>
             </div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="favoriteSongPresentBrand" id="favoriteSongPresentBrandTj"
+              <input class="form-check-input" type="radio" name="favoriteSongPresentBrand"
+                     id="favoriteSongPresentBrandTj"
                      value="TJ" th:checked="${favoriteSongPresentBrand.name().equals('TJ')}">
               <label class="form-check-label" for="favoriteSongPresentBrandTj">TJ</label>
             </div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="favoriteSongPresentBrand" id="favoriteSongPresentBrandKy"
+              <input class="form-check-input" type="radio" name="favoriteSongPresentBrand"
+                     id="favoriteSongPresentBrandKy"
                      value="KY" th:checked="${favoriteSongPresentBrand.name().equals('KY')}">
               <label class="form-check-label" for="favoriteSongPresentBrandKy">금영</label>
             </div>
@@ -215,24 +221,28 @@
               <button id="deleteFavoriteSongTjButton"
                       class="btn btn-xsm btn-outline-danger collapse-button-hide-when-expanded delete-favorite-song-button"
                       type="button" data-bs-toggle="collapse"
-                      data-bs-target="#deleteFavoriteSongTjCollapse" aria-expanded="false" aria-controls="deleteFavoriteSongTjCollapse">
+                      data-bs-target="#deleteFavoriteSongTjCollapse" aria-expanded="false"
+                      aria-controls="deleteFavoriteSongTjCollapse">
                 삭제
               </button>
-              <button id="deleteFavoriteSongTjCompleteButton" class="btn btn-xsm btn-outline-danger delete-favorite-song-complete-button"
+              <button id="deleteFavoriteSongTjCompleteButton"
+                      class="btn btn-xsm btn-outline-danger delete-favorite-song-complete-button"
                       type="button">
                 삭제완료
               </button>
             </div>
           </h2>
           <div class="switch-order-hint-collapse collapse" id="switchOrderTjCollapse">
-            <span style="background-color: var(--bs-highlight-bg)">처음 클릭한 곡</span>
-            이
-            <span style="background-color: var(--bs-secondary-border-subtle)">두번째로 클릭한 곡</span>
-            바로 아래 순서로 변경됩니다.<br>
-            변경한 순서는 '순서변경완료' 버튼을 눌러야 적용됩니다.
+            <p>
+              <span style="background-color: var(--bs-highlight-bg)">처음 클릭한 곡</span>
+              이
+              <span style="background-color: var(--bs-secondary-border-subtle)">두번째로 클릭한 곡</span>
+              바로 아래 순서로 변경됩니다.<br>
+              변경한 순서는 '순서변경완료' 버튼을 눌러야 적용됩니다.
+            </p>
           </div>
           <div class="delete-favorite-song-hint-collapse collapse" id="deleteFavoriteSongTjCollapse">
-            <span>삭제하려는 애창곡의 제목을 클릭하면 삭제됩니다.</span>
+            <p>삭제하려는 애창곡의 제목을 클릭하면 삭제됩니다.</p>
           </div>
           <div class="song-table-border box-shadow-sm">
             <table class="song-table table-tj">
@@ -276,8 +286,8 @@
               <button id="switchOrderKyButton"
                       class="btn btn-xsm btn-outline-secondary collapse-button-hide-when-expanded switch-order-button"
                       type="button" data-bs-toggle="collapse"
-                      data-bs-target="#switchOrderTjCollapse" aria-expanded="false"
-                      aria-controls="switchOrderTjCollapse">
+                      data-bs-target="#switchOrderKyCollapse" aria-expanded="false"
+                      aria-controls="switchOrderKyCollapse">
                 순서변경
               </button>
               <button id="switchOrderKyCompleteButton"
@@ -288,15 +298,29 @@
               <button id="deleteFavoriteSongKyButton"
                       class="btn btn-xsm btn-outline-danger collapse-button-hide-when-expanded delete-favorite-song-button"
                       type="button" data-bs-toggle="collapse"
-                      data-bs-target="#deleteFavoriteSongTjCollapse" aria-expanded="false" aria-controls="deleteFavoriteSongTjCollapse">
+                      data-bs-target="#deleteFavoriteSongKyCollapse" aria-expanded="false"
+                      aria-controls="deleteFavoriteSongKyCollapse">
                 삭제
               </button>
-              <button id="deleteFavoriteSongKyCompleteButton" class="btn btn-xsm btn-outline-danger delete-favorite-song-complete-button"
+              <button id="deleteFavoriteSongKyCompleteButton"
+                      class="btn btn-xsm btn-outline-danger delete-favorite-song-complete-button"
                       type="button">
                 삭제완료
               </button>
             </div>
           </h2>
+          <div class="switch-order-hint-collapse collapse" id="switchOrderKyCollapse">
+            <p>
+              <span style="background-color: var(--bs-highlight-bg)">처음 클릭한 곡</span>
+              이
+              <span style="background-color: var(--bs-secondary-border-subtle)">두번째로 클릭한 곡</span>
+              바로 아래 순서로 변경됩니다.<br>
+              변경한 순서는 '순서변경완료' 버튼을 눌러야 적용됩니다.
+            </p>
+          </div>
+          <div class="delete-favorite-song-hint-collapse collapse" id="deleteFavoriteSongKyCollapse">
+            <p>삭제하려는 애창곡의 제목을 클릭하면 삭제됩니다.</p>
+          </div>
           <div class="song-table-border box-shadow-sm">
             <table class="song-table table-ky">
               <thead>
@@ -400,7 +424,8 @@
               <p class="mb-2">추가 텍스트를 입력해 주세요. (최대 50자)</p>
             </div>
             <div class="input-group justify-content-center mb-3">
-            <textarea type="text" id="addInfoTextInput" class="form-control text-input" placeholder="비워둘 경우 노래의 기본값 으로 저장됩니다"
+            <textarea type="text" id="addInfoTextInput" class="form-control text-input"
+                      placeholder="비워둘 경우 노래의 기본값 으로 저장됩니다"
                       aria-label="추가텍스트" aria-describedby="" maxlength="50"></textarea>
               <button class="btn btn-outline-primary" type="submit" id="addSongButton">추가하기</button>
             </div>
