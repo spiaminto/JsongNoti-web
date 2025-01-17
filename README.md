@@ -78,7 +78,10 @@
 애창곡 목록에 관련된 설정입니다.
 
 #### 3.4.1 표시 방식
-<img alt='애창곡 표시 방식' src='https://github.com/user-attachments/assets/778bc6f1-f499-43b0-bb2b-38b137c7a38e' width="80%">  
+<img alt='애창곡 표시 방식' src='https://github.com/user-attachments/assets/778bc6f1-f499-43b0-bb2b-38b137c7a38e' width="80%">
+<img alt='애창곡 표시 방식 small' src='https://github.com/user-attachments/assets/bf7c92cc-2869-4009-b4dd-c192ff7ba425' width="80%">
+<img alt='애창곡 표시 방식 400' src='https://github.com/user-attachments/assets/87764ed4-1cf8-4b53-bb74-462a95b27566' width="80%">
+
 
 애창곡 목록의 표시 방식을 변경할수 있습니다.  
 
