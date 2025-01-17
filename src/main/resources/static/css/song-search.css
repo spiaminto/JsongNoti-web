@@ -1,4 +1,6 @@
-
+#searchHintContainer .title-hint {
+    display: none; /* 초기값이 SINGER 이기 때문에 */
+}
 
 .memo-button-wrapper {
     position: absolute;

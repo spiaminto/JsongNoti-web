@@ -3,6 +3,16 @@ import CommonUtil from "./common-util.js";
 
 $(function () {
 
+    $("#songSearchForm input[name='searchType']").on('change', function () {
+        let searchType = $("#songSearchForm input[name='searchType']:checked").val();
+        if (searchType === 'SINGER') {
+            $('#searchHintContainer').find('.singer-hint').show().end().find('.title-hint').hide();
+        } else if (searchType === 'TITLE') {
+            $('#searchHintContainer').find('.title-hint').show().end().find('.singer-hint').hide();
+        }
+
+    })
+
     // 서버에 노래 검색 요청
     $("#songSearchForm").submit(function (event) {
         event.preventDefault();
