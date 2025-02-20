@@ -88,8 +88,8 @@ public class IndexController {
     }
 
     @GetMapping("/favorite-song")
-    public String memo(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                       Model model) {
+    public String favoriteSongs(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                Model model) {
         if (principalDetails == null || principalDetails.getUserId() == null) {
             return "redirect:/oauth2/authorization/google";
         }

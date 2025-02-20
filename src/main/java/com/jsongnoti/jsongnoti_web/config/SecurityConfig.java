@@ -35,8 +35,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-//                                .requestMatchers("/memo").authenticated()
-                                .requestMatchers("/users/{userId}").access((authentication, context) ->
+                                .requestMatchers("/users/{userId}/**").access((authentication, context) ->
                                         new AuthorizationDecision(decideUsersAuthentication(authentication, context)))
                                 // resources
                                 .requestMatchers("/static/**", "/assets/**", "/css/**", "/js/**").permitAll()
@@ -83,7 +82,7 @@ public class SecurityConfig {
      */
     private boolean decideUsersAuthentication(Supplier<Authentication> authentication, RequestAuthorizationContext context) {
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.get().getPrincipal();
-        String pathVariable = context.getVariables().get("userId");
+        String pathVariable = context.getVariables().get("userId"); // context.variables 는 matcher 정보중 {variable} 로 구성된 map
         return principalDetails != null && pathVariable != null && pathVariable.equals(principalDetails.getUserId().toString());
     }
 

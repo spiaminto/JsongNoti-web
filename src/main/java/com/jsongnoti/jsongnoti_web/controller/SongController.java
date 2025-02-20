@@ -24,8 +24,6 @@ public class SongController {
     public ResponseEntity<SongSearchResponse> songs(@Valid @ModelAttribute SongSearchRequest songSearchRequest) {
         log.info("songSearchForm: {}", songSearchRequest);
 
-        // form 검증
-
         SongSearchCond songSearchCond = new SongSearchCond(songSearchRequest.getSearchType(), songSearchRequest.getKeyword(), songSearchRequest.getBrand());
         SongSearchResult results = songSearchService.searchSongs(songSearchCond);
 

@@ -28,8 +28,14 @@ public class FavoriteSongController {
     private final FavoriteSongService favoriteSongService;
 
     @GetMapping("/favorite-songs")
-    public ResponseEntity<FavoriteSongResponse> favoriteSongs(@Valid @ModelAttribute FavoriteSongSearchRequest favoriteSongSearchRequest) {
+    public ResponseEntity<FavoriteSongResponse> favoriteSongs(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                              @Valid @ModelAttribute FavoriteSongSearchRequest favoriteSongSearchRequest) {
         log.info("favoriteSongSearchRequest: {}", favoriteSongSearchRequest);
+        Long userId = favoriteSongSearchRequest.getUserId();
+        // 폼 userId 값 검증
+        if (!userId.equals(principalDetails.getUserId())) {
+            return ResponseEntity.badRequest().body(FavoriteSongResponse.withMessage("잘못된 애창곡 요청입니다."));
+        }
 
         FavoriteSongServiceResult result = favoriteSongService.searchFavoriteSongs(new FavoriteSongSearchCond(favoriteSongSearchRequest.getUserId(), favoriteSongSearchRequest.getBrand(), favoriteSongSearchRequest.getFavoriteSongPresentType()));
         return ResponseEntity.ok().body(FavoriteSongResponse.builder()
@@ -45,7 +51,7 @@ public class FavoriteSongController {
         if (!userId.equals(principalDetails.getUserId())) {
             return ResponseEntity.badRequest().body(FavoriteSongResponse.withMessage("잘못된 추가 요청입니다."));
         }
-        
+
         Long songId = favoriteSongAddRequest.getSongId();
         int presentOrder = favoriteSongAddRequest.getPresentOrder();
 
@@ -87,7 +93,7 @@ public class FavoriteSongController {
 
         FavoriteSongServiceResult result = favoriteSongService.deleteFavoriteSong(userId, favoriteSongId);
         int status = result.isSuccess() ? 200 : 409;
-        
+
         return ResponseEntity.status(status).body(FavoriteSongResponse.withMessage(result.getMessage()));
     }
 
