@@ -8,10 +8,11 @@
 ### 0.1 서비스 아키텍처
 <img alt='아키텍처' src='https://github.com/user-attachments/assets/8cfca7dc-2f88-4dcb-ae35-2df9e68347fa' width="80%">
 
-CloudFlare: DNS 및 TLS 인증서 적용, 봇 차단 등을 담당합니다.
-Elastic Beanstalk: EC2 와 RDS, CloudWatch 등 여러가지 AWS 서비스를 통합 관리합니다.  
-RDS: 검색 인덱스와 유사도 검색을 위해 PostgreSQL 데이터베이스를 사용합니다. pg_bigm 을 통해 GIN index 인덱싱과 유사도 검색을 구현합니다.
+CloudFlare: DNS 및 TLS 인증서 적용, 봇 차단 등을 담당합니다.  
+Elastic Beanstalk: EC2 와 RDS, CloudWatch 등 여러가지 AWS 서비스를 통합 관리합니다.    
+RDS: 검색 인덱스와 유사도 검색을 위해 PostgreSQL 데이터베이스를 사용합니다. pg_bigm 을 통해 GIN index 인덱싱과 유사도 검색을 구현합니다.  
 Lambda: EventBridge 의 스케쥴에 맞추어 람다 함수를 실행합니다. 람다함수는 SpringCloudFunction 으로 구현하였으며, 각 노래방 서비스에서 신곡 정보를 수집하고, GPT 를 통해 한글화 데이터를 생성하여 데이터베이스에 저장합니다.  
+
 
 
 ## 1. 신곡 정보 및 알림메일
