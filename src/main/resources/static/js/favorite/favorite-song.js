@@ -39,6 +39,10 @@ $(function () {
         }
     })
 
+    $('#useDefaultInfoTextCheck').change(function () {
+        $(this).is(':checked') ? $('#addInfoTextInput').prop('disabled', true) : $('#addInfoTextInput').prop('disabled', false);
+    })
+
 // 애창곡 저장
     $('#favoriteSongAddForm').submit(function (event) {
         event.preventDefault();
@@ -46,6 +50,7 @@ $(function () {
         let userId = $('.favorite-song-section-header').data('user-id');
         let songId = $(this).attr('data-song-id');
         let infoTextInputVal = $(this).find('#addInfoTextInput').val();
+        let useDefaultInfoText = $(this).find('#useDefaultInfoTextCheck').is(':checked');
         let presentOrder = Number($('#currentPresentOrder').text()) - 1; // 순서가 0부터 시작
         let csrfToken = $('#csrfToken').val();
 
@@ -62,6 +67,7 @@ $(function () {
                 userId: userId,
                 songId: songId,
                 infoText: infoTextInputVal,
+                useDefaultInfoText:  useDefaultInfoText,
                 presentOrder: presentOrder,
             }),
             success: function (data) {

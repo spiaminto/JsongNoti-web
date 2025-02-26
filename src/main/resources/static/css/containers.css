@@ -37,7 +37,7 @@ section:first-of-type {
 #container {
     max-width: 95%;
     margin: 0 auto;
-
+    height: 100vh;
 }
 
 /* 바디가 패딩 늘려 크기 보정 */

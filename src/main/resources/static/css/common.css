@@ -59,7 +59,6 @@
 
     .modal-image-wrapper {
         max-width: 500px;
-        margin: 0 auto
     }
 
     .modal-dialog button {
@@ -187,6 +186,23 @@ tbody, td, tfoot, thead, th, tr {
 /* 유틸리티 */
 .row-for-expand-padding {
     /* 부모 요소의 padding 을 먹기위한 row 표시용 */
+}
+
+/* 사이드 버튼 */
+.side-button-container {
+    position: fixed;
+    right: 10px;
+    bottom: 20%;
+    z-index: 10;
+    display: none;
+}
+
+.side-button-wrapper {
+    margin-bottom: 0.5rem;
+    padding: 5px 10px 15px;
+    border-radius: 100%;
+    background-color: var(--bs-tertiary-bg);
+    border: solid 2px var(--bs-secondary-bg);
 }
 
 

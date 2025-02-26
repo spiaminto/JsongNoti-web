@@ -19,4 +19,6 @@ public class FavoriteSongAddRequest {
     @Size(max = 50)
     private String infoText;
 
+    private boolean useDefaultInfoText;
+
 }

@@ -9,4 +9,5 @@ public class SongSearchCond {
     private final SongSearchType searchType;
     private final String keyword;
     private final Brand brand;
+    private final boolean additionalSearch;
 }

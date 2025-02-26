@@ -63,12 +63,47 @@
                   scrollTop: $('.showcase').offset().top - 16 // 2rem 여유
               }, 500);
           });
+
+// 고정 버튼
+          let timer = null;
+          $(window).scroll(function () {
+              if (timer == null) {
+                  console.log("hie")
+                  timer = setTimeout(function () {
+                      let $navbar = $('.navbar');
+                      if ($(window).scrollTop() > $navbar.scrollTop() + $navbar.height()) {
+                          $('.side-button-container').fadeIn(100);
+                      } else {
+                          $('.side-button-container').fadeOut(100);
+                      }
+                      timer = null;
+                  }, 300);
+              }
+          });
       })
   </script>
 </head>
 <body class="outer-element">
 <div id="alertMessage" th:text="${alertMessage}" style="width: 0; height: 0; display: none"></div>
 <div id="container">
+
+  <div class="side-button-container">
+    <div class="side-button-wrapper">
+      <button class="favorite-song-link-button icon-button btn "
+              style="background-image: url('/static/assets/icon/favorite_song_512.png')"
+              th:style="'background-image: url(/assets/icon/favorite_song_512.png)'"
+              data-bs-toggle="modal" data-bs-target="#favoriteLoginModal">
+        <span class="icon-button-label"><b>애창곡</b></span>
+      </button>
+    </div>
+    <div class="side-button-wrapper">
+      <button class="search-link-button icon-button btn" onclick="location.href = '/search'"
+              style="background-image: url('/static/assets/icon/search_512.png')"
+              th:style="'background-image: url(/assets/icon/search_512.png)'">
+        <span class="icon-button-label search-icon-label"><b>검색</b></span>
+      </button>
+    </div>
+  </div>
 
   <!-- Navigation-->
   <nav class="navbar navbar-light static-top">
@@ -82,12 +117,12 @@
       <img src="/static/assets/icon/logo_512.png" th:src="@{'/assets/icon/logo_512.png'}" alt="로고아이콘" width="35px">
     </h1>
     <div class="button-wrapper">
-      <button id="searchButton" onclick="location.href = '/search'" class="icon-button btn"
+      <button class="search-link-button icon-button btn" onclick="location.href = '/search'"
               style="background-image: url('/static/assets/icon/search_512.png')"
               th:style="'background-image: url(/assets/icon/search_512.png)'">
         <span class="icon-button-label search-icon-label"><b>검색</b></span>
       </button>
-      <button id="favoriteSongButton" class="icon-button btn "
+      <button class="favorite-song-link-button icon-button btn "
               style="background-image: url('/static/assets/icon/favorite_song_512.png')"
               th:style="'background-image: url(/assets/icon/favorite_song_512.png)'"
               data-bs-toggle="modal" data-bs-target="#favoriteLoginModal">
@@ -98,7 +133,7 @@
 
   <!-- 로그인 안내 모달 -->
   <div class="modal fade" id="favoriteLoginModal" tabindex="-1" aria-labelledby="favoriteLoginModal" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h3 class="modal-title">애창곡 로그인 안내</h3>
@@ -124,8 +159,10 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-lg btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">닫기</button>
-          <button type="button" class="btn btn-lg btn-outline-primary favorite-login-button" data-bs-dismiss="modal"><i class="bi bi-google"></i><span class="ms-1">구글 로그인</span></button>
+          <button type="button" class="btn btn-lg btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">닫기
+          </button>
+          <button type="button" class="btn btn-lg btn-outline-primary favorite-login-button" data-bs-dismiss="modal"><i
+              class="bi bi-google"></i><span class="ms-1">구글 로그인</span></button>
         </div>
       </div>
     </div>
@@ -200,7 +237,7 @@
 
   <!-- agreement Modal -->
   <div class="modal fade" id="agreementModal" tabindex="-1" aria-labelledby="agreementModal" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h3 class="modal-title" id="agreementModalHeaderText">이메일 수집 동의</h3>

@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,22 +26,25 @@ public class SongSearchService {
     public SongSearchResult searchSongs(SongSearchCond searchCond) {
         SongSearchType searchType = searchCond.getSearchType();
         String keyword = searchCond.getKeyword();
-
-        List<SongSearchDto> songSearchDtos = new ArrayList<>();
+        boolean isAdditionalSearch = searchCond.isAdditionalSearch();
 
         boolean keywordHasKorean = RegexPatterns.hasKorean(keyword);
-        switch (searchType) {
-            case TITLE -> songSearchDtos = keywordHasKorean ?
-                    searchSongsByKoreanTitle(keyword) :
-                    searchSongsByTitle(keyword);
-            case SINGER -> songSearchDtos = keywordHasKorean ?
-                    searchSongsByKoreanSinger(keyword) :
-                    searchSongsBySinger(keyword);
-//            case INFO -> songSearchDtos = keywordHasKorean ?
-//                    searchSongsByKoreanInfo(keyword) :
-//                    searchSongsByInfo(keyword);
-            default -> log.error("Invalid search type: {}", searchType);
-        }
+        List<SongSearchDto> songSearchDtos = switch (searchType) {
+            case TITLE -> isAdditionalSearch ? additionalTitleSearch(keyword) :
+                    keywordHasKorean ?
+                            searchSongsByKoreanTitle(keyword) :
+                            searchSongsByTitle(keyword);
+            case SINGER -> isAdditionalSearch ? additionalSingerSearch(keyword) :
+                    keywordHasKorean ?
+                            searchSongsByKoreanSinger(keyword) :
+                            searchSongsBySinger(keyword);
+            // case INFO -> 미구현
+            default -> {
+                log.error("invalid search type = {}", searchType);
+                yield Collections.emptyList();
+            }
+        };
+
 
         // 브랜드 필터링
         songSearchDtos = songSearchDtos.stream().filter(song -> song.getBrand() == searchCond.getBrand()).toList();
@@ -92,7 +96,7 @@ public class SongSearchService {
         }
         // interface 를 dto 로 변환
         List<SongSearchDto> priorDtos = findPriorDtos.stream().map(SongSearchDto::from).collect(Collectors.toList());
-        List<SongSearchDto> dtos =findDtos.stream().map(SongSearchDto::from).collect(Collectors.toList());
+        List<SongSearchDto> dtos = findDtos.stream().map(SongSearchDto::from).collect(Collectors.toList());
 
         // 자동입력 값을 유사도로 찾은 결과에서 수기입력 값을 likeQuery 찾읁 결과를 제외 (중복제거)
         dtos.removeAll(priorDtos);
@@ -102,6 +106,18 @@ public class SongSearchService {
         List<SongSearchDto> searchResults = priorDtos;
         log.info("searchResults = {}", searchResults);
         return searchResults;
+    }
+
+// 추가검색 : 일반 like 를 전체 검색으로 걸면 검색결과가 과도하게 나오는 경우가 있어 사용자의 추가 검색필요시 전체 like 검색
+    private List<SongSearchDto> additionalTitleSearch(String keyword) {
+        List<SongSearchResultDto> songByTitleLikeOriginAndKorean = songRepository.findSongByTitleLikeOriginOrKoreanOrRead(keyword);
+        return songByTitleLikeOriginAndKorean.stream().map(SongSearchDto::from).toList();
+        
+    }
+
+    private List<SongSearchDto> additionalSingerSearch(String keyword) {
+        List<SongSearchResultDto> songBySingerLikeOriginAndKorean = songRepository.findSongBySingerLikeOriginOrKoreanOrRead(keyword);
+        return songBySingerLikeOriginAndKorean.stream().map(SongSearchDto::from).toList();
     }
 
 //    private List<SongSearchDto> searchSongsByKoreanInfo(String koreanInfo) {

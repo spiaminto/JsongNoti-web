@@ -54,8 +54,9 @@ public class FavoriteSongController {
 
         Long songId = favoriteSongAddRequest.getSongId();
         int presentOrder = favoriteSongAddRequest.getPresentOrder();
+        boolean useDefaultInfoText = favoriteSongAddRequest.isUseDefaultInfoText();
 
-        FavoriteSongServiceResult result = favoriteSongService.saveFavoriteSong(userId, songId, favoriteSongAddRequest.getInfoText(), presentOrder);
+        FavoriteSongServiceResult result = favoriteSongService.saveFavoriteSong(userId, songId, favoriteSongAddRequest.getInfoText(), presentOrder, useDefaultInfoText);
         int status = result.isSuccess() ? 200 : 409;
 
         return ResponseEntity.status(status).body(FavoriteSongResponse.withMessage(result.getMessage()));

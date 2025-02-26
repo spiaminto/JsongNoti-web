@@ -40,10 +40,10 @@ public class FavoriteSongService {
     }
 
     @Transactional
-    public FavoriteSongServiceResult saveFavoriteSong(Long userId, Long songId, String infoText, int presentOrder) {
+    public FavoriteSongServiceResult saveFavoriteSong(Long userId, Long songId, String infoText, int presentOrder, boolean useDefaultText) {
         // 노래 및 순서 조회
         Song song = songRepository.findById(songId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 곡입니다."));
-        String info = infoText.isBlank() ? song.getInfo() : infoText; // 입력한 info 없으면 기존 info 사용
+        String info = useDefaultText ? song.getInfo() : infoText; // 기본값 사용 체크시 기본값 사용
         
         // 중복확인
         FavoriteSong findFavoriteSong = favoriteSongRepository.findByUserIdAndBrandAndNumber(userId, song.getBrand(), song.getNumber());
@@ -51,8 +51,12 @@ public class FavoriteSongService {
             return FavoriteSongServiceResult.fail("이미 해당 곡이 존재합니다.");
         }
 
-        // 순서 미리 변경
         long favoriteSongCount = favoriteSongRepository.countByUserId(userId);
+        // 100개 이상 저장불가
+        if (favoriteSongCount >= 100) {
+            return FavoriteSongServiceResult.fail("현재 애창곡은 100개까지만 저장 가능합니다.");
+        }
+        // 순서 미리 변경
         if (favoriteSongCount != presentOrder) {
             syncPresentOrder(userId, presentOrder, song.getBrand(), "save");
         }

@@ -29,7 +29,8 @@ public class UserService {
 
     @Transactional
     public UserServiceResult updateUser(Long userId, UserUpdateParam updateParam) {
-        // ...
+        // ....
+        int number = 1;
 
         UserServiceResult userServiceResult = updateMemoSetting(userId, updateParam);
         return userServiceResult;

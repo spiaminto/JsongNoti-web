@@ -1,5 +1,5 @@
-#searchHintContainer .title-hint {
-    display: none; /* 초기값이 SINGER 이기 때문에 */
+#searchHintContainer .singer-hint {
+    display: none; /* 초기값이 TITLE 이기 때문에 */
 }
 
 .memo-button-wrapper {
@@ -26,7 +26,7 @@
 }
 
 #searchHintContainer p {
-    font-size: calc(0.8rem + 0.5vw);
+    font-size: calc(0.85rem + 0.3vw);
     margin-bottom: 0.2rem;
 }
 

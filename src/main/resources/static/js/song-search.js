@@ -7,8 +7,10 @@ $(function () {
         let searchType = $("#songSearchForm input[name='searchType']:checked").val();
         if (searchType === 'SINGER') {
             $('#searchHintContainer').find('.singer-hint').show().end().find('.title-hint').hide();
+            $('#searchSongInput').attr('placeholder', '아티스트명 입력 (최소 2자)');
         } else if (searchType === 'TITLE') {
             $('#searchHintContainer').find('.title-hint').show().end().find('.singer-hint').hide();
+            $('#searchSongInput').attr('placeholder', '노래제목 입력 (최소 2자)');
         }
 
     })
@@ -16,6 +18,15 @@ $(function () {
     // 서버에 노래 검색 요청
     $("#songSearchForm").submit(function (event) {
         event.preventDefault();
+        requestSongSearch(false);
+    });
+
+    // 추가 검색 요청
+    $("#additionalSongSearchButton").click(function () {
+        requestSongSearch(true);
+    })
+
+    function requestSongSearch(isAdditionalSearch) {
         let brand = $('#songSearchForm input[name=brand]:checked').val();
         let searchType = $('#songSearchForm input[name=searchType]:checked').val();
         let keyword = $('#songSearchForm input[name=keyword]').val();
@@ -25,7 +36,8 @@ $(function () {
             data: {
                 brand: brand,
                 searchType: searchType,
-                keyword: keyword
+                keyword: keyword,
+                additionalSearch: isAdditionalSearch
             },
             success: function (data) {
                 let searchResults = data.songs;
@@ -37,7 +49,7 @@ $(function () {
                 alert(message);
             }
         });
-    });
+    }
 
     /**
      * 노래 검색 결과 후처리
@@ -62,7 +74,7 @@ $(function () {
         // 새로운 검색결과 테이블 바디에 아이디 붙이고 교체
         $songSearchResultTableBody.replaceWith(songTable.find('tbody').attr('id', 'songSearchResultTableBody'));
 
-        // 검색결과 collapse 안보일경우 보이게
+        // 검색결과 collapse 안보일경우 보이게, additional 검색 추가
         if (!$("#songSearchResultCollapse").hasClass("show")) {
             $("#songSearchResultCollapseButton").click();
         }
@@ -71,7 +83,9 @@ $(function () {
 // 검색 결과 누르면 폼에 입력 -> 검색결과의 .song-title 에 이벤트 연결
     function fillMemoAddFormWithSearchResult(event) {
         let favoriteSongAddForm = $('#favoriteSongAddForm');
-        if (favoriteSongAddForm.length === 0) { return; } // 메모 추가폼이 없으면 리턴
+        if (favoriteSongAddForm.length === 0) {
+            return;
+        } // 메모 추가폼이 없으면 리턴
         $('#addInfoTextInput').val(''); // 메모 입력창 초기화 뒤에서 하면 거슬림
 
         // 클릭한 노래의 정보를 폼에 입력

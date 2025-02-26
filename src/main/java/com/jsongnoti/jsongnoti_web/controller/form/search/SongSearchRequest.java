@@ -14,4 +14,5 @@ public class SongSearchRequest {
     private SongSearchType searchType;
     @Size(min = 2, max = 20)
     private String keyword;
+    private boolean additionalSearch;
 }

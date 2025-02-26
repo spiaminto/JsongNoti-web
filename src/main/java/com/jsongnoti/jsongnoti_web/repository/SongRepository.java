@@ -93,6 +93,23 @@ public interface SongRepository extends JpaRepository<Song, Long> {
                     "order by bigm_similarity(sk.singer_read, :keyword) desc", nativeQuery = true)
     List<SongSearchResultDto> findSongByKoreanSingerReadSimilar(String keyword);
 
+    // 추가검색 ===========================================================================================
+    // 추가검색은 언어 구별 없이 한번에 구현함 (원어, 한글, 한글read 동시 검색)
+
+    @Query(value =
+            "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
+                    "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
+                    "WHERE sk.title_origin LIKE likequery(:keyword) OR sk.title LIKE likequery(:keyword) OR sk.title_read LIKE likequery(:keyword) " +
+                    "order by s.reg_date desc", nativeQuery = true)
+    List<SongSearchResultDto> findSongByTitleLikeOriginOrKoreanOrRead(String keyword);
+
+    @Query(value =
+            "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
+                    "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
+                    "WHERE sk.singer_origin LIKE likequery(:keyword) OR sk.singer LIKE likequery(:keyword) sk.singer_read LIKE likequery(:keyword) " +
+                    "order by s.reg_date desc", nativeQuery = true)
+    List<SongSearchResultDto> findSongBySingerLikeOriginOrKoreanOrRead(String keyword);
+
 
 
 //    @Query(value =

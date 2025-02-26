@@ -53,11 +53,15 @@ $(function () {
     });
 
     // 애창곡 버튼 클릭
-    $('#favoriteSongButton').on('click', function (e) {
+    $('.favorite-song-link-button').on('click', function (e) {
         if (localStorage.getItem('isLoggedIn') === 'true') {
             // 로그인 이력 존재
             $('#favoriteLoginModal').find('.favorite-login-button').attr('disabled', true)
-            $('.login-modal-info').html('구글 로그인 중입니다. 잠시만 기다려주세요.<br> 10초이상 기다려도 로그인이 안될경우 로그인 버튼을 누르거나 새로고침해 주세요.');
+            $('.login-modal-info').html('<b>자동 로그인 중입니다. 잠시만 기다려주세요.</b>' +
+                '<div class="spinner-border spinner-border-sm text-primary ms-2" role="status">\n' +
+                '  <span class="visually-hidden">로그인중</span>\n' +
+                '</div>' +
+                '<br> 10초이상 기다려도 로그인이 안될경우 로그인 버튼을 누르거나 새로고침해 주세요.');
             setTimeout(function () {
                 $('#favoriteLoginModal').find('.favorite-login-button').attr('disabled', false)
             }, 5000);
@@ -69,4 +73,5 @@ $(function () {
     $('.favorite-login-button').click(function () {
         location.href = '/favorite-song';
     })
+
 })
