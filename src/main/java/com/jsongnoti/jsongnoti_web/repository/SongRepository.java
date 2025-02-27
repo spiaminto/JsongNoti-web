@@ -106,7 +106,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     @Query(value =
             "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
                     "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
-                    "WHERE sk.singer_origin LIKE likequery(:keyword) OR sk.singer LIKE likequery(:keyword) sk.singer_read LIKE likequery(:keyword) " +
+                    "WHERE sk.singer_origin LIKE likequery(:keyword) OR sk.singer LIKE likequery(:keyword) OR sk.singer_read LIKE likequery(:keyword) " +
                     "order by s.reg_date desc", nativeQuery = true)
     List<SongSearchResultDto> findSongBySingerLikeOriginOrKoreanOrRead(String keyword);
 
