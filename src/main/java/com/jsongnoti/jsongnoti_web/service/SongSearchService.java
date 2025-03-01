@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,22 +53,20 @@ public class SongSearchService {
 
     // 원어 검색 ============================================================================
     private List<SongSearchDto> searchSongsByTitle(String title) {
-        return songRepository.findSongByTitleSimilar(title).stream().map(SongSearchDto::from).toList();
+        return songRepository.findSongByTitleSimilar(title, title.toUpperCase()).stream().map(SongSearchDto::from).toList();
     }
 
     private List<SongSearchDto> searchSongsBySinger(String singer) {
         // 수기입력
         List<SongSearchDto> findPriorDtos = songRepository.findSongBySingerPrior(singer).stream().map(SongSearchDto::from).collect(Collectors.toList());
         // 원어
-        List<SongSearchDto> findOriginDtos = songRepository.findSongBySingerSimilar(singer).stream().map(SongSearchDto::from).collect(Collectors.toList());
-        // 수기입력 값과 원어 값 중복제거 후 합치기
+        List<SongSearchDto> findOriginDtos = songRepository.findSongBySingerSimilar(singer, singer.toUpperCase()).stream().map(SongSearchDto::from).collect(Collectors.toList());
+
+        // 수기입력 우선, 중복제거
         findOriginDtos.removeAll(findPriorDtos);
         findPriorDtos.addAll(findOriginDtos);
-        return findPriorDtos;
-    }
 
-    private List<SongSearchDto> searchSongsByInfo(String info) {
-        return songRepository.findSongByInfoSimilar(info).stream().map(SongSearchDto::from).toList();
+        return findPriorDtos;
     }
 
     // 한글 검색 ============================================================================
@@ -77,34 +74,32 @@ public class SongSearchService {
         List<SongSearchDto> titleSimilarDtos = songRepository.findSongByKoreanTitleSimilar(koreanTitle).stream().map(SongSearchDto::from).collect(Collectors.toList());
         List<SongSearchDto> titleReadSimilarDtos = songRepository.findSongByKoreanTitleReadSimilar(koreanTitle).stream().map(SongSearchDto::from).collect(Collectors.toList());
 
+        // 독음우선, 중복제거
         titleSimilarDtos.removeAll(titleReadSimilarDtos);
         titleReadSimilarDtos.addAll(titleSimilarDtos);
 
-        List<SongSearchDto> searchResults = new ArrayList<>();
-        searchResults = titleReadSimilarDtos;
-        log.info("searchResults = {}", searchResults);
+        List<SongSearchDto> searchResults = titleReadSimilarDtos;
+//        log.info("searchResults = {}", searchResults);
         return searchResults;
     }
 
     private List<SongSearchDto> searchSongsByKoreanSinger(String koreanSinger) {
         // 수기 입력 - likequery 로 찾기
-        List<SongSearchResultDto> findPriorDtos = songRepository.findSongBySingerPrior(koreanSinger);
+        List<SongSearchDto> singerPriorDtos = songRepository.findSongBySingerPrior(koreanSinger).stream().map(SongSearchDto::from).collect(Collectors.toList());
         // 자동 입력 - 유사도로 찾기
-        List<SongSearchResultDto> findDtos = songRepository.findSongByKoreanSingerSimilar(koreanSinger);
-        if (findDtos.isEmpty()) {
-            findDtos = songRepository.findSongByKoreanSingerReadSimilar(koreanSinger);
-        }
-        // interface 를 dto 로 변환
-        List<SongSearchDto> priorDtos = findPriorDtos.stream().map(SongSearchDto::from).collect(Collectors.toList());
-        List<SongSearchDto> dtos = findDtos.stream().map(SongSearchDto::from).collect(Collectors.toList());
+        List<SongSearchDto> singerSimilarDtos = songRepository.findSongByKoreanSingerSimilar(koreanSinger).stream().map(SongSearchDto::from).collect(Collectors.toList());
+        List<SongSearchDto> singerReadSimilarDtos = songRepository.findSongByKoreanSingerReadSimilar(koreanSinger).stream().map(SongSearchDto::from).collect(Collectors.toList());
 
-        // 자동입력 값을 유사도로 찾은 결과에서 수기입력 값을 likeQuery 찾읁 결과를 제외 (중복제거)
-        dtos.removeAll(priorDtos);
-        // 수기입력 값을 likeQuery 로 찾은 결과 뒤에 자동입력 값을 유사도로 찾은 결과를 붙임
-        priorDtos.addAll(dtos);
+        // 독음우선, 중복제거
+        singerSimilarDtos.removeAll(singerReadSimilarDtos);
+        singerReadSimilarDtos.addAll(singerSimilarDtos);
 
-        List<SongSearchDto> searchResults = priorDtos;
-        log.info("searchResults = {}", searchResults);
+        // 수기입력 우선, 중복제거
+        singerReadSimilarDtos.removeAll(singerPriorDtos);
+        singerPriorDtos.addAll(singerReadSimilarDtos);
+
+        List<SongSearchDto> searchResults = singerPriorDtos;
+//        log.info("searchResults = {}", searchResults);
         return searchResults;
     }
 
@@ -119,9 +114,5 @@ public class SongSearchService {
         List<SongSearchResultDto> songBySingerLikeOriginAndKorean = songRepository.findSongBySingerLikeOriginOrKoreanOrRead(keyword);
         return songBySingerLikeOriginAndKorean.stream().map(SongSearchDto::from).toList();
     }
-
-//    private List<SongSearchDto> searchSongsByKoreanInfo(String koreanInfo) {
-//        return songRepository.findSongByKoreanInfoSimilar(koreanInfo).stream().map(SongSearchDto::from).toList();
-//    }
 
 }

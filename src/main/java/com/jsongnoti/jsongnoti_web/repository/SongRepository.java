@@ -31,16 +31,16 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     @Query(value =
             "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
                     "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
-                    "WHERE s.title =% :keyword " +
-                    "order by bigm_similarity(s.title, :keyword) desc", nativeQuery = true)
-    List<SongSearchResultDto> findSongByTitleSimilar(String keyword);
+                    "WHERE s.title =% :keyword OR s.title =% :upperKeyword " +
+                    "order by bigm_similarity(s.title, :keyword) desc, bigm_similarity(s.title, :upperKeyword) desc", nativeQuery = true)
+    List<SongSearchResultDto> findSongByTitleSimilar(String keyword, String upperKeyword);
 
     @Query(value =
             "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
                     "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
-                    "WHERE s.singer =% :keyword " +
-                    "order by bigm_similarity(s.singer, :keyword) desc", nativeQuery = true)
-    List<SongSearchResultDto> findSongBySingerSimilar(String keyword);
+                    "WHERE s.singer =% :keyword OR s.singer =% :upperKeyword " +
+                    "order by bigm_similarity(s.singer, :keyword) desc, bigm_similarity(s.title, :upperKeyword) desc", nativeQuery = true)
+    List<SongSearchResultDto> findSongBySingerSimilar(String keyword, String upperKeyword);
 
     @Query(value =
             "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
@@ -74,9 +74,9 @@ public interface SongRepository extends JpaRepository<Song, Long> {
                     "FROM {h-schema} song s " +
                     "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
                     "WHERE sk.title_read =% :keyword " +
-                    "order by bigm_similarity(sk.title_read, :keyword) desc ) " +
-                    "as t " +
-                    "where t.similarity > 0.5", nativeQuery = true)
+                    "ORDER BY bigm_similarity(sk.title_read, :keyword) DESC ) " +
+                    "AS t " +
+                    "WHERE t.similarity > 0.5", nativeQuery = true)
     List<SongSearchResultDto> findSongByKoreanTitleReadSimilar(String keyword);
 
     @Query(value =
