@@ -44,7 +44,6 @@ public class SongSearchService {
             }
         };
 
-
         // 브랜드 필터링
         songSearchDtos = songSearchDtos.stream().filter(song -> song.getBrand() == searchCond.getBrand()).toList();
 
@@ -66,6 +65,7 @@ public class SongSearchService {
         findOriginDtos.removeAll(findPriorDtos);
         findPriorDtos.addAll(findOriginDtos);
 
+        log.debug("findPriorDtos = {}", findPriorDtos);
         return findPriorDtos;
     }
 
@@ -78,15 +78,14 @@ public class SongSearchService {
         titleSimilarDtos.removeAll(titleReadSimilarDtos);
         titleReadSimilarDtos.addAll(titleSimilarDtos);
 
-        List<SongSearchDto> searchResults = titleReadSimilarDtos;
-//        log.info("searchResults = {}", searchResults);
-        return searchResults;
+        log.debug("titleReadSimilarDtos = {}", titleReadSimilarDtos);
+        return titleReadSimilarDtos;
     }
 
     private List<SongSearchDto> searchSongsByKoreanSinger(String koreanSinger) {
-        // 수기 입력 - likequery 로 찾기
+        // 수기 입력
         List<SongSearchDto> singerPriorDtos = songRepository.findSongBySingerPrior(koreanSinger).stream().map(SongSearchDto::from).collect(Collectors.toList());
-        // 자동 입력 - 유사도로 찾기
+        // 자동 입력
         List<SongSearchDto> singerSimilarDtos = songRepository.findSongByKoreanSingerSimilar(koreanSinger).stream().map(SongSearchDto::from).collect(Collectors.toList());
         List<SongSearchDto> singerReadSimilarDtos = songRepository.findSongByKoreanSingerReadSimilar(koreanSinger).stream().map(SongSearchDto::from).collect(Collectors.toList());
 
@@ -98,12 +97,11 @@ public class SongSearchService {
         singerReadSimilarDtos.removeAll(singerPriorDtos);
         singerPriorDtos.addAll(singerReadSimilarDtos);
 
-        List<SongSearchDto> searchResults = singerPriorDtos;
-//        log.info("searchResults = {}", searchResults);
-        return searchResults;
+        log.debug("singerPriorDtos = {}", singerPriorDtos);
+        return singerPriorDtos;
     }
 
-// 추가검색 : 일반 like 를 전체 검색으로 걸면 검색결과가 과도하게 나오는 경우가 있어 사용자의 추가 검색필요시 전체 like 검색
+// 추가검색 : 일반 like 를 전체 검색으로 걸면 검색결과가 과도하게 나오는 경우가 있어 사용자의 추가 검색필요시에만 전체 like 검색
     private List<SongSearchDto> additionalTitleSearch(String keyword) {
         List<SongSearchResultDto> songByTitleLikeOriginAndKorean = songRepository.findSongByTitleLikeOriginOrKoreanOrRead(keyword);
         return songByTitleLikeOriginAndKorean.stream().map(SongSearchDto::from).toList();

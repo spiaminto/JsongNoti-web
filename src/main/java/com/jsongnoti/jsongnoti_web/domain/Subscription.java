@@ -1,6 +1,9 @@
 package com.jsongnoti.jsongnoti_web.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -33,7 +36,7 @@ public class Subscription {
     private int authenticationRetry; // 최대 3
 
     /**
-     * User 의 이메일 인증을 완료합니다.<br>
+     * 이메일 인증을 완료합니다.<br>
      * 인증이 완료되면 authenticationToken, authenticationTimestamp 를 null 로 초기화하고 verified 를 true 로 설정합니다.
      */
     public void verify() {
@@ -43,7 +46,7 @@ public class Subscription {
     }
 
     /**
-     * User 의 인증 토큰과 인증토큰 만료시간, 재시도 횟수를 갱신합니다.
+     * 인증 토큰과 인증토큰 만료시간, 재시도 횟수를 갱신합니다.
      */
     public void setAuth() {
         String authenticationToken = new SecureRandom().nextInt(1000, 10000) + "";
@@ -54,7 +57,7 @@ public class Subscription {
     }
 
     /**
-     * User 가 인증에 실패하여 재시도 횟수를 증가시킵니다.
+     * 인증에 실패하여 재시도 횟수를 증가시킵니다.
      */
     public void verificationFailed() {
         this.authenticationRetry++;

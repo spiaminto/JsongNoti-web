@@ -111,12 +111,4 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     List<SongSearchResultDto> findSongBySingerLikeOriginOrKoreanOrRead(String keyword);
 
 
-
-//    @Query(value =
-//            "SELECT s.id, s.brand, s.number, s.title, s.singer, s.info, sk.title as title_korean FROM {h-schema} song s " +
-//                    "JOIN {h-schema} song_korean sk ON s.id = sk.song_id " +
-//                    "WHERE sk.info =% :keyword " +
-//                    "order by bigm_similarity(sk.info, :keyword) desc", nativeQuery = true)
-//    List<SongSearchResultDto> findSongByKoreanInfoSimilar(String keyword);
-
 }
