@@ -68,7 +68,6 @@
           let timer = null;
           $(window).scroll(function () {
               if (timer == null) {
-                  console.log("hie")
                   timer = setTimeout(function () {
                       let $navbar = $('.navbar');
                       if ($(window).scrollTop() > $navbar.scrollTop() + $navbar.height()) {
@@ -114,7 +113,7 @@
       <a class="navbar-brand" href="/">
         신곡알림
       </a>
-      <img src="/static/assets/icon/logo_512.png" th:src="@{'/assets/icon/logo_512.png'}" alt="로고아이콘" width="35px">
+      <img class="navbar-brand-icon" src="/static/assets/icon/logo_512.png" th:src="@{'/assets/icon/logo_512.png'}" alt="로고아이콘">
     </h1>
     <div class="button-wrapper">
       <button class="search-link-button icon-button btn" onclick="location.href = '/search'"
@@ -146,7 +145,7 @@
               <div class="video-shadow dark-mode-element"></div>
             </div>
             <p class="px-3 mb-0 login-modal-info">
-              애창곡의 정보를 추가메모와 함께 저장할 수 있습니다.
+              애창곡의 정보를 추가하고싶은 내용과 함께 저장할 수 있습니다.
               <a href="https://github.com/spiaminto/JsongNoti-web?tab=readme-ov-file#3-%EC%95%A0%EC%B0%BD%EA%B3%A1"
                  target="_blank"
                  class="text-decoration-none small align-top">
@@ -609,14 +608,14 @@
             <a class="text-primary-emphasis text-decoration-none"
                href="https://mail.google.com/mail/?view=cm&fs=1&to=jsongnoti%2Bcs@gmail.com&su=일본 신곡 알림이 문의"
                target="_blank">
-              Contact
+              메일문의
               <i class="bi-envelope fs-3"></i>
             </a>
           </li>
           <li class="list-inline-item contact-mail-mobile me-4">
             <a class="text-primary-emphasis text-decoration-none"
                href="mailto:jsongnoti+cs@gmail.com?subject=일본 신곡 알림이 문의">
-              Contact
+              메일문의
               <i class="bi-envelope fs-3"></i>
             </a>
           </li>

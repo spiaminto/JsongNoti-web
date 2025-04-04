@@ -12,7 +12,7 @@
     }
 }
 
-/* 메모 등록 */
+/* 애창곡 등록 */
 .favorite-song-add-form-container {
     padding: 0 0.3rem;
     max-width: 768px;
@@ -20,6 +20,12 @@
 
 #favoriteSongAddForm {
     width: 100%;
+}
+
+#favoriteSongAddForm .song-info {
+    /* 애창곡 등록시 추가내용 부분 강조 */
+    color: var(--bs-secondary-color);
+    font-size: calc(0.9rem + 0.3vw); /* 원본 calc(0.8rem + 0.3vw) */
 }
 
 /* 노래 등록 폼 아래 마진 공백 생기는거 삭제 */

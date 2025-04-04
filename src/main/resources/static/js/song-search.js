@@ -100,16 +100,16 @@ $(function () {
         favoriteSongAddForm.attr('data-brand', brand);
         favoriteSongAddForm.attr('data-song-id', songRow.find('.song-number').data('id'));
 
-        // 메모 테이블 정보로 현재 순서 텍스트 갱신
-        let songMemo = brand === 'TJ' ? $('.table-tj') : $('.table-ky');
-        let lastPresentOrder = songMemo.find('tr:last-child .song-number').attr('data-present-order');
-        lastPresentOrder = lastPresentOrder ? lastPresentOrder : -1; // 메모가 없을 경우 -1
+        // 애창곡 테이블 정보로 현재 순서 텍스트 갱신
+        let favoriteSongTable = brand === 'TJ' ? $('.table-tj') : $('.table-ky');
+        let lastPresentOrder = favoriteSongTable.find('tr:last-child .song-number').attr('data-present-order');
+        lastPresentOrder = lastPresentOrder ? lastPresentOrder : -1; // 애창곡이 없을 경우 -1
         $('#currentPresentOrder').text(Number(lastPresentOrder) + 2); // 순서가 0부터 시작
 
 
         // 메모 추가폼으로 스크롤
         $('html, body').animate({
-            scrollTop: $('#favoriteSongAddForm').offset().top - 16 // 2rem 여유
+            scrollTop: $('#favoriteSongAddForm').offset().top - 32 // 2rem 여유
         }, 500, function () {
             // 추가 텍스트 입력창 열기 및 포커스
             if (!$('#addInfoTextCollapse').hasClass('show')) {

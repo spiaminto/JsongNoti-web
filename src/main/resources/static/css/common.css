@@ -66,14 +66,23 @@
     }
 }
 
+/* navbar 아이콘 */
+.navbar-brand-icon {
+    width: 32px;
+    
+    @media (min-width: 1200px) {
+        width: 40px;
+    }
+}
+
 /* 아이콘 버튼 */
 .icon-button {
-    margin-left: calc(0.1rem + 0.5vw);
+    margin-left: calc(0.3rem + 0.5vw);
     position: relative;
     background: no-repeat center center;
     background-size: cover;
-    width: 35px; /* 360px 기준*/
-    height: 35px; /* 360px 기준*/
+    width: 35px;
+    height: 35px;
     vertical-align: text-bottom;
 }
 
@@ -93,14 +102,6 @@
 
 .icon-button .search-icon-label {
     bottom: -38%; /* 이상하게 홈화면에서 검색 아이콘의 라벨이 쳐저 보여서 올림 */
-}
-
-/* 360px 맞추기 위해 어쩔수 없이 사용 */
-@media (min-width: 390px) {
-    .icon-button {
-        width: 40px;
-        height: 40px;
-    }
 }
 
 @media (min-width: 992px) {

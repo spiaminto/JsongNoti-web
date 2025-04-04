@@ -1,6 +1,6 @@
 /* 헤더텍스트 추가 설정 */
 #container nav h1 {
-    padding: 0.5rem 0.5rem;
+    padding: 0.25rem 0.25rem;
     background-color: var(--bs-highlight-bg);
     border-radius: 10px;
     /*box-shadow:  0 0 10px 10px #fff3cd;*/
@@ -18,7 +18,9 @@ h2, h3 {
 /* 헤더 텍스트 사이즈 보정 */
 
 h1 .navbar-brand {
-    font-size: calc(1.5rem + 0.7vw);
+    font-size: calc(1.3rem + 0.7vw);
+    letter-spacing: -0.05em;
+    padding: 0;
 }
 
 h1 {

@@ -51,7 +51,7 @@
 <div id="container">
 
   <!-- Navigation-->
-  <nav class="navbar justify-content-start static-top">
+  <nav class="navbar static-top">
     <h1>
       <a class="navbar-brand" href="/">
         제이노티
@@ -59,9 +59,14 @@
       <a class="navbar-brand" href="/search">
         노래검색
       </a>
-      <img src="/static/assets/icon/search_512.png" th:src="@{'/assets/icon/search_512.png'}" alt="검색아이콘" width="35px">
+      <img class="navbar-brand-icon" src="/static/assets/icon/search_512.png" th:src="@{'/assets/icon/search_512.png'}" alt="검색아이콘" width="35px">
     </h1>
-    <div class="memo-button-wrapper">
+    <div class="button-wrapper">
+      <button class="search-link-button icon-button btn" onclick="location.href = '/'"
+              style="background-image: url('/static/assets/icon/logo_512.png')"
+              th:style="'background-image: url(/assets/icon/logo_512.png)'">
+        <span class="icon-button-label search-icon-label"><b>신곡</b></span>
+      </button>
       <button class="favorite-song-link-button icon-button btn "
               style="background-image: url('/static/assets/icon/favorite_song_512.png')"
               th:style="'background-image: url(/assets/icon/favorite_song_512.png)'"
@@ -197,7 +202,7 @@
                 추가 검색
               </button>
               <p class="mb-0 mt-2">
-                추가 검색에서 원하는 결과가 없을경우 홈페이지 아래의 Contact 를 통해 문의 해주시면 반영하겠습니다.
+                원하는 곡이 검색되지 않을경우 홈페이지 아래의 <b>메일문의 링크를 눌러 문의</b>주시면 빠르게 반영하겠습니다.
               </p>
             </div>
           </div>
@@ -269,14 +274,14 @@
               <a class="text-primary-emphasis text-decoration-none"
                  href="https://mail.google.com/mail/?view=cm&fs=1&to=jsongnoti%2Bcs@gmail.com&su=일본 신곡 알림이 문의"
                  target="_blank">
-                Contact
+                메일문의
                 <i class="bi-envelope fs-3"></i>
               </a>
             </li>
             <li class="list-inline-item contact-mail-mobile me-4">
               <a class="text-primary-emphasis text-decoration-none"
                  href="mailto:jsongnoti+cs@gmail.com?subject=일본 신곡 알림이 문의">
-                Contact
+                메일문의
                 <i class="bi-envelope fs-3"></i>
               </a>
             </li>

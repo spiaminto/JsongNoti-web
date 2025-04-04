@@ -9,21 +9,21 @@ class CommonUtil {
     blinkElement(element, originalBackground) {
         $(element).css({
             transitionProperty: 'background',
-            transitionDuration: '0.3s',
+            transitionDuration: '0.5s',
         });
         setTimeout(function () {
             $(element).css('background', 'var(--bs-highlight-bg) none')
         }, 10);
         setTimeout(function () {
             $(element).css('background', originalBackground)
-        }, 300);
+        }, 500);
         setTimeout(function () {
             $(element).css({
                 transitionProperty: '',
                 transitionDuration: '',
                 background: ''
             });
-        }, 600);
+        }, 1000);
     }
 }
 const commonUtil = new CommonUtil();
