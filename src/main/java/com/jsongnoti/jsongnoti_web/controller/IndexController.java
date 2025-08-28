@@ -107,7 +107,7 @@ public class IndexController {
     @GetMapping("/privacy-policy")
     public String privacyPolicy(@RequestParam(value = "date", required = false) String date) {
         log.info("date: {}", date);
-        if (date == null) { date = "241223"; }
+        if (date == null) { date = "250625"; }
         return "privacy/privacy-" + date;
     }
 
