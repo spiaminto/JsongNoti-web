@@ -2,9 +2,9 @@ package com.jsongnoti.jsongnoti_web.controller;
 
 import com.jsongnoti.jsongnoti_web.auth.PrincipalDetails;
 import com.jsongnoti.jsongnoti_web.controller.dto.NewSongDto;
-import com.jsongnoti.jsongnoti_web.domain.User;
+import com.jsongnoti.jsongnoti_web.domain.Member;
+import com.jsongnoti.jsongnoti_web.service.MemberService;
 import com.jsongnoti.jsongnoti_web.service.SongService;
-import com.jsongnoti.jsongnoti_web.service.UserService;
 import com.jsongnoti.jsongnoti_web.service.dto.LatestAndLastSongsDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ import java.util.Locale;
 public class IndexController {
 
     private final SongService songService;
-    private final UserService userService;
+    private final MemberService memberService;
 
     @GetMapping("/health-check")
     @ResponseBody
@@ -90,16 +90,16 @@ public class IndexController {
     @GetMapping("/favorite-song")
     public String favoriteSongs(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                 Model model) {
-        if (principalDetails == null || principalDetails.getUserId() == null) {
+        if (principalDetails == null || principalDetails.getMemberId() == null) {
             return "redirect:/oauth2/authorization/google";
         }
 
-        Long userId = principalDetails.getUserId();
-        User user = userService.findUserById(userId);
+        Long userId = principalDetails.getMemberId();
+        Member member = memberService.findMemberById(userId);
         model.addAttribute("userId", userId);
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("favoriteSongPresentType", user.getFavoriteSongPresentType());
-        model.addAttribute("favoriteSongPresentBrand", user.getFavoriteSongPresentBrand());
+        model.addAttribute("username", member.getUsername());
+        model.addAttribute("favoriteSongPresentType", member.getFavoriteSongPresentType());
+        model.addAttribute("favoriteSongPresentBrand", member.getFavoriteSongPresentBrand());
 
         return "favorite-songs";
     }

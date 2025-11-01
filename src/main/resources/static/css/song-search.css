@@ -37,10 +37,6 @@
     padding: 0 0.5rem;
 }
 
-#songSearchResultTable .song-title-text {
-    display: inline; /* 한글 타이틀 표시를 위해 인라인 */
-}
-
 #songSearchResultTable .song-title:hover {
     cursor: pointer;
 }

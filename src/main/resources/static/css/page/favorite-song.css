@@ -41,10 +41,6 @@
     vertical-align: super;
 }
 
-#songSearchResultTable .song-title-text {
-    display: inline; /* 한글 타이틀 표시를 위해 인라인 */
-}
-
 .selected {
     background-color: var(--bs-highlight-bg);
 }

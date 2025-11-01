@@ -47,13 +47,21 @@ dependencies {
     // log4jdbc
     implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
 
+
+    // https://mvnrepository.com/artifact/xerces/xercesImpl
+    implementation 'xerces:xercesImpl:2.12.2'
+    
+    // ojdbc 11 대신 production 버전으로 써야 key 인증관련 jar 가 추가됨 (없으면 키 저장소 초기화 불가)
+    // https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc10-production
+    implementation 'com.oracle.database.jdbc:ojdbc10-production:19.27.0.0'
+
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
 
-version = '1.1.4a'
+version = '1.2.1a'
 // AWS Elastic Beanstalk 배포를 위한 빌드
 task buildAwsEb(type: Zip) {
     from bootJar.outputs.files

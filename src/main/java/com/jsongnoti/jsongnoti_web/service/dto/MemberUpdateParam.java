@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class UserUpdateParam {
+public class MemberUpdateParam {
 
     private String email;
     private String username;

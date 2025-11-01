@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class FavoriteSongSearchCond {
-    private final Long userId;
+    private final Long memberId;
     private final Brand brand;
     private final FavoriteSongPresentType presentType;
 }

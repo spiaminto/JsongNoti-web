@@ -52,14 +52,14 @@ public class SongSearchService {
 
     // 원어 검색 ============================================================================
     private List<SongSearchDto> searchSongsByTitle(String title) {
-        return songRepository.findSongByTitleSimilar(title, title.toUpperCase()).stream().map(SongSearchDto::from).toList();
+        return songRepository.findSongByTitleSimilar(title).stream().map(SongSearchDto::from).toList();
     }
 
     private List<SongSearchDto> searchSongsBySinger(String singer) {
         // 수기입력
         List<SongSearchDto> findPriorDtos = songRepository.findSongBySingerPrior(singer).stream().map(SongSearchDto::from).collect(Collectors.toList());
         // 원어
-        List<SongSearchDto> findOriginDtos = songRepository.findSongBySingerSimilar(singer, singer.toUpperCase()).stream().map(SongSearchDto::from).collect(Collectors.toList());
+        List<SongSearchDto> findOriginDtos = songRepository.findSongBySingerSimilar(singer).stream().map(SongSearchDto::from).collect(Collectors.toList());
 
         // 수기입력 우선, 중복제거
         findOriginDtos.removeAll(findPriorDtos);

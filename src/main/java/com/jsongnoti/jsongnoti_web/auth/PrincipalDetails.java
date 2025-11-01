@@ -1,6 +1,6 @@
 package com.jsongnoti.jsongnoti_web.auth;
 
-import com.jsongnoti.jsongnoti_web.domain.User;
+import com.jsongnoti.jsongnoti_web.domain.Member;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ import java.util.Map;
  */
 public class PrincipalDetails implements OAuth2User, UserDetails {
 
-    private final User user;
+    private final Member member;
     private final Map<String, Object> attributes; // OAuth2User.getAttributes() 로 받은 정보
 
 //    public PrincipalDetails(User user) {
@@ -39,7 +39,7 @@ public class PrincipalDetails implements OAuth2User, UserDetails {
         collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return user.getRole();
+                return member.getRole();
             }
         });
 
@@ -51,10 +51,10 @@ public class PrincipalDetails implements OAuth2User, UserDetails {
         return "";
     }
 
-    public Long getUserId() { return user.getId(); }
+    public Long getMemberId() { return member.getId(); }
 
     public String getUsername() {
-        return user.getUsername();
+        return member.getUsername();
     }
 
     @Override
@@ -78,7 +78,7 @@ public class PrincipalDetails implements OAuth2User, UserDetails {
     }
 
     public String getEmail() {
-        return user.getEmail();
+        return member.getEmail();
     }
 
     /**
@@ -88,7 +88,7 @@ public class PrincipalDetails implements OAuth2User, UserDetails {
      */
     @Override
     public String getName() {
-        return user.getId() + "";
+        return member.getId() + "";
     } // OAuth2User, user PK
 
     @Override

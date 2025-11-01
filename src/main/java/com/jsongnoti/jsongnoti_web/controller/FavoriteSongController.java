@@ -33,7 +33,7 @@ public class FavoriteSongController {
         log.info("favoriteSongSearchRequest: {}", favoriteSongSearchRequest);
         Long userId = favoriteSongSearchRequest.getUserId();
         // 폼 userId 값 검증
-        if (!userId.equals(principalDetails.getUserId())) {
+        if (!userId.equals(principalDetails.getMemberId())) {
             return ResponseEntity.badRequest().body(FavoriteSongResponse.withMessage("잘못된 애창곡 요청입니다."));
         }
 
@@ -48,7 +48,7 @@ public class FavoriteSongController {
         log.info("favoriteSongAddRequest: {}", favoriteSongAddRequest);
         Long userId = favoriteSongAddRequest.getUserId();
         // 폼 userId 값 검증
-        if (!userId.equals(principalDetails.getUserId())) {
+        if (!userId.equals(principalDetails.getMemberId())) {
             return ResponseEntity.badRequest().body(FavoriteSongResponse.withMessage("잘못된 추가 요청입니다."));
         }
 
@@ -68,7 +68,7 @@ public class FavoriteSongController {
         log.info("switchOrder: {}", favoriteSongsReorderRequest);
         Long userId = favoriteSongsReorderRequest.getUserId();
         // 폼 userId 값 검증
-        if (!userId.equals(principalDetails.getUserId())) {
+        if (!userId.equals(principalDetails.getMemberId())) {
             return ResponseEntity.badRequest().body(FavoriteSongResponse.withMessage("잘못된 순서변경 요청입니다."));
         }
 
@@ -88,7 +88,7 @@ public class FavoriteSongController {
         log.info("deleteFavoriteSong: {}", favoriteSongDeleteRequest);
         Long userId = favoriteSongDeleteRequest.getUserId();
         // 폼 userId 값 검증
-        if (!userId.equals(principalDetails.getUserId())) {
+        if (!userId.equals(principalDetails.getMemberId())) {
             return ResponseEntity.badRequest().body(FavoriteSongResponse.withMessage("잘못된 메모삭제 요청입니다."));
         }
 

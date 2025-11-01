@@ -2,7 +2,7 @@
 <configuration>
 
     <!-- EB 의 EC2 인스턴스 내부 경로-->
-    <property name="LOG_DIR" value="/var/log/jsongnoti/" />
+    <property name="LOG_DIR" value="/home/ubuntu/oci/webapp/log/" />
 
     <!-- CONSOLE 콘솔 로그 -->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">

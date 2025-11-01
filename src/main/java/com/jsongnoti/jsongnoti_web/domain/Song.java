@@ -15,7 +15,7 @@ import static lombok.AccessLevel.PROTECTED;
 @AllArgsConstructor(access = PROTECTED)
 @Builder
 @Getter
-@EqualsAndHashCode(of = {"number", "title"}) @ToString // 노래 번호, 제목으로 중복판별
+@EqualsAndHashCode(of = {"songNumber", "title"}) @ToString // 노래 번호, 제목으로 중복판별
 public class Song {
 
     @Id
@@ -25,7 +25,7 @@ public class Song {
     @Enumerated(EnumType.STRING)
     private Brand brand;
 
-    private int number;
+    private int songNumber;
     private String title;
     private String info;
 
@@ -35,7 +35,7 @@ public class Song {
 
     private LocalDate regDate;
 
-    @Builder.Default
+    @Builder.Default @Column(columnDefinition = "boolean")
     private boolean mailed = false;
 
     @CreationTimestamp

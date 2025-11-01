@@ -3,6 +3,9 @@ package com.jsongnoti.jsongnoti_web.domain;
 import com.jsongnoti.jsongnoti_web.domain.enums.Brand;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -17,16 +20,20 @@ public class FavoriteSong {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    private Long memberId;
+    private Long songId;
 
     @Enumerated(EnumType.STRING)
     private Brand brand;
-    private int number;
+    private int songNumber;
     private String title;
     private String singer;
 
     private String info;
     private int presentOrder; // 표시순서, start from 0
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
     public void updatePresentOrder(int presentOrder) {
         this.presentOrder = presentOrder;

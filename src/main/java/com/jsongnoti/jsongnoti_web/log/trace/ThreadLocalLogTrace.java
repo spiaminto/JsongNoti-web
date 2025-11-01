@@ -4,6 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Component
 public class ThreadLocalLogTrace implements LogTrace {
@@ -32,7 +35,7 @@ public class ThreadLocalLogTrace implements LogTrace {
         if (traceId.isFirstLevel()) {
             log.info("[{}] {}", traceId.getId(), START_MESSAGE);
         } else
-        log.info("[{}] {}{}", traceId.getId(), addSpace(START_PREFIX, traceId.getLevel()), message);
+            log.info("[{}] {}{}", traceId.getId(), addSpace(START_PREFIX, traceId.getLevel()), message);
 
         return new TraceStatus(traceId, message);
     }
@@ -41,6 +44,7 @@ public class ThreadLocalLogTrace implements LogTrace {
     public void end(TraceStatus status) {
         complete(status, null, null);
     }
+
     @Override
     public void exception(TraceStatus status, Exception e, Object[] params) {
         complete(status, e, params);
@@ -52,23 +56,28 @@ public class ThreadLocalLogTrace implements LogTrace {
      */
     private void complete(TraceStatus status, Exception e, Object[] params) {
         TraceId traceId = status.getTraceId();
-        if (e == null && completeEnabled) {
-//             완료 로그 출력 여부가 true 이면 완료 로그만 출력
-            log.info("[{}] {}{}", traceId.getId(), addSpace(COMPLETE_PREFIX, traceId.getLevel()), status.getMessage());
-            if (traceId.isFirstLevel()) {
-                log.info("[{}] {}", traceId.getId(), COMPLETE_MESSAGE);
-            }
-        } else {
-            // exception 발생 시 파라미터를 같이 출력
+        if (e != null) {
+            // exception 발생 시  파라미터를 같이 출력
             StringBuilder sb = new StringBuilder();
             for (Object param : params) {
                 sb.append(param).append(",\n");
             }
-            log.error("[{}] {}{} [ex] = {}\n [params] = \n{}", traceId.getId(), addSpace(EX_PREFIX, traceId.getLevel()), status.getMessage(), e, sb);
+            String stackTrace = Arrays.stream(e.getStackTrace())
+                    .limit(10)
+                    .map(StackTraceElement::toString)
+                    .collect(Collectors.joining("\n"));
+            log.error("[{}] {}{} \n exception = \n{}\n from = \n{}\n params = \n{}", traceId.getId(), addSpace(EX_PREFIX, traceId.getLevel()), status.getMessage(), e, stackTrace, sb);
+        } else if (completeEnabled) {
+            log.info("[{}] {}{}", traceId.getId(), addSpace(COMPLETE_PREFIX, traceId.getLevel()), status.getMessage());
+        }
+
+        if (traceId.isFirstLevel()) {
+            log.info("[{}] {}", traceId.getId(), COMPLETE_MESSAGE);
         }
 
         releaseTraceId();
     }
+
 
     /**
      * TraceId 를 동기화(초기화)
@@ -102,7 +111,7 @@ public class ThreadLocalLogTrace implements LogTrace {
     private static String addSpace(String prefix, int level) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < level; i++) {
-            sb.append( (i == level - 1) ? "|" + prefix + " " : "|   ");
+            sb.append((i == level - 1) ? "|" + prefix + " " : "|   ");
         }
         return sb.toString();
     }

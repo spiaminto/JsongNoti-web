@@ -24,7 +24,7 @@ public class SongKorean {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
     private Long songId;
-    private Integer number;
+    private Integer songNumber;
 
     private String title;
     private String titleOrigin;
