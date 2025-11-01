@@ -61,7 +61,7 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-version = '1.2.1a'
+version = '1.2.2a'
 // AWS Elastic Beanstalk 배포를 위한 빌드
 task buildAwsEb(type: Zip) {
     from bootJar.outputs.files
