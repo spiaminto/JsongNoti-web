@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jsongnoti.jsongnoti_web.auth.PrincipalDetails;
 import com.jsongnoti.jsongnoti_web.auth.oauth.provider.GoogleUserInfo;
 import com.jsongnoti.jsongnoti_web.auth.oauth.provider.OAuth2UserInfo;
-import com.jsongnoti.jsongnoti_web.domain.User;
+import com.jsongnoti.jsongnoti_web.domain.Member;
 import com.jsongnoti.jsongnoti_web.domain.enums.Brand;
 import com.jsongnoti.jsongnoti_web.domain.enums.FavoriteSongPresentType;
-import com.jsongnoti.jsongnoti_web.repository.UserRepository;
+import com.jsongnoti.jsongnoti_web.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +32,7 @@ import java.util.Optional;
  * OAuth2 유저 인증 처리 클래스
  */
 public class Oauth2UserService extends DefaultOAuth2UserService {
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final RestClient restClient;
     private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
     @Value("${jsongnoti.oauth2.secret}")
@@ -77,27 +77,27 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
      */
     private PrincipalDetails processOAuth2User(OAuth2UserInfo oAuth2UserInfo) {
         // DB 에 OAuth2 유저 존재여부 조회
-        Optional<User> findUserOptional =
-                userRepository.findByProviderAndProviderId(oAuth2UserInfo.getProvider(), oAuth2UserInfo.getProviderId());
+        Optional<Member> findUserOptional =
+                memberRepository.findByProviderAndProviderId(oAuth2UserInfo.getProvider(), oAuth2UserInfo.getProviderId());
 
-        User processedUser;
+        Member processedMember;
         if (findUserOptional.isPresent()) {
             // 로그인
             log.info("OAuth2 유저 로그인 {} - {} ", oAuth2UserInfo.getProvider(), oAuth2UserInfo.getProviderId());
-            User findUser = findUserOptional.get();
+            Member findMember = findUserOptional.get();
             // 이메일 바뀌면 자동 갱신
-            if (!oAuth2UserInfo.getEmail().equals(findUser.getEmail())) {
+            if (!oAuth2UserInfo.getEmail().equals(findMember.getEmail())) {
                 log.info("OAuth2 유저 이메일 변경 {} - {} ", oAuth2UserInfo.getProvider(), oAuth2UserInfo.getProviderId());
-                findUser.updateOauth2Email(oAuth2UserInfo.getEmail());
+                findMember.updateOauth2Email(oAuth2UserInfo.getEmail());
             }
-            processedUser = findUser;
+            processedMember = findMember;
 
         } else {
             // 회원가입
             log.info("OAuth2 유저 회원가입, OAuth2UserInfo={}", oAuth2UserInfo);
             String forOauth2UserUsername = oAuth2UserInfo.getEmail().substring(0, oAuth2UserInfo.getEmail().indexOf('@')); //email 에서 @gmail.com 제외한 나머지
 
-            User newUser = User.builder()
+            Member newMember = Member.builder()
                     .email(oAuth2UserInfo.getEmail())
                     .username(forOauth2UserUsername)
                     .password(bCryptPasswordEncoder.encode(oauth2Password))
@@ -108,15 +108,15 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
                     .favoriteSongPresentBrand(Brand.ALL)
                     .build();
 
-            userRepository.save(newUser);
-            processedUser = newUser;
+            memberRepository.save(newMember);
+            processedMember = newMember;
         }
 
         // attribute 매핑
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> oauth2Attributes = objectMapper.convertValue(oAuth2UserInfo, new TypeReference<>() {});
 
-        return new PrincipalDetails(processedUser, oauth2Attributes);
+        return new PrincipalDetails(processedMember, oauth2Attributes);
     }
 
     /**

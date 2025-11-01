@@ -1,6 +1,6 @@
 package com.jsongnoti.jsongnoti_web.service.dto;
 
-import com.jsongnoti.jsongnoti_web.domain.Song;
+import com.jsongnoti.jsongnoti_web.repository.SongWithKoreanDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,10 +14,10 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class LatestAndLastSongsDto {
 
-    private List<Song> tjLatestMonthSongs;
-    private List<Song> tjLastMonthSongs;
-    private List<Song> kyLatestMonthSongs;
-    private List<Song> kyLastMonthSongs;
+    private List<SongWithKoreanDto> tjLatestMonthSongs;
+    private List<SongWithKoreanDto> tjLastMonthSongs;
+    private List<SongWithKoreanDto> kyLatestMonthSongs;
+    private List<SongWithKoreanDto> kyLastMonthSongs;
 
     private LocalDate tjLatestDate;
     private LocalDate kyLatestDate;

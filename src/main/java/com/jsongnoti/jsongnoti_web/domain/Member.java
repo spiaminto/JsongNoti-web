@@ -18,7 +18,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class User {
+public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

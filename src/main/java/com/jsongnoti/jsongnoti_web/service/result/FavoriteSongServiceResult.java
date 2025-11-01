@@ -1,6 +1,6 @@
 package com.jsongnoti.jsongnoti_web.service.result;
 
-import com.jsongnoti.jsongnoti_web.domain.FavoriteSong;
+import com.jsongnoti.jsongnoti_web.repository.FavoriteSongWithKoreanDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,13 +12,13 @@ public class FavoriteSongServiceResult {
 
     private boolean isSuccess;
     private String message;
-    private List<FavoriteSong> favoriteSongs;
+    private List<FavoriteSongWithKoreanDto> favoriteSongs;
 
     public static FavoriteSongServiceResult success(String message) {
         return new FavoriteSongServiceResult(true, message, null);
     }
 
-    public static FavoriteSongServiceResult successWithSongs(String message, List<FavoriteSong> favoriteSongs) {
+    public static FavoriteSongServiceResult successWithSongs(String message, List<FavoriteSongWithKoreanDto> favoriteSongs) {
         return new FavoriteSongServiceResult(true, message, favoriteSongs);
     }
 

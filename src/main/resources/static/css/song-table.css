@@ -127,6 +127,10 @@ mark, .mark {
     text-decoration: none;
 }
 
+.song-title ruby {
+    display: ruby; /* 루비인경우 이쪽을 우선적용 */
+}
+
 .song-title-text > a:hover {
     text-decoration: underline;
 }

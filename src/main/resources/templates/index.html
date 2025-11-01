@@ -266,7 +266,8 @@
       <div class="new-song-section-header">
         <p>
           최근 신곡 목록입니다. <br>
-          노래 제목을 클릭하시면 구글 검색으로 이동합니다.
+          노래 제목을 클릭하시면 구글 검색으로 이동합니다. <br>
+          한글 표시는 참고용으로, 정확하지 않습니다.
         </p>
       </div>
       <div class="row">
@@ -294,9 +295,9 @@
                 <td class="song-title">
                   <div>
                     <a class="song-title-text" target="_blank" th:href="${song.searchUrl}"
-                       href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9"
-                       th:text="${song.title}">
-                      노래 제목
+                       href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9">
+                      <!-- 내부문자 분리를 위해 rb 태그 사용 -->
+                      <ruby><rb th:text="${song.title}">Title</rb><rp>(</rp><rt th:text="${song.titleKorean}">루비</rt><rp>)</rp></ruby>
                     </a>
                   </div>
                   <div class="song-info" th:text="${song.info}">정보 텍스트
@@ -334,9 +335,8 @@
                 <td class="song-title">
                   <div>
                     <a class="song-title-text" target="_blank" th:href="${song.searchUrl}"
-                       href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9"
-                       th:text="${song.title}">
-                      노래 제목
+                       href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9">
+                      <ruby><rb th:text="${song.title}">Title</rb><rp>(</rp><rt th:text="${song.titleKorean}">루비</rt><rp>)</rp></ruby>
                     </a>
                   </div>
                   <div class="song-info" th:text="${song.info}">정보 텍스트
@@ -374,9 +374,8 @@
                 <td class="song-title">
                   <div>
                     <a class="song-title-text" target="_blank" th:href="${song.searchUrl}"
-                       href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9"
-                       th:text="${song.title}">
-                      노래 제목
+                       href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9">
+                      <ruby><rb th:text="${song.title}">Title</rb><rp>(</rp><rt th:text="${song.titleKorean}">루비</rt><rp>)</rp></ruby>
                     </a>
                   </div>
                   <div class="song-info" th:text="${song.info}">정보 텍스트
@@ -414,9 +413,8 @@
                 <td class="song-title">
                   <div>
                     <a class="song-title-text" target="_blank" th:href="${song.searchUrl}"
-                       href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9"
-                       th:text="${song.title}">
-                      노래 제목
+                       href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9">
+                      <ruby><rb th:text="${song.title}">Title</rb><rp>(</rp><rt th:text="${song.titleKorean}">루비</rt><rp>)</rp></ruby>
                     </a>
                   </div>
                   <div class="song-info" th:text="${song.info}">정보 텍스트

@@ -15,7 +15,7 @@ public class SongSearchDto {
 
     private Long id;
     private Brand brand;
-    private String number;
+    private String songNumber;
     private String title;
     private String singer;
     private String info;
@@ -25,10 +25,10 @@ public class SongSearchDto {
         SongSearchDto result = new SongSearchDto();
         result.setId(dto.getId());
         result.setBrand(dto.getBrand());
-        result.setNumber(dto.getNumber());
+        result.setSongNumber(dto.getSongNumber());
         result.setTitle(dto.getTitle());
         result.setSinger(dto.getSinger());
-        result.setInfo(dto.getInfo());
+        result.setInfo(dto.getInfo() == null ? "" : dto.getInfo()); // 오라클은 '' == null 이여서 별도처리
         result.setTitleKorean(RegexPatterns.hasKorean(dto.getTitleKorean()) ? dto.getTitleKorean() : ""); // 한글 포함 안될경우 제거
         return result;
     }

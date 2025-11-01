@@ -1,11 +1,11 @@
-package com.jsongnoti.jsongnoti_web.controller.form.user;
+package com.jsongnoti.jsongnoti_web.controller.form.member;
 
 import com.jsongnoti.jsongnoti_web.domain.enums.Brand;
 import com.jsongnoti.jsongnoti_web.domain.enums.FavoriteSongPresentType;
 import lombok.Data;
 
 @Data
-public class UserUpdateRequest {
+public class MemberUpdateRequest {
     private String email;
     private String username;
     private String password;

@@ -55,17 +55,17 @@
           type="module"></script>
   <script src="/static/js/favorite/favorite-song.js" th:src="@{/js/favorite/favorite-song.js}" type="module"></script>
   <script src="/static/js/favorite/change-setting.js" th:src="@{/js/favorite/change-setting.js}" type="module"></script>
-  <script src="/static/js/favorite/user.js" th:src="@{/js/favorite/user.js}" type="text/javascript"></script>
+  <script src="/static/js/favorite/member.js" th:src="@{/js/favorite/member.js}" type="text/javascript"></script>
   <script type="module">
-
       //init
       let isLoggedIn = localStorage.getItem('isLoggedIn'); // null or 'true'
       if (!isLoggedIn) {
           localStorage.setItem('isLoggedIn', 'true');
       }
-
+  </script>
+  <script th:inline="javascript" type="module">
       // import FavoriteSongsUtil from '/static/js/favorite/favorite-song-util.js'; // 로컬
-      import FavoriteSongUtil from '/js/favorite/favorite-song-util.js';
+      import FavoriteSongUtil from /*[[@{/js/favorite/favorite-song-util.js}]]*/ "/js/favorite/favorite-song-util.js";
 
       $(function () {
           FavoriteSongUtil.initializeFavoriteSongTable();
@@ -84,7 +84,8 @@
       <a class="navbar-brand" href="/favorite-song">
         애창곡
       </a>
-      <img class="navbar-brand-icon" src="/static/assets/icon/favorite_song_512.png" th:src="@{'/assets/icon/favorite_song_512.png'}" alt="애창곡아이콘">
+      <img class="navbar-brand-icon" src="/static/assets/icon/favorite_song_512.png"
+           th:src="@{'/assets/icon/favorite_song_512.png'}" alt="애창곡아이콘">
     </h1>
     <div class="button-wrapper">
       <button class="search-link-button icon-button btn" onclick="location.href = '/'"

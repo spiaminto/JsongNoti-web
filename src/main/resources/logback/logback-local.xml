@@ -2,8 +2,8 @@
 <configuration>
 
     <!-- 파일 절대경로 ( \ = C:\ ) -->
-    <!--    <property name="LOG_DIR" value="\customLog/logback" />-->
-    <property name="LOG_DIR" value="\Users\felix\.Study\Spring_Practice\.log\JsongNoti_Web" />
+        <property name="LOG_DIR" value="\customLog/logback" />
+<!--    <property name="LOG_DIR" value="\Users\felix\.Study\Spring_Practice\.log\JsongNoti_Web" />-->
 
     <!-- CONSOLE 콘솔 로그 -->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
@@ -95,6 +95,7 @@
     </logger>
 
     <logger name="jdbc.sqltiming" level="info">
+        <appender-ref ref="console" />
         <appender-ref ref="sqlToFile" />
     </logger>
 

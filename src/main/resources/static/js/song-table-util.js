@@ -1,4 +1,3 @@
-
 class SongTableUtil {
     /**
      * .empty-song-table 을 복사한 뒤 dataList 의 값으로 채움
@@ -17,9 +16,17 @@ class SongTableUtil {
         let firstRow = resultTable.find('tbody tr:first-child');
         $.each(dataList, function (index, song) {
             let row = firstRow.clone();
-            row.find('.song-number span').text(song.number);
-            row.find('.song-title-text').text(song.title);
-            row.find('.song-info span').text(song.info);
+            row.find('.song-number span').text(song.songNumber);
+            const jpRangeRegex = /[\u3040-\u309F\u30A0-\u30FF\u31F0-\u31FF\uFF65-\uFF9F\u4E00-\u9FFF]/;
+            row.find('.song-title-text').replaceWith(
+                $('<ruby>')
+                    .addClass('song-title-text')
+                    .append($('<rb>').text(song.title))
+                    .append($('<rp>').text('('))
+                    .append($('<rt>').text(song.titleKorean && jpRangeRegex.test(song.title) ? song.titleKorean : ''))
+                    .append($('<rp>').text(')'))
+            )
+            row.find('.song-info span').text(song.info || '');
             row.find('.song-singer').text(song.singer);
             firstRow.before(row); // after 가 아닌 before 로 붙여야 순서가 맞음
         });

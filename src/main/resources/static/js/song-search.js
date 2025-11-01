@@ -63,10 +63,8 @@ $(function () {
         // 새로운 검색결과 테이블 생성 및 채우기
         let songTable = SongTableUtil.renderEmptySongTable(data);
 
-        // 검색결과 후처리 - 한글타이틀 기입, 클릭시 폼입력 이벤트바인딩, data-id (songId) 추가
+        // 검색결과 후처리 - 클릭시 폼입력 이벤트바인딩, data-id (songId) 추가
         $.each(data, function (index, song) {
-            let songTitleHint = song.titleKorean ? '<i class=\'song-title-korean\'>' + song.titleKorean + '</i>' : '';
-            $(songTable.find('.song-title-text')[index]).after(songTitleHint);
             $(songTable.find('.song-title')[index]).on('click', fillMemoAddFormWithSearchResult);
             $(songTable.find('.song-number')[index]).attr('data-id', song.id);
         });
