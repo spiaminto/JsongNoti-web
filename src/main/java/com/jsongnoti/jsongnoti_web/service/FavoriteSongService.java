@@ -54,8 +54,8 @@ public class FavoriteSongService {
 
         long favoriteSongCount = favoriteSongRepository.countByMemberId(userId);
         // 100개 이상 저장불가
-        if (favoriteSongCount >= 100) {
-            return FavoriteSongServiceResult.fail("현재 애창곡은 100개까지만 저장 가능합니다.");
+        if (favoriteSongCount >= 200) {
+            return FavoriteSongServiceResult.fail("현재 애창곡은 200개까지만 저장 가능합니다.");
         }
         // 순서 미리 변경
         if (favoriteSongCount != presentOrder) {

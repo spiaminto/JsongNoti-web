@@ -6,12 +6,11 @@
 해당 노래방과 관련 없는 개인이 편의를 위해 만든 서비스 입니다.
 
 ### 0.1 서비스 아키텍처
-<img alt='아키텍처' src='https://github.com/user-attachments/assets/8cfca7dc-2f88-4dcb-ae35-2df9e68347fa' width="80%">
+<img alt='아키텍처' src='https://github.com/user-attachments/assets/7c9b780f-1012-4207-882e-384768898ffd' width="80%">
 
 * __CloudFlare:__ 프록시 서버로써 DNS 및 TLS 인증서 적용, 봇 차단, 캐싱 등을 담당합니다.
-* __Elastic Beanstalk:__ AWS 에서 제공하는 배포 환경으로 EC2 와 RDS, CloudWatch 등 여러가지 AWS 서비스를 통합하여 관리하고 있습니다. 
-* __RDS:__ 한글 및 일본어 유사도 검색을 위해 PostgreSQL 데이터베이스를 사용합니다. pg_bigm 모듈을 이용하여 GIN index 인덱싱과 유사도 검색을 구현합니다.  
-* __Lambda:__ EventBridge 의 스케쥴에 맞추어 람다 함수를 실행합니다. 람다함수는 SpringCloudFunction 으로 구현하였으며, 각 노래방 서비스에서 신곡 정보를 수집하고, GPT 를 통해 한글화 데이터를 생성하여 데이터베이스에 저장합니다.  
+* __OCI:__ 웹 앱과 DB 는 각각 Oracle Compute Infrastructure 의 compute 인스턴스, ADW 인스턴스에 배포중입니다. 
+* __AWS Lambda:__ EventBridge 의 스케쥴에 맞추어 람다 함수를 실행합니다. 람다함수는 각 노래방 서비스에서 신곡 정보를 수집하고, AI 를 통해 한글화 데이터를 생성하여 데이터베이스에 저장합니다.  
 
 
 ## 1. 신곡 정보 및 알림 기능

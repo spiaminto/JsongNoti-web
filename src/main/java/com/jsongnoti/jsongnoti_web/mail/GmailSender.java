@@ -24,7 +24,7 @@ public class GmailSender {
     private final TemplateEngine templateEngine;
 
     @Value("${action.url}")
-    private String actionUrl; // https://jsongnoti.com/
+    private String actionUrl;
 
     @Value("${spring.mail.username}")
     private String from;
