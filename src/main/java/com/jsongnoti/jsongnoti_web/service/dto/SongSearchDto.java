@@ -20,6 +20,7 @@ public class SongSearchDto {
     private String singer;
     private String info;
     private String titleKorean;
+    private String infoKorean;
 
     public static SongSearchDto from(SongSearchResultDto dto) {
         SongSearchDto result = new SongSearchDto();
@@ -30,6 +31,7 @@ public class SongSearchDto {
         result.setSinger(dto.getSinger());
         result.setInfo(dto.getInfo() == null ? "" : dto.getInfo()); // 오라클은 '' == null 이여서 별도처리
         result.setTitleKorean(RegexPatterns.hasKorean(dto.getTitleKorean()) ? dto.getTitleKorean() : ""); // 한글 포함 안될경우 제거
+        result.setInfoKorean(RegexPatterns.hasKorean(dto.getInfoKorean()) ? dto.getInfoKorean() : null);
         return result;
     }
 

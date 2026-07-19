@@ -10,4 +10,5 @@ public interface SongSearchResultDto {
     String getSinger();
     String getInfo();
     String getTitleKorean();
+    String getInfoKorean();
 }

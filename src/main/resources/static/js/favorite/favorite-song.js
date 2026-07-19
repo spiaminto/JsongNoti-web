@@ -40,7 +40,30 @@ $(function () {
     })
 
     $('#useDefaultInfoTextCheck').change(function () {
-        $(this).is(':checked') ? $('#addInfoTextInput').prop('disabled', true) : $('#addInfoTextInput').prop('disabled', false);
+        let $infoTextInput = $('#addInfoTextInput');
+        let $defaultInfoPreview = $('#defaultInfoPreview');
+        if ($(this).is(':checked')) {
+            let $favoriteSongAddForm = $('#favoriteSongAddForm');
+            let info = $favoriteSongAddForm.attr('data-info-original') || '';
+            let infoKorean = $favoriteSongAddForm.attr('data-info-korean') || '';
+            $defaultInfoPreview.empty();
+            if (infoKorean) {
+                $defaultInfoPreview.append(
+                    $('<ruby>')
+                        .append($('<rb>').text(info))
+                        .append($('<rp>').text('('))
+                        .append($('<rt>').text(infoKorean))
+                        .append($('<rp>').text(')'))
+                );
+            } else {
+                $defaultInfoPreview.text(info || '작품정보가 없습니다.');
+            }
+            $infoTextInput.prop('disabled', true).addClass('d-none');
+            $defaultInfoPreview.removeClass('d-none');
+        } else {
+            $defaultInfoPreview.addClass('d-none').empty();
+            $infoTextInput.prop('disabled', false).removeClass('d-none');
+        }
     })
 
 // 애창곡 저장

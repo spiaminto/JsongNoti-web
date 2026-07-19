@@ -26,9 +26,11 @@ public interface FavoriteSongRepository extends JpaRepository<FavoriteSong, Long
                         f.id, f.memberId, f.brand, f.songNumber,
                         f.title, sk.title, f.singer, sk.singer,
                         f.info,
+                        CASE WHEN f.info = s.info THEN sk.info ELSE NULL END,
                         f.presentOrder
                         )
             FROM FavoriteSong f
+            LEFT JOIN Song s ON f.songId = s.id
             LEFT JOIN SongKorean sk ON f.songId = sk.songId
             WHERE f.memberId = :userId AND f.brand = :brand
             ORDER BY f.presentOrder ASC
@@ -45,9 +47,11 @@ public interface FavoriteSongRepository extends JpaRepository<FavoriteSong, Long
                         f.id, f.memberId, f.brand, f.songNumber,
                         f.title, sk.title, f.singer, sk.singer,
                         f.info,
+                        CASE WHEN f.info = s.info THEN sk.info ELSE NULL END,
                         f.presentOrder
                         )
             FROM FavoriteSong f
+            LEFT JOIN Song s ON f.songId = s.id
             LEFT JOIN SongKorean sk ON f.songId = sk.songId
             WHERE f.memberId = :userId AND f.brand = :brand
             ORDER BY f.singer ASC

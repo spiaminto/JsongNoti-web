@@ -1,4 +1,5 @@
-#searchHintContainer .singer-hint {
+#searchHintContainer .singer-hint,
+#searchHintContainer .info-hint {
     display: none; /* 초기값이 TITLE 이기 때문에 */
 }
 

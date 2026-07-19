@@ -439,6 +439,7 @@
             <textarea type="text" id="addInfoTextInput" class="form-control text-input"
                       placeholder="추가 내용을 비워둘경우 노래 제목만 저장합니다 (최대 50자)"
                       aria-label="추가텍스트" aria-describedby="" maxlength="50"></textarea>
+              <div id="defaultInfoPreview" class="form-control text-input text-start d-none" role="status"></div>
               <button class="btn btn-outline-primary" type="submit" id="addSongButton"><b>애창곡 추가</b></button>
             </div>
           </div>
@@ -463,6 +464,9 @@
       <p><em class="text-muted title-hint">
         <b>검색 예시</b> : 青と夏, 푸름과 여름, 파랑과 여름, 아오토나츠
       </em></p>
+      <p><em class="text-muted info-hint">
+        <b>검색 예시</b> : 불꽃 소방대, 원펀맨, BanG Dream!
+      </em></p>
     </div>
 
     <!--노래 검색 폼-->
@@ -485,6 +489,10 @@
         <div class="form-check form-check-inline">
           <input class="form-check-input" type="radio" name="searchType" id="searchTypeArtist" value="SINGER">
           <label class="form-check-label" for="searchTypeArtist">아티스트명</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="searchType" id="searchTypeInfo" value="INFO">
+          <label class="form-check-label" for="searchTypeInfo">작품명/정보</label>
         </div>
       </div>
       <div class="input-group justify-content-center">
@@ -513,6 +521,7 @@
             <p class="mb-0">노래 제목을 누르면 애창곡 추가 폼에 입력됩니다.</p>
             <p class="text-muted small mb-1">(한글 표시는 참고용으로, 정확하지 않습니다)</p>
           </div>
+          <div id="songSearchMessage" class="alert alert-info d-none mx-2 mt-2 mb-0" role="status" aria-live="polite"></div>
           <div class="song-table-border mt-2">
             <table class="table-hover song-table" id="songSearchResultTable">
               <thead>

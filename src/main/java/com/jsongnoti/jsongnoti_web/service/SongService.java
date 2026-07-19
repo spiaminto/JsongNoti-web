@@ -41,8 +41,8 @@ public class SongService {
         // 브랜드별 분류
         Map<Brand, List<SongWithKoreanDto>> songs = findSongs.stream()
                 .collect(Collectors.groupingBy(SongWithKoreanDto::getBrand));
-        List<SongWithKoreanDto> tjSongs = songs.get(Brand.TJ);
-        List<SongWithKoreanDto> kySongs = songs.get(Brand.KY);
+        List<SongWithKoreanDto> tjSongs = songs.getOrDefault(Brand.TJ, List.of());
+        List<SongWithKoreanDto> kySongs = songs.getOrDefault(Brand.KY, List.of());
 
         // 당일(now) 로 미리 초기화.
         LocalDate tjLatestDate = LocalDate.now();

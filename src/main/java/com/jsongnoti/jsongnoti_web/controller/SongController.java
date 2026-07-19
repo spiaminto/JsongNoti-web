@@ -28,6 +28,7 @@ public class SongController {
         SongSearchResult results = songSearchService.searchSongs(songSearchCond);
 
         return ResponseEntity.ok().body(SongSearchResponse.builder()
+                .message(results.getMessage())
                 .songs(results.getSongSearchDtos()).build());
     }
 }

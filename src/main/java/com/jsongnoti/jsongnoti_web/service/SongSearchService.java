@@ -12,7 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,12 +23,22 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SongSearchService {
 
+    private static final String INFO_ROLE_ONLY_MESSAGE = "작품명을 함께 입력해주세요. 예: 원피스 OP";
+    private static final List<String> INFO_ROLE_KEYWORDS = List.of(
+            "OPENING", "ENDING", "오프닝", "엔딩", "주제가", "테마송", "삽입곡", "게임",
+            "OST", "CM", "OP", "ED"
+    );
+
     private final SongRepository songRepository;
 
     public SongSearchResult searchSongs(SongSearchCond searchCond) {
         SongSearchType searchType = searchCond.getSearchType();
         String keyword = searchCond.getKeyword();
         boolean isAdditionalSearch = searchCond.isAdditionalSearch();
+
+        if (searchType == SongSearchType.INFO && isInfoRoleOnly(keyword)) {
+            return SongSearchResult.success(INFO_ROLE_ONLY_MESSAGE, Collections.emptyList());
+        }
 
         boolean keywordHasKorean = RegexPatterns.hasKorean(keyword);
         List<SongSearchDto> songSearchDtos = switch (searchType) {
@@ -37,17 +50,13 @@ public class SongSearchService {
                     keywordHasKorean ?
                             searchSongsByKoreanSinger(keyword) :
                             searchSongsBySinger(keyword);
-            // case INFO -> 미구현
-            default -> {
-                log.error("invalid search type = {}", searchType);
-                yield Collections.emptyList();
-            }
+            case INFO -> isAdditionalSearch ? additionalInfoSearch(keyword) : searchSongsByInfo(keyword);
         };
 
         // 브랜드 필터링
         songSearchDtos = songSearchDtos.stream().filter(song -> song.getBrand() == searchCond.getBrand()).toList();
 
-        return SongSearchResult.success("검색 성공", songSearchDtos);
+        return SongSearchResult.success(null, songSearchDtos);
     }
 
     // 원어 검색 ============================================================================
@@ -101,7 +110,43 @@ public class SongSearchService {
         return singerPriorDtos;
     }
 
-// 추가검색 : 일반 like 를 전체 검색으로 걸면 검색결과가 과도하게 나오는 경우가 있어 사용자의 추가 검색필요시에만 전체 like 검색
+    // 작품 정보 검색 ========================================================================
+    private List<SongSearchDto> searchSongsByInfo(String keyword) {
+        List<SongSearchDto> infoAliasDtos = songRepository.findSongByInfoAliases(keyword).stream()
+                .map(SongSearchDto::from)
+                .toList();
+        List<SongSearchDto> infoKoreanDtos = songRepository.findSongByKoreanInfoSimilar(keyword).stream()
+                .map(SongSearchDto::from)
+                .toList();
+        List<SongSearchDto> infoOriginDtos = songRepository.findSongByInfoSimilar(keyword).stream()
+                .map(SongSearchDto::from)
+                .toList();
+
+        // 별칭, 한글 대표값, 원문 순으로 합치면서 곡 ID 기준 중복 제거
+        Map<Long, SongSearchDto> songsById = new LinkedHashMap<>();
+        infoAliasDtos.forEach(song -> songsById.putIfAbsent(song.getId(), song));
+        infoKoreanDtos.forEach(song -> songsById.putIfAbsent(song.getId(), song));
+        infoOriginDtos.forEach(song -> songsById.putIfAbsent(song.getId(), song));
+        return List.copyOf(songsById.values());
+    }
+
+    private boolean isInfoRoleOnly(String keyword) {
+        if (keyword == null) {
+            return false;
+        }
+        String normalizedKeyword = keyword.replaceAll("\\s+", "").toUpperCase(Locale.ROOT);
+        boolean hasRoleKeyword = false;
+        for (String roleKeyword : INFO_ROLE_KEYWORDS) {
+            if (normalizedKeyword.contains(roleKeyword)) {
+                normalizedKeyword = normalizedKeyword.replace(roleKeyword, "");
+                hasRoleKeyword = true;
+            }
+        }
+        String remainingKeyword = normalizedKeyword.replaceAll("[,/&+·-]", "");
+        return hasRoleKeyword && remainingKeyword.isEmpty();
+    }
+
+    // 추가검색 : 일반 like 를 전체 검색으로 걸면 검색결과가 과도하게 나오는 경우가 있어 사용자의 추가 검색필요시에만 전체 like 검색
     private List<SongSearchDto> additionalTitleSearch(String keyword) {
         List<SongSearchResultDto> songByTitleLikeOriginAndKorean = songRepository.findSongByTitleLikeOriginOrKoreanOrRead(keyword);
         return songByTitleLikeOriginAndKorean.stream().map(SongSearchDto::from).toList();
@@ -111,6 +156,12 @@ public class SongSearchService {
     private List<SongSearchDto> additionalSingerSearch(String keyword) {
         List<SongSearchResultDto> songBySingerLikeOriginAndKorean = songRepository.findSongBySingerLikeOriginOrKoreanOrRead(keyword);
         return songBySingerLikeOriginAndKorean.stream().map(SongSearchDto::from).toList();
+    }
+
+    private List<SongSearchDto> additionalInfoSearch(String keyword) {
+        return songRepository.findSongByInfoLikeOriginOrKoreanOrAliases(keyword).stream()
+                .map(SongSearchDto::from)
+                .toList();
     }
 
 }

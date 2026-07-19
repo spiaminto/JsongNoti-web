@@ -1,9 +1,13 @@
 #CUSTOM
 application-*.properties
 .Memo/**
+_ai-workflow/**
+_migration/**
+_legacy-ui/**
 src/main/resources/static/assets/**
 src/main/resources/templates/privacy/**
 src/main/resources/templates/terms/**
+docs
 
 
 HELP.md

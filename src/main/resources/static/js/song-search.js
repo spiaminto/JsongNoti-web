@@ -6,11 +6,14 @@ $(function () {
     $("#songSearchForm input[name='searchType']").on('change', function () {
         let searchType = $("#songSearchForm input[name='searchType']:checked").val();
         if (searchType === 'SINGER') {
-            $('#searchHintContainer').find('.singer-hint').show().end().find('.title-hint').hide();
-            $('#searchSongInput').attr('placeholder', '아티스트명 입력 (최소 2자)');
+            $('#searchHintContainer').find('.singer-hint').show().end().find('.title-hint, .info-hint').hide();
+            $('#searchSongInput').attr('placeholder', '아티스트명 입력 (최소 2자)').attr('aria-label', '아티스트명 입력');
+        } else if (searchType === 'INFO') {
+            $('#searchHintContainer').find('.info-hint').show().end().find('.title-hint, .singer-hint').hide();
+            $('#searchSongInput').attr('placeholder', '작품명 또는 정보 입력 (최소 2자)').attr('aria-label', '작품명 또는 정보 입력');
         } else if (searchType === 'TITLE') {
-            $('#searchHintContainer').find('.title-hint').show().end().find('.singer-hint').hide();
-            $('#searchSongInput').attr('placeholder', '노래제목 입력 (최소 2자)');
+            $('#searchHintContainer').find('.title-hint').show().end().find('.singer-hint, .info-hint').hide();
+            $('#searchSongInput').attr('placeholder', '노래제목 입력 (최소 2자)').attr('aria-label', '노래제목 입력');
         }
 
     })
@@ -40,8 +43,8 @@ $(function () {
                 additionalSearch: isAdditionalSearch
             },
             success: function (data) {
-                let searchResults = data.songs;
-                songSearchPostProcess(searchResults);
+                let searchResults = data.songs || [];
+                songSearchPostProcess(searchResults, data.message);
             },
             error: function (xhr) {
                 // console.log(xhr);
@@ -54,11 +57,19 @@ $(function () {
     /**
      * 노래 검색 결과 후처리
      * @param data 서버에서 받은 Song 리스트
+     * @param message 사용자 안내 메시지
      */
-    function songSearchPostProcess(data) {
+    function songSearchPostProcess(data, message) {
         // 기존 검색 결과 초기화
         let $songSearchResultTableBody = $('#songSearchResultTableBody');
         $songSearchResultTableBody.empty();
+
+        let $songSearchMessage = $('#songSearchMessage');
+        if (message) {
+            $songSearchMessage.text(message).removeClass('d-none');
+        } else {
+            $songSearchMessage.text('').addClass('d-none');
+        }
 
         // 새로운 검색결과 테이블 생성 및 채우기
         let songTable = SongTableUtil.renderEmptySongTable(data);
@@ -88,10 +99,16 @@ $(function () {
 
         // 클릭한 노래의 정보를 폼에 입력
         let songRow = $(this).closest('tr');
+        let songTitle = songRow.find('.song-title-text rb').text() || songRow.find('.song-title-text').text();
+        let songInfo = songRow.find('.song-info').attr('data-info-original') || '';
+        let songInfoKorean = songRow.find('.song-info').attr('data-info-korean') || '';
         favoriteSongAddForm.find('.song-number span').text(songRow.find('.song-number span').text());
-        favoriteSongAddForm.find('.song-title-text').text(songRow.find('.song-title-text').text());
-        favoriteSongAddForm.find('.song-info-text').text(songRow.find('.song-info span').text());
+        favoriteSongAddForm.find('.song-title-text').text(songTitle);
+        favoriteSongAddForm.find('.song-info-text').text(songInfo);
         favoriteSongAddForm.find('.song-singer').text(songRow.find('.song-singer').text());
+        favoriteSongAddForm.attr('data-info-original', songInfo);
+        favoriteSongAddForm.attr('data-info-korean', songInfoKorean);
+        $('#useDefaultInfoTextCheck').trigger('change');
 
         // 폼 data 에 songId, brand 저장
         let brand = $('#songSearchForm input[name=brand]:checked').val()
@@ -113,7 +130,9 @@ $(function () {
             if (!$('#addInfoTextCollapse').hasClass('show')) {
                 $('#addInfoTextCollapseButton').click();
             }
-            $('#addInfoTextInput').focus();
+            if (!$('#useDefaultInfoTextCheck').is(':checked')) {
+                $('#addInfoTextInput').focus();
+            }
             // 입력폼 하이라이트
             CommonUtil.blinkElement($('.add-song-row'), $('.add-song-row').css('background'));
         });

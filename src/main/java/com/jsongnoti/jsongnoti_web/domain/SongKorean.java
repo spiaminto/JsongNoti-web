@@ -1,5 +1,6 @@
 package com.jsongnoti.jsongnoti_web.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -34,6 +35,12 @@ public class SongKorean {
     private String singerOrigin;
     private String singerRead;
     private String singerPrior;
+
+    @Column(length = 255)
+    private String info;
+
+    @Column(name = "info_aliases", length = 255)
+    private String infoAliases;
 
     private String model;
 

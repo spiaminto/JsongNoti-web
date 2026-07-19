@@ -26,7 +26,22 @@ class SongTableUtil {
                     .append($('<rt>').text(song.titleKorean && jpRangeRegex.test(song.title) ? song.titleKorean : ''))
                     .append($('<rp>').text(')'))
             )
-            row.find('.song-info span').text(song.info || '');
+            let songInfo = song.info || '';
+            let songInfoContainer = row.find('.song-info');
+            let songInfoText = songInfoContainer.find('span');
+            songInfoContainer.attr('data-info-original', songInfo);
+            songInfoContainer.attr('data-info-korean', song.infoKorean || '');
+            if (song.infoKorean) {
+                songInfoText.empty().append(
+                    $('<ruby>')
+                        .append($('<rb>').text(songInfo))
+                        .append($('<rp>').text('('))
+                        .append($('<rt>').text(song.infoKorean))
+                        .append($('<rp>').text(')'))
+                );
+            } else {
+                songInfoText.text(songInfo);
+            }
             row.find('.song-singer').text(song.singer);
             firstRow.before(row); // after 가 아닌 before 로 붙여야 순서가 맞음
         });

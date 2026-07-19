@@ -17,6 +17,7 @@ public class FavoriteSongWithKoreanDto {
     private String singerKorean;
 
     private String info;
+    private String infoKorean;
     private int presentOrder; // 표시순서, start from 0
 
 }

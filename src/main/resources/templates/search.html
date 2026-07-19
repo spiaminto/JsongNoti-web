@@ -131,6 +131,9 @@
       <p><em class="text-muted title-hint">
         <b>검색 예시</b> : 青と夏, 푸름과 여름, 파랑과 여름, 아오토나츠
       </em></p>
+      <p><em class="text-muted info-hint">
+        <b>검색 예시</b> : 불꽃 소방대, 원펀맨, BanG Dream!
+      </em></p>
     </div>
     <div class="song-search-container mt-2">
       <!--노래 검색 폼-->
@@ -153,6 +156,10 @@
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="radio" name="searchType" id="searchTypeArtist" value="SINGER">
             <label class="form-check-label" for="searchTypeArtist">아티스트명</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="searchType" id="searchTypeInfo" value="INFO">
+            <label class="form-check-label" for="searchTypeInfo">작품명/정보</label>
           </div>
         </div>
         <div class="input-group justify-content-center">
@@ -181,6 +188,7 @@
             <div class="song-search-result-header text-center">
               한글 표시는 참고용으로, 정확하지 않습니다.
             </div>
+            <div id="songSearchMessage" class="alert alert-info d-none mx-2 mt-2 mb-0" role="status" aria-live="polite"></div>
             <div class="song-table-border mt-2">
               <table class="table-hover song-table" id="songSearchResultTable">
                 <thead>
