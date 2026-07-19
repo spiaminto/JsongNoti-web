@@ -4,6 +4,12 @@ application-*.properties
 _ai-workflow/**
 _migration/**
 _legacy-ui/**
+.codex/
+AGENTS.md
+buildNumber.txt
+debug.log
+src/main/java/com/jsongnoti/jsongnoti_web/repository/SongRepositoryPostgres.java
+src/test/
 src/main/resources/static/assets/**
 src/main/resources/templates/privacy/**
 src/main/resources/templates/terms/**
