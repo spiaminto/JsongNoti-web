@@ -6,6 +6,7 @@ import com.jsongnoti.jsongnoti_web.repository.SongRepository;
 import com.jsongnoti.jsongnoti_web.repository.SongSearchResultDto;
 import com.jsongnoti.jsongnoti_web.service.dto.SongSearchCond;
 import com.jsongnoti.jsongnoti_web.service.dto.SongSearchDto;
+import com.jsongnoti.jsongnoti_web.service.result.SongSearchGroupResult;
 import com.jsongnoti.jsongnoti_web.service.result.SongSearchResult;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.Test;
@@ -16,9 +17,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -98,6 +102,92 @@ class SongSearchServiceTest {
                 .containsExactly(1L);
     }
 
+    @Test
+    void unifiedSearchOrdersStrongMatchThenSimilarityAndKeepsDuplicatesBetweenGroups() {
+        SongSearchResultDto duplicatedTitle = song(1L, Brand.TJ, "炎炎ノ消防隊 OP", "불꽃 소방대 OP", 75, null, null);
+        SongSearchResultDto singerOne = song(2L, Brand.TJ, "", null, 60, null, null);
+        SongSearchResultDto singerTwo = song(3L, Brand.TJ, "", null, 55, null, null);
+        SongSearchResultDto exactInfoAlias = song(1L, Brand.TJ, "炎炎ノ消防隊 OP", "불꽃 소방대 OP", null, "불꽃소방대, 불꽃 소방대", null);
+
+        when(songRepository.findSongByKoreanTitleSimilar("불꽃 소방대")).thenReturn(List.of(duplicatedTitle));
+        when(songRepository.findSongByKoreanSingerSimilar("불꽃 소방대")).thenReturn(List.of(singerOne, singerTwo));
+        when(songRepository.findSongByInfoAliases("불꽃 소방대")).thenReturn(List.of(exactInfoAlias));
+
+        SongSearchCond searchCond = new SongSearchCond(SongSearchType.UNIFIED, "불꽃 소방대", Brand.TJ, false);
+
+        SongSearchResult result = songSearchService.searchSongs(searchCond);
+
+        assertThat(result.getSongSearchGroupResults())
+                .extracting(SongSearchGroupResult::getSearchType)
+                .containsExactly(SongSearchType.INFO, SongSearchType.TITLE, SongSearchType.SINGER);
+        assertThat(result.getSongSearchGroupResults().get(0).getSongSearchDtos())
+                .extracting(SongSearchDto::getId)
+                .containsExactly(1L);
+        assertThat(result.getSongSearchGroupResults().get(1).getSongSearchDtos())
+                .extracting(SongSearchDto::getId)
+                .containsExactly(1L);
+    }
+
+    @Test
+    void unifiedSearchWithoutHighSimilarityOrdersGroupsByResultCount() {
+        SongSearchResultDto title = song(1L, Brand.TJ, "", null, 60, null, null);
+        SongSearchResultDto singerOne = song(2L, Brand.TJ, "", null, 60, null, null);
+        SongSearchResultDto singerTwo = song(3L, Brand.TJ, "", null, 55, null, null);
+        when(songRepository.findSongByTitleSimilar("keyword")).thenReturn(List.of(title));
+        when(songRepository.findSongBySingerSimilar("keyword")).thenReturn(List.of(singerOne, singerTwo));
+
+        SongSearchResult result = songSearchService.searchSongs(
+                new SongSearchCond(SongSearchType.UNIFIED, "keyword", Brand.TJ, false)
+        );
+
+        assertThat(result.getSongSearchGroupResults())
+                .extracting(SongSearchGroupResult::getSearchType)
+                .containsExactly(SongSearchType.SINGER, SongSearchType.TITLE, SongSearchType.INFO);
+    }
+
+    @Test
+    void unifiedSearchLimitsEachGroupToFiftyAfterCountingAllResults() {
+        List<SongSearchResultDto> titleResults = IntStream.rangeClosed(1, 55)
+                .mapToObj(id -> song((long) id, Brand.TJ, "", null, 60, null, null))
+                .toList();
+        when(songRepository.findSongByTitleSimilar("keyword")).thenReturn(titleResults);
+
+        SongSearchResult result = songSearchService.searchSongs(
+                new SongSearchCond(SongSearchType.UNIFIED, "keyword", Brand.TJ, false)
+        );
+
+        SongSearchGroupResult titleGroup = result.getSongSearchGroupResults().stream()
+                .filter(group -> group.getSearchType() == SongSearchType.TITLE)
+                .findFirst()
+                .orElseThrow();
+        assertThat(titleGroup.getTotalCount()).isEqualTo(55);
+        assertThat(titleGroup.getSongSearchDtos()).hasSize(50);
+    }
+
+    @Test
+    void unifiedRoleOnlyKeywordSkipsOnlyInfoSearch() {
+        SongSearchResult result = songSearchService.searchSongs(
+                new SongSearchCond(SongSearchType.UNIFIED, "OP", Brand.TJ, false)
+        );
+
+        SongSearchGroupResult infoGroup = result.getSongSearchGroupResults().stream()
+                .filter(group -> group.getSearchType() == SongSearchType.INFO)
+                .findFirst()
+                .orElseThrow();
+        assertThat(infoGroup.getMessage()).isEqualTo("작품명을 함께 입력해주세요. 예: 원피스 OP");
+        assertThat(infoGroup.getSongSearchDtos()).isEmpty();
+        verify(songRepository).findSongByTitleSimilar("OP");
+        verify(songRepository).findSongBySingerPrior("OP");
+        verify(songRepository).findSongBySingerSimilar("OP");
+        verifyNoInteractionsWithInfoSearch();
+    }
+
+    private void verifyNoInteractionsWithInfoSearch() {
+        verify(songRepository, never()).findSongByInfoAliases(anyString());
+        verify(songRepository, never()).findSongByKoreanInfoSimilar(anyString());
+        verify(songRepository, never()).findSongByInfoSimilar(anyString());
+    }
+
     private SongSearchResultDto song(Long id, Brand brand, String info, String infoKorean) {
         SongSearchResultDto song = mock(SongSearchResultDto.class);
         when(song.getId()).thenReturn(id);
@@ -108,6 +198,21 @@ class SongSearchServiceTest {
         when(song.getInfo()).thenReturn(info);
         when(song.getTitleKorean()).thenReturn("한글 제목 " + id);
         when(song.getInfoKorean()).thenReturn(infoKorean);
+        return song;
+    }
+
+    private SongSearchResultDto song(Long id, Brand brand, String info, String infoKorean,
+                                     Integer similarity, String infoAliases, String singerPrior) {
+        SongSearchResultDto song = song(id, brand, info, infoKorean);
+        if (similarity != null) {
+            when(song.getSimilarity()).thenReturn(similarity);
+        }
+        if (infoAliases != null) {
+            when(song.getInfoAliases()).thenReturn(infoAliases);
+        }
+        if (singerPrior != null) {
+            when(song.getSingerPrior()).thenReturn(singerPrior);
+        }
         return song;
     }
 

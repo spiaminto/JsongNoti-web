@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum SongSearchType {
+    UNIFIED("unified"),
     TITLE("title"),
     SINGER("singer"),
     INFO("info");

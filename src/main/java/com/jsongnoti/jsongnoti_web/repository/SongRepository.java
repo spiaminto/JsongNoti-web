@@ -79,7 +79,8 @@ public interface SongRepository extends JpaRepository<Song, Long> {
 
     @Query(value = """
             SELECT s.id, s.brand, s.song_number, s.title, s.singer, s.info,
-                   sk.title as title_korean, sk.info as info_korean
+                   sk.title as title_korean, sk.info as info_korean,
+                   sk.singer_prior as singer_prior
             FROM song s
                 JOIN song_korean sk ON s.id = sk.song_id
             WHERE sk.singer_prior LIKE '%' || :keyword || '%'
@@ -154,7 +155,8 @@ public interface SongRepository extends JpaRepository<Song, Long> {
 
     @Query(value = """
             SELECT s.id, s.brand, s.song_number, s.title, s.singer, s.info,
-                   sk.title as title_korean, sk.info as info_korean
+                   sk.title as title_korean, sk.info as info_korean,
+                   sk.info_aliases as info_aliases
             FROM song s
                 JOIN song_korean sk ON s.id = sk.song_id
             WHERE sk.info_aliases IS NOT NULL

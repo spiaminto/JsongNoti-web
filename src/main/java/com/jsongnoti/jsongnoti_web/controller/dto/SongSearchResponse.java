@@ -11,4 +11,5 @@ public class SongSearchResponse {
 
     private String message;
     private List<SongSearchDto> songs;
+    private List<SongSearchGroupResponse> groups;
 }
