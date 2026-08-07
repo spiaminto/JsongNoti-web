@@ -38,13 +38,16 @@ public interface SongRepository extends JpaRepository<Song, Long> {
 
 
     // 원어 검색 =========================================================================================
+    // 유사도 검색 정규화: 표시용 컬럼에는 기호를 유지하고, FUZZY_MATCH 비교 시점에만 양쪽에서
+    // REGEXP_REPLACE(LOWER(x), '[^[:alnum:]]', '') 로 문자·숫자만 남김 (기호·공백 제거, 한글·가나·한자 유지)
+    // 규칙 변경 시 아래 FUZZY_MATCH 쿼리 전체를 함께 수정할 것
 
     @Query(value = """
                 WITH song_fuzzy_matches AS (
                     SELECT s.*,
-                           GREATEST(
-                                   FUZZY_MATCH(LEVENSHTEIN, s.TITLE, :keyword),
-                                   FUZZY_MATCH(LEVENSHTEIN, s.TITLE, UPPER(:keyword))
+                           FUZZY_MATCH(LEVENSHTEIN,
+                                   REGEXP_REPLACE(LOWER(s.TITLE), '[^[:alnum:]]', ''),
+                                   REGEXP_REPLACE(LOWER(:keyword), '[^[:alnum:]]', '')
                            ) as similarity
                     FROM SONG s
                 )
@@ -52,7 +55,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
                        sk.title as title_korean, sk.info as info_korean
                 FROM SONG_KOREAN sk
                          JOIN song_fuzzy_matches s ON s.id = sk.song_id
-                where s.similarity >= 40
+                where s.similarity >= 45
                 ORDER BY s.similarity DESC
             """, nativeQuery = true)
     List<SongSearchResultDto> findSongByTitleSimilar(String keyword);
@@ -60,9 +63,9 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     @Query(value = """
                 WITH song_fuzzy_matches AS (
                     SELECT s.*,
-                           GREATEST(
-                                   FUZZY_MATCH(LEVENSHTEIN, s.SINGER, :keyword),
-                                   FUZZY_MATCH(LEVENSHTEIN, s.SINGER, UPPER(:keyword))
+                           FUZZY_MATCH(LEVENSHTEIN,
+                                   REGEXP_REPLACE(LOWER(s.SINGER), '[^[:alnum:]]', ''),
+                                   REGEXP_REPLACE(LOWER(:keyword), '[^[:alnum:]]', '')
                            ) as similarity
                     FROM SONG s
                 )
@@ -70,7 +73,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
                        sk.title as title_korean, sk.info as info_korean
                 FROM SONG_KOREAN sk
                          JOIN song_fuzzy_matches s ON s.id = sk.song_id
-                where s.similarity >= 40
+                where s.similarity >= 45
                 ORDER BY s.similarity DESC
             """, nativeQuery = true)
     List<SongSearchResultDto> findSongBySingerSimilar(String keyword);
@@ -93,14 +96,17 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     @Query(value = """
             WITH song_korean_fuzzy_matches AS (
                 SELECT sk.song_id, sk.title, sk.info,
-                       FUZZY_MATCH(LEVENSHTEIN, SK.TITLE, :keyword) as similarity
+                       FUZZY_MATCH(LEVENSHTEIN,
+                               REGEXP_REPLACE(LOWER(SK.TITLE), '[^[:alnum:]]', ''),
+                               REGEXP_REPLACE(LOWER(:keyword), '[^[:alnum:]]', '')
+                       ) as similarity
                 FROM SONG_KOREAN sk
             )
             SELECT s.id, s.brand, s.song_number, s.title, s.SINGER, s.INFO,
                    sk.title as title_korean, sk.info as info_korean, sk.similarity
             FROM SONG s
                      JOIN song_korean_fuzzy_matches sk ON s.id = sk.song_id
-            WHERE sk.similarity >= 40
+            WHERE sk.similarity >= 45
             ORDER BY sk.similarity DESC
             """, nativeQuery = true)
     List<SongSearchResultDto> findSongByKoreanTitleSimilar(String keyword);
@@ -109,7 +115,10 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     @Query(value = """
             WITH song_korean_fuzzy_matches AS (
                 SELECT sk.song_id, sk.title, sk.info,
-                       FUZZY_MATCH(LEVENSHTEIN, SK.TITLE_READ, :keyword) as similarity
+                       FUZZY_MATCH(LEVENSHTEIN,
+                               REGEXP_REPLACE(LOWER(SK.TITLE_READ), '[^[:alnum:]]', ''),
+                               REGEXP_REPLACE(LOWER(:keyword), '[^[:alnum:]]', '')
+                       ) as similarity
                 FROM SONG_KOREAN sk
             )
             SELECT s.id, s.brand, s.song_number, s.title, s.SINGER, s.INFO,
@@ -124,14 +133,17 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     @Query(value = """
             WITH song_korean_fuzzy_matches AS (
                 SELECT sk.song_id, sk.title, sk.info,
-                       FUZZY_MATCH(LEVENSHTEIN, SK.SINGER, :keyword) as similarity
+                       FUZZY_MATCH(LEVENSHTEIN,
+                               REGEXP_REPLACE(LOWER(SK.SINGER), '[^[:alnum:]]', ''),
+                               REGEXP_REPLACE(LOWER(:keyword), '[^[:alnum:]]', '')
+                       ) as similarity
                 FROM SONG_KOREAN sk
             )
             SELECT s.id, s.brand, s.song_number, s.title, s.SINGER, s.INFO,
                    sk.title as title_korean, sk.info as info_korean, sk.similarity
             FROM SONG s
                      JOIN song_korean_fuzzy_matches sk ON s.id = sk.song_id
-            where sk.similarity >= 40
+            where sk.similarity >= 45
             ORDER BY sk.similarity DESC
             """, nativeQuery = true)
     List<SongSearchResultDto> findSongByKoreanSingerSimilar(String keyword);
@@ -139,7 +151,10 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     @Query(value = """
             WITH song_korean_fuzzy_matches AS (
                 SELECT sk.song_id, sk.title, sk.info,
-                       FUZZY_MATCH(LEVENSHTEIN, SK.SINGER_READ, :keyword) as similarity
+                       FUZZY_MATCH(LEVENSHTEIN,
+                               REGEXP_REPLACE(LOWER(SK.SINGER_READ), '[^[:alnum:]]', ''),
+                               REGEXP_REPLACE(LOWER(:keyword), '[^[:alnum:]]', '')
+                       ) as similarity
                 FROM SONG_KOREAN sk
             )
             SELECT s.id, s.brand, s.song_number, s.title, s.SINGER, s.INFO,
@@ -175,9 +190,9 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     @Query(value = """
             WITH song_korean_info_fuzzy_matches AS (
                 SELECT sk.song_id, sk.title, sk.info,
-                       GREATEST(
-                               FUZZY_MATCH(LEVENSHTEIN, sk.info, :keyword),
-                               FUZZY_MATCH(LEVENSHTEIN, sk.info, UPPER(:keyword))
+                       FUZZY_MATCH(LEVENSHTEIN,
+                               REGEXP_REPLACE(LOWER(sk.info), '[^[:alnum:]]', ''),
+                               REGEXP_REPLACE(LOWER(:keyword), '[^[:alnum:]]', '')
                        ) as similarity
                 FROM song_korean sk
                 WHERE sk.info IS NOT NULL
@@ -186,7 +201,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
                    sk.title as title_korean, sk.info as info_korean, sk.similarity
             FROM song s
                 JOIN song_korean_info_fuzzy_matches sk ON s.id = sk.song_id
-            WHERE sk.similarity >= 40
+            WHERE sk.similarity >= 45
             ORDER BY sk.similarity DESC
             """, nativeQuery = true)
     List<SongSearchResultDto> findSongByKoreanInfoSimilar(String keyword);
@@ -194,9 +209,9 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     @Query(value = """
             WITH song_info_fuzzy_matches AS (
                 SELECT s.*,
-                       GREATEST(
-                               FUZZY_MATCH(LEVENSHTEIN, s.info, :keyword),
-                               FUZZY_MATCH(LEVENSHTEIN, s.info, UPPER(:keyword))
+                       FUZZY_MATCH(LEVENSHTEIN,
+                               REGEXP_REPLACE(LOWER(s.info), '[^[:alnum:]]', ''),
+                               REGEXP_REPLACE(LOWER(:keyword), '[^[:alnum:]]', '')
                        ) as similarity
                 FROM song s
                 WHERE s.info IS NOT NULL
@@ -205,7 +220,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
                    sk.title as title_korean, sk.info as info_korean
             FROM song_korean sk
                 JOIN song_info_fuzzy_matches s ON s.id = sk.song_id
-            WHERE s.similarity >= 40
+            WHERE s.similarity >= 45
             ORDER BY s.similarity DESC
             """, nativeQuery = true)
     List<SongSearchResultDto> findSongByInfoSimilar(String keyword);
