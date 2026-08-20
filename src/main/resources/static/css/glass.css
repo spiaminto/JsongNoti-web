@@ -1,0 +1,513 @@
+/* ==========================================================================
+   glass.css — 글래스모피즘 foundation
+   기준 시안: static/design-preview/11-1-liquid-glass-fluid.html ("오전 10시의 빛")
+
+   이 파일이 담당하는 것:
+     1) 디자인 토큰(:root)과 NanumSquareRound 웹폰트 weight 매핑
+     2) 유리 표면(.glass)과 Bootstrap 컴포넌트(.btn, .form-control, .modal 등)의
+        시각 오버라이드 — 동작(JS)은 Bootstrap 그대로 두고 겉만 바꾼다
+     3) 배경 연출: 햇살(.sky/.ray), 보케(.bokeh)
+     4) 모션 어휘: 로드 시퀀스(.veil), 스크롤 리빌([data-lift]), 반사광(.sheen)
+     5) 접근성: reduced-motion / reduced-transparency / contrast 대응
+
+   레이아웃과 페이지 구성은 다루지 않는다 (containers.css, page/*.css 담당).
+   Bootstrap CSS 뒤, 다른 커스텀 CSS 앞에 로드해야 한다.
+   ========================================================================== */
+
+/* ---------- 웹폰트: self-host + 가짜 굵기 교정 ----------
+   pstatic 원본 CSS 는 굵기를 별도 family 이름(L/R/B/EB)으로만 제공해
+   font-weight 지정 시 브라우저 합성 굵기가 표시되던 문제를,
+   같은 파일을 weight 300/400/700/800 에 매핑해 해결한다.
+   파일은 /static/fonts/ 에 self-host — 브라우저 추적 방지가
+   pstatic.net 을 차단해 폰트가 아예 안 뜨던 문제까지 함께 해결. */
+@font-face {
+    font-family: 'NanumSquareRound';
+    font-weight: 300;
+    font-display: swap;
+    src: url(../fonts/NanumSquareRoundL.woff2) format("woff2");
+}
+
+@font-face {
+    font-family: 'NanumSquareRound';
+    font-weight: 400;
+    font-display: swap;
+    src: url(../fonts/NanumSquareRoundR.woff2) format("woff2");
+}
+
+@font-face {
+    font-family: 'NanumSquareRound';
+    font-weight: 700;
+    font-display: swap;
+    src: url(../fonts/NanumSquareRoundB.woff2) format("woff2");
+}
+
+@font-face {
+    font-family: 'NanumSquareRound';
+    font-weight: 800;
+    font-display: swap;
+    src: url(../fonts/NanumSquareRoundEB.woff2) format("woff2");
+}
+
+/* ---------- 디자인 토큰 ---------- */
+:root {
+    /* 잉크(글자) 3단계 */
+    --ink: #1b232b;
+    --ink-2: #45515c;
+    --ink-3: #8792a0;
+
+    /* 바탕과 유리 표면 */
+    --bg: #eaf0f4;
+    --glass-bg: rgb(255 255 255 / .52);
+    --glass-bg-strong: rgb(255 255 255 / .66);
+    --glass-border: rgb(255 255 255 / .72);
+    --glass-shadow: 0 24px 60px rgb(30 42 56 / .12);
+
+    /* 햇살 색 (rgb 채널값 — rgb(var(--sun) / a) 형태로 사용) */
+    --sun: 255 240 205;
+
+    /* 서비스 브랜드: TJ·금영 식별색을 유리에 맞춘 tint + 어두운 잉크 */
+    --tj-tint: rgb(249 80 1 / .14);
+    --tj-ink: #933a05;
+    --ky-tint: rgb(100 149 237 / .18);
+    --ky-ink: #2f5495;
+
+    /* 추가일 badge·최신곡 highlight 공용 */
+    --badge-tint: rgb(255 200 120 / .30);
+    --badge-ink: #7a5210;
+
+    /* 위험 동작(구독취소·탈퇴) */
+    --danger-tint: rgb(255 122 96 / .18);
+    --danger-ink: #a03015;
+
+    --ease-float: cubic-bezier(.22, .8, .3, 1);
+}
+
+/* ---------- 전역 베이스 ---------- */
+/* overflow-x 는 html 에도 걸어야 한다. body 에만 걸면 절대배치 요소(보케·햇살)가
+   뷰포트 가로 스크롤을 만든다 (시안 모바일 검증에서 확인된 결함) */
+html {
+    overflow-x: clip;
+    /* body 그라디언트가 끝나는 지점(짧은 페이지·overscroll)에서도 바탕색이 이어지도록 */
+    background: #e4ebf1;
+    /* 스크롤바 자리를 상시 확보 — 모달이 스크롤을 잠가도 레이아웃이 밀리지 않는다 */
+    scrollbar-gutter: stable;
+}
+
+/* 오전 10시의 빛: 좌상단 해 + 곳곳의 빛 웅덩이. 시안 값 그대로 */
+body {
+    color: var(--ink);
+    background:
+        radial-gradient(900px 600px at 12% -4%, rgb(var(--sun) / .55), transparent 62%),
+        radial-gradient(1100px 800px at 88% 12%, rgb(205 226 244 / .6), transparent 60%),
+        radial-gradient(800px 620px at 76% 38%, rgb(186 212 240 / .5), transparent 62%),
+        radial-gradient(700px 560px at 10% 52%, rgb(var(--sun) / .34), transparent 60%),
+        radial-gradient(900px 700px at 30% 68%, rgb(255 255 255 / .75), transparent 65%),
+        radial-gradient(850px 680px at 88% 82%, rgb(196 220 238 / .5), transparent 62%),
+        radial-gradient(700px 550px at 22% 94%, rgb(var(--sun) / .26), transparent 60%),
+        linear-gradient(180deg, #edf2f6 0%, var(--bg) 45%, #e4ebf1 100%);
+    min-height: 100vh;
+    /* overflow-x 는 html 의 clip 하나로 처리한다. body 에도 걸면 html 이
+       clip 인 상태에서는 body 가 자기만의 스크롤 컨테이너가 되어
+       창 스크롤바와 별개의 내부 스크롤바가 하나 더 생긴다 */
+}
+
+/* 키보드 포커스는 유리 위에서도 명확하게 */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid rgb(100 149 237 / .55);
+    outline-offset: 2px;
+}
+
+/* ---------- 유리 표면 ---------- */
+.glass {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    backdrop-filter: blur(22px) saturate(160%);
+    border: 1px solid var(--glass-border);
+    border-radius: 28px;
+    box-shadow:
+        var(--glass-shadow),
+        inset 0 1px 0 rgb(255 255 255 / .85),
+        inset 0 -1px 0 rgb(255 255 255 / .25);
+}
+
+/* ---------- 버튼: Bootstrap .btn 전체를 유리 버튼으로 ----------
+   variant(btn-outline-primary 등) 구분 없이 같은 유리 표면을 쓰고,
+   위험 동작만 danger tint 로 구분한다. press 는 pointer-down 즉시 반응 */
+.btn,
+.glass-btn {
+    display: inline-block;
+    font-weight: 800;
+    color: var(--ink);
+    background: var(--glass-bg-strong);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    text-decoration: none;
+    box-shadow: 0 10px 26px rgb(30 42 56 / .12), inset 0 1px 0 rgb(255 255 255 / .9);
+    transition: transform .35s var(--ease-float), box-shadow .35s, background .35s, color .35s;
+}
+
+.btn:hover,
+.glass-btn:hover {
+    color: var(--ink);
+    transform: translateY(-2px);
+    background: rgb(255 255 255 / .8);
+    border-color: var(--glass-border);
+    box-shadow: 0 16px 34px rgb(30 42 56 / .16), inset 0 1px 0 rgb(255 255 255 / .95);
+}
+
+/* hover 의 느린 전환 대신 즉시 줄어드는 press 피드백 */
+.btn:active,
+.glass-btn:active {
+    color: var(--ink);
+    background: var(--glass-bg-strong);
+    border-color: var(--glass-border);
+    transform: scale(.965);
+    transition: transform .08s ease-out;
+}
+
+.btn:disabled {
+    color: var(--ink-3);
+    background: rgb(255 255 255 / .4);
+    border-color: rgb(255 255 255 / .5);
+    box-shadow: none;
+}
+
+/* Bootstrap 없이 단독으로 쓰는 유리 버튼(.glass-btn)의 크기.
+   .btn 쪽에 넣으면 btn-lg/btn-sm 의 크기 체계를 덮어쓰므로 여기서만 준다 */
+.glass-btn {
+    padding: .7rem 1.4rem;
+}
+
+/* 위험 동작(구독취소·탈퇴·삭제)만 붉은 tint 로 구분. 테두리도 같은 계열로 흐리게 */
+.btn-danger,
+.btn-outline-danger {
+    color: var(--danger-ink);
+    background: var(--danger-tint);
+    border-color: rgb(255 170 150 / .55);
+}
+
+.btn-danger:hover,
+.btn-outline-danger:hover {
+    color: var(--danger-ink);
+    background: rgb(255 190 175 / .45);
+    border-color: rgb(255 170 150 / .7);
+}
+
+.btn-danger:active,
+.btn-outline-danger:active {
+    color: var(--danger-ink);
+    background: var(--danger-tint);
+    border-color: rgb(255 170 150 / .55);
+}
+
+/* ---------- 입력: Bootstrap .form-control 을 유리 입력창으로 ---------- */
+.form-control {
+    color: var(--ink);
+    background: rgb(255 255 255 / .55);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: inset 0 1px 3px rgb(30 42 56 / .06);
+}
+
+.form-control:focus {
+    color: var(--ink);
+    background: rgb(255 255 255 / .78);
+    border-color: rgb(100 149 237 / .45);
+    box-shadow: inset 0 1px 3px rgb(30 42 56 / .06);
+}
+
+.form-control::placeholder {
+    color: var(--ink-3);
+}
+
+.form-check-input {
+    accent-color: #6d7d8d;
+}
+
+.form-check-input:checked {
+    background-color: #6d7d8d;
+    border-color: #6d7d8d;
+}
+
+/* 입력창과 버튼을 유리답게 띄워 배치 (Bootstrap 이 모서리를 붙이는 것을 되돌림) */
+.input-group {
+    gap: .55rem;
+}
+
+.input-group > .form-control,
+.input-group > .btn {
+    border-radius: 16px !important; /* Bootstrap 의 first/last-child 모서리 제거 규칙보다 우선 */
+}
+
+/* ---------- 모달: 유리 판 + 흐려지는 배경 ---------- */
+.modal-content {
+    background: rgb(255 255 255 / .82);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    backdrop-filter: blur(22px) saturate(160%);
+    border: 1px solid var(--glass-border);
+    border-radius: 28px;
+    box-shadow: var(--glass-shadow), inset 0 1px 0 rgb(255 255 255 / .85);
+}
+
+.modal-header,
+.modal-footer {
+    border-color: rgb(140 160 180 / .25);
+}
+
+/* 모달 뒤 페이지를 어둡게만 하지 않고 실제로 흐린다 */
+.modal-backdrop {
+    --bs-backdrop-bg: #2a3947;
+    --bs-backdrop-opacity: .4;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+}
+
+/* 모달이 열릴 때 화면이 옆으로 밀리는 것 방지.
+   Bootstrap 은 스크롤바를 없애며 body 에 padding-right 를 인라인으로 넣어
+   보정하는데, 위의 scrollbar-gutter: stable 이 이미 자리를 확보하므로
+   그 보정이 오히려 콘텐츠를 왼쪽으로 민다 — 무효화한다 (인라인보다 우선하도록 !important) */
+body.modal-open {
+    padding-right: 0 !important;
+}
+
+/* 배경 스크롤 잠금은 body 대신 viewport(html)에서 — gutter 가 유지되어 밀림이 없다 */
+html:has(body.modal-open) {
+    overflow-y: hidden;
+}
+
+/* ---------- 그 밖의 Bootstrap 표면 ---------- */
+.card {
+    background: rgb(255 255 255 / .45);
+    border: 1px solid rgb(255 255 255 / .65);
+    border-radius: 20px;
+}
+
+.alert-info {
+    color: var(--ky-ink);
+    background: var(--ky-tint);
+    border: 1px solid rgb(255 255 255 / .6);
+    border-radius: 14px;
+}
+
+/* 추가일 badge·최신곡 highlight 공용 표식 */
+mark,
+.mark {
+    color: var(--badge-ink);
+    background: var(--badge-tint);
+    border-radius: 8px;
+}
+
+/* ---------- 햇살 막대 ----------
+   페이지 최상단에 고정된 자리를 차지하고, 스크롤하면 함께 밀려 올라간다.
+   개별 막대의 위치·폭·불투명도·블러·딜레이는 markup 의 inline 변수로 지정 */
+.sky {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 130vh;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.ray {
+    position: absolute;
+    top: -12vh;
+    left: var(--x);
+    width: var(--w);
+    height: 120vh;
+    transform-origin: top center;
+    transform: rotate(32deg) scaleY(0);
+    background: linear-gradient(180deg,
+        rgb(var(--sun) / 0) 0%,
+        rgb(var(--sun) / var(--a)) 22%,
+        rgb(var(--sun) / calc(var(--a) * .55)) 55%,
+        rgb(var(--sun) / 0) 88%);
+    filter: blur(var(--b));
+    opacity: 0;
+    animation: ray-in 1.4s var(--ease-float) forwards;
+    animation-delay: var(--d);
+    will-change: transform, opacity;
+}
+
+@keyframes ray-in {
+    0% { transform: rotate(32deg) scaleY(0); opacity: 0; }
+    55% { opacity: 1; }
+    100% { transform: rotate(32deg) scaleY(1); opacity: 1; }
+}
+
+/* ---------- 보케 ----------
+   히어로 사진의 조명 방울을 CSS 로 추상화한 잔상. 형태 없는 빛 덩어리라
+   유리 너머로 비쳐도 표 가독성을 해치지 않는다.
+   위치·크기는 glass-motion.js 가 로드마다 랜덤으로 흩뿌린다 */
+.bokeh {
+    position: absolute;
+    inset: -60px 0;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.bokeh i {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--s);
+    height: var(--s);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(var(--c) / var(--o)) 0%, rgb(var(--c) / 0) 68%);
+    filter: blur(6px);
+}
+
+/* ---------- 로드 시퀀스 (딜레이 기반) ----------
+   햇살(CSS 애니메이션) → 상단바 → 히어로 순서.
+   .veil 이 붙은 요소는 숨은 채 시작하고, glass-motion.js 가 .on 을 붙이면
+   inline 변수 --vd 만큼 기다렸다가 떠오른다 */
+.veil {
+    opacity: 0;
+    transform: translateY(22px);
+    filter: blur(14px);
+    transition: opacity 1s var(--ease-float), transform 1s var(--ease-float), filter 1s var(--ease-float);
+    transition-delay: var(--vd, 0s);
+    will-change: transform, opacity, filter;
+}
+
+.veil.on {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+}
+
+/* ---------- 스크롤 리빌: 희미한 유리 → 선명 ----------
+   [data-lift] 요소가 30% 이상 보이면 glass-motion.js 가 .is-lit 을 붙인다 */
+[data-lift] {
+    opacity: .14;
+    transform: translateY(34px) scale(.985);
+    filter: blur(12px);
+    transition: opacity 1.1s var(--ease-float), transform 1.1s var(--ease-float), filter 1.1s var(--ease-float);
+    will-change: transform, opacity, filter;
+}
+
+[data-lift].is-lit {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+}
+
+/* 표의 행은 패널이 떠오른 뒤 위에서부터 순서대로 */
+[data-lift] tbody tr {
+    opacity: 0;
+    transform: translateY(14px);
+}
+
+[data-lift].is-lit tbody tr {
+    animation: row-in .7s var(--ease-float) both;
+}
+
+[data-lift].is-lit tbody tr:nth-child(1) { animation-delay: .25s; }
+[data-lift].is-lit tbody tr:nth-child(2) { animation-delay: .35s; }
+[data-lift].is-lit tbody tr:nth-child(3) { animation-delay: .45s; }
+[data-lift].is-lit tbody tr:nth-child(4) { animation-delay: .55s; }
+[data-lift].is-lit tbody tr:nth-child(5) { animation-delay: .65s; }
+[data-lift].is-lit tbody tr:nth-child(6) { animation-delay: .75s; }
+
+@keyframes row-in {
+    to { opacity: 1; transform: none; }
+}
+
+/* 더보기(컬랩스)로 여는 표는 행 스태거를 끄고 표 전체가 한 번에 떠오른다.
+   행마다 딜레이를 주면 높이 애니메이션(0.5s)이 끝난 뒤에도 1초 넘게
+   행 단위 재페인트가 이어져 버벅임의 원인이 된다 (3턴 피드백).
+   시작 시점은 펼침 시작과 동시 — 컬랩스는 위에서부터 드러나므로
+   먼저 보이는 윗부분이 이미 차올라 있어야 빈 유리판이 보이지 않는다.
+   (뒤 선언이 위의 nth-child 딜레이를 덮도록 이 블록은 스태거 뒤에 둘 것) */
+[data-lift].is-lit .collapse tbody tr,
+[data-lift].is-lit .collapsing tbody tr {
+    animation: none;
+    opacity: 1;
+    transform: none;
+}
+
+[data-lift] .collapsing .song-table,
+[data-lift] .collapse.show .song-table {
+    /* 딜레이 .45s: 판이 거의 다 펼쳐진 다음 내용이 떠오르는 2박자 연출.
+       동시 시작(3턴)은 펼침 클리핑에 모션이 묻혀 보이지 않아 4턴에서 조정 */
+    animation: table-in .5s var(--ease-float) .45s both;
+}
+
+@keyframes table-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+}
+
+/* ---------- 반사광: 포인터를 따라오는 하이라이트 ----------
+   유리가 빛을 받는 재질임을 드러낸다. sheen 이 붙은 유리에 공통 적용.
+   --mx/--my 는 glass-motion.js 가 pointermove 마다 갱신 */
+.sheen {
+    position: relative;
+    overflow: hidden;
+}
+
+.sheen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(300px 220px at var(--mx, 50%) var(--my, -20%),
+        rgb(255 255 255 / .85), transparent 72%);
+    /* soft-light: 유리 면만 밝히고 글자 대비는 유지한다 */
+    mix-blend-mode: soft-light;
+    opacity: 0;
+    transition: opacity .5s;
+    pointer-events: none;
+}
+
+.sheen.lit-by-pointer::after {
+    opacity: 1;
+}
+
+/* ---------- 접근성: 모션·투명도·대비 각각 대응 ---------- */
+/* 모션 최소화: 크로스페이드만 남긴다 */
+@media (prefers-reduced-motion: reduce) {
+    .ray { animation-duration: .01s; animation-delay: 0s; }
+    .veil, [data-lift] { transition: opacity .2s ease; }
+    .veil { opacity: 1; transform: none; filter: none; }
+    [data-lift] { opacity: 1; transform: none; filter: none; }
+    [data-lift] tbody tr { animation: none; opacity: 1; transform: none; }
+    [data-lift] .collapsing .song-table, [data-lift] .collapse.show .song-table { animation: none; }
+    .sheen::after { display: none; }
+    .btn:hover, .glass-btn:hover { transform: none; }
+}
+
+/* 투명도 최소화: 유리를 거의 불투명하게, blur 제거 */
+@media (prefers-reduced-transparency: reduce) {
+    .glass, .glass-btn, .btn, .modal-content {
+        background: rgb(255 255 255 / .95);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+    .form-control {
+        background: #ffffff;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+    .sheen::after { display: none; }
+    .modal-backdrop { -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+
+/* 고대비: 잉크를 진하게, 유리 테두리를 어둡게, 장식 빛은 제거 */
+@media (prefers-contrast: more) {
+    :root {
+        --ink-2: #333f4a;
+        --glass-border: rgb(70 85 100 / .55);
+        --glass-bg: rgb(255 255 255 / .9);
+        --glass-bg-strong: rgb(255 255 255 / .96);
+    }
+    .bokeh { display: none; }
+    .ray { display: none; }
+}

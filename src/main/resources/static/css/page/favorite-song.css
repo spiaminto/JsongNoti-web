@@ -1,18 +1,140 @@
+/* ==========================================================================
+   page/favorite-song.css — 애창곡 페이지 전용
+   글래스모피즘 오버홀: 브랜드별 목록은 유리 패널 2열(.songs-grid),
+   추가 폼·검색은 하나의 유리 패널 섹션.
+   순서변경·삭제의 행 상태 색은 badge(선택)·회색(대상)·danger(삭제) tint 로 통일.
+   ========================================================================== */
 
-
-.expand-for-single-favorite-song { /* .song-container 하나일경우 추가로 붙는 클래스 */
-    width: 100%;
-    max-width: 768px;
-    padding: 0 0.3rem !important;
+/* 보케(.bokeh, absolute)의 기준점 */
+#container {
+    position: relative;
 }
 
-@media (min-width: 992px) {
-    .expand-for-single-favorite-song {
-        padding: 0 0.5rem !important;
+/* ---------- 애창곡 목록 ---------- */
+.favorite-song-section {
+    position: relative;
+    z-index: 1; /* 보케 위로 */
+}
+
+.favorite-song-section-header p {
+    color: var(--ink-2);
+    margin-bottom: 0;
+}
+
+/* 브랜드 하나만 표시할 때: grid 전체 폭을 쓰되 표는 가운데로 */
+.expand-for-single-favorite-song {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: 100%;
+    max-width: 768px;
+}
+
+/* 표 제목 오른쪽의 순서변경·삭제 버튼 묶음 */
+.header-button-wrapper {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    gap: .6rem;
+}
+
+/* 좁은 화면: 가운데 정렬한 제목과 오른쪽 버튼이 겹치므로 제목을 왼쪽으로.
+   들여쓰기 10px 는 아래 표 유리판의 곡선 안쪽과 시작선을 맞추기 위함 */
+@media (max-width: 576px) {
+    .favorite-song-section .song-header-text {
+        justify-content: flex-start;
+        padding-left: 10px;
     }
 }
 
-/* 애창곡 등록 */
+/* 완료 버튼은 작업 시작 전까지 숨김 (JS 가 show/hide) */
+.switch-order-complete-button,
+.delete-favorite-song-complete-button {
+    display: none;
+}
+
+/* 순서변경 안내의 색 견본: 행 상태 색과 짝을 맞춘다 */
+.hint-pick {
+    background: var(--badge-tint);
+    color: var(--badge-ink);
+    border-radius: 6px;
+    padding: .15rem .35rem;
+    font-weight: 800;
+}
+
+.hint-target {
+    background: rgb(140 160 180 / .35);
+    color: var(--ink);
+    border-radius: 6px;
+    padding: .15rem .35rem;
+    font-weight: 800;
+}
+
+/* ---------- 순서변경·삭제 행 상태 ---------- */
+/* 작업 중인 행: 유리 위 빗금 */
+.song-row-switching {
+    background: repeating-linear-gradient(-45deg,
+        rgb(255 255 255 / .55), rgb(255 255 255 / .55) 3px,
+        rgb(255 255 255 / .15) 0, rgb(255 255 255 / .15) 6px);
+}
+
+/* 첫번째 클릭(옮길 곡) */
+.song-row-will-switch-selected {
+    background: var(--badge-tint) none;
+}
+
+/* 두번째 클릭(기준 곡) */
+.song-row-be-switched-selected {
+    background: rgb(140 160 180 / .35) none;
+}
+
+@media (hover: hover) and (pointer: fine) { /* 마우스에서만 호버 */
+    .song-row-will-switch:hover {
+        background: var(--badge-tint) none;
+        cursor: pointer;
+    }
+
+    .song-row-be-switched:hover {
+        background: rgb(140 160 180 / .35) none;
+        cursor: pointer;
+    }
+
+    .song-row-deleting:hover {
+        background: rgb(255 122 96 / .3) none;
+        cursor: pointer;
+    }
+}
+
+.song-row-switched {
+    background: rgb(140 160 180 / .35) none;
+}
+
+/* 삭제 모드의 행: 붉은 빗금 */
+.song-row-deleting {
+    background: repeating-linear-gradient(-45deg,
+        rgb(255 122 96 / .2), rgb(255 122 96 / .2) 3px,
+        rgb(255 255 255 / .2) 0, rgb(255 255 255 / .2) 6px);
+}
+
+/* 순서 설정 모달에서 선택된 행 */
+.selected {
+    background-color: var(--badge-tint);
+}
+
+/* ---------- 애창곡 추가 섹션 (유리 패널) ---------- */
+.add-favorite-song-section {
+    position: relative;
+    z-index: 1;
+    padding: clamp(1.3rem, 3vw, 2rem);
+}
+
+/* 반사광(::after) 위로 내용을 올린다 */
+.add-favorite-song-section > * {
+    position: relative;
+    z-index: 1;
+}
+
 .favorite-song-add-form-container {
     padding: 0 0.3rem;
     max-width: 768px;
@@ -23,15 +145,14 @@
 }
 
 #defaultInfoPreview {
-    border-radius: 10px 0 0 10px;
     font-size: calc(1rem + 0.3vw);
     padding: 0.75rem 1rem;
 }
 
 #favoriteSongAddForm .song-info {
     /* 애창곡 등록시 추가내용 부분 강조 */
-    color: var(--bs-secondary-color);
-    font-size: calc(0.9rem + 0.3vw); /* 원본 calc(0.8rem + 0.3vw) */
+    color: var(--ink-2);
+    font-size: calc(0.9rem + 0.3vw);
 }
 
 /* 노래 등록 폼 아래 마진 공백 생기는거 삭제 */
@@ -47,78 +168,15 @@
     vertical-align: super;
 }
 
-.selected {
-    background-color: var(--bs-highlight-bg);
-}
-
 .empty-song-table {
     display: none;
 }
 
-/* 순서변경 및 삭제 */
-.song-row-switching {
-    background: repeating-linear-gradient(-45deg, var(--bs-secondary-bg), var(--bs-secondary-bg) 3px, var(--bs-tertiary-bg) 0, var(--bs-tertiary-bg) 6px);
-    /*background-color: var(--bs-secondary-bg);*/
-    transition-duration: 0.5s;
-    transition-property: background-color;
-}
-
-.song-row-will-switch-selected {
-    background: var(--bs-highlight-bg) none;
-}
-
-.song-row-be-switched-selected {
-    background: var(--bs-secondary-border-subtle) none;
-}
-
-@media (hover: hover) and (pointer: fine) { /* 마우스에서만 호버 */
-    .song-row-will-switch:hover {
-        background: var(--bs-highlight-bg) none;
-        cursor: pointer;
-    }
-
-    .song-row-be-switched:hover {
-        background: var(--bs-secondary-border-subtle) none;
-        cursor: pointer;
-    }
-
-    .song-row-deleting:hover {
-        background: var(--bs-danger-bg-subtle) none;
-        cursor: pointer;
-    }
-}
-
-.song-row-switched {
-    background: var(--bs-secondary-border-subtle) none;
-}
-
-.switch-order-complete-button {
-    display: none;
-}
-
-/*.collapse-button-hide-when-expanded[aria-expanded="true"] {*/
-/*    display: none !important;*/
-/*}*/
-
-.song-row-deleting {
-    background: repeating-linear-gradient(-45deg, var(--bs-danger-bg-subtle), var(--bs-danger-bg-subtle) 3px, var(--bs-tertiary-bg) 0, var(--bs-tertiary-bg) 6px);
-    transition-duration: 0.5s;
-    transition-property: background-color;
-}
-
-.delete-favorite-song-complete-button {
-    display: none;
-}
-
-.splitter {
-    margin: 2rem auto;
-}
-
-/* 필요한 경우 공통부로 뺄 것*/
+/* ---------- 기타 ---------- */
+/* 작은 버튼 (순서변경·삭제 등 표 제목 옆) */
 .btn-xsm {
     padding: calc(0.3rem + 0.1vw) calc(0.5rem + 0.1vw);
     font-size: calc(0.7rem + 0.1vw);
-    border-radius: 10px;
 }
 
 #verifyDeleteUserCollapseButton {
@@ -128,6 +186,3 @@
 .forms-verify {
     padding-top: 1rem;
 }
-
-
-

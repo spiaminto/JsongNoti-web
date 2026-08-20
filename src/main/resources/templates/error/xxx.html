@@ -1,14 +1,20 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>오류 - 제이노티</title>
+    <link href="/static/css/glass.css" th:href="@{/css/glass.css}" rel="stylesheet"/>
+    <link href="/static/css/page/error.css" th:href="@{/css/page/error.css}" rel="stylesheet"/>
 </head>
 <body>
-    <h2> 알수없는 에러 </h2>
-    <button type="button" onclick="location.href='index.html'"
+<main class="error-card glass">
+    <h2>알수없는 에러</h2>
+    <p>문제가 계속되면 메일로 문의해주세요.</p>
+    <button type="button" class="glass-btn" onclick="location.href='index.html'"
             th:onclick="|location.href='@{/}'|">
         홈으로 돌아가기
-</button>
+    </button>
+</main>
 </body>
 </html>

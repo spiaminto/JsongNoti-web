@@ -48,7 +48,7 @@
 }
 
 .unified-search-group + .unified-search-group {
-    border-top: 1px solid var(--bs-border-color);
+    border-top: 1px solid rgb(140 160 180 / .35); /* 유리 위 구분선 */
     margin-top: 1.5rem;
 }
 
@@ -65,7 +65,7 @@
 }
 
 .unified-search-result-count {
-    color: var(--bs-secondary-color);
+    color: var(--ink-3);
     font-size: calc(0.75rem + 0.3vw);
     font-weight: normal;
 }
@@ -82,7 +82,7 @@
 }
 
 .song-title-korean {
-    color: #777;
+    color: var(--ink-2);
     margin-left: 1rem;
     display: inline-block;
 }

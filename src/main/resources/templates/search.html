@@ -13,7 +13,8 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet"
         type="text/css"/>
-  <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css" rel="stylesheet"/>
+  <!-- 웹폰트는 glass.css 가 weight 매핑과 함께 로드한다 -->
+  <link href="/static/css/glass.css" th:href="@{/css/glass.css}" rel="stylesheet"/>
   <link href="/static/css/common.css" th:href="@{/css/common.css}" rel="stylesheet"/>
   <link href="/static/css/containers.css" th:href="@{/css/containers.css}" rel="stylesheet"/>
   <link href="/static/css/header-text.css" th:href="@{/css/header-text.css}" rel="stylesheet"/>
@@ -21,14 +22,6 @@
   <link href="/static/css/song-table.css" th:href="@{/css/song-table.css}" rel="stylesheet"/>
   <link href="/static/css/song-search.css" th:href="@{/css/song-search.css}" rel="stylesheet"/>
   <link href="/static/css/page/search.css" th:href="@{/css/page/search.css}" rel="stylesheet"/>
-  <script>
-      // dark mode 인라인
-      if (localStorage.getItem('darkMode') === 'true') {
-          document.documentElement.setAttribute('data-bs-theme', 'dark');
-      } else {
-          document.documentElement.setAttribute('data-bs-theme', '');
-      }
-  </script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-JFWLSXBEYR"></script>
   <script>
@@ -45,13 +38,24 @@
   <script src="/static/js/common-util.js" th:src="@{/js/common-util.js}" type="module"></script>
   <script src="/static/js/song-table-util.js" th:src="@{/js/song-table-util.js}" type="module"></script>
   <script src="/static/js/common-handlers.js" th:src="@{/js/common-handlers.js}" type="module"></script>
+  <script src="/static/js/glass-motion.js" th:src="@{/js/glass-motion.js}" type="text/javascript"></script>
+  <script src="/static/js/glass-collapse.js" th:src="@{/js/glass-collapse.js}" type="text/javascript"></script>
   <script src="/static/js/song-search.js" th:src="@{/js/song-search.js}" type="module"></script>
 </head>
 <body class="outer-element">
 <div id="container">
 
-  <!-- Navigation-->
-  <nav class="navbar static-top">
+  <!-- 보케: 유리 패널 뒤에 깔리는 빛 잔상. 위치·크기는 로드마다 랜덤 -->
+  <div class="bokeh" aria-hidden="true">
+    <i style="--s:340px; --x:-6%;  --y:2%;  --c:255 186 110; --o:.38"></i>
+    <i style="--s:220px; --x:52%;  --y:-2%; --c:255 150 130; --o:.30"></i>
+    <i style="--s:320px; --x:84%;  --y:18%; --c:150 190 240; --o:.36"></i>
+    <i style="--s:200px; --x:10%;  --y:48%; --c:255 200 130; --o:.28"></i>
+    <i style="--s:280px; --x:80%;  --y:66%; --c:150 190 240; --o:.30"></i>
+  </div>
+
+  <!-- Navigation: 떠 있는 유리 알약 -->
+  <nav class="navbar veil" style="--vd:.1s">
     <h1>
       <a class="navbar-brand" href="/">
         제이노티
@@ -59,19 +63,17 @@
       <a class="navbar-brand" href="/search">
         노래검색
       </a>
-      <img class="navbar-brand-icon" src="/static/assets/icon/search_512.png" th:src="@{'/assets/icon/search_512.png'}" alt="검색아이콘" width="35px">
+      <img class="navbar-brand-icon" src="/static/assets/icon/search_512.png" th:src="@{'/assets/icon/search_512.png'}" alt="검색아이콘">
     </h1>
     <div class="button-wrapper">
-      <button class="search-link-button icon-button btn" onclick="location.href = '/'"
-              style="background-image: url('/static/assets/icon/logo_512.png')"
-              th:style="'background-image: url(/assets/icon/logo_512.png)'">
-        <span class="icon-button-label search-icon-label"><b>신곡</b></span>
+      <button class="search-link-button icon-link" type="button" onclick="location.href = '/'">
+        <img src="/static/assets/icon/logo_512.png" th:src="@{/assets/icon/logo_512.png}" alt="">
+        <span class="icon-link-label">신곡</span>
       </button>
-      <button class="favorite-song-link-button icon-button btn "
-              style="background-image: url('/static/assets/icon/favorite_song_512.png')"
-              th:style="'background-image: url(/assets/icon/favorite_song_512.png)'"
+      <button class="favorite-song-link-button icon-link" type="button"
               data-bs-toggle="modal" data-bs-target="#favoriteLoginModal">
-        <span class="icon-button-label"><b>애창곡</b></span>
+        <img src="/static/assets/icon/favorite_song_512.png" th:src="@{/assets/icon/favorite_song_512.png}" alt="">
+        <span class="icon-link-label">애창곡</span>
       </button>
     </div>
   </nav>
@@ -103,16 +105,17 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-lg btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">닫기
+          <button type="button" class="btn btn-lg" data-bs-dismiss="modal" aria-label="Close">닫기
           </button>
-          <button type="button" class="btn btn-lg btn-outline-primary favorite-login-button" data-bs-dismiss="modal"><i
+          <button type="button" class="btn btn-lg favorite-login-button" data-bs-dismiss="modal"><i
               class="bi bi-google"></i><span class="ms-1">구글 로그인</span></button>
         </div>
       </div>
     </div>
   </div>
 
-  <section class="song-search-section inner-element">
+  <!-- 검색: 페이지 전체가 하나의 유리 패널 -->
+  <section class="song-search-section glass sheen veil" style="--vd:.25s">
     <h2 class="text-center">노래 검색</h2>
     <div id="searchHintContainer" class="mt-3">
       <p> 원어와 한국어로 검색할 수 있습니다.</p>
@@ -173,25 +176,28 @@
           <input type="text" name="keyword" id="searchSongInput" class="form-control form-control-lg text-input"
                  placeholder="검색어 입력 (최소 2자)"
                  aria-label="통합검색어 입력" aria-describedby="" minlength="2" maxlength="20">
-          <button class="btn btn-outline-primary" type="submit" id="searchSongButton">검색하기</button>
+          <button class="btn" type="submit" id="searchSongButton">검색하기</button>
         </div>
       </form>
 
       <!--노래 검색 결과-->
       <h3 class="text-center mt-4 mb-3">
         <span>검색결과</span>
-        <button class="btn btn-outline-secondary rounded-circle arrow-collapse-button"
+        <!-- 결과 컬랩스는 부트스트랩 플러그인 대신 glass-collapse 컴포넌트가 맡는다
+             (data-bs-toggle 없음, data-gc-toggle 사용 — ui-overhaul 15턴) -->
+        <button class="btn rounded-circle arrow-collapse-button"
                 id="songSearchResultCollapseButton"
                 type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#songSearchResultCollapse" aria-expanded="false" aria-controls="songSearchResultCollpase">
+                data-gc-toggle="#songSearchResultCollapse" aria-expanded="false" aria-controls="songSearchResultCollapse">
           <i class="bi bi-caret-down-fill"></i>
         </button>
       </h3>
 
       <div class="row row-for-expand-padding">
-        <div class="collapse song-search-result-collapse" id="songSearchResultCollapse">
-          <div class="card card-body box-shadow-sm px-1 py-2">
+        <!-- data-glass-collapse: glass-collapse.js 컴포넌트가 여닫음·내용 교체를 맡는다.
+             glass-motion 7번 구역은 이 속성을 보면 관여하지 않는다 (ui-overhaul 15턴) -->
+        <div class="collapse song-search-result-collapse" id="songSearchResultCollapse" data-glass-collapse>
+          <div class="card card-body px-1 py-2">
             <div class="song-search-result-header text-center">
               한글 표시는 참고용으로, 정확하지 않습니다.
             </div>
@@ -203,8 +209,7 @@
                   <thead>
                   <tr>
                     <th>번호</th>
-                    <th>제목</th>
-                    <th>아티스트</th>
+                    <th>노래</th>
                   </tr>
                   </thead>
                   <tbody id="songSearchResultTableBody">
@@ -215,7 +220,7 @@
                 <p class="mb-0">
                   원하는 검색 결과가 없는 경우 추가 검색 버튼 클릭 <br>
                 </p>
-                <button id="additionalSongSearchButton" class="btn btn-sm btn-outline-primary mt-2 ms-auto">
+                <button id="additionalSongSearchButton" class="btn btn-sm mt-2 ms-auto">
                   추가 검색
                 </button>
                 <p class="mb-0 mt-2">
@@ -228,14 +233,13 @@
       </div>
     </div>
 
-    <!--빈 테이블-->
+    <!--빈 테이블: JS(song-table-util.js)가 복제해 검색 결과를 채우는 원본 -->
     <div class="d-none song-table-border">
       <table class="empty-song-table song-table">
         <thead>
         <tr>
           <th>번호</th>
-          <th>제목</th>
-          <th>아티스트</th>
+          <th>노래</th>
         </tr>
         </thead>
         <tbody>
@@ -249,13 +253,12 @@
                 노래 제목
               </a>
             </div>
-            <div class="song-info">
-            <span>
-            정보 텍스트
-          </span>
+            <div class="song-meta">
+              <div class="song-info">
+                <span>정보 텍스트</span>
+              </div>
+              <div class="song-singer">가수명</div>
             </div>
-          </td>
-          <td class="song-singer">가수명
           </td>
         </tr>
         </tbody>
@@ -264,7 +267,7 @@
   </section>
 
   <!-- Footer-->
-  <footer class="footer inner-element mt-4">
+  <footer class="footer mt-4">
     <div class="container">
       <div class="row">
         <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
@@ -283,13 +286,13 @@
         <div class="col-lg-6 footer-icon-container text-center text-lg-end">
           <ul class="list-inline mb-0">
             <li class="list-inline-item me-4">&nbsp;
-              <a class="text-primary-emphasis text-decoration-none" href="https://github.com/spiaminto/JsongNoti-web">
+              <a class="text-decoration-none" href="https://github.com/spiaminto/JsongNoti-web">
                 Github
                 <i class="bi-github fs-3"></i>
               </a>
             </li>
             <li class="list-inline-item contact-mail-pc me-4">
-              <a class="text-primary-emphasis text-decoration-none"
+              <a class="text-decoration-none"
                  href="https://mail.google.com/mail/?view=cm&fs=1&to=jsongnoti%2Bcs@gmail.com&su=일본 신곡 알림이 문의"
                  target="_blank">
                 메일문의
@@ -297,14 +300,15 @@
               </a>
             </li>
             <li class="list-inline-item contact-mail-mobile me-4">
-              <a class="text-primary-emphasis text-decoration-none"
+              <a class="text-decoration-none"
                  href="mailto:jsongnoti+cs@gmail.com?subject=일본 신곡 알림이 문의">
                 메일문의
                 <i class="bi-envelope fs-3"></i>
               </a>
             </li>
+            <!-- 다크모드 토글: light 전용 오버홀 동안 숨김 (footer.css 에서 display:none) -->
             <li class="list-inline-item dark-mode-button">
-              <a class="text-primary-emphasis text-decoration-none"
+              <a class="text-decoration-none"
                  href="mailto:jsongnoti+cs@gmail.com?subject=일본 신곡 알림이 문의">
                 다크모드
                 <i class="bi bi-moon-fill fs-3"></i>

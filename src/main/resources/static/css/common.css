@@ -1,37 +1,37 @@
-/* 다크모드 엘레먼트 */
-#container .dark-mode-element {
-    display: none;
+/* ==========================================================================
+   common.css — 페이지 공통 부품 (상단바 아이콘, 사이드 버튼, 모달 보정 등)
+   글래스모피즘 오버홀: 표면·모션 어휘는 glass.css 가 정본.
+   ========================================================================== */
+
+/* ---------- 다크모드 잔재 ----------
+   light 전용 오버홀 동안 다크모드 전용 요소(영상 위 어둡게 덮는 막 등)는
+   기존 JS(common-handlers.js)가 localStorage 값으로 show() 하더라도
+   보이지 않도록 !important 로 잠근다. (docs/_temp/ui-overhaul.md 참고) */
+.dark-mode-element {
+    display: none !important;
 }
 
-/* 삼각 화살표 컬랩스 */
+/* ---------- 삼각 화살표 컬랩스 버튼 ---------- */
 .arrow-collapse-button-open {
     transform: rotate(180deg);
 }
 
 .arrow-collapse-button {
-    transition: 0.5s;
-    width: 1.6rem;
-    height: 1.6rem;
+    transition: transform 0.5s, background .35s, box-shadow .35s;
+    width: 1.9rem;
+    height: 1.9rem;
     padding: 0;
+    border-radius: 50%;
+    vertical-align: middle;
 }
 
 .arrow-collapse-button i {
-    font-size: 1.2rem;
+    font-size: 1rem;
+    color: var(--ink-2);
+    line-height: 1;
 }
 
-/* 페이드 인 */
-.fade-in-element {
-    opacity: 0;
-    transform: translateY(25px);
-    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-}
-
-.fade-in-element.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* 모달 */
+/* ---------- 모달 크기 보정 (기존 유지) ---------- */
 .modal-dialog {
     font-size: calc(0.9rem + 0.3vw);
 }
@@ -42,12 +42,7 @@
     margin: 0 auto 1rem;
 }
 
-.modal-image-wrapper .video-shadow {
-    width: 100%;
-    background-color: rgba(0, 0, 0, 0.2);
-}
-
-.modal-image-wrapper>img{
+.modal-image-wrapper > img {
     width: 100%;
     border-radius: 20px;
 }
@@ -66,73 +61,88 @@
     }
 }
 
-/* navbar 아이콘 */
+/* ---------- 상단바 브랜드 아이콘 ---------- */
 .navbar-brand-icon {
     width: 32px;
-    
+
     @media (min-width: 1200px) {
         width: 40px;
     }
 }
 
-/* 아이콘 버튼 */
-.icon-button {
-    margin-left: calc(0.3rem + 0.5vw);
-    position: relative;
-    background: no-repeat center center;
-    background-size: cover;
-    width: 35px;
-    height: 35px;
-    vertical-align: text-bottom;
+/* ---------- 상단바·사이드 아이콘 버튼 ----------
+   markup: button.icon-link > img + span.icon-link-label
+   아이콘 아래 라벨이 붙은 세로 묶음. hover 시 유리 하이라이트가 깔린다 */
+.icon-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .35rem; /* Bootstrap .icon-link 기본 .375rem 을 살짝 좁힘 */
+    padding: .2rem .55rem;
+    border: 0;
+    border-radius: 18px;
+    background: transparent;
+    font-size: .8rem;
+    font-weight: 800;
+    color: var(--ink-2);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .3s, color .3s;
 }
 
-.icon-button:first-child {
-    margin-left: 0;
+.icon-link:hover {
+    background: rgb(255 255 255 / .6);
+    color: var(--ink);
 }
 
-
-.icon-button-label {
-    position: absolute;
-    font-size: 0.75rem;
-    width: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: -40%;
+/* press 는 즉시 반응 */
+.icon-link:active {
+    transform: scale(.94);
+    transition: transform .08s ease-out;
 }
 
-.icon-button .search-icon-label {
-    bottom: -38%; /* 이상하게 홈화면에서 검색 아이콘의 라벨이 쳐저 보여서 올림 */
+.icon-link img {
+    width: 30px;
+    height: 30px;
+}
+
+/* 라벨은 아이콘 바로 아래에 붙인다 (아이콘 이미지의 여백만큼 당김) */
+.icon-link .icon-link-label {
+    margin-top: -6px;
 }
 
 @media (min-width: 992px) {
-    .icon-button {
-        width: 45px;
-        height: 45px;
+    .icon-link img {
+        width: 34px;
+        height: 34px;
     }
 
-    .icon-button-label {
-        font-size: 0.9rem;
+    .icon-link {
+        font-size: .9rem;
     }
 }
 
-/* 공통 border-radius */
-footer {
-    border-radius: 20px;
+/* ---------- 사이드 버튼 (스크롤 시 나타나는 검색·애창곡 바로가기) ---------- */
+.side-button-container {
+    position: fixed;
+    right: 12px;
+    bottom: 20%;
+    z-index: 30;
+    display: none;
 }
 
-.card {
-    border-radius: 10px;
+/* 유리 알약 하나가 버튼 하나 */
+.side-button-wrapper {
+    margin-bottom: .6rem;
+    border-radius: 22px;
+    background: var(--glass-bg-strong);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 10px 26px rgb(30 42 56 / .12), inset 0 1px 0 rgb(255 255 255 / .9);
 }
 
-.form-control {
-    border-radius: 10px;
-}
-
-.btn {
-    border-radius: 10px;
-}
-
-/* 크기제한 */
+/* ---------- 입력 크기 제한 (기존 유지) ---------- */
 .text-input {
     max-width: 500px;
 }
@@ -141,69 +151,38 @@ footer {
     font-size: calc(0.8rem + 0.3vw);
 }
 
-
-/* styles.css 초기화 */
-.navbar-brand {
-    margin-right: 0;
-}
-
-.box-shadow-sm {
-    /* color x y blur spread */
-    box-shadow: var(--bs-dark-bg-subtle) 1px 2px 4px 0px;
-}
-
-.box-shadow {
-    box-shadow: var(--bs-dark-bg-subtle) 1px 3px 5px 3px;
-}
-
-
-/* 부트스트랩 공통부 수정*/
+/* ---------- Bootstrap 공통부 수정 (기존 유지) ---------- */
 .btn-lg {
-    font-size: 1rem; /* 원본 1.25rem*/
+    font-size: 1rem; /* 원본 1.25rem */
 }
 
 .form-control-lg {
     font-size: 1rem;
 }
 
-tbody, td, tfoot, thead, th, tr {
-    border-width: 1px;
-}
-
-@media(min-width: 768px) {
+@media (min-width: 768px) {
     .form-control-lg {
-        padding: 0.75rem 1rem; /* 원본 0.5rem 1rem*/
+        padding: 0.75rem 1rem; /* 원본 0.5rem 1rem */
         font-size: 1.25rem; /* 원본으로 복구 */
     }
-
 }
 
+/* CSS smooth scroll 을 끈다 — 사용방법 바로가기 등이 jQuery animate 로
+   스크롤하므로 둘이 겹치면 스크롤이 덜컹거린다 */
 @media (prefers-reduced-motion: no-preference) {
     :root {
         scroll-behavior: unset;
     }
 }
 
-/* 유틸리티 */
+/* ---------- 유틸리티 ---------- */
 .row-for-expand-padding {
     /* 부모 요소의 padding 을 먹기위한 row 표시용 */
 }
 
-/* 사이드 버튼 */
-.side-button-container {
-    position: fixed;
-    right: 10px;
-    bottom: 20%;
-    z-index: 10;
-    display: none;
+/* 과거 그림자 유틸리티: 유리 표면(.glass, .song-table-border)이 자체 그림자를
+   가지므로 시각 효과를 없앤다. markup 잔존분 대비용으로 클래스만 남긴다 */
+.box-shadow-sm,
+.box-shadow {
+    box-shadow: none;
 }
-
-.side-button-wrapper {
-    margin-bottom: 0.5rem;
-    padding: 5px 10px 15px;
-    border-radius: 100%;
-    background-color: var(--bs-tertiary-bg);
-    border: solid 2px var(--bs-secondary-bg);
-}
-
-

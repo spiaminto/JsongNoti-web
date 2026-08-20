@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!--<html lang="ko" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">-->
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
 <head>
@@ -15,21 +14,14 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet"
         type="text/css"/>
-  <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css" rel="stylesheet"/>
+  <!-- 웹폰트는 glass.css 가 weight 매핑과 함께 로드한다 -->
+  <link href="/static/css/glass.css" th:href="@{/css/glass.css}" rel="stylesheet"/>
   <link href="/static/css/common.css" th:href="@{/css/common.css}" rel="stylesheet"/>
   <link href="/static/css/containers.css" th:href="@{/css/containers.css}" rel="stylesheet"/>
   <link href="/static/css/header-text.css" th:href="@{/css/header-text.css}" rel="stylesheet"/>
   <link href="/static/css/song-table.css" th:href="@{/css/song-table.css}" rel="stylesheet"/>
   <link href="/static/css/footer.css" th:href="@{/css/footer.css}" rel="stylesheet"/>
   <link href="/static/css/page/index.css" th:href="@{/css/page/index.css}" rel="stylesheet"/>
-  <script>
-      // dark mode 인라인
-      if (localStorage.getItem('darkMode') === 'true') {
-          document.documentElement.setAttribute('data-bs-theme', 'dark');
-      } else {
-          document.documentElement.setAttribute('data-bs-theme', '');
-      }
-  </script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-JFWLSXBEYR"></script>
   <script>
@@ -44,7 +36,7 @@
   </script>
   <script src="https://code.jquery.com/jquery.min.js"></script>
   <script src="/static/js/common-handlers.js" th:src="@{/js/common-handlers.js}" type="text/javascript"></script>
-  <script src="/static/js/fade-in.js" th:src="@{/js/fade-in.js}" type="text/javascript"></script>
+  <script src="/static/js/glass-motion.js" th:src="@{/js/glass-motion.js}" type="text/javascript"></script>
   <script src="/static/js/index/subscribe.js" th:src="@{/js/index/subscribe.js}" type="text/javascript"></script>
   <script src="/static/js/index/unsubscribe.js" th:src="@{/js/index/unsubscribe.js}" type="text/javascript"></script>
   <script>
@@ -60,7 +52,7 @@
 // 사용방법 바로가기 버튼 클릭 이벤트
           $('.usage-Button').click(function () {
               $('html, body').animate({
-                  scrollTop: $('.showcase').offset().top - 16 // 2rem 여유
+                  scrollTop: $('.showcase').offset().top - 90 // fixed 상단바 높이만큼 여유
               }, 500);
           });
 
@@ -84,28 +76,41 @@
 </head>
 <body class="outer-element">
 <div id="alertMessage" th:text="${alertMessage}" style="width: 0; height: 0; display: none"></div>
+
+<!-- 배경 연출: 씻어낸 히어로 사진 + 햇살. 콘텐츠 뒤(z-index 0)에 깔린다 -->
+<div class="photo-bg" aria-hidden="true"></div>
+<div class="sky" aria-hidden="true">
+  <span class="ray" style="--x:-6%;  --w:120px; --a:.50; --b:22px; --d:.05s"></span>
+  <span class="ray" style="--x:4%;   --w:52px;  --a:.62; --b:10px; --d:.22s"></span>
+  <span class="ray" style="--x:11%;  --w:88px;  --a:.45; --b:16px; --d:.12s"></span>
+  <span class="ray" style="--x:19%;  --w:34px;  --a:.68; --b:7px;  --d:.38s"></span>
+  <span class="ray" style="--x:26%;  --w:140px; --a:.34; --b:26px; --d:.18s"></span>
+  <span class="ray" style="--x:37%;  --w:60px;  --a:.52; --b:12px; --d:.48s"></span>
+  <span class="ray" style="--x:47%;  --w:96px;  --a:.30; --b:20px; --d:.30s"></span>
+  <span class="ray" style="--x:58%;  --w:44px;  --a:.42; --b:9px;  --d:.58s"></span>
+</div>
+
 <div id="container">
 
+  <!-- 사이드 버튼: 스크롤 시 나타나는 검색·애창곡 바로가기 -->
   <div class="side-button-container">
     <div class="side-button-wrapper">
-      <button class="favorite-song-link-button icon-button btn "
-              style="background-image: url('/static/assets/icon/favorite_song_512.png')"
-              th:style="'background-image: url(/assets/icon/favorite_song_512.png)'"
+      <button class="favorite-song-link-button icon-link" type="button"
               data-bs-toggle="modal" data-bs-target="#favoriteLoginModal">
-        <span class="icon-button-label"><b>애창곡</b></span>
+        <img src="/static/assets/icon/favorite_song_512.png" th:src="@{/assets/icon/favorite_song_512.png}" alt="">
+        <span class="icon-link-label">애창곡</span>
       </button>
     </div>
     <div class="side-button-wrapper">
-      <button class="search-link-button icon-button btn" onclick="location.href = '/search'"
-              style="background-image: url('/static/assets/icon/search_512.png')"
-              th:style="'background-image: url(/assets/icon/search_512.png)'">
-        <span class="icon-button-label search-icon-label"><b>검색</b></span>
+      <button class="search-link-button icon-link" type="button" onclick="location.href = '/search'">
+        <img src="/static/assets/icon/search_512.png" th:src="@{/assets/icon/search_512.png}" alt="">
+        <span class="icon-link-label">검색</span>
       </button>
     </div>
   </div>
 
-  <!-- Navigation-->
-  <nav class="navbar navbar-light static-top">
+  <!-- Navigation: 떠 있는 유리 알약. 햇살 뒤(0.4s)에 떠오른다 -->
+  <nav class="navbar veil" style="--vd:.4s">
     <h1>
       <a class="navbar-brand" href="/">
         제이노티
@@ -116,16 +121,14 @@
       <img class="navbar-brand-icon" src="/static/assets/icon/logo_512.png" th:src="@{'/assets/icon/logo_512.png'}" alt="로고아이콘">
     </h1>
     <div class="button-wrapper">
-      <button class="search-link-button icon-button btn" onclick="location.href = '/search'"
-              style="background-image: url('/static/assets/icon/search_512.png')"
-              th:style="'background-image: url(/assets/icon/search_512.png)'">
-        <span class="icon-button-label search-icon-label"><b>검색</b></span>
+      <button class="search-link-button icon-link" type="button" onclick="location.href = '/search'">
+        <img src="/static/assets/icon/search_512.png" th:src="@{/assets/icon/search_512.png}" alt="">
+        <span class="icon-link-label">검색</span>
       </button>
-      <button class="favorite-song-link-button icon-button btn "
-              style="background-image: url('/static/assets/icon/favorite_song_512.png')"
-              th:style="'background-image: url(/assets/icon/favorite_song_512.png)'"
+      <button class="favorite-song-link-button icon-link" type="button"
               data-bs-toggle="modal" data-bs-target="#favoriteLoginModal">
-        <span class="icon-button-label"><b>애창곡</b></span>
+        <img src="/static/assets/icon/favorite_song_512.png" th:src="@{/assets/icon/favorite_song_512.png}" alt="">
+        <span class="icon-link-label">애창곡</span>
       </button>
     </div>
   </nav>
@@ -158,78 +161,62 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-lg btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">닫기
+          <button type="button" class="btn btn-lg" data-bs-dismiss="modal" aria-label="Close">닫기
           </button>
-          <button type="button" class="btn btn-lg btn-outline-primary favorite-login-button" data-bs-dismiss="modal"><i
+          <button type="button" class="btn btn-lg favorite-login-button" data-bs-dismiss="modal"><i
               class="bi bi-google"></i><span class="ms-1">구글 로그인</span></button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Masthead-->
-  <header class="masthead">
-    <!--    <button class="btn btn-primary" onclick="document.getElementById('verifyEmailCollapseButton').click()">test</button>-->
-    <div class="masthead-background box-shadow" style="background-image: url('/static/assets/img/karaoke.jpg')"
-         th:style="'background-image:url(/assets/img/karaoke.jpg)'">
-      <div class="container position-relative masthead-content-wrapper">
-        <div class="row justify-content-center">
-          <div class="col-xl-6">
-            <div class="text-center text-white">
-              <!-- Page heading-->
-              <h2 class="mb-5 headerText">TJ, 금영 노래방에<br class="br-mobile"> 일본 신곡이 등록되면 <br> 오전 10시에 <br
-                  class="br-mobile">알림 메일을 보내드립니다</h2>
-              <form class="forms-subscribe forms" id="subscribeForm">
-                <!-- Email address input-->
-                <div class="input-group justify-content-center">
-                  <input class="form-control form-control-lg text-input" id="emailInput" type="email"
-                         placeholder="이메일 입력"
-                         required>
-                  <button class="btn btn-lg btn-outline-light forms-submit-button" id="submitButton" type="submit">
-                    구독하기
-                  </button>
-                </div>
-                <input type="hidden" id="csrfToken" name="_csrf" th:value="${_csrf.token}"/>
-                <div class="row agreement-wrapper">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                    <label class="form-check-label" for="flexCheckDefault">
-                      이메일 수집에 동의합니다
-                    </label>
-                    <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-outline-light agreement-btn" data-bs-toggle="modal"
-                            data-bs-target="#agreementModal">
-                      [ 자세히 보기 ]
-                    </button>
-                  </div>
-                </div>
-              </form>
-              <!-- 인증코드 전송폼 -->
-              <button id="verifyEmailCollapseButton" type="button" data-bs-toggle="collapse"
-                      data-bs-target="#verifyEmailCollapse" aria-expanded="false" aria-controls="verifyEmailCollapse">
+  <!-- 히어로: 스크롤이 아니라 딜레이(0.8s)로 떠오르는 유리 카드 -->
+  <header class="hero-zone">
+    <div class="hero glass veil sheen" style="--vd:.8s">
+      <h1 class="headerText">노래방에 일본 신곡이 등록되면<br>오전 10시에 메일로 알려드려요.</h1>
+      <form class="forms-subscribe forms" id="subscribeForm">
+        <!-- Email address input-->
+        <div class="field-row">
+          <input class="form-control text-input" id="emailInput" type="email"
+                 autocomplete="email" placeholder="이메일 입력" aria-label="이메일 입력"
+                 required>
+          <button class="btn forms-submit-button" id="submitButton" type="submit">
+            구독하기
+          </button>
+        </div>
+        <input type="hidden" id="csrfToken" name="_csrf" th:value="${_csrf.token}"/>
+        <div class="agreement-wrapper">
+          <label class="agree">
+            <input type="checkbox" value="" id="flexCheckDefault">
+            <span>
+              이메일 수집에 동의해요.
+              <!-- Button trigger modal -->
+              <button type="button" class="agreement-btn" data-bs-toggle="modal" data-bs-target="#agreementModal">
+                [ 자세히 보기 ]
               </button>
-              <form class="forms forms-verify" id="verifySubscriptionForm">
-                <div class="collapse" id="verifyEmailCollapse">
-                  <div class="input-group justify-content-center">
-                    <input class="form-control form-control-lg text-input" id="verifyCodeInput" type="number"
-                           placeholder="4자리 인증 코드 입력"
-                           required>
-                    <button class="btn btn-outline-light btn-lg" id="verifySubmitButton"
-                            type="submit">인증하기
-                    </button>
-                  </div>
-                </div>
-              </form>
-
-              <!-- 사용방법 바로가기 버튼 -->
-              <div class="row justify-content-center mt-4">
-                <div class="col-auto" id="goToUsageButtonWrapper">
-                  <button id="goToUsageButton" class="btn btn-outline-light btn-lg usage-Button"> 사용 방법</button>
-                </div>
-              </div>
-            </div>
+            </span>
+          </label>
+        </div>
+      </form>
+      <!-- 인증코드 전송폼: 구독 요청 성공 시 JS 가 숨은 버튼을 눌러 연다 -->
+      <button id="verifyEmailCollapseButton" type="button" data-bs-toggle="collapse"
+              data-bs-target="#verifyEmailCollapse" aria-expanded="false" aria-controls="verifyEmailCollapse">
+      </button>
+      <form class="forms forms-verify" id="verifySubscriptionForm">
+        <div class="collapse" id="verifyEmailCollapse">
+          <div class="field-row">
+            <input class="form-control text-input" id="verifyCodeInput" type="number"
+                   placeholder="4자리 인증 코드 입력" aria-label="인증 코드 입력"
+                   required>
+            <button class="btn" id="verifySubmitButton" type="submit">인증하기
+            </button>
           </div>
         </div>
+      </form>
+
+      <!-- 사용방법 바로가기 버튼 -->
+      <div class="usage-link">
+        <button id="goToUsageButton" class="glass-btn usage-Button" type="button">사용 방법</button>
       </div>
     </div>
   </header>
@@ -254,37 +241,43 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-lg btn-outline-primary" data-bs-dismiss="modal">확인</button>
+          <button type="button" class="btn btn-lg" data-bs-dismiss="modal">확인</button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- 신곡 일람 표 -->
-  <section class="new-song-section text-center inner-element">
+  <section class="new-song-section text-center">
+    <!-- 보케: 히어로 사진의 조명 방울 잔상. 위치·크기는 로드마다 랜덤 -->
+    <div class="bokeh" aria-hidden="true">
+      <i style="--s:380px; --x:-8%;  --y:-6%; --c:255 186 110; --o:.42"></i>
+      <i style="--s:180px; --x:44%;  --y:-4%; --c:255 150 130; --o:.35"></i>
+      <i style="--s:140px; --x:88%;  --y:2%;  --c:255 160 140; --o:.30"></i>
+      <i style="--s:320px; --x:78%;  --y:35%; --c:150 190 240; --o:.38"></i>
+      <i style="--s:220px; --x:28%;  --y:70%; --c:255 200 130; --o:.30"></i>
+    </div>
     <div id="newSongContainer" class="song-container">
       <div class="new-song-section-header">
-        <p>
-          최근 신곡 목록입니다. <br>
-          노래 제목을 클릭하시면 구글 검색으로 이동합니다. <br>
-          한글 표시는 참고용으로, 정확하지 않습니다.
+        <p class="songs-intro" data-lift>
+          최근 신곡 목록이에요. 노래 제목을 클릭하면 구글 검색으로 이동해요.<br>
+          한글 표시는 참고용이라 정확하지 않아요.
         </p>
       </div>
-      <div class="row">
+      <div class="songs-grid">
         <!-- 태진 -->
-        <div class="fade-in-element song-table-container">
-          <h2 class="song-header-text position-relative">
+        <div class="song-panel glass sheen" data-lift>
+          <h2 class="song-header-text">
             <span th:text="${tjLatestMonth + ' TJ 신곡'}">11월 TJ 신곡</span>
-            <mark class="position-absolute song-header-subtext" th:text="${tjLatestDateStr + ' 추가'}">00/00(요) 추가
+            <mark class="song-header-subtext" th:text="${tjLatestDateStr + ' 추가'}">00/00(요) 추가
             </mark>
           </h2>
-          <div class="song-table-border box-shadow-sm">
+          <div class="song-table-border">
             <table class="table-tj song-table">
               <thead>
               <tr>
                 <th>번호</th>
-                <th>제목</th>
-                <th>아티스트</th>
+                <th>노래</th>
               </tr>
               </thead>
               <tbody>
@@ -300,37 +293,36 @@
                       <ruby><rb th:text="${song.title}">Title</rb><rp>(</rp><rt th:text="${song.titleKorean}">루비</rt><rp>)</rp></ruby>
                     </a>
                   </div>
-                  <div class="song-info" th:text="${song.info}">정보 텍스트
+                  <div class="song-meta">
+                    <div class="song-info">
+                      <!-- 작품정보도 제목처럼 한글 읽기가 있으면 루비로 표기 -->
+                      <span th:if="${#strings.isEmpty(song.infoKorean)}" th:text="${song.info}">정보 텍스트</span>
+                      <span th:unless="${#strings.isEmpty(song.infoKorean)}">
+                        <ruby><rb th:text="${song.info}">정보</rb><rp>(</rp><rt th:text="${song.infoKorean}">루비</rt><rp>)</rp></ruby>
+                      </span>
+                    </div>
+                    <div class="song-singer" th:text="${song.singer}">가수</div>
                   </div>
-                </td>
-                <td class="song-singer" th:text="${song.singer}">가수
                 </td>
               </tr>
               </tbody>
             </table>
           </div>
-          <!-- TJ 저번달 -->
-          <div class="last-month-show-button-wrapper">
-            <button class="btn btn-outline-secondary last-month-show-button" type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#tjLastMonthSongContentBorder" aria-expanded="false"
-                    aria-controls="tjLastMonthSongContentBorder"
-                    th:text="${tjLastMonth + ' TJ 신곡'}">
-              저번달 신곡 목록
-            </button>
-          </div>
-          <div class="song-table-border box-shadow-sm collapse" id="tjLastMonthSongContentBorder">
+          <!-- TJ 저번달: 컬랩스 래퍼(높이 애니메이션 대상)와 유리판(.song-table-border)을 분리 —
+               margin·border 가 래퍼 안쪽에 있어야 height 애니메이션에 함께 접힌다 (6턴-2) -->
+          <div class="song-table-collapse collapse" id="tjLastMonthSongContentBorder">
+          <div class="song-table-border">
             <table class="table-tj song-table">
               <thead>
               <tr>
                 <th>번호</th>
-                <th>제목</th>
-                <th>아티스트</th>
+                <th>노래</th>
               </tr>
               </thead>
               <tbody>
               <tr th:each="song : ${tjLastMonthSongs}">
-                <td class="song-number" th:text="${song.number}">12345
+                <td class="song-number">
+                  <span th:text="${song.number}">12345</span>
                 </td>
                 <td class="song-title">
                   <div>
@@ -339,31 +331,45 @@
                       <ruby><rb th:text="${song.title}">Title</rb><rp>(</rp><rt th:text="${song.titleKorean}">루비</rt><rp>)</rp></ruby>
                     </a>
                   </div>
-                  <div class="song-info" th:text="${song.info}">정보 텍스트
+                  <div class="song-meta">
+                    <div class="song-info">
+                      <!-- 작품정보도 제목처럼 한글 읽기가 있으면 루비로 표기 -->
+                      <span th:if="${#strings.isEmpty(song.infoKorean)}" th:text="${song.info}">정보 텍스트</span>
+                      <span th:unless="${#strings.isEmpty(song.infoKorean)}">
+                        <ruby><rb th:text="${song.info}">정보</rb><rp>(</rp><rt th:text="${song.infoKorean}">루비</rt><rp>)</rp></ruby>
+                      </span>
+                    </div>
+                    <div class="song-singer" th:text="${song.singer}">가수</div>
                   </div>
-                </td>
-                <td class="song-singer" th:text="${song.singer}">가수명
                 </td>
               </tr>
               </tbody>
             </table>
           </div>
-
+          </div>
+          <div class="last-month-show-button-wrapper">
+            <button class="btn last-month-show-button" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#tjLastMonthSongContentBorder" aria-expanded="false"
+                    aria-controls="tjLastMonthSongContentBorder"
+                    th:text="${tjLastMonth + ' TJ 신곡'}">
+              저번달 신곡 목록
+            </button>
+          </div>
         </div>
         <!-- 금영 -->
-        <div class="fade-in-element song-table-container">
+        <div class="song-panel glass sheen" data-lift>
           <h2 class="song-header-text">
             <span th:text="${kyLatestMonth + ' 금영 신곡'}">11월 금영 신곡</span>
-            <mark class="position-absolute song-header-subtext" th:text="${kyLatestDateStr + ' 추가'}">00/00(0) 추가
+            <mark class="song-header-subtext" th:text="${kyLatestDateStr + ' 추가'}">00/00(0) 추가
             </mark>
           </h2>
-          <div class="song-table-border box-shadow-sm">
+          <div class="song-table-border">
             <table class="table-ky song-table">
               <thead>
               <tr>
                 <th>번호</th>
-                <th>제목</th>
-                <th>아티스트</th>
+                <th>노래</th>
               </tr>
               </thead>
               <tbody>
@@ -378,37 +384,35 @@
                       <ruby><rb th:text="${song.title}">Title</rb><rp>(</rp><rt th:text="${song.titleKorean}">루비</rt><rp>)</rp></ruby>
                     </a>
                   </div>
-                  <div class="song-info" th:text="${song.info}">정보 텍스트
+                  <div class="song-meta">
+                    <div class="song-info">
+                      <!-- 작품정보도 제목처럼 한글 읽기가 있으면 루비로 표기 -->
+                      <span th:if="${#strings.isEmpty(song.infoKorean)}" th:text="${song.info}">정보 텍스트</span>
+                      <span th:unless="${#strings.isEmpty(song.infoKorean)}">
+                        <ruby><rb th:text="${song.info}">정보</rb><rp>(</rp><rt th:text="${song.infoKorean}">루비</rt><rp>)</rp></ruby>
+                      </span>
+                    </div>
+                    <div class="song-singer" th:text="${song.singer}">가수</div>
                   </div>
-                </td>
-                <td class="song-singer" th:text="${song.singer}">가수명
                 </td>
               </tr>
               </tbody>
             </table>
           </div>
-          <!-- 금영 저번달 목록 -->
-          <div class="last-month-show-button-wrapper">
-            <button class="btn btn-outline-secondary last-month-show-button" type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#kyLastMonthSongContentBorder" aria-expanded="false"
-                    aria-controls="kyLastMonthSongContentBorder"
-                    th:text="${kyLastMonth + ' 금영 신곡'}">
-              저번달 신곡 목록
-            </button>
-          </div>
-          <div class="song-table-border box-shadow-sm collapse" id="kyLastMonthSongContentBorder">
+          <!-- 금영 저번달 목록: TJ 와 같은 컬랩스 래퍼/유리판 분리 구조 (6턴-2) -->
+          <div class="song-table-collapse collapse" id="kyLastMonthSongContentBorder">
+          <div class="song-table-border">
             <table class="song-table table-ky">
               <thead>
               <tr>
                 <th>번호</th>
-                <th>제목</th>
-                <th>아티스트</th>
+                <th>노래</th>
               </tr>
               </thead>
               <tbody>
               <tr th:each="song : ${kyLastMonthSongs}">
-                <td class="song-number" th:text="${song.number}">12345
+                <td class="song-number">
+                  <span th:text="${song.number}">12345</span>
                 </td>
                 <td class="song-title">
                   <div>
@@ -417,14 +421,30 @@
                       <ruby><rb th:text="${song.title}">Title</rb><rp>(</rp><rt th:text="${song.titleKorean}">루비</rt><rp>)</rp></ruby>
                     </a>
                   </div>
-                  <div class="song-info" th:text="${song.info}">정보 텍스트
+                  <div class="song-meta">
+                    <div class="song-info">
+                      <!-- 작품정보도 제목처럼 한글 읽기가 있으면 루비로 표기 -->
+                      <span th:if="${#strings.isEmpty(song.infoKorean)}" th:text="${song.info}">정보 텍스트</span>
+                      <span th:unless="${#strings.isEmpty(song.infoKorean)}">
+                        <ruby><rb th:text="${song.info}">정보</rb><rp>(</rp><rt th:text="${song.infoKorean}">루비</rt><rp>)</rp></ruby>
+                      </span>
+                    </div>
+                    <div class="song-singer" th:text="${song.singer}">가수</div>
                   </div>
-                </td>
-                <td class="song-singer" th:text="${song.singer}">가수명
                 </td>
               </tr>
               </tbody>
             </table>
+          </div>
+          </div>
+          <div class="last-month-show-button-wrapper">
+            <button class="btn last-month-show-button" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#kyLastMonthSongContentBorder" aria-expanded="false"
+                    aria-controls="kyLastMonthSongContentBorder"
+                    th:text="${kyLastMonth + ' 금영 신곡'}">
+              저번달 신곡 목록
+            </button>
           </div>
         </div>
       </div>
@@ -432,96 +452,121 @@
 
   </section>
 
-  <div class="splitter"></div>
-
-  <!-- 사용 방법 및 주의사항 표-->
+  <!-- 사용 방법 및 주의사항 -->
   <section class="showcase">
-    <div class="container-fluid p-0">
-      <div class="row g-0 fade-in-element">
-        <h2 id="showCaseHeaderText" class="">
-          사용 방법
-        </h2>
+    <!-- 보케: 사용 방법 구간의 빛 잔상 -->
+    <div class="bokeh" aria-hidden="true">
+      <i style="--s:300px; --x:-4%;  --y:6%;  --c:255 186 110; --o:.35"></i>
+      <i style="--s:360px; --x:80%;  --y:22%; --c:150 190 240; --o:.35"></i>
+      <i style="--s:200px; --x:6%;   --y:44%; --c:255 150 130; --o:.30"></i>
+      <i style="--s:150px; --x:48%;  --y:58%; --c:255 200 130; --o:.25"></i>
+      <i style="--s:280px; --x:84%;  --y:70%; --c:255 186 110; --o:.35"></i>
+      <i style="--s:180px; --x:-2%;  --y:84%; --c:150 190 240; --o:.30"></i>
+    </div>
+    <h2 id="showCaseHeaderText" data-lift>
+      사용 방법
+    </h2>
+    <!-- 각 항목: 물방울 동심원이 먼저 퍼지고 영상·글 타일이 반 박자 늦게 떠오른다 -->
+    <div class="usage-row" data-lift style="--dx:16%; --dy:34%">
+      <div class="drops" aria-hidden="true">
+        <i style="--s:130px; --dd:0s"></i>
+        <i style="--s:230px; --dd:.16s"></i>
+        <i style="--s:340px; --dd:.32s"></i>
       </div>
-      <div class="row g-0 fade-in-element">
-        <div class="showcase-img-wrapper">
-          <video autoplay muted loop playsinline class="box-shadow">
-            <source src="/static/assets/mov/subscribe.webm" th:src="@{/assets/mov/subscribe.webm}" type="video/webm">
-            <source src="/static/assets/mov/subscribe.mp4" th:src="@{/assets/mov/subscribe.mp4}" type="video/mp4">
-            노래방 일본 신곡 알림이 구독하기 동영상
-          </video>
-          <div class="video-shadow dark-mode-element"></div>
-        </div>
-        <div class="col-lg-6 order-lg-1 showcase-text inner-element">
-          <h3>구독하기</h3>
-          <p class="lead mb-3">
-            이메일을 입력한 후 구독하기 버튼을 누릅니다. <br>
-            이메일로 전송된 구독 인증 메일의 인증번호를 입력하면 구독이 완료됩니다. <br>
-          </p>
-          <p class="lead mb-0">
-            메일이 정상적으로 수신되지 않을 시 스팸함을 확인해주세요. <br>
-            (인증 메일이 스팸으로 분류되었을 경우 스팸 해제 해주셔야 알림 메일을 정상적으로 수신할 수 있습니다)
-          </p>
-        </div>
+      <div class="u-video glass">
+        <video autoplay muted loop playsinline preload="metadata">
+          <source src="/static/assets/mov/subscribe.webm" th:src="@{/assets/mov/subscribe.webm}" type="video/webm">
+          <source src="/static/assets/mov/subscribe.mp4" th:src="@{/assets/mov/subscribe.mp4}" type="video/mp4">
+          노래방 일본 신곡 알림이 구독하기 동영상
+        </video>
+        <div class="video-shadow dark-mode-element"></div>
       </div>
-      <div class="row g-0 fade-in-element">
-        <div class="showcase-img-wrapper">
-          <video autoplay muted loop playsinline class="box-shadow">
-            <source src="/static/assets/mov/noti.webm" th:src="@{/assets/mov/noti.webm}" type="video/webm">
-            <source src="/static/assets/mov/noti.mp4" th:src="@{/assets/mov/noti.mp4}" type="video/mp4">
-            노래방 일본 신곡 알림이 이메일 수신 동영상
-          </video>
-          <div class="video-shadow dark-mode-element"></div>
-        </div>
-        <div class="col-lg-6 showcase-text inner-element">
-          <h3>이메일 수신</h3>
-          <p class="lead mb-3">
-            노래방에 일본 신곡이 추가되면 오전 10시에 등록된 이메일로 알려드립니다.<br>
-            메일이 정상적으로 수신되지 않을 시 스팸함을 확인해주세요.
-          </p>
-          <p class="lead mb-0">
-            보통 TJ는 매주 화요일, 목요일에 신곡이 추가되며 금영은 비정기적으로 추가됩니다. <br>
-          </p>
-        </div>
+      <div class="u-text glass sheen">
+        <h3>구독하기</h3>
+        <p>
+          이메일을 입력한 후 구독하기 버튼을 눌러요.
+          이메일로 전송된 구독 인증 메일의 인증번호를 입력하면 구독이 완료돼요.
+        </p>
+        <p>
+          메일이 오지 않으면 스팸함을 확인해 주세요.
+          인증 메일이 스팸으로 분류되었다면 스팸 해제를 해야 알림 메일을 정상적으로 받을 수 있어요.
+        </p>
       </div>
-      <div class="row g-0 fade-in-element">
-        <div class="showcase-img-wrapper">
-          <video autoplay muted loop playsinline class="box-shadow">
-            <source src="/static/assets/mov/unsubscribe.webm" th:src="@{/assets/mov/unsubscribe.webm}"
-                    type="video/webm">
-            <source src="/static/assets/mov/unsubscribe.mp4" th:src="@{/assets/mov/unsubscribe.mp4}" type="video/mp4">
-            노래방 일본 신곡 알림이 구독취소 동영상
-          </video>
-          <div class="video-shadow dark-mode-element"></div>
-        </div>
-        <div class="col-lg-6 order-lg-1 showcase-text inner-element">
-          <h3>구독 취소</h3>
-          <p class="lead mb-0">
-            구독 취소는 홈페이지 맨 아래의 구독취소 버튼을 눌러 할 수 있습니다.<br>
-            이메일로 전송된 구독취소 인증번호를 입력하면 구독이 취소됩니다. <br>
-            이메일 인증이 불가능할 시 문의 부탁드립니다.</p>
-        </div>
+    </div>
+    <div class="usage-row" data-lift style="--dx:78%; --dy:22%">
+      <div class="drops" aria-hidden="true">
+        <i style="--s:120px; --dd:0s"></i>
+        <i style="--s:220px; --dd:.16s"></i>
+        <i style="--s:330px; --dd:.32s"></i>
       </div>
-      <div class="row g-0 fade-in-element">
-        <div class="showcase-img-wrapper">
-          <div class="col-lg-6 order-lg-2 text-white showcase-img box-shadow"
-               style="background-image: url('/static/assets/img/bg-showcase-3.jpg')"
-               th:style="'background-image: url(/assets/img/bg-showcase-3.jpg)'"></div>
-          <div class="video-shadow dark-mode-element"></div>
-        </div>
-        <div class="col-lg-6 order-lg-1 showcase-text inner-element">
-          <h3>문의사항</h3>
-          <p class="lead mb-0">
-            문의사항은 jsongnoti+cs@gmail.com 으로 문의 부탁드립니다. <br>
-            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=jsongnoti%2Bcs@gmail.com&su=일본 신곡 알림이 문의">
-              PC용 지메일
-            </a>
-            또는
-            <a href="mailto:jsongnoti+cs@gmail.com?subject=일본 신곡 알림이 문의">
-              모바일용 메일
-            </a>
-            링크를 클릭하시면 바로 메일을 작성할 수 있습니다.
-          </p>
-        </div>
+      <div class="u-video glass">
+        <video autoplay muted loop playsinline preload="metadata">
+          <source src="/static/assets/mov/noti.webm" th:src="@{/assets/mov/noti.webm}" type="video/webm">
+          <source src="/static/assets/mov/noti.mp4" th:src="@{/assets/mov/noti.mp4}" type="video/mp4">
+          노래방 일본 신곡 알림이 이메일 수신 동영상
+        </video>
+        <div class="video-shadow dark-mode-element"></div>
+      </div>
+      <div class="u-text glass sheen">
+        <h3>이메일 수신</h3>
+        <p>
+          노래방에 일본 신곡이 추가되면 오전 10시에 등록된 이메일로 알려드려요.
+          메일이 오지 않으면 스팸함을 확인해 주세요.
+        </p>
+        <p>
+          보통 TJ는 매주 화요일과 목요일에 신곡이 추가되고, 금영은 비정기적으로 추가돼요.
+        </p>
+      </div>
+    </div>
+    <div class="usage-row" data-lift style="--dx:30%; --dy:72%">
+      <div class="drops" aria-hidden="true">
+        <i style="--s:140px; --dd:0s"></i>
+        <i style="--s:240px; --dd:.16s"></i>
+        <i style="--s:350px; --dd:.32s"></i>
+      </div>
+      <div class="u-video glass">
+        <video autoplay muted loop playsinline preload="metadata">
+          <source src="/static/assets/mov/unsubscribe.webm" th:src="@{/assets/mov/unsubscribe.webm}"
+                  type="video/webm">
+          <source src="/static/assets/mov/unsubscribe.mp4" th:src="@{/assets/mov/unsubscribe.mp4}" type="video/mp4">
+          노래방 일본 신곡 알림이 구독취소 동영상
+        </video>
+        <div class="video-shadow dark-mode-element"></div>
+      </div>
+      <div class="u-text glass sheen">
+        <h3>구독 취소</h3>
+        <p>
+          구독 취소는 페이지 맨 아래의 구독 취소 버튼을 눌러서 할 수 있어요.
+          이메일로 전송된 구독 취소 인증번호를 입력하면 구독이 취소돼요.
+        </p>
+        <p>
+          이메일 인증이 어려우면 문의해 주세요.
+        </p>
+      </div>
+    </div>
+    <div class="usage-row" data-lift style="--dx:74%; --dy:64%">
+      <div class="drops" aria-hidden="true">
+        <i style="--s:130px; --dd:0s"></i>
+        <i style="--s:230px; --dd:.16s"></i>
+        <i style="--s:340px; --dd:.32s"></i>
+      </div>
+      <div class="u-video glass">
+        <img src="/static/assets/img/bg-showcase-3.jpg" th:src="@{/assets/img/bg-showcase-3.jpg}" alt="문의사항 이미지">
+        <div class="video-shadow dark-mode-element"></div>
+      </div>
+      <div class="u-text glass sheen">
+        <h3>문의사항</h3>
+        <p>
+          문의사항은 jsongnoti+cs@gmail.com 으로 보내주세요.
+          <a href="https://mail.google.com/mail/?view=cm&fs=1&to=jsongnoti%2Bcs@gmail.com&su=일본 신곡 알림이 문의">
+            PC용 지메일
+          </a>
+          또는
+          <a href="mailto:jsongnoti+cs@gmail.com?subject=일본 신곡 알림이 문의">
+            모바일용 메일
+          </a>
+          링크를 누르면 바로 메일을 작성할 수 있어요.
+        </p>
       </div>
     </div>
   </section>
@@ -558,7 +603,7 @@
               <div class="input-group justify-content-center">
                 <input class="form-control form-control-lg text-input" id="verifyDeleteCodeInput" type="number"
                        placeholder="4자리 인증 코드 입력" required>
-                <button class="btn btn-outline-secondary btn-lg" id="verifyDeleteSubmitButton"
+                <button class="btn btn-lg" id="verifyDeleteSubmitButton"
                         type="submit">인증하기
                 </button>
               </div>
@@ -566,7 +611,7 @@
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" id="unsubscribeModalCloseButton" class="btn btn-lg btn-outline-secondary"
+          <button type="button" id="unsubscribeModalCloseButton" class="btn btn-lg"
                   data-bs-dismiss="modal">닫기
           </button>
         </div>
@@ -575,7 +620,7 @@
   </div>
 
   <!-- Footer-->
-  <footer class="footer inner-element">
+  <footer class="footer">
     <div class="row">
       <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
         <button type="button" class="btn btn-danger" id="unsubscribeModalButton" data-bs-toggle="modal"
@@ -597,13 +642,13 @@
       <div class="footer-icon-container col-lg-6  text-center text-lg-end">
         <ul class="list-inline mb-0">
           <li class="list-inline-item me-4">&nbsp;
-            <a class="text-primary-emphasis text-decoration-none" href="https://github.com/spiaminto/JsongNoti-web">
+            <a class="text-decoration-none" href="https://github.com/spiaminto/JsongNoti-web">
               Github
               <i class="bi-github fs-3"></i>
             </a>
           </li>
           <li class="list-inline-item contact-mail-pc me-4">
-            <a class="text-primary-emphasis text-decoration-none"
+            <a class="text-decoration-none"
                href="https://mail.google.com/mail/?view=cm&fs=1&to=jsongnoti%2Bcs@gmail.com&su=일본 신곡 알림이 문의"
                target="_blank">
               메일문의
@@ -611,14 +656,15 @@
             </a>
           </li>
           <li class="list-inline-item contact-mail-mobile me-4">
-            <a class="text-primary-emphasis text-decoration-none"
+            <a class="text-decoration-none"
                href="mailto:jsongnoti+cs@gmail.com?subject=일본 신곡 알림이 문의">
               메일문의
               <i class="bi-envelope fs-3"></i>
             </a>
           </li>
+          <!-- 다크모드 토글: light 전용 오버홀 동안 숨김 (footer.css 에서 display:none) -->
           <li class="list-inline-item dark-mode-button">
-            <a class="text-primary-emphasis text-decoration-none"
+            <a class="text-decoration-none"
                href="">
               다크모드
               <i class="bi bi-moon-fill fs-3"></i>

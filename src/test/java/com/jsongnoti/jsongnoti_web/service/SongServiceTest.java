@@ -36,6 +36,7 @@ class SongServiceTest {
                 "singer",
                 "가수",
                 "info",
+                "정보",
                 LocalDate.now()
         );
         when(songRepository.findSongsBetweenTime(any(LocalDate.class), any(LocalDate.class)))

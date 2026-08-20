@@ -1,0 +1,22 @@
+/* ==========================================================================
+   page/search.css — 검색 페이지 전용
+   글래스모피즘 오버홀: 검색 섹션 전체가 하나의 유리 패널이고,
+   그 뒤에 보케(.bokeh)가 깔린다.
+   ========================================================================== */
+
+/* 보케(.bokeh, absolute)의 기준점 */
+#container {
+    position: relative;
+}
+
+.song-search-section {
+    position: relative;
+    z-index: 1; /* 보케 위로 */
+    padding: clamp(1.3rem, 3vw, 2rem);
+}
+
+/* 반사광(::after) 위로 내용을 올린다 */
+.song-search-section > * {
+    position: relative;
+    z-index: 1;
+}

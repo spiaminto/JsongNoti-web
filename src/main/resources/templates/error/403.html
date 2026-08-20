@@ -1,15 +1,20 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Title</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>403 - 제이노티</title>
+    <link href="/static/css/glass.css" th:href="@{/css/glass.css}" rel="stylesheet"/>
+    <link href="/static/css/page/error.css" th:href="@{/css/page/error.css}" rel="stylesheet"/>
 </head>
 <body>
-<h2> 403 에러 </h2>
-<p> 해당 페이지에 접근 권한이 없습니다. </p>
-<button type="button" onclick="location.href='index.html'"
-        th:onclick="|location.href='@{/}'|">
-  홈으로 돌아가기
-</button>
+<main class="error-card glass">
+    <h2>403 에러</h2>
+    <p>해당 페이지에 접근 권한이 없습니다.</p>
+    <button type="button" class="glass-btn" onclick="location.href='index.html'"
+            th:onclick="|location.href='@{/}'|">
+        홈으로 돌아가기
+    </button>
+</main>
 </body>
 </html>

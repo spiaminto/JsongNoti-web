@@ -1,21 +1,37 @@
-#CUSTOM
-application-*.properties
-.Memo/**
-_ai-workflow/**
-_migration/**
-_legacy-ui/**
-.codex/
-AGENTS.md
+#CUSTOM SETTINGS
 buildNumber.txt
 debug.log
-src/main/java/com/jsongnoti/jsongnoti_web/repository/SongRepositoryPostgres.java
-src/test/
+.playwright-mcp/
+.mcp.json
+
+# LOCAL DOCS
+docs/
+.Memo/
+
+# AI
+.agents/
+AGENTS.md
+.codex/
+.claude/
+CLAUDE.md
+
+# OPERATION
+application-*.properties
 src/main/resources/static/assets/**
 src/main/resources/templates/privacy/**
 src/main/resources/templates/terms/**
-docs
-.playwright-mcp/
 
+src/test/
+
+# LEGACY
+src/main/java/com/jsongnoti/jsongnoti_web/repository/SongRepositoryPostgres.java
+_migration/
+
+# ETC
+src/main/resources/static/design-preview/
+static_backup/
+
+# --------------------------------------------------------------------------------------------------------
 
 HELP.md
 .gradle

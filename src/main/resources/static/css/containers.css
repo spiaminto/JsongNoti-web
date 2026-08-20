@@ -1,25 +1,35 @@
-/* 바디, 컨테이너, section, nav, header ====================================================== */
-/*
-  media
-  최소치 360px
-  @media (min-width: 576px)
-  @media (min-width: 768px)
-  @media (min-width: 992px) // 여기서 부터 레이아웃 가로로 확장
-  @media (min-width: 1200px)
-*/
+/* ==========================================================================
+   containers.css — 바디, 컨테이너, section, 상단바 레이아웃
+   글래스모피즘 오버홀: 색·표면 토큰은 glass.css 가 정본이고,
+   이 파일은 페이지 골격(폭·간격·상단바 배치)만 다룬다.
+
+   media 기준 (기존 유지)
+     최소치 360px
+     @media (min-width: 576px)
+     @media (min-width: 768px)
+     @media (min-width: 992px)  // 여기서 부터 레이아웃 가로로 확장
+     @media (min-width: 1200px)
+   ========================================================================== */
 
 body {
-    font-family: 'NanumSquareRound', sans-serif;
+    font-family: 'NanumSquareRound', 'Noto Sans KR', system-ui, sans-serif;
     font-size: calc(0.9rem + 0.3vw);
     min-width: 360px;
 }
 
-section {
-    margin-top: 1.5rem;
+/* .outer-element / .inner-element 는 과거 배경 2단 구성의 흔적으로,
+   지금은 JS(다크모드 트랜지션)가 참조하는 marker 로만 남긴다.
+   표면 표현은 glass.css 의 .glass 를 쓴다. */
+
+/* 콘텐츠 폭: 시안과 동일하게 1140px 에 맞춘다 */
+#container {
+    max-width: 1172px; /* 1140 + 좌우 padding 16px */
+    margin: 0 auto;
+    padding: 96px 16px 0; /* 상단 padding 은 fixed 상단바 자리 */
 }
 
-section:first-of-type {
-    margin-top: 0;
+section {
+    margin-top: 2rem;
 }
 
 @media (min-width: 992px) {
@@ -28,39 +38,53 @@ section:first-of-type {
     }
 }
 
-/* .container width px 설정값 무시 */
-#container .container {
-    max-width: 100%;
+/* ---------- 상단바: 떠 있는 유리 알약 ----------
+   시안의 .top 을 기존 .navbar markup 에 입힌 것.
+   로드 시퀀스(.veil)와 함께 쓰므로 transition 을 합쳐 선언한다 —
+   나중에 선언한 transition shorthand 가 .veil 의 것을 통째로 덮어쓰는
+   결함을 피하기 위함. scrolled 전환(bg·shadow)만 딜레이 0 */
+.navbar {
+    position: fixed;
+    top: 14px;
+    left: 0;
+    right: 0;
+    margin-inline: auto;
+    width: min(1140px, calc(100% - 24px));
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    /* 좌우 padding 은 알약의 둥근 곡선이 끝나는 평평한 지점부터 내용이 놓이도록 */
+    padding: .3rem 1.5rem .3rem 1.75rem;
+    border-radius: 999px;
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    backdrop-filter: blur(22px) saturate(160%);
+    border: 1px solid var(--glass-border);
+    box-shadow:
+        var(--glass-shadow),
+        inset 0 1px 0 rgb(255 255 255 / .85);
+    transition:
+        opacity 1s var(--ease-float) var(--vd, 0s),
+        transform 1s var(--ease-float) var(--vd, 0s),
+        filter 1s var(--ease-float) var(--vd, 0s),
+        background .4s,
+        box-shadow .4s;
 }
 
-/* .container 의 maxwidth 가 px 단위로 맞춰져있는걸 수정 */
-#container {
-    max-width: 95%;
-    margin: 0 auto;
-    height: 100vh;
+/* scroll edge: 콘텐츠가 상단바 아래로 지나갈 때만 재질이 두꺼워진다
+   (.scrolled 는 glass-motion.js 가 scrollY > 8 에서 토글) */
+.navbar.scrolled {
+    background: rgb(255 255 255 / .68);
+    box-shadow:
+        0 14px 34px rgb(30 42 56 / .16),
+        inset 0 1px 0 rgb(255 255 255 / .9);
 }
 
-/* 바디가 패딩 늘려 크기 보정 */
-@media (min-width: 1400px) {
-    #container {
-        max-width: 1280px; /* 최대크기 */
-    }
+/* 상단바 오른쪽 아이콘 메뉴 묶음 */
+.navbar .button-wrapper {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
 }
-
-#container nav {
-    padding: 0.5rem 0;
-}
-
-/* UI 는 외부엘리먼트 (바디) 와 내부엘리먼트 로 구성된다. */
-.outer-element { /* 배경 (사실상 바디)*/
-    background-color: var(--bs-secondary-bg);
-}
-
-.inner-element { /* 하얀색으로 뜨는 엘리먼트 */
-    /*background-color: var(--bs-light-bg-subtle);*/
-    background-color: var(--bs-tertiary-bg);
-    border-radius: 20px;
-    padding: 1.5rem 1rem;
-}
-
-

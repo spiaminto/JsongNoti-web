@@ -21,7 +21,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
 
     @Query("""
             SELECT new com.jsongnoti.jsongnoti_web.repository.SongWithKoreanDto(
-                        s.brand, s.songNumber, s.title, sk.title, s.singer, sk.singer, s.info, s.regDate
+                        s.brand, s.songNumber, s.title, sk.title, s.singer, sk.singer, s.info, sk.info, s.regDate
                         )
                          FROM Song s
                         LEFT JOIN SongKorean sk on s.id = sk.songId
@@ -41,6 +41,10 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     // 유사도 검색 정규화: 표시용 컬럼에는 기호를 유지하고, FUZZY_MATCH 비교 시점에만 양쪽에서
     // REGEXP_REPLACE(LOWER(x), '[^[:alnum:]]', '') 로 문자·숫자만 남김 (기호·공백 제거, 한글·가나·한자 유지)
     // 규칙 변경 시 아래 FUZZY_MATCH 쿼리 전체를 함께 수정할 것
+    //
+    // 정렬: 모든 검색 쿼리는 동점(같은 유사도·같은 등록일) 순서 고정을 위해
+    // 2차 정렬 키(reg_date DESC, id)를 함께 건다. 1차 키만 걸면 DB 가 동점 행의
+    // 순서를 보장하지 않아 같은 검색이 호출마다 다른 순서를 반환한다
 
     @Query(value = """
                 WITH song_fuzzy_matches AS (
@@ -56,7 +60,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
                 FROM SONG_KOREAN sk
                          JOIN song_fuzzy_matches s ON s.id = sk.song_id
                 where s.similarity >= 45
-                ORDER BY s.similarity DESC
+                ORDER BY s.similarity DESC, s.reg_date DESC, s.id
             """, nativeQuery = true)
     List<SongSearchResultDto> findSongByTitleSimilar(String keyword);
 
@@ -74,7 +78,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
                 FROM SONG_KOREAN sk
                          JOIN song_fuzzy_matches s ON s.id = sk.song_id
                 where s.similarity >= 45
-                ORDER BY s.similarity DESC
+                ORDER BY s.similarity DESC, s.reg_date DESC, s.id
             """, nativeQuery = true)
     List<SongSearchResultDto> findSongBySingerSimilar(String keyword);
 
@@ -87,7 +91,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
             FROM song s
                 JOIN song_korean sk ON s.id = sk.song_id
             WHERE sk.singer_prior LIKE '%' || :keyword || '%'
-            ORDER BY s.reg_date DESC
+            ORDER BY s.reg_date DESC, s.id
             """, nativeQuery = true)
     List<SongSearchResultDto> findSongBySingerPrior(String keyword);
 
@@ -107,7 +111,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
             FROM SONG s
                      JOIN song_korean_fuzzy_matches sk ON s.id = sk.song_id
             WHERE sk.similarity >= 45
-            ORDER BY sk.similarity DESC
+            ORDER BY sk.similarity DESC, s.reg_date DESC, s.id
             """, nativeQuery = true)
     List<SongSearchResultDto> findSongByKoreanTitleSimilar(String keyword);
 
@@ -126,7 +130,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
             FROM SONG s
                      JOIN song_korean_fuzzy_matches sk ON s.id = sk.song_id
             where sk.similarity >= 55
-            ORDER BY sk.similarity DESC
+            ORDER BY sk.similarity DESC, s.reg_date DESC, s.id
             """, nativeQuery = true)
     List<SongSearchResultDto> findSongByKoreanTitleReadSimilar(String keyword);
 
@@ -144,7 +148,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
             FROM SONG s
                      JOIN song_korean_fuzzy_matches sk ON s.id = sk.song_id
             where sk.similarity >= 45
-            ORDER BY sk.similarity DESC
+            ORDER BY sk.similarity DESC, s.reg_date DESC, s.id
             """, nativeQuery = true)
     List<SongSearchResultDto> findSongByKoreanSingerSimilar(String keyword);
 
@@ -162,7 +166,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
             FROM SONG s
                      JOIN song_korean_fuzzy_matches sk ON s.id = sk.song_id
             where sk.similarity >= 55
-            ORDER BY sk.similarity DESC
+            ORDER BY sk.similarity DESC, s.reg_date DESC, s.id
             """, nativeQuery = true)
     List<SongSearchResultDto> findSongByKoreanSingerReadSimilar(String keyword);
 
@@ -183,7 +187,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
                          WHEN LOWER(REPLACE(sk.info_aliases, ' ', '')) = LOWER(REPLACE(:keyword, ' ', '')) THEN 0
                          ELSE 1
                      END,
-                     s.reg_date DESC
+                     s.reg_date DESC, s.id
             """, nativeQuery = true)
     List<SongSearchResultDto> findSongByInfoAliases(String keyword);
 
@@ -202,7 +206,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
             FROM song s
                 JOIN song_korean_info_fuzzy_matches sk ON s.id = sk.song_id
             WHERE sk.similarity >= 45
-            ORDER BY sk.similarity DESC
+            ORDER BY sk.similarity DESC, s.reg_date DESC, s.id
             """, nativeQuery = true)
     List<SongSearchResultDto> findSongByKoreanInfoSimilar(String keyword);
 
@@ -221,7 +225,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
             FROM song_korean sk
                 JOIN song_info_fuzzy_matches s ON s.id = sk.song_id
             WHERE s.similarity >= 45
-            ORDER BY s.similarity DESC
+            ORDER BY s.similarity DESC, s.reg_date DESC, s.id
             """, nativeQuery = true)
     List<SongSearchResultDto> findSongByInfoSimilar(String keyword);
 
@@ -235,7 +239,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
             WHERE sk.title_origin LIKE '%' || :keyword || '%'
                            OR sk.title LIKE '%' || :keyword || '%'
                            OR sk.title_read LIKE '%' || :keyword || '%'
-            order by s.reg_date desc
+            order by s.reg_date desc, s.id
             """, nativeQuery = true)
     List<SongSearchResultDto> findSongByTitleLikeOriginOrKoreanOrRead(String keyword);
 
@@ -246,7 +250,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
             WHERE sk.singer_origin LIKE '%' || :keyword || '%'
                            OR sk.singer LIKE '%' || :keyword || '%'
                            OR sk.singer_read LIKE '%' || :keyword || '%'
-            order by s.reg_date desc
+            order by s.reg_date desc, s.id
             """, nativeQuery = true)
     List<SongSearchResultDto> findSongBySingerLikeOriginOrKoreanOrRead(String keyword);
 
@@ -258,7 +262,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
             WHERE LOWER(s.info) LIKE '%' || LOWER(:keyword) || '%'
                OR LOWER(sk.info) LIKE '%' || LOWER(:keyword) || '%'
                OR LOWER(sk.info_aliases) LIKE '%' || LOWER(:keyword) || '%'
-            ORDER BY s.reg_date DESC
+            ORDER BY s.reg_date DESC, s.id
             """, nativeQuery = true)
     List<SongSearchResultDto> findSongByInfoLikeOriginOrKoreanOrAliases(String keyword);
 

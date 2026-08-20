@@ -1,24 +1,44 @@
+/* ==========================================================================
+   footer.css — 푸터
+   글래스모피즘 오버홀: 푸터는 유리판 없이 바탕 위에 바로 놓는다 (시안과 동일).
+   기존 Bootstrap grid(.row/.col-lg-6) 골격은 유지하고 색·간격만 다듬는다.
+   ========================================================================== */
+
 .footer {
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
+    margin-top: 2rem;
+    padding: 1rem 0 3rem;
 }
 
 .footer p {
-    margin-bottom: 0; /* 1rem 이던거 초기화 */
+    margin-bottom: 0;
+    font-size: .8rem;
+    color: var(--ink-2);
+}
+
+/* Bootstrap 의 .text-muted 색 대신 잉크 톤으로 통일 */
+.footer .text-muted,
+.footer a.text-muted {
+    color: var(--ink-2) !important;
 }
 
 .footer .btn-danger {
     margin-bottom: 1rem;
-}
-
-@media (min-width: 992px) {
-    .footer .btn-danger {
-        font-size: calc(0.9rem + 0.3vw);
-    }
+    font-size: calc(0.8rem + 0.2vw);
 }
 
 .footer-icon-container {
     margin-top: 1rem;
+}
+
+.footer-icon-container a {
+    font-weight: 800;
+    color: var(--ink-2) !important; /* .text-primary-emphasis 를 잉크 톤으로 */
+}
+
+.footer-icon-container a:hover {
+    color: var(--ink) !important;
+    text-decoration: underline !important;
+    text-underline-offset: 4px;
 }
 
 @media (min-width: 992px) {
@@ -28,8 +48,7 @@
     }
 }
 
-
-
+/* 메일문의 링크: PC 는 gmail 웹, 모바일은 mailto */
 .contact-mail-mobile {
     display: inline-block;
 }
@@ -48,11 +67,16 @@
     }
 }
 
+/* 다크모드 토글: light 전용 오버홀 동안 숨김 (docs/_temp/ui-overhaul.md 참고) */
+.dark-mode-button {
+    display: none !important;
+}
+
 .google-analytics-button {
     font-size: 1em;
     border: 0;
     background-color: transparent;
     cursor: pointer;
     padding: 0.1rem;
-    color: #6c757d ;
+    color: var(--ink-2);
 }

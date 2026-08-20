@@ -19,6 +19,7 @@ public class SongWithKoreanDto {
     private String singerKorean;
 
     private String info;
+    private String infoKorean;
 
     private LocalDate regDate;
 }
