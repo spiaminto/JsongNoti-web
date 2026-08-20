@@ -73,16 +73,8 @@ $(function () {
                         renderSingleSearchResults(data.songs || [], data.message);
                     }
                 };
-                // 검색 페이지는 결과 컬랩스를 glass-collapse 컴포넌트가 맡는다 —
-                // 이미 펼쳐져 있으면 내용 교체를 높이 모핑과 함께 애니메이션한다.
-                // 컴포넌트가 없는 페이지(애창곡)는 기존 경로 그대로
-                let gc = window.GlassCollapse && window.GlassCollapse.of('#songSearchResultCollapse');
-                if (gc && gc.isOpen()) {
-                    gc.swap(render);
-                } else {
-                    render();
-                    showSearchResultCollapse();
-                }
+                render();
+                showSearchResultCollapse();
             },
             error: function (xhr) {
                 let message = xhr.responseJSON.message;

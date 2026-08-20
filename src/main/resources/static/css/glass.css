@@ -93,9 +93,26 @@ html {
     scrollbar-gutter: stable;
 }
 
-/* 오전 10시의 빛: 좌상단 해 + 곳곳의 빛 웅덩이. 시안 값 그대로 */
 body {
     color: var(--ink);
+    background: var(--bg);
+    min-height: 100vh;
+    /* overflow-x 는 html 의 clip 하나로 처리한다. body 에도 걸면 html 이
+       clip 인 상태에서는 body 가 자기만의 스크롤 컨테이너가 되어
+       창 스크롤바와 별개의 내부 스크롤바가 하나 더 생긴다 */
+}
+
+/* 오전 10시의 빛: 좌상단 해 + 곳곳의 빛 웅덩이. 시안 값 그대로 —
+   단, body 가 아니라 뷰포트 고정 레이어에 칠한다. body 에 직접 칠하면
+   그라디언트 기하가 문서 높이에 묶여, collapse 등 height 전환이 매 프레임
+   문서 전체 재도장을 일으킨다. background-attachment: fixed 는 iOS Safari
+   미지원이라 fixed 의사요소를 쓴다 */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;   /* 보케(z-index: -1)보다 아래 */
+    pointer-events: none;
     background:
         radial-gradient(900px 600px at 12% -4%, rgb(var(--sun) / .55), transparent 62%),
         radial-gradient(1100px 800px at 88% 12%, rgb(205 226 244 / .6), transparent 60%),
@@ -105,10 +122,6 @@ body {
         radial-gradient(850px 680px at 88% 82%, rgb(196 220 238 / .5), transparent 62%),
         radial-gradient(700px 550px at 22% 94%, rgb(var(--sun) / .26), transparent 60%),
         linear-gradient(180deg, #edf2f6 0%, var(--bg) 45%, #e4ebf1 100%);
-    min-height: 100vh;
-    /* overflow-x 는 html 의 clip 하나로 처리한다. body 에도 걸면 html 이
-       clip 인 상태에서는 body 가 자기만의 스크롤 컨테이너가 되어
-       창 스크롤바와 별개의 내부 스크롤바가 하나 더 생긴다 */
 }
 
 /* 키보드 포커스는 유리 위에서도 명확하게 */
