@@ -87,6 +87,50 @@
     display: inline-block;
 }
 
+/* 검색 대기 placeholder: bootstrap 기본값(currentColor 50% — 잉크색 막대)은
+   유리 위에서 탁해, 팔레트의 옅은 블루그레이와 둥근 모서리로 다듬는다.
+   wave(밝은 띠가 쓸고 지나가는 mask 애니메이션)는 행(tr)마다 건다 —
+   tbody 통짜 마스크는 표 높이에 비례해 띠가 늘어나, 키 큰 표에서 아래쪽
+   행들이 사이클 내내 바랜 채 머문다. 행마다 걸면 띠가 행 높이 안에서만
+   지나가고 전 행이 동기로 반짝인다 */
+.song-table .placeholder {
+    background-color: rgb(154 178 200 / .35);
+    border-radius: 6px;
+}
+
+.song-table .placeholder-wave {
+    /* bootstrap 기본 mask 띠는 20% 감쇠뿐이라 옅은 막대 위에서 안 보인다 —
+       띠를 55% 감쇠로 깊게 판다. 주기는 1.2s: 0.5s 는 촐싹거리고 0.8s 는
+       빨라서 잘 안 보인다는 피드백을 거친 값. 공개 시점은 JS 가 사이클
+       경계(animationiteration)에 정렬하므로 주기를 바꿔도 잘리지 않는다 */
+    -webkit-mask-image: linear-gradient(130deg, #000 55%, rgb(0 0 0 / .45) 75%, #000 95%);
+    mask-image: linear-gradient(130deg, #000 55%, rgb(0 0 0 / .45) 75%, #000 95%);
+    animation-duration: 1.2s;
+}
+
+/* 행 단위 wave 가 glass.css 의 행 리빌 규칙에 눌리지 않게 한다 —
+   [data-lift].is-lit tbody tr(row-in, 0-2-2)과 컬랩스 스태거 해제
+   블록(animation: none, 0-3-2)이 bootstrap .placeholder-wave(0-1-0)의
+   애니메이션을 덮어쓰므로, 그보다 높거나 같은 특정도로 wave 를 되살린다
+   (동률은 이 파일이 glass.css 뒤에 로드되어 이긴다) */
+tbody tr.placeholder-wave,
+[data-lift].is-lit tbody tr.placeholder-wave,
+[data-lift].is-lit .collapse tbody tr.placeholder-wave {
+    opacity: 1;
+    transform: none;
+    animation: placeholder-wave 1.2s linear infinite;
+}
+
+/* 위 규칙이 bootstrap 의 reduced-motion 처리(.placeholder-wave 애니메이션
+   해제)까지 눌러 버리므로 여기서 같은 해제를 복원한다 */
+@media (prefers-reduced-motion: reduce) {
+    tbody tr.placeholder-wave,
+    [data-lift].is-lit tbody tr.placeholder-wave,
+    [data-lift].is-lit .collapse tbody tr.placeholder-wave {
+        animation: none;
+    }
+}
+
 
 
 

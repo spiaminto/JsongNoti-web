@@ -9,7 +9,9 @@
  *  4) 반사광: .sheen 유리에서 포인터를 따라 --mx/--my 를 갱신
  *  5) 보케: .bokeh i 의 위치·크기를 로드마다 랜덤으로 흩뿌린다
  *  6) 접힘 스크롤 팔로우: index 더보기를 최하단 근처에서 접으면 화면을
- *     토글 버튼이 중앙에 오는 위치로 감속 이동시킨다
+ *     토글 버튼이 중앙에 오는 위치로 감속 이동시킨다. followScroll 은
+ *     window.glassMotion 으로 공개되어 검색 더보기 접힘과 애창곡 노래
+ *     클릭 스크롤(song-search.js)도 쓴다
  *
  * 컬랩스의 높이 전환 자체에는 관여하지 않는다 — 전 페이지 순정 부트스트랩
  * collapse 를 쓴다. (과거 6·7번 높이 예약 구역은 body 그라디언트가 문서
@@ -211,6 +213,12 @@
 
         collapseEl.addEventListener("show.bs.collapse", cancelFollowScroll);
     });
+
+    // 다른 스크립트(검색 더보기 등)도 같은 감속 팔로우를 쓸 수 있게 공개
+    window.glassMotion = {
+        followScroll: followScroll,
+        cancelFollowScroll: cancelFollowScroll
+    };
 
     } // init 끝
 })();

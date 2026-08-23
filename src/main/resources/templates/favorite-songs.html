@@ -453,6 +453,9 @@
         </a>
       </p>
       <p> 검색어는 <b>띄어쓰기를 구분</b>하며, <b>검색어를 짧게 입력할 경우 결과가 누락될 수 있습니다.</b></p>
+      <p><em class="text-muted unified-hint">
+        노래제목, 아티스트명, 작품명을 한 번에 검색합니다.
+      </em></p>
       <p><em class="text-muted singer-hint">
         <b>검색 예시</b> : Official髭男dism, 오피셜 히게 단디즘, 히게단 (약칭 일부 지원, 2025년 11월 기준 433건 등록)
       </em></p>
@@ -478,7 +481,11 @@
       </div>
       <div class="search-type-check-wrapper input-wrapper mb-2">
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="searchType" id="searchTypeTitle" value="TITLE" checked>
+          <input class="form-check-input" type="radio" name="searchType" id="searchTypeUnified" value="UNIFIED" checked>
+          <label class="form-check-label" for="searchTypeUnified">통합검색</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="searchType" id="searchTypeTitle" value="TITLE">
           <label class="form-check-label" for="searchTypeTitle">노래제목</label>
         </div>
         <div class="form-check form-check-inline">
@@ -492,8 +499,8 @@
       </div>
       <div class="input-group justify-content-center">
         <input type="text" name="keyword" id="searchSongInput" class="form-control form-control-lg text-input "
-               placeholder="노래 제목 입력 (최소 2자)"
-               aria-label="노래 제목 입력" aria-describedby="" minlength="2" maxlength="20">
+               placeholder="검색어 입력 (최소 2자)"
+               aria-label="통합검색어 입력" aria-describedby="" minlength="2" maxlength="20">
         <button id="searchSongButton" class="btn" type="submit">검색하기</button>
       </div>
     </form>
@@ -516,28 +523,31 @@
             <p class="mb-0">노래 제목을 누르면 애창곡 추가 폼에 입력됩니다.</p>
             <p class="text-muted small mb-1">(한글 표시는 참고용으로, 정확하지 않습니다)</p>
           </div>
-          <div id="songSearchMessage" class="alert alert-info d-none mx-2 mt-2 mb-0" role="status" aria-live="polite"></div>
-          <div class="song-table-border mt-2">
-            <table class="table-hover song-table" id="songSearchResultTable">
-              <thead>
-              <tr>
-                <th>번호</th>
-                <th>노래</th>
-              </tr>
-              </thead>
-              <tbody id="songSearchResultTableBody">
-              </tbody>
-            </table>
-          </div>
-          <div class="mt-4 small text-center">
-            <p class="mb-0">
-              원하는 검색 결과가 없는 경우 추가 검색 버튼 클릭 <br>
-            </p>
-            <button id="additionalSongSearchButton" class="btn btn-sm mt-2 ms-auto">
-              추가 검색
-            </button>
-            <p class="mb-0 mt-2">
-              원하는 곡이 검색되지 않을경우 홈페이지 아래의 <b>메일문의 링크를 눌러 문의</b>주시면 빠르게 반영하겠습니다. </p>
+          <div id="unifiedSongSearchGroups" class="d-none"></div>
+          <div id="singleSongSearchResult">
+            <div id="songSearchMessage" class="alert alert-info d-none mx-2 mt-2 mb-0" role="status" aria-live="polite"></div>
+            <div class="song-table-border mt-2">
+              <table class="table-hover song-table" id="songSearchResultTable">
+                <thead>
+                <tr>
+                  <th>번호</th>
+                  <th>노래</th>
+                </tr>
+                </thead>
+                <tbody id="songSearchResultTableBody">
+                </tbody>
+              </table>
+            </div>
+            <div class="mt-4 small text-center">
+              <p class="mb-0">
+                원하는 검색 결과가 없는 경우 추가 검색 버튼 클릭 <br>
+              </p>
+              <button id="additionalSongSearchButton" class="btn btn-sm mt-2 ms-auto">
+                추가 검색
+              </button>
+              <p class="mb-0 mt-2">
+                원하는 곡이 검색되지 않을경우 홈페이지 아래의 <b>메일문의 링크를 눌러 문의</b>주시면 빠르게 반영하겠습니다. </p>
+            </div>
           </div>
         </div>
       </div>

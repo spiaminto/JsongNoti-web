@@ -458,6 +458,54 @@ mark,
     to { opacity: 1; transform: none; }
 }
 
+/* ---------- 더보기 행 리빌: 표 일부 행(d-none) 펼침 ----------
+   통합검색 더보기(song-search.js)가 쓴다. 래퍼 height 전환(.more-animating)과
+   함께, 드러나는 행이 index 리빌과 같은 어휘(row-in)로 하나씩 떠오른다.
+   딜레이는 JS 가 --rd 로 주는 압축 계단(행당 70ms, 상한 650ms) — 한 번에
+   최대 45행이 드러나므로 index 의 100ms 계단을 그대로 쓰면 꼬리가 4초를
+   넘는다. 높이 전환과 행 스태거의 동시 진행은 3턴에서 버벅임으로 껐던
+   조합이지만, 버벅임의 진범(문서 높이에 묶인 body 그라디언트)이 제거되어
+   되살린다. 두 번째 선택자는 위 컬랩스 스태거 해제 블록(0-3-2)보다
+   특정도를 높여 이긴다 */
+tbody tr.more-reveal,
+[data-lift].is-lit .collapse tbody tr.more-reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    animation: row-in .7s var(--ease-float) var(--rd, 0s) both;
+}
+
+/* 접는 동안은 리빌을 멈춘다 — 접힘 측정과 종료의 d-none 토글이 display
+   복귀마다 애니메이션을 재시작시키는 것을 막는다 */
+tbody tr.more-reveal.more-settled,
+[data-lift].is-lit .collapse tbody tr.more-reveal.more-settled {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    transition: opacity .18s ease;
+}
+
+/* 접힘 1박자: 내용을 먼저 지운다 — 행이 보인 채 쓸려 올라가는 인상
+   (18턴 피드백)을 없애고, 빈 다음에 판이 접힌다 (펼침의 거울상) */
+tbody tr.more-reveal.more-settled.more-hide,
+[data-lift].is-lit .collapse tbody tr.more-reveal.more-settled.more-hide {
+    opacity: 0;
+}
+
+/* 더보기 래퍼 높이 전환 — 순정 bootstrap collapse 와 같은 박자.
+   clip 은 .song-table-border 상시 overflow: hidden 이 이미 맡고 있다 */
+.song-table-border.more-animating {
+    transition: height .35s ease;
+}
+
+/* 컬랩스 안에 나중에 삽입되는 표(추가검색 placeholder·갱신 결과)는 위
+   table-in(2박자 통짜 떠오름)을 끈다 — placeholder 는 즉시 보여야 하고,
+   갱신 결과는 행 스태거(.more-reveal)가 이중 fade 없이 단독으로 맡는다 */
+[data-lift] .collapsing .song-table.no-table-in,
+[data-lift] .collapse.show .song-table.no-table-in {
+    animation: none;
+    opacity: 1;
+}
+
 /* ---------- 반사광: 포인터를 따라오는 하이라이트 ----------
    유리가 빛을 받는 재질임을 드러낸다. sheen 이 붙은 유리에 공통 적용.
    --mx/--my 는 glass-motion.js 가 pointermove 마다 갱신 */
@@ -493,6 +541,8 @@ mark,
     [data-lift] { opacity: 1; transform: none; filter: none; }
     [data-lift] tbody tr { animation: none; opacity: 1; transform: none; }
     [data-lift] .collapsing .song-table, [data-lift] .collapse.show .song-table { animation: none; }
+    tbody tr.more-reveal, [data-lift].is-lit .collapse tbody tr.more-reveal { animation: none; opacity: 1; transform: none; }
+    .song-table-border.more-animating { transition: none; }
     .sheen::after { display: none; }
     .btn:hover, .glass-btn:hover { transform: none; }
 }
