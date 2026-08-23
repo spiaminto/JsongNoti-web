@@ -20,12 +20,14 @@
              div.song-singer              ← 아티스트
    ========================================================================== */
 
-/* ---------- 표 래퍼: 유리판 ---------- */
+/* ---------- 표 래퍼 ----------
+   C 플랫(19턴): 표를 감싸던 안쪽 유리판(배경·외곽선·그림자)을 걷어냈다 —
+   유리 타일 안에 또 유리판이 앉는 "유리 속 유리"가 어색하고, Apple HIG 도
+   유리는 기능 레이어 전용이지 콘텐츠 레이어에 쓰지 말라고 한다. 행은
+   바깥 유리 타일 위에 직접 앉고, "표의 시작"은 표 제목(h2)의 밑선이 맡는다.
+   래퍼 자체는 더보기 높이 전환의 대상이자 클리핑 박스로 남는다 */
 .song-table-border {
-    border: 1px solid rgb(255 255 255 / .65);
-    border-radius: 20px;
     overflow: hidden;
-    background: rgb(255 255 255 / .35);
 }
 
 /* ---------- 표 배치 ----------
@@ -56,7 +58,8 @@
 }
 
 .song-panel .song-table-border {
-    margin-top: 1.1rem;
+    /* C 플랫: 행이 제목 밑선 바로 아래에서 시작한다 (td 패딩이 호흡을 맡음) */
+    margin-top: 0;
 }
 
 /* ---------- 표 자체 ---------- */
@@ -68,6 +71,13 @@
     text-align: left;
     margin-bottom: 0;
     border-style: hidden;
+}
+
+/* C 플랫(19턴): 번호/노래 헤더 띠도 걷는다 — 번호 열은 자명하고, 표의
+   시작 경계는 제목 밑선이 맡는다. 마크업과 아래 th 스타일은 남겨 둔다
+   (되돌림 대비 + JS 가 placeholder 표에 같은 마크업을 만든다) */
+.song-table thead {
+    display: none;
 }
 
 /* 표 헤더: 반투명 tint 띠로 본문과 위계를 나눈다.
@@ -119,6 +129,9 @@
 
 /* ---------- 번호 칸 ---------- */
 .song-number {
+    /* thead 가 숨어 fixed 레이아웃의 열 폭 기준이 없으므로 첫 행 td 가
+       번호 열 폭을 선언한다 (기존 thead th:first-child 의 5.2rem 이관) */
+    width: 5.2rem;
     text-align: center;
     padding-left: .5rem !important;
     padding-right: .5rem !important;
@@ -205,7 +218,10 @@ a.song-title-text:hover {
     background: rgb(255 255 255 / .5);
 }
 
-/* ---------- 표 제목 (h2) + 추가일 chip ---------- */
+/* ---------- 표 제목 (h2) + 추가일 chip ----------
+   C 플랫(19턴): 판과 헤더 띠가 사라진 자리에서 제목 밑선이 "표의 시작"을
+   맡는다. 밑선 색은 기본 중립 잉크, 브랜드 표는 :has() 로 브랜드 잉크
+   (thead tint 가 지니던 TJ/금영 식별을 밑선이 이어받는다) */
 .song-header-text {
     position: relative; /* 애창곡 화면의 header 버튼(position-absolute) 기준점 */
     display: flex;
@@ -214,7 +230,17 @@ a.song-title-text:hover {
     gap: .6rem;
     text-align: center;
     font-size: 1.3rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0;
+    padding-bottom: .55rem;
+    border-bottom: 2px solid rgb(100 125 155 / .45);
+}
+
+.song-panel:has(.table-tj) .song-header-text {
+    border-bottom-color: rgb(147 58 5 / .4); /* --tj-ink 계열 */
+}
+
+.song-panel:has(.table-ky) .song-header-text {
+    border-bottom-color: rgb(47 84 149 / .4); /* --ky-ink 계열 */
 }
 
 .song-header-subtext {
@@ -235,10 +261,12 @@ a.song-title-text:hover {
 
 /* 컬랩스 래퍼: 유리판(.song-table-border)의 margin·border 를 래퍼 안쪽에 가둬
    height 애니메이션에 함께 접히게 한다 (6턴-2 덜컥임 해결).
-   overflow 를 상시로 걸어 BFC 를 유지해야 margin 이 펼친 상태에서
-   래퍼 밖으로 새어나가(margin collapsing) 닫기 시작 프레임에 튀지 않는다 */
+   BFC 를 상시로 유지해야 margin 이 펼친 상태에서 래퍼 밖으로 새어나가
+   (margin collapsing) 닫기 시작 프레임에 튀지 않는다 — overflow: hidden
+   대신 flow-root 로 만들어 내용물을 잘라내지 않는다(19턴). 전환 중에는
+   bootstrap .collapsing 이 자체 overflow 를 건다 */
 .song-table-collapse {
-    overflow: hidden;
+    display: flow-root;
 }
 
 .last-month-show-button-wrapper {

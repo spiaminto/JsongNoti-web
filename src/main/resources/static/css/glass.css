@@ -95,7 +95,10 @@ html {
 
 body {
     color: var(--ink);
-    background: var(--bg);
+    /* 배경은 칠하지 않는다 — body 에 불투명 배경을 주면 음수 z 로 깔리는
+       빛 웅덩이 필드(body::before)와 보케가 그 밑에 묻혀 안 보인다.
+       바탕색은 html(#e4ebf1)과 필드의 마지막 linear-gradient 층이 맡는다 */
+    background: transparent;
     min-height: 100vh;
     /* overflow-x 는 html 의 clip 하나로 처리한다. body 에도 걸면 html 이
        clip 인 상태에서는 body 가 자기만의 스크롤 컨테이너가 되어
@@ -320,6 +323,39 @@ mark,
 /* ---------- 햇살 막대 ----------
    페이지 최상단에 고정된 자리를 차지하고, 스크롤하면 함께 밀려 올라간다.
    개별 막대의 위치·폭·불투명도·블러·딜레이는 markup 의 inline 변수로 지정 */
+/* ---------- 배경: 씻어낸 노래방 사진 ----------
+   시안 검토에서 확정한 "배경 모드". 첫 화면 뒤에 채도 낮춘 사진이 깔리고
+   유리(히어로·상단바)가 그것을 실제로 블러한다. 스크롤하면 함께 밀려
+   올라간다. 원래 index 전용(page/index.css)이었으나 19턴에 검색 페이지도
+   같은 배경을 쓰게 되어 배경 연출 절로 이동 */
+.photo-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 105vh;
+    background: url("../assets/img/karaoke.jpg") center / cover;
+    opacity: .55;
+    pointer-events: none;
+    /* 가장자리를 타원형으로 씻어내 바탕과 잇는다 */
+    -webkit-mask-image: radial-gradient(115% 90% at 50% 30%, #000 40%, transparent 88%);
+    mask-image: radial-gradient(115% 90% at 50% 30%, #000 40%, transparent 88%);
+    filter: saturate(.88) brightness(1.05);
+    z-index: 0;
+}
+
+/* 아래로 갈수록 바탕색에 녹아 사라진다 */
+.photo-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+        rgb(255 255 255 / .18) 0%,
+        rgb(255 255 255 / .06) 35%,
+        rgb(236 241 245 / .55) 70%,
+        rgb(234 240 244 / .95) 96%);
+}
+
 .sky {
     position: absolute;
     inset: 0 0 auto 0;
@@ -361,9 +397,16 @@ mark,
    위치·크기는 glass-motion.js 가 로드마다 랜덤으로 흩뿌린다 */
 .bokeh {
     position: absolute;
-    inset: -60px 0;
+    /* 점이 영역 밖으로 튀어나와도 문서 스크롤 높이에 관여하지 못하게
+       overflow 로 자른다 — 없으면 컬랩스로 영역이 줄 때 하단 점(특히
+       페이드아웃 중인 추가 점)이 사라질 때까지 스크롤이 길게 남는다.
+       좌우는 600px 씩 넓혀 두는데, 기준 영역이 뷰포트보다 좁은 페이지
+       (index·애창곡 섹션)에서 경계에 걸친 점이 세로 직선으로 잘리는 것을
+       화면 밖으로 밀어내기 위함이다. JS 산포는 이 여백을 빼고 계산한다 */
+    inset: -60px -600px;
     z-index: -1;
     pointer-events: none;
+    overflow: hidden;
 }
 
 .bokeh i {

@@ -42,15 +42,31 @@
   <script src="/static/js/song-search.js" th:src="@{/js/song-search.js}" type="module"></script>
 </head>
 <body class="outer-element">
+
+<!-- 배경 연출: 씻어낸 히어로 사진 + 햇살 (index 와 동일 구성) -->
+<div class="photo-bg" aria-hidden="true"></div>
+<div class="sky" aria-hidden="true">
+  <span class="ray" style="--x:-6%;  --w:120px; --a:.50; --b:22px; --d:.05s"></span>
+  <span class="ray" style="--x:4%;   --w:52px;  --a:.62; --b:10px; --d:.22s"></span>
+  <span class="ray" style="--x:11%;  --w:88px;  --a:.45; --b:16px; --d:.12s"></span>
+  <span class="ray" style="--x:19%;  --w:34px;  --a:.68; --b:7px;  --d:.38s"></span>
+  <span class="ray" style="--x:26%;  --w:140px; --a:.34; --b:26px; --d:.18s"></span>
+  <span class="ray" style="--x:37%;  --w:60px;  --a:.52; --b:12px; --d:.48s"></span>
+  <span class="ray" style="--x:47%;  --w:96px;  --a:.30; --b:20px; --d:.30s"></span>
+  <span class="ray" style="--x:58%;  --w:44px;  --a:.42; --b:9px;  --d:.58s"></span>
+</div>
+
 <div id="container">
 
-  <!-- 보케: 유리 패널 뒤에 깔리는 빛 잔상. 위치·크기는 로드마다 랜덤 -->
+  <!-- 보케: 히어로 사진의 조명 방울 잔상 (index 와 동일 톤).
+       위치·크기는 로드마다 랜덤 -->
   <div class="bokeh" aria-hidden="true">
-    <i style="--s:340px; --x:-6%;  --y:2%;  --c:255 186 110; --o:.38"></i>
-    <i style="--s:220px; --x:52%;  --y:-2%; --c:255 150 130; --o:.30"></i>
-    <i style="--s:320px; --x:84%;  --y:18%; --c:150 190 240; --o:.36"></i>
-    <i style="--s:200px; --x:10%;  --y:48%; --c:255 200 130; --o:.28"></i>
-    <i style="--s:280px; --x:80%;  --y:66%; --c:150 190 240; --o:.30"></i>
+    <i style="--s:380px; --x:-8%;  --y:-6%; --c:255 186 110; --o:.42"></i>
+    <i style="--s:180px; --x:44%;  --y:-4%; --c:255 150 130; --o:.35"></i>
+    <i style="--s:140px; --x:88%;  --y:2%;  --c:255 160 140; --o:.30"></i>
+    <i style="--s:320px; --x:78%;  --y:35%; --c:150 190 240; --o:.38"></i>
+    <i style="--s:220px; --x:28%;  --y:70%; --c:255 200 130; --o:.30"></i>
+    <i style="--s:260px; --x:55%;  --y:85%; --c:255 186 110; --o:.28"></i>
   </div>
 
   <!-- Navigation: 떠 있는 유리 알약 -->
@@ -262,7 +278,11 @@
     </div>
   </section>
 
-  <!-- Footer-->
+</div> <!-- /container -->
+
+<!-- Footer: 문서 바닥의 흰 지대(footer-zone) 위에 앉는다.
+     zone 이 사진·배경을 흰색 그라데이션으로 씻어내리며 footer 를 받친다 -->
+<div class="footer-zone">
   <footer class="footer mt-4">
     <div class="container">
       <div class="row">
@@ -315,8 +335,8 @@
       </div>
     </div>
   </footer>
+</div> <!-- /footer-zone -->
 
-</div> <!-- /container -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

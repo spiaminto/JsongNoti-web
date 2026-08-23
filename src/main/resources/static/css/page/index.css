@@ -9,36 +9,8 @@
     padding-top: 0;
 }
 
-/* ---------- 배경: 씻어낸 노래방 사진 ----------
-   시안 검토에서 확정한 "배경 모드". 첫 화면 뒤에 채도 낮춘 사진이 깔리고
-   유리(히어로·상단바)가 그것을 실제로 블러한다. 스크롤하면 함께 밀려 올라간다 */
-.photo-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 105vh;
-    background: url("../../assets/img/karaoke.jpg") center / cover;
-    opacity: .55;
-    pointer-events: none;
-    /* 가장자리를 타원형으로 씻어내 바탕과 잇는다 */
-    -webkit-mask-image: radial-gradient(115% 90% at 50% 30%, #000 40%, transparent 88%);
-    mask-image: radial-gradient(115% 90% at 50% 30%, #000 40%, transparent 88%);
-    filter: saturate(.88) brightness(1.05);
-    z-index: 0;
-}
-
-/* 아래로 갈수록 바탕색에 녹아 사라진다 */
-.photo-bg::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg,
-        rgb(255 255 255 / .18) 0%,
-        rgb(255 255 255 / .06) 35%,
-        rgb(236 241 245 / .55) 70%,
-        rgb(234 240 244 / .95) 96%);
-}
+/* 배경 사진(.photo-bg)은 검색 페이지와 공용이 되어 glass.css 배경 연출
+   절로 이동 (19턴) */
 
 /* ---------- 히어로 ---------- */
 .hero-zone {

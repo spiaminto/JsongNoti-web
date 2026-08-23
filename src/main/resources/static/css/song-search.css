@@ -47,16 +47,21 @@
     padding: 1rem 0.5rem 0;
 }
 
+/* C 플랫(19턴): 그룹 사이 구분선은 지운다("표 맨아래 border" — 사용자 피드백).
+   경계는 여백과 다음 그룹 헤더의 밑선이 맡는다 */
 .unified-search-group + .unified-search-group {
-    border-top: 1px solid rgb(140 160 180 / .35); /* 유리 위 구분선 */
-    margin-top: 1.5rem;
+    margin-top: 2rem;
 }
 
+/* 그룹 헤더가 판 없는 표의 시작 경계를 맡는다 — 짙은 밑선 (표 제목 h2 와
+   같은 어휘, song-table.css) */
 .unified-search-group-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0;
+    padding-bottom: .55rem;
+    border-bottom: 2px solid rgb(100 125 155 / .45);
 }
 
 .unified-search-group-header h4 {

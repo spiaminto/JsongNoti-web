@@ -85,21 +85,33 @@
     // 보케: 팔레트·불투명도는 markup 값을 유지하고, 위치와 크기만 로드마다 다르게.
     // 위치는 % 가 아니라 px 로 박는다 — % 로 두면 더보기(컬랩스)로 섹션 높이가
     // 변하는 동안 매 프레임 블러 원들이 재배치·재페인트되어 버벅임의 원인이 된다
+    var bokehCoveredHeights = new WeakMap(); // 점이 흩어져 있는 영역 높이 (증감 판단 기준)
     function scatterBokeh() {
+        // 전체 재산포는 확장 커버용 추가 점(data-clone)을 걷어내고 원본만 다시 편다
+        document.querySelectorAll(".bokeh i[data-clone]").forEach(function (dot) {
+            dot.remove();
+        });
         document.querySelectorAll(".bokeh i").forEach(function (dot) {
             var area = dot.parentElement.getBoundingClientRect();
+            var host = dot.parentElement.parentElement.getBoundingClientRect();
+            var off = (area.width - host.width) / 2; // .bokeh 의 좌우 클리핑 여백
             // 재산포 시 랜덤 크기가 누적 증폭되지 않도록 markup 원본 크기를 저장해 둔다
             var base = parseFloat(dot.getAttribute("data-s") || dot.style.getPropertyValue("--s")) || 240;
             dot.setAttribute("data-s", base);
-            dot.style.setProperty("--x", Math.round((Math.random() * 100 - 10) / 100 * area.width) + "px");
-            dot.style.setProperty("--y", Math.round(Math.random() * .92 * area.height) + "px");
-            dot.style.setProperty("--s", Math.round(base * (.8 + Math.random() * .5)) + "px");
+            var size = Math.round(base * (.8 + Math.random() * .5));
+            dot.style.setProperty("--x", Math.round(off + (Math.random() * 100 - 10) / 100 * host.width) + "px");
+            // 점 크기를 빼고 놓는다 — 아래 클리핑 경계에 걸치면 가로 직선으로 잘린다
+            dot.style.setProperty("--y", Math.round(Math.random() * Math.max(0, area.height - size)) + "px");
+            dot.style.setProperty("--s", size + "px");
+        });
+        document.querySelectorAll(".bokeh").forEach(function (b) {
+            bokehCoveredHeights.set(b, b.getBoundingClientRect().height);
         });
     }
     scatterBokeh();
 
     // px 고정 위치는 뷰포트 폭이 바뀌면(회전, 창 크기 조절) 어긋나므로 다시 흩뿌린다.
-    // 높이만 변하는 경우(모바일 주소창 접힘, 컬랩스 펼침)는 건드리지 않아
+    // 뷰포트 높이만 변하는 경우(모바일 주소창 접힘)는 건드리지 않아
     // 더보기 최적화(px 고정)가 그대로 유지된다
     var bokehLastWidth = window.innerWidth;
     var bokehResizeTimer = null;
@@ -112,6 +124,84 @@
             }
         }, 200);
     });
+
+    // 산포는 로드 시점 영역 높이에 px 로 박히므로, 검색 결과 펼침처럼 기준
+    // 영역이 자라면 새 구간에는 보케가 없다(줄면 영역 밖에 점이 남는다).
+    // 기존 점을 옮기면(전체 재산포) 접기/펴기마다 배경이 통째로 바뀌어
+    // 부자연스러우므로, 기존 점은 그대로 두고 **새로 생긴 구간에만** 추가
+    // 점(data-clone, 원본 팔레트 순환)을 심고 줄면 그 추가분만 걷어낸다.
+    // 300ms 디바운스 — 컬랩스 전환 중에는 계속 밀려 매 프레임 작업이 없다
+    // 추가 점은 뿅 나타나지 않고 opacity 만 전환해 떠오른다(사용자 피드백) —
+    // opacity 는 컴포지터 처리라 블러 원이어도 성능 부담이 없다
+    var bokehReduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function fadeInBokehDot(dot) {
+        if (bokehReduceMotion) return;
+        dot.style.opacity = "0";
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+                dot.style.transition = "opacity 1.4s ease";
+                dot.style.opacity = "1";
+            });
+        });
+    }
+    function fadeOutBokehDot(dot) {
+        if (bokehReduceMotion) { dot.remove(); return; }
+        dot.style.transition = "opacity 1s ease";
+        dot.style.opacity = "0";
+        setTimeout(function () { dot.remove(); }, 1100);
+    }
+
+    function coverBokehGrowth(b, covered, height) {
+        var originals = b.querySelectorAll("i:not([data-clone])");
+        if (!originals.length) return;
+        var span = height - covered;
+        var count = Math.min(8, Math.max(1, Math.round(span / 350)));
+        var hostWidth = b.parentElement.getBoundingClientRect().width;
+        var off = (b.getBoundingClientRect().width - hostWidth) / 2; // 좌우 클리핑 여백
+        for (var i = 0; i < count; i++) {
+            var src = originals[i % originals.length];
+            var base = parseFloat(src.getAttribute("data-s")) || 240;
+            var size = Math.round(base * (.8 + Math.random() * .5));
+            // 점 크기를 뺀 자리가 없으면 심지 않는다 — 아래 클리핑 경계에
+            // 걸치면 가로 직선으로 잘린다
+            if (covered + size > height) continue;
+            var dot = src.cloneNode(false);
+            dot.setAttribute("data-clone", "");
+            dot.style.setProperty("--x", Math.round(off + (Math.random() * 100 - 10) / 100 * hostWidth) + "px");
+            dot.style.setProperty("--y", Math.round(covered + Math.random() * (height - size - covered)) + "px");
+            dot.style.setProperty("--s", size + "px");
+            b.appendChild(dot);
+            fadeInBokehDot(dot);
+        }
+    }
+
+    if (window.ResizeObserver) {
+        var bokehGrowTimer = null;
+        var bokehObserver = new ResizeObserver(function () {
+            clearTimeout(bokehGrowTimer);
+            bokehGrowTimer = setTimeout(function () {
+                document.querySelectorAll(".bokeh").forEach(function (b) {
+                    var covered = bokehCoveredHeights.get(b) || 0;
+                    var h = b.getBoundingClientRect().height;
+                    if (h > covered + 150) {
+                        coverBokehGrowth(b, covered, h);
+                        bokehCoveredHeights.set(b, h);
+                    } else if (h < covered - 150) {
+                        b.querySelectorAll("i[data-clone]").forEach(function (dot) {
+                            // 점 바닥이 줄어든 경계를 넘으면 걷어낸다 — 걸친 채 남으면
+                            // 가로 직선으로 잘린 모습이 된다
+                            var bottom = parseFloat(dot.style.getPropertyValue("--y")) + parseFloat(dot.style.getPropertyValue("--s"));
+                            if (bottom > h) fadeOutBokehDot(dot);
+                        });
+                        bokehCoveredHeights.set(b, h);
+                    }
+                });
+            }, 300);
+        });
+        document.querySelectorAll(".bokeh").forEach(function (b) {
+            bokehObserver.observe(b);
+        });
+    }
 
     // 접힘 스크롤 팔로우 (index 더보기): 최하단 근처에서 접으면 문서가 줄며
     // 브라우저가 scrollY 를 계단식으로 클램프해 화면이 우두커니 남는다 —
