@@ -113,8 +113,10 @@
 /* 행 구분선: 유리 밑으로 빛이 스민 하늘색 페이드 라인 — 가운데가 또렷하고
    표 양끝에서 투명하게 녹는다. 셀 border 로 그리면 표 페인트가 Blink 의
    느린 경로로 떨어져 컬랩스 리빌마다 80~90ms 래스터 버스트가 생기므로
-   border 는 쓰지 않는다 (ui-overhaul 11턴 실측) */
-.song-table tbody tr + tr {
+   border 는 쓰지 않는다 (ui-overhaul 11턴 실측).
+   :where 로 특정도를 0 으로 — 안 그러면 이 쇼트핸드가 행 상태 하이라이트
+   (.selected, 순서변경·삭제 tint)의 배경을 특정도로 눌러 지운다 */
+:where(.song-table tbody tr + tr) {
     background: linear-gradient(90deg,
         transparent 0%,
         rgb(120 170 215 / .5) 12%,

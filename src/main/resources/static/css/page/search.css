@@ -34,11 +34,11 @@ body {
 }
 
 /* 보케(.bokeh, absolute)의 기준점. flex 기둥에서 남는 높이를 다 차지한다.
-   z-index 0: 스태킹 컨텍스트를 만들어야 음수 z 의 보케가 body 불투명
-   배경 위에 그려진다 — 없으면 보케가 body 배경 밑에 깔려 안 보인다 */
+   z-index 를 주면 안 된다 — 스태킹 컨텍스트가 되면 안의 부트스트랩 모달이
+   갇혀 body 직속 백드롭(1050)이 모달(1055) 위에 덮인다. 음수 z 보케는
+   body 배경이 투명이라(glass.css) 컨텍스트 없이도 필드 위에 그려진다 */
 #container {
     position: relative;
-    z-index: 0;
     width: 100%;
     flex: 1 0 auto;
 }

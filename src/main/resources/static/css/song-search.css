@@ -60,6 +60,9 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 0;
+    /* 제목 들여쓰기 1rem (20턴) — flex 컨테이너라 text-indent 가 무효해
+       padding 으로 동일 효과를 낸다. 밑선은 여전히 전폭 */
+    padding-left: 1rem;
     padding-bottom: .55rem;
     border-bottom: 2px solid rgb(100 125 155 / .45);
 }

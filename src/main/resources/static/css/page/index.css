@@ -41,8 +41,14 @@
 /* 사진 위에서는 soft-light 가 더 세게 발현되므로 반사광을 낮춰
    다른 유리 타일과 체감 밝기를 맞춘다 */
 .hero.sheen::after {
-    background: radial-gradient(300px 220px at var(--mx, 50%) var(--my, -20%),
-        rgb(255 255 255 / .45), transparent 72%);
+    /* .45 → .32: 기본 sheen 의 30% 감쇠(20턴)에 비례해 함께 낮춰
+       다른 유리 타일과의 체감 밝기 관계를 유지한다. 스톱 곡선은
+       glass.css 기본 sheen 과 같은 비율 */
+    background: radial-gradient(320px 240px at var(--mx, 50%) var(--my, -20%),
+        rgb(255 255 255 / .21),
+        rgb(255 255 255 / .1) 40%,
+        rgb(255 255 255 / .035) 68%,
+        transparent 92%);
 }
 
 .hero .headerText {

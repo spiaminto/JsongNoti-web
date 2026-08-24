@@ -100,9 +100,14 @@ body {
        바탕색은 html(#e4ebf1)과 필드의 마지막 linear-gradient 층이 맡는다 */
     background: transparent;
     min-height: 100vh;
-    /* overflow-x 는 html 의 clip 하나로 처리한다. body 에도 걸면 html 이
-       clip 인 상태에서는 body 가 자기만의 스크롤 컨테이너가 되어
-       창 스크롤바와 별개의 내부 스크롤바가 하나 더 생긴다 */
+    /* html 의 clip 만으로는 부족하다 — 루트는 세로축이 스크롤 컨테이너라
+       가로 clip 이 hidden 처럼 동작해, 스크롤바만 없을 뿐 프로그램적
+       스크롤(scrollIntoView·포커스 이동·페이지 내 찾기)로는 여전히 옆으로
+       밀린다. 보케 상자의 좌우 600px 여백이 만드는 가로 오버플로를 body
+       에서 clip 으로 잘라야 문서의 가로 스크롤 여지 자체가 사라진다.
+       (clip 은 hidden 과 달리 스크롤 컨테이너를 만들지 않아 이중 스크롤바
+       없음 — 실측 확인. 모달은 fixed 라 조상 clip 의 영향을 받지 않는다) */
+    overflow-x: clip;
 }
 
 /* 오전 10시의 빛: 좌상단 해 + 곳곳의 빛 웅덩이. 시안 값 그대로 —
@@ -562,8 +567,14 @@ tbody tr.more-reveal.more-settled.more-hide,
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: radial-gradient(300px 220px at var(--mx, 50%) var(--my, -20%),
-        rgb(255 255 255 / .85), transparent 72%);
+    /* .85 → .6 → .4: 호버 빛이 강하고 색 배경(검색 사진) 위에서 촌스럽게
+       도드라진다는 20턴 피드백으로 두 차례 감쇠. 중간 스톱들: 직선 감쇠의
+       끊기는 테두리 대신 바깥으로 갈수록 완만히 잦아드는 곡선 */
+    background: radial-gradient(320px 240px at var(--mx, 50%) var(--my, -20%),
+        rgb(255 255 255 / .4),
+        rgb(255 255 255 / .18) 40%,
+        rgb(255 255 255 / .07) 68%,
+        transparent 92%);
     /* soft-light: 유리 면만 밝히고 글자 대비는 유지한다 */
     mix-blend-mode: soft-light;
     opacity: 0;

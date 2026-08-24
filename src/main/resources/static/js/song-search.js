@@ -219,7 +219,7 @@ $(function () {
                 let $moreWrapper = $('<div>')
                     .addClass('unified-search-more-wrapper');
                 let $moreButton = $('<button>')
-                    .addClass('btn btn-sm btn-outline-secondary')
+                    .addClass('btn btn-lg btn-outline-secondary')
                     .attr({
                         type: 'button',
                         'aria-expanded': 'false'
@@ -243,7 +243,7 @@ $(function () {
 
         if (!group.message && !additionalSearched) {
             let $additionalButton = $('<button>')
-                .addClass('btn btn-sm btn-outline-primary')
+                .addClass('btn btn-lg btn-outline-primary')
                 .attr('type', 'button')
                 .text('추가 검색')
                 .on('click', function () {
@@ -380,7 +380,7 @@ $(function () {
     // 더보기 행 펼침·접힘: 래퍼(.song-table-border) 높이를 실측해 전환한다
     // (순정 collapse 감각). 표의 일부 행만 여닫는 구조라 bootstrap Collapse 를
     // 쓸 수 없어 같은 박자(.35s ease, glass.css .more-animating)를 직접 건다.
-    // 접힘은 2박자 — 드러났던 행을 먼저 지우고(.18s), 빈 다음에 판을 접는다.
+    // 접힘은 행 지우기(.18s)와 판 접기를 같은 프레임에 시작한다.
     // 최하단 근처에서 접으면 index 더보기와 같은 감속 팔로우(glass-motion 의
     // window.glassMotion.followScroll)로 화면을 버튼 중앙 위치로 이동시킨다.
     // 전환 중 재클릭하면 진행 중인 상태에서 이어서 반전한다
@@ -392,7 +392,6 @@ $(function () {
         }
         if (window.glassMotion) window.glassMotion.cancelFollowScroll();
         $wrapper.off('transitionend.more');
-        clearTimeout($wrapper.data('moreHideTimer'));
 
         // 펼침·접힘 자연 높이는 폭이 안 바뀌는 한 불변이므로 최초 1회만
         // 실측해 캐시한다. 이후 토글의 강제 리플로우는 전환 기준 굳히기
@@ -454,27 +453,17 @@ $(function () {
         }
 
         if (show) {
-            if ($wrapper.data('moreFadePending')) {
-                // 지우기(1박자) 도중 반전 — 판은 아직 안 접혔으므로 스태거
-                // 재생 없이 현재 투명도에서 그대로 되살린다 (settle 의 transition)
-                $wrapper.data('moreFadePending', false);
-                $hiddenRows.removeClass('more-hide');
-                return;
-            }
             let startHeight = wrapper.getBoundingClientRect().height; // 쓰기 전 측정 — 리플로우 없음
             // d-none 해제가 리빌 애니메이션을 처음부터 재생시킨다
             $hiddenRows.removeClass('d-none more-settled more-hide');
             animateHeight(startHeight);
         } else {
-            // settle 과 hide 를 한 번에: 전환이 현재 계산값에서 0 으로 시작해
-            // 스태거 도중의 반투명 행도 번쩍임 없이 이어서 사라진다.
-            // 클릭 프레임에는 쓰기만 하고 측정은 지우기가 끝난 정적 구간에 몬다
-            $wrapper.data('moreFadePending', true);
+            // 지우기와 접힘을 같은 프레임에 시작한다 — 행은 접히는 동안(.18s)
+            // 빠르게 사라진다. 지우기 1박자 후 접던 이전 방식은 190ms 멈칫으로
+            // 읽혀 제거(20턴). 측정을 쓰기 앞에 두어 리플로우 없이 시작한다
+            let startHeight = wrapper.getBoundingClientRect().height;
             $hiddenRows.addClass('more-settled more-hide');
-            $wrapper.data('moreHideTimer', setTimeout(function () {
-                $wrapper.data('moreFadePending', false);
-                animateHeight(wrapper.getBoundingClientRect().height);
-            }, 190));
+            animateHeight(startHeight);
         }
     }
 
