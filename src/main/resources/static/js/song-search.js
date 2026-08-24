@@ -142,11 +142,12 @@ $(function () {
     }
 
     // 갱신 결과의 보이는 행을 더보기 리빌과 같은 어휘로 하나씩 띄운다.
-    // 표 통짜 fade(table-in)는 끄고 스태거가 단독으로 맡는다
+    // 표 통짜 fade(table-in)는 끄고 스태거가 단독으로 맡는다.
+    // 계단은 index 지난달 컬랩스와 동일(첫 행 50ms + 행당 70ms, 상한 1030ms)
     function applyRowReveal($group) {
         $group.find('.song-table').addClass('no-table-in');
         $group.find('tbody tr:not(.d-none)').addClass('more-reveal').each(function (i) {
-            this.style.setProperty('--rd', Math.min(i * 70, 650) + 'ms');
+            this.style.setProperty('--rd', Math.min(50 + i * 70, 1030) + 'ms');
         });
     }
 
@@ -205,12 +206,12 @@ $(function () {
 
         if (songs.length > 0) {
             let $tableWrapper = createSongTableWrapper(songs);
-            // 숨은 행에는 떠오름 리빌(.more-reveal, glass.css)과 압축 계단
+            // 숨은 행에는 떠오름 리빌(.more-reveal, glass.css)과 계단
             // 딜레이(--rd)를 미리 실어 둔다 — 펼칠 때 d-none 해제만으로
-            // 애니메이션이 처음부터 재생된다
+            // 애니메이션이 처음부터 재생된다. 계단은 index 와 동일
             let $hiddenRows = $tableWrapper.find('tbody tr').slice(5).addClass('d-none more-reveal');
             $hiddenRows.each(function (i) {
-                this.style.setProperty('--rd', Math.min(i * 70, 650) + 'ms');
+                this.style.setProperty('--rd', Math.min(50 + i * 70, 1030) + 'ms');
             });
             $group.append($tableWrapper);
 

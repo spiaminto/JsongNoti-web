@@ -124,6 +124,17 @@
         transparent 100%) 0 0 / 100% 1px no-repeat;
 }
 
+/* index 지난달 컬랩스는 별도 표라 tr + tr 이 두 표의 이음매를 못 잇는다 —
+   펼치면 이번달 마지막 행과 지난달 첫 행 사이만 선이 빈다.
+   지난달 표의 첫 행 위에 같은 선을 그어 이음매를 채운다 */
+:where(.song-table-collapse .song-table tbody tr:first-child) {
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgb(120 170 215 / .5) 12%,
+        rgb(120 170 215 / .5) 88%,
+        transparent 100%) 0 0 / 100% 1px no-repeat;
+}
+
 .song-table tbody td {
     padding: .95rem .8rem;
     vertical-align: top;

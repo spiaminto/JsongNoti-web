@@ -266,6 +266,9 @@
         var toggleBtn = document.querySelector('[data-bs-target="#' + id + '"]');
 
         collapseEl.addEventListener("hide.bs.collapse", function () {
+            // 접히는 동안 행 리빌(row-in) 정지 — 아래 측정의 display 토글이
+            // 애니메이션을 재시작시켜 행이 사라졌다 다시 떠오르는 것을 막는다
+            collapseEl.classList.add("closing");
             cancelFollowScroll();
             if (!toggleBtn) return;
             var se = document.scrollingElement || document.documentElement;
@@ -301,7 +304,14 @@
             followScroll(y0, Math.max(0, Math.min(y0, futureMax, centered)));
         });
 
-        collapseEl.addEventListener("show.bs.collapse", cancelFollowScroll);
+        collapseEl.addEventListener("hidden.bs.collapse", function () {
+            collapseEl.classList.remove("closing");
+        });
+
+        collapseEl.addEventListener("show.bs.collapse", function () {
+            collapseEl.classList.remove("closing"); // 접힘 중 재펼침 대비
+            cancelFollowScroll();
+        });
     });
 
     // 다른 스크립트(검색 더보기 등)도 같은 감속 팔로우를 쓸 수 있게 공개
