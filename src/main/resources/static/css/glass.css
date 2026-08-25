@@ -585,6 +585,16 @@ tbody tr.more-reveal.more-settled.more-hide,
     transform: none;
 }
 
+/* 접힘 높이 전환을 1s 감속 곡선으로 — 22턴 track 팔로우는 화면이 접힘
+   속도를 그대로 타므로, 관성 활강의 느낌은 접힘 전환 자체가 만든다.
+   .closing 은 접힘 중에만 붙으므로 펼침은 부트스트랩 기본(.35s ease) 유지.
+   부트스트랩 JS 는 전환 시간을 computed style 에서 읽어 hidden 발화를
+   맞추므로 CSS 로 늘려도 안전하다 */
+.song-table-collapse.collapsing.closing {
+    transition-duration: 1s;
+    transition-timing-function: cubic-bezier(.16, 1, .3, 1);
+}
+
 /* 행별 딜레이 — 70ms 계단 (21턴: 100→80→70 으로 조임, 검색 더보기도 동일).
    정의 밖의 행이 딜레이 0 으로 첫 행보다 먼저 튀지 않게 꼬리(n+15)를
    마지막 값으로 받는다 */

@@ -8,8 +8,8 @@
  *  3) scroll edge: 콘텐츠가 상단바 아래로 지나갈 때만 .navbar 재질을 두껍게
  *  4) 반사광: .sheen 유리에서 포인터를 따라 --mx/--my 를 갱신
  *  5) 보케: .bokeh i 의 위치·크기를 로드마다 랜덤으로 흩뿌린다
- *  6) 접힘 스크롤 팔로우: index 더보기를 최하단 근처에서 접으면 화면을
- *     토글 버튼이 중앙에 오는 위치로 감속 이동시킨다. followScroll 은
+ *  6) 접힘 스크롤 팔로우: index 더보기를 접으면 토글 버튼을 화면 중앙까지
+ *     활강시켜 포착한 뒤, 중앙에 고정한 채 접힘을 따라 함께 이동한다. followScroll 은
  *     window.glassMotion 으로 공개되어 검색 더보기 접힘과 애창곡 노래
  *     클릭 스크롤(song-search.js)도 쓴다
  *
@@ -228,8 +228,36 @@
         return 1 - Math.pow(2, -10 * t);
     }
 
-    function followScroll(fromY, toY) {
-        if (followReduceMotion || toY >= fromY) {
+    // easeInOutSine — index 접힘 2박자(시안 A)의 활강 곡선 (22턴). 접힘 완료
+    // 시점(정지 상태)에서 출발하므로 램프 0 으로 완만히 붙는다 — 정지에서
+    // expo 로 치면 발차기처럼 읽히고, cubic 은 램프가 길어 박자 사이
+    // 쉼이 300ms 대로 늘어진다 (실측). sine 은 쉼 ~200ms 로 이어 붙는다
+    function easeInOutSine(t) {
+        return -(Math.cos(Math.PI * t) - 1) / 2;
+    }
+
+    // 임계감쇠 스프링 곡선 (시안 B, 22턴): 1 − e^(−ωt)(1+ωt).
+    // 접힘과 "동시에" 출발하는 연속형 — 출발이 포물선(속도 0)이라
+    // 초반 ~100ms 는 접힘 클램프와 위치·속도가 겹치며 자연스럽게
+    // 이어받고, 이후 스프링이 앞서 내려가 한 호흡으로 감속 정착한다.
+    // ω=9, T=1200ms (ωT=10.8) — 98% 정착 0.64s + 긴 마이크로 꼬리
+    var SPRING_WT = 10.8;
+    var SPRING_NORM = 1 - Math.exp(-SPRING_WT) * (1 + SPRING_WT);
+    function springEase(t) {
+        var wt = SPRING_WT * t;
+        return (1 - Math.exp(-wt) * (1 + wt)) / SPRING_NORM;
+    }
+
+    // index 접힘 팔로우 방식:
+    //  "track"    — 시안 B2: 버튼을 화면 중앙으로 포착 후 고정한 채 함께 이동
+    //  "spring"   — 시안 B: 최종 목표로 동시 스프링 (버튼은 도착 시에만 중앙)
+    //  "two-beat" — 시안 A: 접힘 완료 후 활강
+    var indexFollowMode = "track";
+
+    function followScroll(fromY, toY, opts) {
+        var duration = (opts && opts.duration) || 850;
+        var ease = (opts && opts.ease) || easeOutExpo;
+        if (followReduceMotion || Math.abs(toY - fromY) < 1) {
             document.documentElement.style.overflowAnchor = "";
             return;
         }
@@ -249,8 +277,8 @@
         };
         function step(ts) {
             if (start === null) start = ts;
-            var t = Math.min((ts - start) / 850, 1);
-            window.scrollTo(0, fromY + (toY - fromY) * easeOutExpo(t));
+            var t = Math.min((ts - start) / duration, 1);
+            window.scrollTo(0, fromY + (toY - fromY) * ease(t));
             if (t < 1) {
                 followRaf = requestAnimationFrame(step);
             } else {
@@ -260,10 +288,93 @@
         followRaf = requestAnimationFrame(step);
     }
 
+    // "track" 팔로우 — 버튼의 실위치를 매 프레임 읽어 카메라를 버튼에 건다.
+    // 화면 기준 버튼의 중앙 이탈량(e)만 스프링 곡선으로 0 까지 줄인다:
+    //   y = desired(t) − e0·(1 − springEase(t/T)),  desired = 버튼 중앙이 화면
+    //   중앙에 오는 스크롤값(실시간). e 가 줄어드는 동안은 버튼이 화면 안에서
+    //   중앙으로 활강하고(1국면), 0 이 된 뒤로는 버튼에 고정된 채 접힘을 따라
+    //   함께 이동한다(2국면). 접힘의 문서 수축·버튼 이동을 그대로 흡수하므로
+    //   사전 실측(display 토글)이 필요 없다. 종료는 포착 완료 + hidden 이후.
+    //   관성 활강의 몸통은 접힘 전환 자체(glass.css .closing 1s 감속 곡선)가
+    //   만들고, 포착은 그 활강 내내 버튼을 중앙 근처로 스르륵 모으는 역할 —
+    //   접힘(1s)과 거의 같은 길이로 두어 "딱 고정" 대신 근접 유지로 읽히게 한다
+    var TRACK_CAPTURE_MS = 900;
+
+    // (보관) 시안 C 포착 곡선 — 언더댐핑 스프링: 중앙을 지나쳤다 되돌아온다.
+    // 오버슛 = e^(−πζ/√(1−ζ²)) (ζ=.45 → ~21%), ωT=7 → 피크 ~0.5T.
+    // 22턴 실험 결과 기각 — 스크롤 오버슛은 화면 전체 평행이동이라 "뿅"으로
+    // 읽히지 않고, 도착 순간 버튼 scale 뿅(settle-pop)도 시험 후 기각.
+    // 되살리려면 followTrackButton 의 springEase 를 trackEase 로 바꾸면 된다
+    var TRACK_ZETA = 0.45;
+    var TRACK_WT = 7;
+    var trackEaseNorm = null;
+    function trackEaseRaw(t) {
+        var zw = TRACK_ZETA * TRACK_WT;
+        var wd = TRACK_WT * Math.sqrt(1 - TRACK_ZETA * TRACK_ZETA);
+        return 1 - Math.exp(-zw * t) * (Math.cos(wd * t) + (zw / wd) * Math.sin(wd * t));
+    }
+    function trackEase(t) {
+        if (trackEaseNorm === null) trackEaseNorm = trackEaseRaw(1);
+        return trackEaseRaw(t) / trackEaseNorm;
+    }
+    var trackHiddenDone = false;
+    function followTrackButton(btnEl) {
+        if (followReduceMotion) return;
+        var se = document.scrollingElement || document.documentElement;
+        document.documentElement.style.overflowAnchor = "none";
+        trackHiddenDone = false;
+        var e0 = null;
+        var start = null;
+        var abort = function () { cancelFollowScroll(); };
+        window.addEventListener("wheel", abort, { passive: true });
+        window.addEventListener("touchstart", abort, { passive: true });
+        window.addEventListener("keydown", abort);
+        followCleanup = function () {
+            window.removeEventListener("wheel", abort);
+            window.removeEventListener("touchstart", abort);
+            window.removeEventListener("keydown", abort);
+        };
+        function step(ts) {
+            if (start === null) start = ts;
+            var t = Math.min((ts - start) / TRACK_CAPTURE_MS, 1);
+            var r = btnEl.getBoundingClientRect();
+            var desired = r.top + r.height / 2 + window.scrollY - se.clientHeight / 2;
+            desired = Math.max(0, Math.min(se.scrollHeight - se.clientHeight, desired));
+            if (e0 === null) e0 = desired - window.scrollY;
+            window.scrollTo(0, desired - e0 * (1 - springEase(t)));
+            // hidden 미발화 대비 3s 안전 상한
+            if (t >= 1 && (trackHiddenDone || ts - start > 3000)) {
+                cancelFollowScroll();
+                return;
+            }
+            followRaf = requestAnimationFrame(step);
+        }
+        followRaf = requestAnimationFrame(step);
+    }
+
     ["tjLastMonthSongContentBorder", "kyLastMonthSongContentBorder"].forEach(function (id) {
         var collapseEl = document.getElementById(id);
         if (!collapseEl) return;
         var toggleBtn = document.querySelector('[data-bs-target="#' + id + '"]');
+
+        // 2박자 팔로우 (22턴): 접히는 동안(1박자)은 브라우저 클램프가 화면을
+        // 자연스럽게 당기게 두고, 접힘 완료(hidden) 시점의 실제 위치에서
+        // 목표까지 활강(2박자)한다. 접힘 중에 트윈을 같이 돌리면 곡선이
+        // 클램프보다 느린 구간에서 화면이 멈칫한다 (실측: ~200ms 정지).
+        // 예약(1박자 중) 상태의 사용자 입력은 팔로우를 취소한다
+        var pendingFollowTarget = null;
+
+        function removePendingListeners() {
+            window.removeEventListener("wheel", cancelPendingFollow);
+            window.removeEventListener("touchstart", cancelPendingFollow);
+            window.removeEventListener("keydown", cancelPendingFollow);
+        }
+
+        function cancelPendingFollow() {
+            pendingFollowTarget = null;
+            removePendingListeners();
+            document.documentElement.style.overflowAnchor = "";
+        }
 
         collapseEl.addEventListener("hide.bs.collapse", function () {
             // 접히는 동안 행 리빌(row-in) 정지 — 아래 측정의 display 토글이
@@ -271,6 +382,10 @@
             collapseEl.classList.add("closing");
             cancelFollowScroll();
             if (!toggleBtn) return;
+            if (indexFollowMode === "track") {
+                followTrackButton(toggleBtn);
+                return;
+            }
             var se = document.scrollingElement || document.documentElement;
             var docEl = document.documentElement;
             var y0 = window.scrollY;
@@ -295,21 +410,46 @@
             docEl.style.minHeight = "";
             var delta = fBefore - fAfter; // 실제 문서 수축량 (footer 상승분)
             var futureMax = Math.max(0, shBefore - delta - se.clientHeight);
-            if (y0 <= futureMax + 1) {
-                docEl.style.overflowAnchor = ""; // 팔로우 미발동 — 앵커링 원복
+            // 버튼이 뷰포트 중앙에 오는 y. 문서 범위(0..futureMax)로만 자르고
+            // 방향은 제한하지 않는다 — 중간 지점에서 접어도 위·아래 어느 쪽이든
+            // 중앙으로 정렬한다. 아래 방향은 수축(최대치 감소)과 겹치지 않으므로
+            // 클램프 간섭이 없다
+            var centered = btnCenterAfter - se.clientHeight / 2;
+            var target = Math.max(0, Math.min(futureMax, centered));
+            if (Math.abs(target - y0) < 1) {
+                docEl.style.overflowAnchor = ""; // 이동 불요 — 앵커링 원복
                 return;
             }
-            var centered = btnCenterAfter - se.clientHeight / 2;
-            // followScroll 이 overflow-anchor 를 이어받아 종료·중단 시 복원한다
-            followScroll(y0, Math.max(0, Math.min(y0, futureMax, centered)));
+            if (indexFollowMode === "spring") {
+                // 시안 B: 접힘과 동시에 스프링 감속. 초반은 클램프와 겹치고
+                // (scrollTo 가 max 로 잘려 자동으로 min(스프링, 클램프)),
+                // 이후 스프링이 앞서 내려가므로 멈칫 구간이 없다
+                followScroll(y0, target, { duration: 1200, ease: springEase });
+                return;
+            }
+            // 시안 A: 활강은 hidden 에서 시작 — overflow-anchor 는 예약
+            // 취소 또는 followScroll 종료가 복원한다
+            pendingFollowTarget = target;
+            window.addEventListener("wheel", cancelPendingFollow, { passive: true });
+            window.addEventListener("touchstart", cancelPendingFollow, { passive: true });
+            window.addEventListener("keydown", cancelPendingFollow);
         });
 
         collapseEl.addEventListener("hidden.bs.collapse", function () {
             collapseEl.classList.remove("closing");
+            trackHiddenDone = true; // track 팔로우 종료 허가
+            removePendingListeners();
+            if (pendingFollowTarget !== null) {
+                var target = pendingFollowTarget;
+                pendingFollowTarget = null;
+                // 검색·애창곡 호출부는 기본값(850ms 선행 곡선) 유지
+                followScroll(window.scrollY, target, { duration: 850, ease: easeInOutSine });
+            }
         });
 
         collapseEl.addEventListener("show.bs.collapse", function () {
             collapseEl.classList.remove("closing"); // 접힘 중 재펼침 대비
+            cancelPendingFollow();
             cancelFollowScroll();
         });
     });
