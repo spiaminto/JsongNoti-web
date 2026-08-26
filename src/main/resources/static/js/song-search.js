@@ -380,10 +380,12 @@ $(function () {
 
     // 더보기 행 펼침·접힘: 래퍼(.song-table-border) 높이를 실측해 전환한다
     // (순정 collapse 감각). 표의 일부 행만 여닫는 구조라 bootstrap Collapse 를
-    // 쓸 수 없어 같은 박자(.35s ease, glass.css .more-animating)를 직접 건다.
-    // 접힘은 행 지우기(.18s)와 판 접기를 같은 프레임에 시작한다.
-    // 최하단 근처에서 접으면 index 더보기와 같은 감속 팔로우(glass-motion 의
-    // window.glassMotion.followScroll)로 화면을 버튼 중앙 위치로 이동시킨다.
+    // 쓸 수 없어 펼침은 같은 박자(.35s ease, glass.css .more-animating)를,
+    // 접힘은 index 지난달 접힘과 같은 1s 감속(.more-closing)을 직접 건다.
+    // 접힘 팔로우는 index 와 같은 track(glassMotion.followTrackButton) —
+    // 매 프레임 버튼 실위치에서 스크롤을 유도해 화면 중앙으로 포착·고정한다.
+    // 선계산 활강(followScroll)은 높이 전환(CSS)과 곡선이 어긋나 버튼이
+    // 화면에서 프레임마다 요동했다 (2기 1턴 계측: 드득거림의 정체).
     // 전환 중 재클릭하면 진행 중인 상태에서 이어서 반전한다
     function toggleMoreRows($wrapper, $hiddenRows, show, $moreButton) {
         let wrapper = $wrapper[0];
@@ -394,21 +396,20 @@ $(function () {
         if (window.glassMotion) window.glassMotion.cancelFollowScroll();
         $wrapper.off('transitionend.more');
 
+        // 기하 읽기는 행 클래스 토글(쓰기)보다 전부 앞에 몬다 — 쓰기 뒤에
+        // 읽으면 접기 클릭 프레임에 문서 전체 강제 리플로우가 한 번 더
+        // 얹힌다 (2기 1턴 계측: 큰 표에서 클릭 순간 렉의 몸통). 접힘의
+        // 행 클래스(more-settled)는 레이아웃 불변이므로 선독 값이 그대로 유효하다.
         // 펼침·접힘 자연 높이는 폭이 안 바뀌는 한 불변이므로 최초 1회만
         // 실측해 캐시한다. 이후 토글의 강제 리플로우는 전환 기준 굳히기
         // 1회뿐 — 클릭·반전 프레임에 문서 전체 레이아웃이 얹히지 않는다
+        let docEl = document.documentElement;
+        let se = document.scrollingElement || docEl;
+        let cache = $wrapper.data('moreHeights');
+        let needMeasure = !cache || cache.vw !== window.innerWidth;
+        let shBefore = needMeasure ? se.scrollHeight : 0;
+
         function animateHeight(startHeight) {
-            let docEl = document.documentElement;
-            let se = document.scrollingElement || docEl;
-            let y0 = window.scrollY;
-            let followTarget = null;
-            // 읽기를 쓰기보다 앞에 몰고, 캐시가 있는 펼침에서는 아예 읽지
-            // 않는다 — 펼침 클릭 프레임은 행 클래스 제거 직후라 어떤 기하
-            // 읽기도 문서 전체 리플로우를 강제한다
-            let cache = $wrapper.data('moreHeights');
-            let needMeasure = !cache || cache.vw !== window.innerWidth;
-            let shBefore = (!show || needMeasure) ? se.scrollHeight : 0;
-            let btnRect = (!show && $moreButton) ? $moreButton[0].getBoundingClientRect() : null;
             if (needMeasure) {
                 // 실측 중 문서가 잠깐 줄어드는 동안 스크롤 앵커링이 y 를
                 // 끌어올리지 않도록 min-height 받침 + overflow-anchor 해제를
@@ -428,28 +429,24 @@ $(function () {
                 $wrapper.data('moreHeights', cache);
             }
             let endHeight = show ? cache.expandedH : cache.collapsedH;
-            if (!show && btnRect) {
-                // 접힘 후 문서 수축량 — 단일 컬럼 스택이라 래퍼 수축량과 같다
-                let delta = startHeight - endHeight;
-                let futureMax = Math.max(0, shBefore - delta - se.clientHeight);
-                if (y0 > futureMax + 1) {
-                    let centered = btnRect.top + btnRect.height / 2 + y0 - delta - se.clientHeight / 2;
-                    followTarget = Math.max(0, Math.min(y0, futureMax, centered));
-                }
-            }
             if (startHeight === endHeight) return;
             wrapper.style.height = startHeight + 'px';
             $wrapper.addClass('more-animating');
+            // 접힘 중 재펼침 반전도 덮도록 toggle — 접힘에만 1s 감속이 걸린다
+            $wrapper.toggleClass('more-closing', !show);
             void wrapper.offsetHeight; // 시작 높이를 전환 기준으로 굳힌다
             wrapper.style.height = endHeight + 'px';
-            if (followTarget !== null && window.glassMotion) {
-                window.glassMotion.followScroll(y0, followTarget);
+            if (!show && $moreButton && window.glassMotion && window.glassMotion.followTrackButton) {
+                // index 접힘과 같은 track 팔로우 — 문서 수축·버튼 이동을 매
+                // 프레임 그대로 흡수하므로 목표 선계산이 필요 없다
+                window.glassMotion.followTrackButton($moreButton[0]);
             }
             $wrapper.on('transitionend.more', function (e) {
                 if (e.target !== wrapper || e.originalEvent.propertyName !== 'height') return;
-                $wrapper.off('transitionend.more').removeClass('more-animating');
+                $wrapper.off('transitionend.more').removeClass('more-animating more-closing');
                 if (!show) $hiddenRows.addClass('d-none');
                 wrapper.style.height = '';
+                if (!show && window.glassMotion) window.glassMotion.settleFollowTrack();
             });
         }
 
@@ -459,11 +456,14 @@ $(function () {
             $hiddenRows.removeClass('d-none more-settled more-hide');
             animateHeight(startHeight);
         } else {
-            // 지우기와 접힘을 같은 프레임에 시작한다 — 행은 접히는 동안(.18s)
-            // 빠르게 사라진다. 지우기 1박자 후 접던 이전 방식은 190ms 멈칫으로
-            // 읽혀 제거(20턴). 측정을 쓰기 앞에 두어 리플로우 없이 시작한다
+            // 행을 지우지 않고 보인 채 그대로 접는다 (2기 1턴, 사용자 지시) —
+            // 20턴의 "지우기(.18s)+접힘 동시 시작"에서 지우기를 뺀 것.
+            // 행 다발의 opacity 전환이 접힘 프레임에 얹히지 않고, 클리핑은
+            // .song-table-border 상시 overflow: hidden 이 맡는다.
+            // more-settled 는 유지 — 접힘 끝 d-none 과 이후 복귀가 리빌을
+            // 재시작시키지 않게 하는 핀
             let startHeight = wrapper.getBoundingClientRect().height;
-            $hiddenRows.addClass('more-settled more-hide');
+            $hiddenRows.addClass('more-settled');
             animateHeight(startHeight);
         }
     }

@@ -350,6 +350,10 @@
         return trackEaseRaw(t) / trackEaseNorm;
     }
     var trackHiddenDone = false;
+    // 접힘 완료 신호 — track 팔로우의 종료 허가. index 는 hidden.bs.collapse,
+    // 검색 더보기는 래퍼 transitionend 가 호출한다 (팔로우는 한 번에 하나만
+    // 도니 플래그 공유로 충분하다)
+    function settleFollowTrack() { trackHiddenDone = true; }
     function followTrackButton(btnEl) {
         if (followReduceMotion) return;
         var se = document.scrollingElement || document.documentElement;
@@ -469,7 +473,7 @@
 
         collapseEl.addEventListener("hidden.bs.collapse", function () {
             collapseEl.classList.remove("closing");
-            trackHiddenDone = true; // track 팔로우 종료 허가
+            settleFollowTrack(); // track 팔로우 종료 허가
             removePendingListeners();
             if (pendingFollowTarget !== null) {
                 var target = pendingFollowTarget;
@@ -486,10 +490,15 @@
         });
     });
 
-    // 다른 스크립트(검색 더보기 등)도 같은 감속 팔로우를 쓸 수 있게 공개
+    // 다른 스크립트(검색 더보기 등)도 같은 팔로우를 쓸 수 있게 공개.
+    // followTrackButton 을 쓰는 쪽은 접힘 완료 시점에 settleFollowTrack 을
+    // 호출해 종료를 허가한다 (2기 1턴: 검색 더보기 접기가 track 으로 합류 —
+    // 선계산 활강은 높이 전환과 곡선이 어긋나 화면이 프레임마다 요동했다)
     window.glassMotion = {
         followScroll: followScroll,
-        cancelFollowScroll: cancelFollowScroll
+        cancelFollowScroll: cancelFollowScroll,
+        followTrackButton: followTrackButton,
+        settleFollowTrack: settleFollowTrack
     };
 
     } // init 끝

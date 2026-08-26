@@ -659,10 +659,18 @@ tbody tr.more-reveal.more-settled.more-hide,
     opacity: 0;
 }
 
-/* 더보기 래퍼 높이 전환 — 순정 bootstrap collapse 와 같은 박자.
+/* 더보기 래퍼 높이 전환 — 펼침은 순정 bootstrap collapse 와 같은 박자.
    clip 은 .song-table-border 상시 overflow: hidden 이 이미 맡고 있다 */
 .song-table-border.more-animating {
     transition: height .35s ease;
+}
+
+/* 접힘은 index 지난달 접힘(.closing)과 같은 1s 감속 곡선 — track 팔로우가
+   접힘 속도를 그대로 타므로 관성 활강의 몸통은 이 전환 곡선이 만든다
+   (2기 1턴, index 22턴과 동일 문법). 펼침은 위 .35s ease 유지 */
+.song-table-border.more-animating.more-closing {
+    transition-duration: 1s;
+    transition-timing-function: cubic-bezier(.16, 1, .3, 1);
 }
 
 /* 컬랩스 안에 나중에 삽입되는 표(추가검색 placeholder·갱신 결과)는 위

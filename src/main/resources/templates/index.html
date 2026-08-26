@@ -311,6 +311,11 @@
           <!-- TJ 저번달: 컬랩스 래퍼(높이 애니메이션 대상)와 유리판(.song-table-border)을 분리 —
                margin·border 가 래퍼 안쪽에 있어야 height 애니메이션에 함께 접힌다 (6턴-2) -->
           <div class="song-table-collapse collapse" id="tjLastMonthSongContentBorder">
+          <!-- 월 헤더는 컬랩스 안쪽 — 펼침·접힘에 표와 함께 여닫힌다.
+               토글 버튼이 컬랩스 아래로 이동하면서 버튼이 겸하던 헤더 역할을 대신한다 (2기 1턴) -->
+          <h2 class="song-header-text">
+            <span th:text="${tjLastMonth + ' TJ 신곡'}">10월 TJ 신곡</span>
+          </h2>
           <div class="song-table-border">
             <table class="table-tj song-table">
               <thead>
@@ -401,6 +406,10 @@
           </div>
           <!-- 금영 저번달 목록: TJ 와 같은 컬랩스 래퍼/유리판 분리 구조 (6턴-2) -->
           <div class="song-table-collapse collapse" id="kyLastMonthSongContentBorder">
+          <!-- 월 헤더는 컬랩스 안쪽 — TJ 저번달과 같은 취지 (2기 1턴) -->
+          <h2 class="song-header-text">
+            <span th:text="${kyLastMonth + ' 금영 신곡'}">10월 금영 신곡</span>
+          </h2>
           <div class="song-table-border">
             <table class="song-table table-ky">
               <thead>
