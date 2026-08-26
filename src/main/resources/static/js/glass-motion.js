@@ -5,13 +5,16 @@
  * 담당:
  *  1) 로드 시퀀스: .veil 요소에 .on 을 붙여 --vd 딜레이 순서대로 띄운다
  *  2) 스크롤 리빌: [data-lift] 요소가 30% 이상 보이면 .is-lit 을 붙인다 (기존 fade-in.js 대체)
- *  3) scroll edge: 콘텐츠가 상단바 아래로 지나갈 때만 .navbar 재질을 두껍게
+ *  3) scroll edge: 콘텐츠가 상단바 아래로 지나갈 때 .navbar 재질을 두껍게 하고,
+ *     화면 상단 점진 블러 베일(.scroll-veil)을 심어 콘텐츠를 가장자리에서 디졸브 (ui-rnd 5턴)
  *  4) 반사광: .sheen 유리에서 포인터를 따라 --mx/--my 를 갱신
  *  5) 보케: .bokeh i 의 위치·크기를 로드마다 랜덤으로 흩뿌린다
  *  6) 접힘 스크롤 팔로우: index 더보기를 접으면 토글 버튼을 화면 중앙까지
  *     활강시켜 포착한 뒤, 중앙에 고정한 채 접힘을 따라 함께 이동한다. followScroll 은
  *     window.glassMotion 으로 공개되어 검색 더보기 접힘과 애창곡 노래
  *     클릭 스크롤(song-search.js)도 쓴다
+ *  7) interaction glow: 유리 버튼 pointerdown 접점 좌표(--glow-x/--glow-y)를
+ *     심고 .glowing 을 토글한다 — 발광 자체는 CSS(@property transition) (ui-rnd 5턴)
  *
  * 컬랩스의 높이 전환 자체에는 관여하지 않는다 — 전 페이지 순정 부트스트랩
  * collapse 를 쓴다. (과거 6·7번 높이 예약 구역은 body 그라디언트가 문서
@@ -53,15 +56,44 @@
         observer.observe(el);
     });
 
-    // scroll edge: 콘텐츠가 상단바 아래로 지나갈 때만 재질을 두껍게
+    // scroll edge: 콘텐츠가 상단바 아래로 지나갈 때만 재질을 두껍게.
+    // 상단 점진 블러 베일(.scroll-veil)은 상단바 있는 페이지에만 심는다 —
+    // 표시는 CSS 형제 선택자(.navbar.scrolled ~ .scroll-veil)가 따라온다
     var navbar = document.querySelector(".navbar");
     if (navbar) {
+        var scrollVeil = document.createElement("div");
+        scrollVeil.className = "scroll-veil";
+        scrollVeil.setAttribute("aria-hidden", "true");
+        // 형제 선택자가 물리도록 상단바와 같은 부모(#container)의 끝에 심는다
+        // (fixed 라 부모가 어디든 뷰포트 기준으로 뜬다)
+        navbar.parentElement.appendChild(scrollVeil);
         var onScroll = function () {
             navbar.classList.toggle("scrolled", window.scrollY > 8);
         };
         window.addEventListener("scroll", onScroll, { passive: true });
         onScroll();
     }
+
+    // interaction glow: 누른 접점에서 국소 발광 — 좌표만 심고 발광은 CSS 가 맡는다
+    var glowReduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.addEventListener("pointerdown", function (e) {
+        if (glowReduceMotion) return;
+        var btn = e.target.closest(".btn, .glass-btn");
+        if (!btn) return;
+        var rect = btn.getBoundingClientRect();
+        btn.style.setProperty("--glow-x", Math.round(e.clientX - rect.left) + "px");
+        btn.style.setProperty("--glow-y", Math.round(e.clientY - rect.top) + "px");
+        btn.classList.add("glowing");
+    });
+
+    // 어디서 떼든(버튼 밖 드래그 아웃 포함) 발광을 감쇠 국면으로 넘긴다
+    function fadeGlow() {
+        document.querySelectorAll(".glowing").forEach(function (el) {
+            el.classList.remove("glowing");
+        });
+    }
+    document.addEventListener("pointerup", fadeGlow);
+    document.addEventListener("pointercancel", fadeGlow);
 
     // 반사광: 포인터와 1:1 로 따라온다 (rAF 로 요소당 프레임당 1회만 갱신)
     document.querySelectorAll(".sheen").forEach(function (el) {

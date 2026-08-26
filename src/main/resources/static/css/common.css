@@ -131,15 +131,21 @@
     display: none;
 }
 
-/* 유리 알약 하나가 버튼 하나 */
+/* 유리 알약 하나가 버튼 하나 — 재질은 노브를 따른다 (glass.css, 버튼판 스택) */
 .side-button-wrapper {
     margin-bottom: .6rem;
     border-radius: 22px;
-    background: var(--glass-bg-strong);
-    -webkit-backdrop-filter: blur(16px) saturate(160%);
-    backdrop-filter: blur(16px) saturate(160%);
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 10px 26px rgb(30 42 56 / .12), inset 0 1px 0 rgb(255 255 255 / .9);
+    background: rgb(var(--g-white) / var(--g-alpha-strong));
+    -webkit-backdrop-filter: blur(var(--g-blur-btn)) saturate(var(--g-sat));
+    backdrop-filter: blur(var(--g-blur-btn)) saturate(var(--g-sat));
+    border: 1px solid transparent;
+    box-shadow:
+        0 10px 26px rgb(30 42 56 / .12),
+        0 1px 0 rgb(30 42 56 / .13),
+        1px 0 0 rgb(30 42 56 / .06),
+        -1px 0 0 rgb(30 42 56 / .06),
+        inset 0 1px 0 var(--g-inset-hi),
+        inset 0 -2px 7px -2px rgb(255 255 255 / .7);
 }
 
 /* ---------- 입력 크기 제한 (기존 유지) ---------- */

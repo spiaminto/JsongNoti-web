@@ -28,8 +28,9 @@
     width: min(620px, 100%);
     padding: clamp(2rem, 5vw, 3.2rem);
     text-align: center;
-    /* 사진 위에 놓이므로 기본 유리보다 살짝 불투명하게 */
-    background: rgb(255 255 255 / .62);
+    /* 문맥 오버라이드: 사진 위 히어로는 몸체 알파를 전용 노브로 이동 —
+       배경 하드코딩 대신 노브 값 이동 (glass.css .glass 가 조립을 맡는다) */
+    --g-alpha: var(--g-alpha-hero);
 }
 
 /* 반사광(::after)이 z-index 0 에 깔리므로 내용은 그 위로 */

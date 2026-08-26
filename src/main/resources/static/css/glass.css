@@ -55,12 +55,42 @@
     --ink-2: #45515c;
     --ink-3: #8792a0;
 
-    /* 바탕과 유리 표면 */
+    /* 바탕 */
     --bg: #eaf0f4;
-    --glass-bg: rgb(255 255 255 / .52);
-    --glass-bg-strong: rgb(255 255 255 / .66);
-    --glass-border: rgb(255 255 255 / .72);
-    --glass-shadow: 0 24px 60px rgb(30 42 56 / .12);
+
+    /* 유리 재질 노브 (기조: docs/_temp/rnd-liquid-glass.md 2절).
+       숫자 하나짜리 스칼라 노브(-a 접미사 등)와 그것을 조립한 파생 값으로
+       나눈다. 문맥(히어로·모달)·상태(hover·scrolled)·변형(strong)은 전부
+       노브 값의 이동으로 표현하고, 새 하드코딩을 만들지 않는다 */
+
+    /* 몸체 (regular: 가독성 책임) */
+    --g-white: 255 255 255;   /* 몸체 백색 채널 */
+    --g-alpha: .6;            /* 패널 몸체 불투명도 — 알파는 위계가 아니라 "배경 자극도 ×
+                                 콘텐츠 민감도": 표는 보케 위 밀집 텍스트라 히어로보다 높다 */
+    --g-alpha-hero: .55;      /* 히어로 몸체 — 사진 위지만 글자가 커서 패널보다 낮다 */
+    --g-alpha-strong: .66;    /* 컨트롤(버튼) 몸체 */
+    --g-alpha-input: .55;     /* 입력창 몸체 */
+    --g-alpha-modal: .82;     /* 모달 몸체 */
+    --g-sat: 175%;            /* 채도 부스트 */
+    --g-blur-panel: 22px;
+    --g-blur-btn: 16px;
+    --g-blur-input: 10px;
+
+    /* 가장자리 (유리다움 책임) — 패널·버튼 림 보더는 에지 스택
+       (헤어라인 + 상하 inset)으로 대체되어, --g-edge 는 입력창 보더 전용 */
+    --g-edge-a: .72;          /* 림 보더 알파 (입력창) */
+    --g-edge: rgb(255 255 255 / var(--g-edge-a));
+    --g-inset-hi-a: 1;        /* 상단 inset 빛 알파 — 순백: 에지의 또렷함은 유리다움의 몸통 */
+    --g-inset-hi: rgb(255 255 255 / var(--g-inset-hi-a));
+    --g-inset-lo-a: .75;      /* 하단 반사광 알파 — 상단보다 넓게 퍼지는 inset */
+    --g-inset-lo: rgb(255 255 255 / var(--g-inset-lo-a));
+
+    /* 그림자·형태 */
+    --g-drop-a: .12;          /* 드롭 섀도 알파 */
+    --g-drop: 0 24px 60px rgb(30 42 56 / var(--g-drop-a));
+    --g-radius: 28px;
+    --g-radius-ctl: 999px;
+    --g-radius-input: 16px;
 
     /* 햇살 색 (rgb 채널값 — rgb(var(--sun) / a) 형태로 사용) */
     --sun: 255 240 205;
@@ -141,17 +171,23 @@ textarea:focus-visible {
     outline-offset: 2px;
 }
 
-/* ---------- 유리 표면 ---------- */
+/* ---------- 유리 표면 ----------
+   에지는 림 보더 대신 6그림자 스택: 바깥 헤어라인 3면 + 상단 순백 inset +
+   하단 반사광. 하단 inset 이 상단보다 퍼지는 것(바닥 반사광)이 요점이고,
+   음수 스프레드는 좌우 번짐을 조인다 */
 .glass {
-    background: var(--glass-bg);
-    -webkit-backdrop-filter: blur(22px) saturate(160%);
-    backdrop-filter: blur(22px) saturate(160%);
-    border: 1px solid var(--glass-border);
-    border-radius: 28px;
+    background: rgb(var(--g-white) / var(--g-alpha));
+    -webkit-backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
+    backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
+    border: 1px solid transparent;
+    border-radius: var(--g-radius);
     box-shadow:
-        var(--glass-shadow),
-        inset 0 1px 0 rgb(255 255 255 / .85),
-        inset 0 -1px 0 rgb(255 255 255 / .25);
+        var(--g-drop),
+        0 1px 0 rgb(30 42 56 / .13),
+        1px 0 0 rgb(30 42 56 / .06),
+        -1px 0 0 rgb(30 42 56 / .06),
+        inset 0 1px 0 var(--g-inset-hi),
+        inset 0 -3px 10px -2px var(--g-inset-lo);
 }
 
 /* ---------- 버튼: Bootstrap .btn 전체를 유리 버튼으로 ----------
@@ -162,31 +198,47 @@ textarea:focus-visible {
     display: inline-block;
     font-weight: 800;
     color: var(--ink);
-    background: var(--glass-bg-strong);
-    -webkit-backdrop-filter: blur(16px) saturate(160%);
-    backdrop-filter: blur(16px) saturate(160%);
-    border: 1px solid var(--glass-border);
-    border-radius: 999px;
+    background: rgb(var(--g-white) / var(--g-alpha-strong));
+    -webkit-backdrop-filter: blur(var(--g-blur-btn)) saturate(var(--g-sat));
+    backdrop-filter: blur(var(--g-blur-btn)) saturate(var(--g-sat));
+    border: 1px solid transparent;
+    border-radius: var(--g-radius-ctl);
     text-decoration: none;
-    box-shadow: 0 10px 26px rgb(30 42 56 / .12), inset 0 1px 0 rgb(255 255 255 / .9);
+    box-shadow:
+        0 10px 26px rgb(30 42 56 / .12),
+        0 1px 0 rgb(30 42 56 / .13),
+        1px 0 0 rgb(30 42 56 / .06),
+        -1px 0 0 rgb(30 42 56 / .06),
+        inset 0 1px 0 var(--g-inset-hi),
+        inset 0 -2px 7px -2px rgb(255 255 255 / .7);
     transition: transform .35s var(--ease-float), box-shadow .35s, background .35s, color .35s;
+    /* interaction glow(아래) 준비 — 발광을 알약 안으로 클리핑 */
+    position: relative;
+    overflow: hidden;
 }
 
+/* hover·active 는 몸체만 변하고 에지 스택은 유지한다 */
 .btn:hover,
 .glass-btn:hover {
     color: var(--ink);
     transform: translateY(-2px);
-    background: rgb(255 255 255 / .8);
-    border-color: var(--glass-border);
-    box-shadow: 0 16px 34px rgb(30 42 56 / .16), inset 0 1px 0 rgb(255 255 255 / .95);
+    background: rgb(var(--g-white) / .8);
+    border-color: transparent;
+    box-shadow:
+        0 10px 26px rgb(30 42 56 / .12),
+        0 1px 0 rgb(30 42 56 / .13),
+        1px 0 0 rgb(30 42 56 / .06),
+        -1px 0 0 rgb(30 42 56 / .06),
+        inset 0 1px 0 var(--g-inset-hi),
+        inset 0 -2px 7px -2px rgb(255 255 255 / .7);
 }
 
 /* hover 의 느린 전환 대신 즉시 줄어드는 press 피드백 */
 .btn:active,
 .glass-btn:active {
     color: var(--ink);
-    background: var(--glass-bg-strong);
-    border-color: var(--glass-border);
+    background: rgb(var(--g-white) / var(--g-alpha-strong));
+    border-color: transparent;
     transform: scale(.965);
     transition: transform .08s ease-out;
 }
@@ -204,42 +256,78 @@ textarea:focus-visible {
     padding: .7rem 1.4rem;
 }
 
-/* 위험 동작(구독취소·탈퇴·삭제)만 붉은 tint 로 구분. 테두리도 같은 계열로 흐리게 */
+/* 위험 동작(구독취소·탈퇴·삭제)만 붉은 tint 로 구분.
+   보더는 .btn 의 transparent 를 그대로 둔다 — 에지 스택이 위험 버튼에도
+   공통 적용된다 (ui-rnd 5턴 판정) */
 .btn-danger,
 .btn-outline-danger {
     color: var(--danger-ink);
     background: var(--danger-tint);
-    border-color: rgb(255 170 150 / .55);
 }
 
 .btn-danger:hover,
 .btn-outline-danger:hover {
     color: var(--danger-ink);
     background: rgb(255 190 175 / .45);
-    border-color: rgb(255 170 150 / .7);
 }
 
 .btn-danger:active,
 .btn-outline-danger:active {
     color: var(--danger-ink);
     background: var(--danger-tint);
-    border-color: rgb(255 170 150 / .55);
+}
+
+/* ---------- 모션: interaction glow (ui-rnd 5턴) ----------
+   누른 접점에서 국소 발광 — 접점 좌표(--glow-x/--glow-y)와 .glowing 은
+   glass-motion.js 가 심는다. 누름: 작고 밝게 맺힘(빠른 램프) →
+   뗌: 퍼지면서 사그라듦(느린 감쇠) — 반경이 커지며 알파가 빠지는 조합.
+   발광 알파·반경은 @property 타입 등록으로 그라디언트 내부 값이
+   transition 보간된다. 미등록 브라우저는 즉시 전환 자연 폴백.
+   그라디언트 재페인트는 버튼 면적뿐이라 성능 계약(blur 무관) 안이다 */
+@property --glow-a {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 0;
+}
+
+@property --glow-r {
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 130px;
+}
+
+.btn::after,
+.glass-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(circle var(--glow-r) at var(--glow-x, 50%) var(--glow-y, 50%),
+        rgb(255 255 255 / var(--glow-a)), transparent 70%);
+    transition: --glow-a .55s ease-out, --glow-r .55s ease-out;
+}
+
+.glowing::after {
+    --glow-a: .55;
+    --glow-r: 70px;
+    transition-duration: .1s;
 }
 
 /* ---------- 입력: Bootstrap .form-control 을 유리 입력창으로 ---------- */
 .form-control {
     color: var(--ink);
-    background: rgb(255 255 255 / .55);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
+    background: rgb(var(--g-white) / var(--g-alpha-input));
+    -webkit-backdrop-filter: blur(var(--g-blur-input));
+    backdrop-filter: blur(var(--g-blur-input));
+    border: 1px solid var(--g-edge);
+    border-radius: var(--g-radius-input);
     box-shadow: inset 0 1px 3px rgb(30 42 56 / .06);
 }
 
 .form-control:focus {
     color: var(--ink);
-    background: rgb(255 255 255 / .78);
+    background: rgb(var(--g-white) / .78);
     border-color: rgb(100 149 237 / .45);
     box-shadow: inset 0 1px 3px rgb(30 42 56 / .06);
 }
@@ -269,12 +357,18 @@ textarea:focus-visible {
 
 /* ---------- 모달: 유리 판 + 흐려지는 배경 ---------- */
 .modal-content {
-    background: rgb(255 255 255 / .82);
-    -webkit-backdrop-filter: blur(22px) saturate(160%);
-    backdrop-filter: blur(22px) saturate(160%);
-    border: 1px solid var(--glass-border);
-    border-radius: 28px;
-    box-shadow: var(--glass-shadow), inset 0 1px 0 rgb(255 255 255 / .85);
+    background: rgb(var(--g-white) / var(--g-alpha-modal));
+    -webkit-backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
+    backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
+    border: 1px solid transparent;
+    border-radius: var(--g-radius);
+    box-shadow:
+        var(--g-drop),
+        0 1px 0 rgb(30 42 56 / .13),
+        1px 0 0 rgb(30 42 56 / .06),
+        -1px 0 0 rgb(30 42 56 / .06),
+        inset 0 1px 0 var(--g-inset-hi),
+        inset 0 -3px 10px -2px var(--g-inset-lo);
 }
 
 .modal-header,
@@ -288,6 +382,31 @@ textarea:focus-visible {
     --bs-backdrop-opacity: .4;
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
+}
+
+/* ---------- 모션: scroll edge (ui-rnd 5턴) ----------
+   상단바 유리 밑으로 콘텐츠가 지나가면 화면 상단에 점진 블러 베일이
+   떠올라, 콘텐츠가 가장자리에서 디졸브된다. 베일 요소는 glass-motion.js 가
+   상단바 있는 페이지에만 심고, 표시는 .navbar.scrolled(scrollY > 8)를
+   형제 선택자로 따라간다 */
+.scroll-veil {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    z-index: 39; /* 상단바(40) 바로 아래 */
+    pointer-events: none;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 25%, transparent);
+    mask-image: linear-gradient(to bottom, #000 25%, transparent);
+    opacity: 0;
+    transition: opacity .45s ease;
+}
+
+.navbar.scrolled ~ .scroll-veil {
+    opacity: 1;
 }
 
 /* 모달이 열릴 때 화면이 옆으로 밀리는 것 방지.
@@ -662,29 +781,51 @@ tbody tr.more-reveal.more-settled.more-hide,
     .btn:hover, .glass-btn:hover { transform: none; }
 }
 
-/* 투명도 최소화: 유리를 거의 불투명하게, blur 제거 */
+/* 투명도 최소화: 몸체 노브를 거의 불투명하게 올리고 blur 제거 */
 @media (prefers-reduced-transparency: reduce) {
-    .glass, .glass-btn, .btn, .modal-content {
-        background: rgb(255 255 255 / .95);
+    :root {
+        --g-alpha: .95;
+        --g-alpha-hero: .95;
+        --g-alpha-strong: .95;
+        --g-alpha-modal: .95;
+    }
+    /* 상단바·사이드 버튼은 재질 선언이 뒤에 로드되는 파일(containers·
+       common.css)에 있어, 같은 특정도로는 지므로 태그를 붙여 한 단계 올린다 */
+    .glass, .glass-btn, .btn, .modal-content, .form-control,
+    nav.navbar, div.side-button-wrapper {
         -webkit-backdrop-filter: none;
         backdrop-filter: none;
     }
     .form-control {
         background: #ffffff;
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
+    }
+    /* scrolled 상태의 몸체 값 이동(.68)도 불투명 쪽으로 고정 */
+    nav.navbar, nav.navbar.scrolled {
+        background: rgb(var(--g-white) / .95);
     }
     .sheen::after { display: none; }
     .modal-backdrop { -webkit-backdrop-filter: none; backdrop-filter: none; }
+    .scroll-veil { display: none; }
 }
 
-/* 고대비: 잉크를 진하게, 유리 테두리를 어둡게, 장식 빛은 제거 */
+/* 고대비: 잉크를 진하게, 몸체를 거의 불투명하게, 장식 빛은 제거.
+   림 보더가 기본 transparent(에지 스택)이므로 여기서 직접 되살린다 —
+   상태 선택자까지 나란히 선언해 hover/active 의 transparent 를 이긴다 */
 @media (prefers-contrast: more) {
     :root {
         --ink-2: #333f4a;
-        --glass-border: rgb(70 85 100 / .55);
-        --glass-bg: rgb(255 255 255 / .9);
-        --glass-bg-strong: rgb(255 255 255 / .96);
+        --g-edge: rgb(70 85 100 / .55);
+        --g-alpha: .9;
+        --g-alpha-hero: .9;
+        --g-alpha-strong: .96;
+        --g-alpha-input: .95;
+        --g-alpha-modal: .96;
+    }
+    /* 상단바·사이드 버튼은 태그를 붙여 특정도를 올린다 (뒤 로드 파일 대응) */
+    .glass, .modal-content, nav.navbar, div.side-button-wrapper,
+    .btn, .btn:hover, .btn:active,
+    .glass-btn, .glass-btn:hover, .glass-btn:active {
+        border-color: var(--g-edge);
     }
     .bokeh { display: none; }
     .ray { display: none; }

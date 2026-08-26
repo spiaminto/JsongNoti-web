@@ -65,14 +65,19 @@ section {
     flex-wrap: nowrap;
     /* 좌우 padding 은 알약의 둥근 곡선이 끝나는 평평한 지점부터 내용이 놓이도록 */
     padding: .3rem 1.5rem .3rem 1.75rem;
-    border-radius: 999px;
-    background: var(--glass-bg);
-    -webkit-backdrop-filter: blur(22px) saturate(160%);
-    backdrop-filter: blur(22px) saturate(160%);
-    border: 1px solid var(--glass-border);
+    border-radius: var(--g-radius-ctl);
+    /* 재질은 노브를 따른다 (glass.css) — 알약이라 에지 스택은 버튼판 */
+    background: rgb(var(--g-white) / var(--g-alpha));
+    -webkit-backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
+    backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
+    border: 1px solid transparent;
     box-shadow:
-        var(--glass-shadow),
-        inset 0 1px 0 rgb(255 255 255 / .85);
+        var(--g-drop),
+        0 1px 0 rgb(30 42 56 / .13),
+        1px 0 0 rgb(30 42 56 / .06),
+        -1px 0 0 rgb(30 42 56 / .06),
+        inset 0 1px 0 var(--g-inset-hi),
+        inset 0 -2px 7px -2px rgb(255 255 255 / .7);
     transition:
         opacity 1s var(--ease-float) var(--vd, 0s),
         transform 1s var(--ease-float) var(--vd, 0s),
@@ -82,12 +87,17 @@ section {
 }
 
 /* scroll edge: 콘텐츠가 상단바 아래로 지나갈 때만 재질이 두꺼워진다
-   (.scrolled 는 glass-motion.js 가 scrollY > 8 에서 토글) */
+   (.scrolled 는 glass-motion.js 가 scrollY > 8 에서 토글).
+   몸체·드롭만 값 이동하고 에지 스택은 유지한다 */
 .navbar.scrolled {
-    background: rgb(255 255 255 / .68);
+    background: rgb(var(--g-white) / .68);
     box-shadow:
         0 14px 34px rgb(30 42 56 / .16),
-        inset 0 1px 0 rgb(255 255 255 / .9);
+        0 1px 0 rgb(30 42 56 / .13),
+        1px 0 0 rgb(30 42 56 / .06),
+        -1px 0 0 rgb(30 42 56 / .06),
+        inset 0 1px 0 var(--g-inset-hi),
+        inset 0 -2px 7px -2px rgb(255 255 255 / .7);
 }
 
 /* 상단바 오른쪽 아이콘 메뉴 묶음 */
