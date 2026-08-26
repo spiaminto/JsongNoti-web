@@ -12,9 +12,10 @@
 (function () {
     'use strict';
 
-    /* def(기본값)는 glass-proto.css :root 의 B(v0) 값과 수동 동기 유지 —
-       computed 로 읽으면 A 모드(프로토 link off)로 로드했을 때 빈 값이 되고,
-       C 프리셋이 켜져 있으면 C 값이 기본값으로 오염되므로 하드코딩한다 */
+    /* def 는 초기 fallback(B v0 값, glass-proto.css 와 수동 동기) —
+       실제 기준값은 syncDefs() 가 "현재 켜진 프리셋"의 computed 값으로
+       갱신한다 (C 모드에선 C 값이 기준이 되고, 초기화도 거기로 복귀).
+       A 모드처럼 computed 를 읽을 수 없을 때만 이 fallback 이 남는다 */
     var KNOBS = [
         { v: '--g-alpha',        label: '패널 알파',      def: .52, min: 0,   max: 1,   step: .01, unit: '' },
         { v: '--g-alpha-hero',   label: '히어로 알파',    def: .62, min: 0,   max: 1,   step: .01, unit: '' },
@@ -29,7 +30,8 @@
         { v: '--g-inset-hi-a',   label: 'inset 상단 알파', def: .85, min: 0,  max: 1,   step: .01, unit: '' },
         { v: '--g-inset-lo-a',   label: 'inset 하단 알파', def: .25, min: 0,  max: 1,   step: .01, unit: '' },
         { v: '--g-drop-a',       label: '그림자 알파',    def: .12, min: 0,   max: .5,  step: .01, unit: '' },
-        { v: '--g-radius',       label: '패널 라운드',    def: 28,  min: 0,   max: 48,  step: 1,   unit: 'px' }
+        { v: '--g-radius',       label: '패널 라운드',    def: 28,  min: 0,   max: 48,  step: 1,   unit: 'px' },
+        { v: '--g-bokeh',        label: '보케 존재감',    def: 1,   min: 0,   max: 1,   step: .05, unit: '' }
     ];
     var STORE_KEY = 'glassKnobs';
     var root = document.documentElement;
@@ -127,9 +129,47 @@
         'border: 1px solid rgb(120 145 170 / .5); background: #ffffff; color: #1b232b;' +
         'font-weight: 800; font-size: .8rem; box-shadow: 0 6px 18px rgb(30 42 56 / .18); cursor: pointer;';
     opener.addEventListener('click', function () {
+        if (!panel.classList.contains('open')) syncDefs(); // 열 때 현재 프리셋 기준으로 동기화
         panel.classList.toggle('open');
     });
     document.body.appendChild(opener);
+
+    /* ---------- 기준값 동기화 ----------
+       슬라이더 오버라이드를 잠시 걷어낸 상태의 computed 값 = 현재 켜진
+       프리셋(B v0 또는 C)의 값을 읽어 def·표시를 갱신한다. 오버라이드한
+       노브는 슬라이더 값을 유지하고, 새 기준과 같아졌으면 강조만 풀린다 */
+    function syncDefs() {
+        var saved = {};
+        KNOBS.forEach(function (k) {
+            var cur = root.style.getPropertyValue(k.v);
+            if (cur !== '') { saved[k.v] = cur; root.style.removeProperty(k.v); }
+        });
+        var cs = getComputedStyle(root);
+        KNOBS.forEach(function (k) {
+            var raw = parseFloat(cs.getPropertyValue(k.v));
+            if (!isNaN(raw)) k.def = raw; // 읽기 실패(A 모드)면 기존 def 유지
+        });
+        KNOBS.forEach(function (k) {
+            if (saved[k.v] !== undefined) root.style.setProperty(k.v, saved[k.v]);
+        });
+        KNOBS.forEach(function (k) {
+            var overridden = saved[k.v] !== undefined;
+            var val = overridden ? parseFloat(k.input.value) : k.def;
+            k.input.value = val;
+            k.valEl.textContent = fmt(k, val);
+            k.row.classList.toggle('changed', overridden && val !== k.def);
+        });
+    }
+
+    /* 프리셋 토글(A/B·C·에지)이 눌리면 기준값을 다시 읽는다 —
+       A/B 의 link 재활성화가 한 프레임 뒤에 반영되므로 rAF 두 번 뒤에 */
+    ['glassAbToggle', 'glassCToggle', 'glassEdgeToggle'].forEach(function (id) {
+        var btn = document.getElementById(id);
+        if (!btn) return;
+        btn.addEventListener('click', function () {
+            requestAnimationFrame(function () { requestAnimationFrame(syncDefs); });
+        });
+    });
 
     /* ---------- 값 적용·복원 ---------- */
     function setKnob(k, num, persist) {
@@ -168,10 +208,11 @@
         });
     });
 
-    /* 초기 상태: 저장된 오버라이드 복원, 없으면 기본값 표시 */
+    /* 초기 상태: 저장된 오버라이드 복원 후, 현재 프리셋 기준으로 동기화 */
     var stored = loadStore();
     KNOBS.forEach(function (k) {
         if (typeof stored[k.v] === 'number') setKnob(k, stored[k.v], false);
         else resetKnob(k);
     });
+    syncDefs();
 })();
