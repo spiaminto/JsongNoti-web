@@ -1,0 +1,230 @@
+/* ==========================================================================
+   glass-proto.css — Liquid Glass 재질 프로토타입 (ui-rnd 1턴~)
+   기조: docs/_temp/rnd-liquid-glass.md
+
+   glass.css·page/index.css 에 흩어진 유리 재질 선언(.glass, .btn,
+   .form-control, .modal-content, .hero 몸체)을 노브(CSS 변수) 기반으로
+   재정의한다. index.html 에서만, 모든 CSS 뒤에 로드한다.
+
+   v0 은 현행 재질과 같은 값에서 출발한다 — 이후 트윅은 노브 값 이동으로만.
+   레이아웃·모션·배경 연출·틴트 토큰은 다루지 않는다 (기존 파일 그대로).
+   실험은 파일 끝의 옵트인 프리셋(body.gx-*)으로 A/B 한다.
+   ========================================================================== */
+
+/* ---------- 노브 ----------
+   숫자 하나짜리 스칼라 노브(-a 접미사 등)와, 그것을 조립한 파생 값으로
+   나눈다 — 슬라이더 패널(glass-proto-panel.js)이 스칼라만 돌리면 되도록 */
+:root {
+    /* 몸체 (regular: 가독성 책임) */
+    --g-white: 255 255 255;   /* 몸체 백색 채널 */
+    --g-alpha: .52;           /* 패널 몸체 불투명도 */
+    --g-alpha-hero: .62;      /* 히어로 몸체 (사진 위라 살짝 불투명) */
+    --g-alpha-strong: .66;    /* 컨트롤(버튼) 몸체 */
+    --g-alpha-input: .55;     /* 입력창 몸체 */
+    --g-alpha-modal: .82;     /* 모달 몸체 */
+    --g-sat: 160%;            /* 채도 부스트 */
+    --g-blur-panel: 22px;
+    --g-blur-btn: 16px;
+    --g-blur-input: 10px;
+
+    /* 가장자리 (유리다움 책임) */
+    --g-edge-a: .72;          /* 림 보더 알파 */
+    --g-edge: rgb(255 255 255 / var(--g-edge-a));
+    --g-inset-hi-a: .85;      /* 상단 inset 빛 알파 */
+    --g-inset-hi: rgb(255 255 255 / var(--g-inset-hi-a));
+    --g-inset-lo-a: .25;      /* 하단 inset 빛 알파 */
+    --g-inset-lo: rgb(255 255 255 / var(--g-inset-lo-a));
+
+    /* 그림자·형태 */
+    --g-drop-a: .12;          /* 드롭 섀도 알파 */
+    --g-drop: 0 24px 60px rgb(30 42 56 / var(--g-drop-a));
+    --g-radius: 28px;
+    --g-radius-ctl: 999px;
+    --g-radius-input: 16px;
+}
+
+/* ---------- 패널 유리 ---------- */
+.glass {
+    background: rgb(var(--g-white) / var(--g-alpha));
+    -webkit-backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
+    backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
+    border: 1px solid var(--g-edge);
+    border-radius: var(--g-radius);
+    box-shadow:
+        var(--g-drop),
+        inset 0 1px 0 var(--g-inset-hi),
+        inset 0 -1px 0 var(--g-inset-lo);
+}
+
+/* 문맥 오버라이드: 사진 위 히어로는 몸체를 살짝 더 불투명하게 —
+   page/index.css 의 background 하드코딩(.62)을 노브 이동으로 대체.
+   전용 스칼라(--g-alpha-hero)를 거쳐야 슬라이더 패널이 히어로만 돌릴 수 있다 */
+.hero {
+    --g-alpha: var(--g-alpha-hero);
+}
+
+/* ---------- 버튼 ---------- */
+.btn,
+.glass-btn {
+    color: var(--ink);
+    background: rgb(var(--g-white) / var(--g-alpha-strong));
+    -webkit-backdrop-filter: blur(var(--g-blur-btn)) saturate(var(--g-sat));
+    backdrop-filter: blur(var(--g-blur-btn)) saturate(var(--g-sat));
+    border: 1px solid var(--g-edge);
+    border-radius: var(--g-radius-ctl);
+    box-shadow: 0 10px 26px rgb(30 42 56 / .12), inset 0 1px 0 rgb(255 255 255 / .9);
+}
+
+.btn:hover,
+.glass-btn:hover {
+    color: var(--ink);
+    background: rgb(var(--g-white) / .8);
+    border-color: var(--g-edge);
+    box-shadow: 0 16px 34px rgb(30 42 56 / .16), inset 0 1px 0 rgb(255 255 255 / .95);
+}
+
+.btn:active,
+.glass-btn:active {
+    color: var(--ink);
+    background: rgb(var(--g-white) / var(--g-alpha-strong));
+    border-color: var(--g-edge);
+}
+
+.btn:disabled {
+    color: var(--ink-3);
+    background: rgb(var(--g-white) / .4);
+    border-color: rgb(255 255 255 / .5);
+    box-shadow: none;
+}
+
+/* 위험 동작 틴트: 재질층이 .btn 을 다시 선언했으므로 변형도 다시 이긴다 */
+.btn-danger,
+.btn-outline-danger {
+    color: var(--danger-ink);
+    background: var(--danger-tint);
+    border-color: rgb(255 170 150 / .55);
+}
+
+.btn-danger:hover,
+.btn-outline-danger:hover {
+    color: var(--danger-ink);
+    background: rgb(255 190 175 / .45);
+    border-color: rgb(255 170 150 / .7);
+}
+
+.btn-danger:active,
+.btn-outline-danger:active {
+    color: var(--danger-ink);
+    background: var(--danger-tint);
+    border-color: rgb(255 170 150 / .55);
+}
+
+/* ---------- 입력 ---------- */
+.form-control {
+    color: var(--ink);
+    background: rgb(var(--g-white) / var(--g-alpha-input));
+    -webkit-backdrop-filter: blur(var(--g-blur-input));
+    backdrop-filter: blur(var(--g-blur-input));
+    border: 1px solid var(--g-edge);
+    border-radius: var(--g-radius-input);
+    box-shadow: inset 0 1px 3px rgb(30 42 56 / .06);
+}
+
+.form-control:focus {
+    color: var(--ink);
+    background: rgb(var(--g-white) / .78);
+    border-color: rgb(100 149 237 / .45);
+    box-shadow: inset 0 1px 3px rgb(30 42 56 / .06);
+}
+
+/* ---------- 모달 ---------- */
+.modal-content {
+    background: rgb(var(--g-white) / var(--g-alpha-modal));
+    -webkit-backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
+    backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
+    border: 1px solid var(--g-edge);
+    border-radius: var(--g-radius);
+    box-shadow: var(--g-drop), inset 0 1px 0 var(--g-inset-hi);
+}
+
+/* ---------- 접근성: 노브 오버라이드 ----------
+   이 파일이 glass.css 의 재질 선언을 뒤에서 이기므로, glass.css 의
+   폴백 블록도 여기서 다시 이겨야 한다 (미디어 쿼리는 특정도에 관여하지 않음) */
+
+/* 투명도 최소화: 몸체를 거의 불투명하게, blur 제거 */
+@media (prefers-reduced-transparency: reduce) {
+    :root {
+        --g-alpha: .95;
+        --g-alpha-hero: .95;
+        --g-alpha-strong: .95;
+        --g-alpha-modal: .95;
+    }
+
+    .glass, .glass-btn, .btn, .modal-content, .form-control {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+
+    .form-control {
+        background: #ffffff;
+    }
+}
+
+/* 고대비: 에지를 어두운 잉크로, 몸체를 거의 불투명하게
+   (잉크·장식 제거는 glass.css 블록이 계속 담당) */
+@media (prefers-contrast: more) {
+    :root {
+        --g-edge: rgb(70 85 100 / .55);
+        --g-alpha: .9;
+        --g-alpha-strong: .96;
+        --g-alpha-input: .95;
+        --g-alpha-modal: .96;
+    }
+}
+
+/* ==========================================================================
+   실험 프리셋 — body 에 클래스를 얹어 현행과 A/B 한다 (기조 7절).
+   채택되면 값을 위 노브 기본값으로 승격하고 프리셋은 지운다.
+   ========================================================================== */
+
+/* gx-c: C 개선본 프리셋 — B(v0) 위에 얹는 값 이동 (1턴 제안).
+   에지 스택(아래)이 유리다움을 맡는 만큼 몸체를 반 단계 맑게,
+   채도 부스트를 한 단계 올려 유리 너머의 색을 살린다.
+   :root:has() 로 선언해 슬라이더 패널(html 인라인 오버라이드)이
+   개별 노브를 여전히 이길 수 있게 한다 */
+:root:has(body.gx-c) {
+    --g-alpha: .48;
+    --g-sat: 170%;
+}
+
+/* gx-edge: 가장자리 강화 — Liquid Aqua 의 에지 스택 이식 실험.
+   림 보더를 끄고 헤어라인(바깥)+상하 inset 으로 에지를 세운다.
+   하단 inset 이 상단보다 넓게 퍼지는 것(바닥 반사광)이 요점.
+   C 개선본(gx-c)은 이 에지 스택을 동반한다 */
+body.gx-edge .glass,
+body.gx-edge .modal-content,
+body.gx-c .glass,
+body.gx-c .modal-content {
+    border-color: transparent;
+    box-shadow:
+        var(--g-drop),
+        0 1px 0 rgb(30 42 56 / .10),
+        1px 0 0 rgb(30 42 56 / .05),
+        -1px 0 0 rgb(30 42 56 / .05),
+        inset 0 1px 0 rgb(255 255 255 / .95),
+        inset 0 -2px 8px rgb(255 255 255 / .6);
+}
+
+body.gx-edge .btn,
+body.gx-edge .glass-btn,
+body.gx-c .btn,
+body.gx-c .glass-btn {
+    border-color: transparent;
+    box-shadow:
+        0 10px 26px rgb(30 42 56 / .12),
+        0 1px 0 rgb(30 42 56 / .10),
+        1px 0 0 rgb(30 42 56 / .05),
+        -1px 0 0 rgb(30 42 56 / .05),
+        inset 0 1px 0 rgb(255 255 255 / .95),
+        inset 0 -2px 6px rgb(255 255 255 / .55);
+}

@@ -22,6 +22,9 @@
   <link href="/static/css/song-table.css" th:href="@{/css/song-table.css}" rel="stylesheet"/>
   <link href="/static/css/footer.css" th:href="@{/css/footer.css}" rel="stylesheet"/>
   <link href="/static/css/page/index.css" th:href="@{/css/page/index.css}" rel="stylesheet"/>
+  <!-- Liquid Glass 재질 프로토타입 (ui-rnd): 재질 선언을 노브 기반으로 재정의.
+       반드시 맨 뒤에 로드해야 기존 재질 선언을 이긴다 -->
+  <link href="/static/css/glass-proto.css" th:href="@{/css/glass-proto.css}" rel="stylesheet"/>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-JFWLSXBEYR"></script>
   <script>
@@ -676,6 +679,74 @@
   </footer>
 
 </div> <!-- #container -->
+
+<!-- ui-rnd 토글 묶음 (아래부터): A/B=기존 재질↔프로토(link on/off),
+     C 개선본=body.gx-c 프리셋, 에지 실험=body.gx-edge, 노브=슬라이더 패널(별도 JS).
+     재질 R&D 기간 한정 임시 UI — 본편 반영 시 버튼·스크립트째 제거한다.
+     스타일은 inline — A 모드에서 프로토 CSS 가 꺼져도 버튼은 그대로 보여야 한다 -->
+<button id="glassAbToggle" type="button"
+        style="position: fixed; left: 14px; bottom: 14px; z-index: 2000;
+               padding: .45rem .95rem; border-radius: 999px;
+               border: 1px solid rgb(120 145 170 / .5);
+               background: #ffffff; color: #1b232b;
+               font-weight: 800; font-size: .8rem;
+               box-shadow: 0 6px 18px rgb(30 42 56 / .18); cursor: pointer;">
+</button>
+<button id="glassCToggle" type="button"
+        style="position: fixed; left: 14px; bottom: 60px; z-index: 2000;
+               padding: .45rem .95rem; border-radius: 999px;
+               border: 1px solid rgb(120 145 170 / .5);
+               background: #ffffff; color: #1b232b;
+               font-weight: 800; font-size: .8rem;
+               box-shadow: 0 6px 18px rgb(30 42 56 / .18); cursor: pointer;">
+</button>
+<button id="glassEdgeToggle" type="button"
+        style="position: fixed; left: 14px; bottom: 106px; z-index: 2000;
+               padding: .45rem .95rem; border-radius: 999px;
+               border: 1px solid rgb(120 145 170 / .5);
+               background: #ffffff; color: #1b232b;
+               font-weight: 800; font-size: .8rem;
+               box-shadow: 0 6px 18px rgb(30 42 56 / .18); cursor: pointer;">
+</button>
+<script>
+    (function () {
+        var link = document.querySelector('link[href*="glass-proto"]');
+        var abBtn = document.getElementById('glassAbToggle');
+        var cBtn = document.getElementById('glassCToggle');
+        var edgeBtn = document.getElementById('glassEdgeToggle');
+        if (!link || !abBtn || !cBtn || !edgeBtn) return;
+
+        function save(key, val) { try { sessionStorage.setItem(key, val); } catch (e) {} }
+        function readKey(key) { try { return sessionStorage.getItem(key); } catch (e) { return null; } }
+
+        function applyAb(useProto) {
+            link.disabled = !useProto;
+            abBtn.textContent = useProto ? '재질 B: 프로토' : '재질 A: 기존';
+            save('glassAb', useProto ? 'B' : 'A');
+        }
+
+        function applyFlag(cls, on, btn, label, key) {
+            document.body.classList.toggle(cls, on);
+            btn.textContent = label + (on ? ' ON' : ' OFF');
+            save(key, on ? '1' : '0');
+            if (on && link.disabled) applyAb(true); // A 모드에서 켜면 보이도록 B 로 전환
+        }
+
+        applyAb(readKey('glassAb') !== 'A');
+        applyFlag('gx-c', readKey('glassC') === '1', cBtn, 'C 개선본:', 'glassC');
+        applyFlag('gx-edge', readKey('glassEdge') === '1', edgeBtn, '에지 실험:', 'glassEdge');
+
+        abBtn.addEventListener('click', function () { applyAb(link.disabled); });
+        cBtn.addEventListener('click', function () {
+            applyFlag('gx-c', !document.body.classList.contains('gx-c'), cBtn, 'C 개선본:', 'glassC');
+        });
+        edgeBtn.addEventListener('click', function () {
+            applyFlag('gx-edge', !document.body.classList.contains('gx-edge'), edgeBtn, '에지 실험:', 'glassEdge');
+        });
+    })();
+</script>
+<!-- ui-rnd 노브 슬라이더 패널 (임시 R&D UI, A/B 토글과 함께 제거) -->
+<script src="/static/js/glass-proto-panel.js" th:src="@{/js/glass-proto-panel.js}"></script>
 <!-- Bootstrap core JS-->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
