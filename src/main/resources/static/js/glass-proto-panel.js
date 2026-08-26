@@ -12,23 +12,22 @@
 (function () {
     'use strict';
 
-    /* def 는 초기 fallback(B v0 값, glass-proto.css 와 수동 동기) —
-       실제 기준값은 syncDefs() 가 "현재 켜진 프리셋"의 computed 값으로
-       갱신한다 (C 모드에선 C 값이 기준이 되고, 초기화도 거기로 복귀).
+    /* def 는 초기 fallback(모드 B 확정 기본값, glass-proto.css 와 수동 동기) —
+       실제 기준값은 syncDefs() 가 현재 모드의 computed 값으로 갱신한다.
        A 모드처럼 computed 를 읽을 수 없을 때만 이 fallback 이 남는다 */
     var KNOBS = [
-        { v: '--g-alpha',        label: '패널 알파',      def: .52, min: 0,   max: 1,   step: .01, unit: '' },
-        { v: '--g-alpha-hero',   label: '히어로 알파',    def: .62, min: 0,   max: 1,   step: .01, unit: '' },
+        { v: '--g-alpha',        label: '패널 알파',      def: .6,  min: 0,   max: 1,   step: .01, unit: '' },
+        { v: '--g-alpha-hero',   label: '히어로 알파',    def: .55, min: 0,   max: 1,   step: .01, unit: '' },
         { v: '--g-alpha-strong', label: '버튼 알파',      def: .66, min: 0,   max: 1,   step: .01, unit: '' },
         { v: '--g-alpha-input',  label: '입력 알파',      def: .55, min: 0,   max: 1,   step: .01, unit: '' },
         { v: '--g-alpha-modal',  label: '모달 알파',      def: .82, min: 0,   max: 1,   step: .01, unit: '' },
         { v: '--g-blur-panel',   label: '패널 블러',      def: 22,  min: 0,   max: 40,  step: 1,   unit: 'px' },
         { v: '--g-blur-btn',     label: '버튼 블러',      def: 16,  min: 0,   max: 40,  step: 1,   unit: 'px' },
         { v: '--g-blur-input',   label: '입력 블러',      def: 10,  min: 0,   max: 40,  step: 1,   unit: 'px' },
-        { v: '--g-sat',          label: '채도 부스트',    def: 160, min: 100, max: 220, step: 5,   unit: '%' },
+        { v: '--g-sat',          label: '채도 부스트',    def: 175, min: 100, max: 220, step: 5,   unit: '%' },
         { v: '--g-edge-a',       label: '림 보더 알파',   def: .72, min: 0,   max: 1,   step: .01, unit: '' },
-        { v: '--g-inset-hi-a',   label: 'inset 상단 알파', def: .85, min: 0,  max: 1,   step: .01, unit: '' },
-        { v: '--g-inset-lo-a',   label: 'inset 하단 알파', def: .25, min: 0,  max: 1,   step: .01, unit: '' },
+        { v: '--g-inset-hi-a',   label: 'inset 상단 알파', def: 1,   min: 0,  max: 1,   step: .01, unit: '' },
+        { v: '--g-inset-lo-a',   label: 'inset 하단 알파', def: .75, min: 0,  max: 1,   step: .01, unit: '' },
         { v: '--g-drop-a',       label: '그림자 알파',    def: .12, min: 0,   max: .5,  step: .01, unit: '' },
         { v: '--g-radius',       label: '패널 라운드',    def: 28,  min: 0,   max: 48,  step: 1,   unit: 'px' },
         { v: '--g-bokeh',        label: '보케 존재감',    def: 1,   min: 0,   max: 1,   step: .05, unit: '' }
@@ -135,9 +134,10 @@
     document.body.appendChild(opener);
 
     /* ---------- 기준값 동기화 ----------
-       슬라이더 오버라이드를 잠시 걷어낸 상태의 computed 값 = 현재 켜진
-       프리셋(B v0 또는 C)의 값을 읽어 def·표시를 갱신한다. 오버라이드한
-       노브는 슬라이더 값을 유지하고, 새 기준과 같아졌으면 강조만 풀린다 */
+       슬라이더 오버라이드를 잠시 걷어낸 상태의 computed 값 = 현재 모드
+       (B 확정 기본값, C 는 모션 실험이라 재질 값 동일)를 읽어 def·표시를
+       갱신한다. 오버라이드한 노브는 슬라이더 값을 유지하고, 새 기준과
+       같아졌으면 강조만 풀린다 */
     function syncDefs() {
         var saved = {};
         KNOBS.forEach(function (k) {
@@ -161,9 +161,9 @@
         });
     }
 
-    /* 프리셋 토글(A/B·C·에지)이 눌리면 기준값을 다시 읽는다 —
-       A/B 의 link 재활성화가 한 프레임 뒤에 반영되므로 rAF 두 번 뒤에 */
-    ['glassAbToggle', 'glassCToggle', 'glassEdgeToggle'].forEach(function (id) {
+    /* 모드 버튼(A·B·C)이 눌리면 기준값을 다시 읽는다 —
+       A→B/C 의 link 재활성화가 한 프레임 뒤에 반영되므로 rAF 두 번 뒤에 */
+    ['glassModeA', 'glassModeB', 'glassModeC'].forEach(function (id) {
         var btn = document.getElementById(id);
         if (!btn) return;
         btn.addEventListener('click', function () {

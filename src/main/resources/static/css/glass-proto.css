@@ -6,9 +6,11 @@
    .form-control, .modal-content, .hero 몸체)을 노브(CSS 변수) 기반으로
    재정의한다. index.html 에서만, 모든 CSS 뒤에 로드한다.
 
-   v0 은 현행 재질과 같은 값에서 출발한다 — 이후 트윅은 노브 값 이동으로만.
+   기본값은 "이전 턴까지의 확정본"(모드 B)이다 — 1턴에 v0(현행 재질 전사)로
+   출발해 2~3턴 C 프리셋으로 확정한 값을 5턴에 기본값으로 승격했다.
    레이아웃·모션·배경 연출·틴트 토큰은 다루지 않는다 (기존 파일 그대로).
-   실험은 파일 끝의 옵트인 프리셋(body.gx-*)으로 A/B 한다.
+   이번 턴 실험은 파일 끝의 body.gx-c 블록(모드 C)에 가둔다 — 채택되면
+   기본값으로 승격하고 블록을 비우는 회전식 (기조 7절).
    ========================================================================== */
 
 /* ---------- 노브 ----------
@@ -17,22 +19,24 @@
 :root {
     /* 몸체 (regular: 가독성 책임) */
     --g-white: 255 255 255;   /* 몸체 백색 채널 */
-    --g-alpha: .52;           /* 패널 몸체 불투명도 */
-    --g-alpha-hero: .62;      /* 히어로 몸체 (사진 위라 살짝 불투명) */
+    --g-alpha: .6;            /* 패널 몸체 불투명도 — 알파는 위계가 아니라 "배경 자극도 ×
+                                 콘텐츠 민감도": 표는 보케 위 밀집 텍스트라 히어로보다 높다 (3턴) */
+    --g-alpha-hero: .55;      /* 히어로 몸체 — 사진 위지만 글자가 커서 패널보다 낮다 (3턴) */
     --g-alpha-strong: .66;    /* 컨트롤(버튼) 몸체 */
     --g-alpha-input: .55;     /* 입력창 몸체 */
     --g-alpha-modal: .82;     /* 모달 몸체 */
-    --g-sat: 160%;            /* 채도 부스트 */
+    --g-sat: 175%;            /* 채도 부스트 — 호평이던 색 통과는 높게 (3턴) */
     --g-blur-panel: 22px;
     --g-blur-btn: 16px;
     --g-blur-input: 10px;
 
-    /* 가장자리 (유리다움 책임) */
-    --g-edge-a: .72;          /* 림 보더 알파 */
+    /* 가장자리 (유리다움 책임) — 패널·버튼 림 보더는 3턴 에지 스택
+       (헤어라인 + 상하 inset)으로 대체되어, --g-edge 는 입력창 보더 전용 */
+    --g-edge-a: .72;          /* 림 보더 알파 (입력창) */
     --g-edge: rgb(255 255 255 / var(--g-edge-a));
-    --g-inset-hi-a: .85;      /* 상단 inset 빛 알파 */
+    --g-inset-hi-a: 1;        /* 상단 inset 빛 알파 — 순백: 에지의 또렷함은 유리다움의 몸통 (3턴) */
     --g-inset-hi: rgb(255 255 255 / var(--g-inset-hi-a));
-    --g-inset-lo-a: .25;      /* 하단 inset 빛 알파 */
+    --g-inset-lo-a: .75;      /* 하단 반사광 알파 — 상단보다 넓게 퍼지는 inset (3턴) */
     --g-inset-lo: rgb(255 255 255 / var(--g-inset-lo-a));
 
     /* 그림자·형태 */
@@ -51,17 +55,23 @@
     opacity: var(--g-bokeh);
 }
 
-/* ---------- 패널 유리 ---------- */
+/* ---------- 패널 유리 ----------
+   에지는 림 보더 대신 6그림자 스택(3턴 확정): 바깥 헤어라인 3면 + 상단
+   순백 inset + 하단 반사광. 하단 inset 이 상단보다 퍼지는 것(바닥 반사광)이
+   요점이고, 음수 스프레드는 좌우 번짐을 조인다 */
 .glass {
     background: rgb(var(--g-white) / var(--g-alpha));
     -webkit-backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
     backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
-    border: 1px solid var(--g-edge);
+    border: 1px solid transparent;
     border-radius: var(--g-radius);
     box-shadow:
         var(--g-drop),
+        0 1px 0 rgb(30 42 56 / .13),
+        1px 0 0 rgb(30 42 56 / .06),
+        -1px 0 0 rgb(30 42 56 / .06),
         inset 0 1px 0 var(--g-inset-hi),
-        inset 0 -1px 0 var(--g-inset-lo);
+        inset 0 -3px 10px -2px var(--g-inset-lo);
 }
 
 /* 문맥 오버라이드: 사진 위 히어로는 몸체를 살짝 더 불투명하게 —
@@ -71,31 +81,56 @@
     --g-alpha: var(--g-alpha-hero);
 }
 
-/* ---------- 버튼 ---------- */
+/* ---------- 버튼 ----------
+   패널과 같은 에지 스택의 축소판. hover·active 는 몸체만 밝아지고 에지
+   스택은 유지한다 — glass.css 의 hover 그림자(리프트)가 되살아나 스택을
+   지우지 않도록 상태마다 다시 선언해 이긴다 */
 .btn,
 .glass-btn {
     color: var(--ink);
     background: rgb(var(--g-white) / var(--g-alpha-strong));
     -webkit-backdrop-filter: blur(var(--g-blur-btn)) saturate(var(--g-sat));
     backdrop-filter: blur(var(--g-blur-btn)) saturate(var(--g-sat));
-    border: 1px solid var(--g-edge);
+    border: 1px solid transparent;
     border-radius: var(--g-radius-ctl);
-    box-shadow: 0 10px 26px rgb(30 42 56 / .12), inset 0 1px 0 rgb(255 255 255 / .9);
+    box-shadow:
+        0 10px 26px rgb(30 42 56 / .12),
+        0 1px 0 rgb(30 42 56 / .13),
+        1px 0 0 rgb(30 42 56 / .06),
+        -1px 0 0 rgb(30 42 56 / .06),
+        inset 0 1px 0 var(--g-inset-hi),
+        inset 0 -2px 7px -2px rgb(255 255 255 / .7);
+    /* interaction glow(아래) 준비 — 발광을 알약 안으로 클리핑 */
+    position: relative;
+    overflow: hidden;
 }
 
 .btn:hover,
 .glass-btn:hover {
     color: var(--ink);
     background: rgb(var(--g-white) / .8);
-    border-color: var(--g-edge);
-    box-shadow: 0 16px 34px rgb(30 42 56 / .16), inset 0 1px 0 rgb(255 255 255 / .95);
+    border-color: transparent;
+    box-shadow:
+        0 10px 26px rgb(30 42 56 / .12),
+        0 1px 0 rgb(30 42 56 / .13),
+        1px 0 0 rgb(30 42 56 / .06),
+        -1px 0 0 rgb(30 42 56 / .06),
+        inset 0 1px 0 var(--g-inset-hi),
+        inset 0 -2px 7px -2px rgb(255 255 255 / .7);
 }
 
 .btn:active,
 .glass-btn:active {
     color: var(--ink);
     background: rgb(var(--g-white) / var(--g-alpha-strong));
-    border-color: var(--g-edge);
+    border-color: transparent;
+    box-shadow:
+        0 10px 26px rgb(30 42 56 / .12),
+        0 1px 0 rgb(30 42 56 / .13),
+        1px 0 0 rgb(30 42 56 / .06),
+        -1px 0 0 rgb(30 42 56 / .06),
+        inset 0 1px 0 var(--g-inset-hi),
+        inset 0 -2px 7px -2px rgb(255 255 255 / .7);
 }
 
 .btn:disabled {
@@ -105,26 +140,25 @@
     box-shadow: none;
 }
 
-/* 위험 동작 틴트: 재질층이 .btn 을 다시 선언했으므로 변형도 다시 이긴다 */
+/* 위험 동작 틴트: 재질층이 .btn 을 다시 선언했으므로 변형도 다시 이긴다.
+   보더는 .btn 의 transparent 를 그대로 둔다 — 에지 스택 승격(5턴)으로
+   틴트 보더 대신 흰 에지 스택이 위험 버튼에도 공통 적용된다 (구 C 판정대로) */
 .btn-danger,
 .btn-outline-danger {
     color: var(--danger-ink);
     background: var(--danger-tint);
-    border-color: rgb(255 170 150 / .55);
 }
 
 .btn-danger:hover,
 .btn-outline-danger:hover {
     color: var(--danger-ink);
     background: rgb(255 190 175 / .45);
-    border-color: rgb(255 170 150 / .7);
 }
 
 .btn-danger:active,
 .btn-outline-danger:active {
     color: var(--danger-ink);
     background: var(--danger-tint);
-    border-color: rgb(255 170 150 / .55);
 }
 
 /* ---------- 입력 ---------- */
@@ -150,9 +184,78 @@
     background: rgb(var(--g-white) / var(--g-alpha-modal));
     -webkit-backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
     backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
-    border: 1px solid var(--g-edge);
+    border: 1px solid transparent;
     border-radius: var(--g-radius);
-    box-shadow: var(--g-drop), inset 0 1px 0 var(--g-inset-hi);
+    box-shadow:
+        var(--g-drop),
+        0 1px 0 rgb(30 42 56 / .13),
+        1px 0 0 rgb(30 42 56 / .06),
+        -1px 0 0 rgb(30 42 56 / .06),
+        inset 0 1px 0 var(--g-inset-hi),
+        inset 0 -3px 10px -2px var(--g-inset-lo);
+}
+
+/* ---------- 모션: interaction glow (5턴 채택) ----------
+   누른 접점에서 국소 발광 — 접점 좌표(--gx-x/--gx-y)와 .gx-glowing 은
+   glass-proto-motion.js 가 심는다. 누름: 작고 밝게 맺힘(빠른 램프) →
+   뗌: 퍼지면서 사그라듦(느린 감쇠) — 반경이 커지며 알파가 빠지는 조합.
+   발광 알파·반경은 @property 타입 등록으로 그라디언트 내부 값이
+   transition 보간된다 (노트 3). 미등록 브라우저는 즉시 전환 자연 폴백.
+   그라디언트 재페인트는 버튼 면적뿐이라 성능 계약(blur 무관) 안이다 */
+@property --gx-glow-a {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 0;
+}
+
+@property --gx-glow-r {
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 130px;
+}
+
+.btn::after,
+.glass-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(circle var(--gx-glow-r) at var(--gx-x, 50%) var(--gx-y, 50%),
+        rgb(255 255 255 / var(--gx-glow-a)), transparent 70%);
+    transition: --gx-glow-a .55s ease-out, --gx-glow-r .55s ease-out;
+}
+
+.gx-glowing::after {
+    --gx-glow-a: .55;
+    --gx-glow-r: 70px;
+    transition-duration: .1s;
+}
+
+/* ---------- 모션: scroll edge (5턴 채택) ----------
+   상단바 유리 밑으로 콘텐츠가 지나가면 화면 상단에 점진 블러 베일이
+   떠올라, 콘텐츠가 가장자리에서 디졸브된다 (노트 1). 베일 요소는
+   glass-proto-motion.js 가 심고, body.gx-scrolled 는 scrollY > 8 에서
+   토글 (.navbar.scrolled 와 같은 문턱). A 모드에선 이 파일이 꺼져
+   베일이 빈 요소로만 남는다 */
+.gx-scroll-veil {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    z-index: 39; /* 상단바(40) 바로 아래 */
+    pointer-events: none;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 25%, transparent);
+    mask-image: linear-gradient(to bottom, #000 25%, transparent);
+    opacity: 0;
+    transition: opacity .45s ease;
+}
+
+body.gx-scrolled .gx-scroll-veil {
+    opacity: 1;
 }
 
 /* ---------- 접근성: 노브 오버라이드 ----------
@@ -176,10 +279,18 @@
     .form-control {
         background: #ffffff;
     }
+
+    /* 전면 블러 베일(scroll edge)도 끈다 */
+    .gx-scroll-veil {
+        display: none;
+    }
 }
 
 /* 고대비: 에지를 어두운 잉크로, 몸체를 거의 불투명하게
-   (잉크·장식 제거는 glass.css 블록이 계속 담당) */
+   (잉크·장식 제거는 glass.css 블록이 계속 담당).
+   기본 재질의 림 보더가 transparent 로 바뀌었으므로(에지 스택 승격),
+   여기서는 보더를 직접 되살린다 — 상태 선택자까지 나란히 선언해
+   hover/active 의 transparent 를 이긴다 */
 @media (prefers-contrast: more) {
     :root {
         --g-edge: rgb(70 85 100 / .55);
@@ -188,84 +299,16 @@
         --g-alpha-input: .95;
         --g-alpha-modal: .96;
     }
+
+    .glass, .modal-content,
+    .btn, .btn:hover, .btn:active,
+    .glass-btn, .glass-btn:hover, .glass-btn:active {
+        border-color: var(--g-edge);
+    }
 }
 
 /* ==========================================================================
-   실험 프리셋 — body 에 클래스를 얹어 현행과 A/B 한다 (기조 7절).
-   채택되면 값을 위 노브 기본값으로 승격하고 프리셋은 지운다.
+   이번 턴 실험 (모드 C, body.gx-c) — 비어 있음.
+   5턴 모션 어휘 3종(interaction glow, scroll edge, @property 전이)은
+   채택되어 위 기본값으로 승격됨. 다음 실험이 이 자리를 쓴다 (기조 7절).
    ========================================================================== */
-
-/* gx-c: C 개선본 프리셋 — B(v0) 위에 얹는 값 이동.
-   1턴(.48/170%)은 "미세하다", 2턴 과감판(.38/185%/.18)은 "티는 나는데
-   쪼금 오버" — 3턴은 축별 스윗스팟: "오버" 인상의 주범인 몸체 비움과
-   그림자는 v0 쪽으로 되돌리고(.45/.15), 호평이던 색 통과(채도)는 높게
-   유지(175%)한다. 산술 중간이 아니라 축별 판단.
-   :root:has() 로 선언해 슬라이더 패널(html 인라인 오버라이드)이
-   개별 노브를 여전히 이길 수 있게 한다 */
-:root:has(body.gx-c) {
-    --g-alpha: .6;       /* .42→.6: 3턴 확정 — 알파는 위계가 아니라 "배경 자극도 × 콘텐츠 민감도".
-                            표는 보케(시끄러운 배경) 위 밀집 텍스트라 히어로(.55)보다 오히려 높인다 */
-    --g-alpha-hero: .55; /* .58→.55: 3턴 사용자 판정 — 히어로는 과감판 값으로 */
-    --g-sat: 175%;
-    --g-drop-a: .12;     /* .15→.12: 3턴 사용자 판정 — 그림자는 v0 값으로 (과감판이 너무 진했음) */
-    /* 보케 감쇠(.65)는 3턴에서 시험 후 기각 — 보케는 온전히 두고 유리가
-       강하게 블러쳐 들이는 쪽이 예쁘다는 판정. 노브(--g-bokeh)는 남겨둔다 */
-}
-
-/* gx-edge: 가장자리 강화 — Liquid Aqua 의 에지 스택 이식 실험.
-   림 보더를 끄고 헤어라인(바깥)+상하 inset 으로 에지를 세운다.
-   하단 inset 이 상단보다 넓게 퍼지는 것(바닥 반사광)이 요점.
-   C 개선본(gx-c)은 이 에지 스택을 동반한다 */
-body.gx-edge .glass,
-body.gx-edge .modal-content,
-body.gx-c .glass,
-body.gx-c .modal-content {
-    border-color: transparent;
-    box-shadow:
-        var(--g-drop),
-        0 1px 0 rgb(30 42 56 / .10),
-        1px 0 0 rgb(30 42 56 / .05),
-        -1px 0 0 rgb(30 42 56 / .05),
-        inset 0 1px 0 rgb(255 255 255 / .95),
-        inset 0 -2px 8px rgb(255 255 255 / .6);
-}
-
-body.gx-edge .btn,
-body.gx-edge .glass-btn,
-body.gx-c .btn,
-body.gx-c .glass-btn {
-    border-color: transparent;
-    box-shadow:
-        0 10px 26px rgb(30 42 56 / .12),
-        0 1px 0 rgb(30 42 56 / .10),
-        1px 0 0 rgb(30 42 56 / .05),
-        -1px 0 0 rgb(30 42 56 / .05),
-        inset 0 1px 0 rgb(255 255 255 / .95),
-        inset 0 -2px 6px rgb(255 255 255 / .55);
-}
-
-/* C 전용 강화 에지: 위 공용 스택보다 뒤에 두어 gx-c 에서 이긴다.
-   2턴 과감판에서 3턴 한 단계 감쇠 — 헤어라인 .16→.13, 바닥 반사광
-   12px/.85→10px/.75. 상단 인셋 순백과 음수 스프레드(좌우 번짐 조임)는
-   유지: 에지의 또렷함은 "오버" 인상과 무관하게 유리다움의 몸통이다 */
-body.gx-c .glass,
-body.gx-c .modal-content {
-    box-shadow:
-        var(--g-drop),
-        0 1px 0 rgb(30 42 56 / .13),
-        1px 0 0 rgb(30 42 56 / .06),
-        -1px 0 0 rgb(30 42 56 / .06),
-        inset 0 1px 0 rgb(255 255 255 / 1),
-        inset 0 -3px 10px -2px rgb(255 255 255 / .75);
-}
-
-body.gx-c .btn,
-body.gx-c .glass-btn {
-    box-shadow:
-        0 10px 26px rgb(30 42 56 / .12),
-        0 1px 0 rgb(30 42 56 / .13),
-        1px 0 0 rgb(30 42 56 / .06),
-        -1px 0 0 rgb(30 42 56 / .06),
-        inset 0 1px 0 rgb(255 255 255 / 1),
-        inset 0 -2px 7px -2px rgb(255 255 255 / .7);
-}
