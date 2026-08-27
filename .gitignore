@@ -1,4 +1,5 @@
 #CUSTOM SETTINGS
+gradle.properties
 buildNumber.txt
 debug.log
 .playwright-mcp/
