@@ -42,6 +42,14 @@
         });
     });
 
+    // 햇살은 떠오름(ray-in)이 끝나면 합성 레이어에서 내린다 (glass.css .ray.settled).
+    // reduced-motion 에서도 .01s 애니메이션이 끝나므로 animationend 는 항상 온다
+    document.querySelectorAll(".ray").forEach(function (el) {
+        el.addEventListener("animationend", function () {
+            el.classList.add("settled");
+        }, { once: true });
+    });
+
     // 스크롤 리빌: 30% 이상 보이면 떠오르고, 한 번 떠오르면 다시 숨지 않는다
     var observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {

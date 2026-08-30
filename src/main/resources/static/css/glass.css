@@ -506,7 +506,14 @@ mark,
     opacity: 0;
     animation: ray-in 1.4s var(--ease-float) forwards;
     animation-delay: var(--d);
+    /* 떠오르는 동안만 합성 레이어 — 끝나면 JS 가 .settled 를 붙여 해제한다.
+       will-change 가 남아 있으면 blur 가 걸린 대형 레이어 8장이 매 프레임
+       GPU 에서 다시 블러되어 스크롤·접힘 프레임을 깎는다 (2기 2턴 트레이스) */
     will-change: transform, opacity;
+}
+
+.ray.settled {
+    will-change: auto; /* 정적 래스터로 강등 — blur 는 한 번만 그려진다 */
 }
 
 @keyframes ray-in {
@@ -560,7 +567,12 @@ mark,
 .veil.on {
     opacity: 1;
     transform: none;
-    filter: blur(0);
+    /* none 이어야 한다 — blur(0) 은 0px 짜리 필터 패스라 렌더 서피스가
+       상시 남는다. none 으로의 전이는 같은 함수 목록의 항등(blur(0))으로
+       보간되므로 떠오름 모션은 그대로다. will-change 도 도착 후엔 걷는다
+       (전환 중 승격은 브라우저가 알아서 한다) (2기 2턴) */
+    filter: none;
+    will-change: auto;
 }
 
 /* ---------- 스크롤 리빌: 희미한 유리 → 선명 ----------
@@ -576,7 +588,8 @@ mark,
 [data-lift].is-lit {
     opacity: 1;
     transform: none;
-    filter: blur(0);
+    filter: none; /* .veil.on 과 같은 취지 — 도착 후 필터 패스·레이어를 남기지 않는다 */
+    will-change: auto;
 }
 
 /* 표의 행은 패널이 떠오른 뒤 위에서부터 순서대로 */
