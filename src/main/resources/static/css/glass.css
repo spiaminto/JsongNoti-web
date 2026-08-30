@@ -458,14 +458,23 @@ mark,
     left: 0;
     right: 0;
     height: 105vh;
-    background: url("../assets/img/karaoke.jpg") center / cover;
     opacity: .55;
     pointer-events: none;
+    z-index: 0;
+}
+
+/* 사진·마스크·필터는 자식(::before)에 둔다 — 요소 자체에 두면 FLIP 이 이
+   요소를 합성 레이어로 올릴 때 필터·마스크가 프레임마다 GPU 패스로 얹힌다.
+   자식에 두면 레이어 타일에 한 번 구워진다 (2기 3턴) */
+.photo-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("../assets/img/karaoke.jpg") center / cover;
     /* 가장자리를 타원형으로 씻어내 바탕과 잇는다 */
     -webkit-mask-image: radial-gradient(115% 90% at 50% 30%, #000 40%, transparent 88%);
     mask-image: radial-gradient(115% 90% at 50% 30%, #000 40%, transparent 88%);
     filter: saturate(.88) brightness(1.05);
-    z-index: 0;
 }
 
 /* 아래로 갈수록 바탕색에 녹아 사라진다 */
@@ -672,15 +681,64 @@ tbody tr.more-reveal.more-settled.more-hide,
     opacity: 0;
 }
 
+/* ---------- glass mirror: backdrop 없는 큰 유리 판 (glass-motion.js) ----------
+   판 뒤 배경(사진·햇살·보케)을 판 안에 같은 문서 좌표로 복제하고 blur 를
+   한 번만 래스터한다 — 큰 판의 backdrop-filter 는 스크롤·합성 애니마다 GPU
+   에서 재블러된다 (2기 3턴 실측: 검색 섹션 하나가 스크롤 GPU 72→50% 몫).
+   재질 노브(--g-blur-panel, --g-sat, --g-white/--g-alpha)는 .glass 와 공유.
+   클리퍼(정적, 판의 둥근 모서리)와 mirror(FLIP 때 transform 으로 움직인다)를
+   나눠 둔다. 자식 선택자로 page/search.css 의 `.song-search-section > *` 를 이긴다 */
+.glass.has-mirror {
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+.has-mirror > .glass-mirror-clip {
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border-radius: var(--g-radius);
+    overflow: hidden;
+    pointer-events: none;
+    contain: paint;
+}
+.glass-mirror {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    overflow: hidden;
+}
+.glass-mirror-stage {
+    position: absolute;
+    top: 0;
+    left: 0; /* 크기는 JS 가 준다 (판 높이와 무관하게 고정) */
+    filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
+}
+.glass-mirror-tint {
+    position: absolute;
+    inset: 0;
+    background: rgb(var(--g-white) / var(--g-alpha));
+}
+/* 복제본 안의 연출은 정지 상태로 굳힌다 — 떠오름 재생·합성 레이어 승격 금지 */
+.glass-mirror .ray {
+    animation: none;
+    transform: rotate(32deg) scaleY(1);
+    opacity: 1;
+    will-change: auto;
+}
+.glass-mirror .bokeh { inset: auto; }
+.glass-mirror .bokeh i { animation: none; transition: none; }
+
 /* FLIP 형 더보기 접기·펼침 (song-search.js runFlip). 래퍼 height 전환은
    프레임마다 문서 레이아웃과 섹션 유리 판(backdrop·드롭 섀도) 재래스터를
    불러 25ms 프레임이 났다 — 대신 clip-path·transform 만 움직이고, 그동안
    섹션 스킨을 자식 레이어 두 장(몸체 clip-path, 드롭 섀도 scaleY)으로
    내려 섹션은 맨몸으로 둔다. 박자: 펼침 .35s ease, 접힘 1s
    cubic-bezier(.16,1,.3,1) — index 지난달 접힘(.closing)과 동일 */
+/* 섹션은 page/search.css 에서 이미 z-index 스태킹 컨텍스트라 isolation 이
+   필요 없다 (토글하면 판 전체가 다시 그려진다). mirror 판은 배경·backdrop 이
+   이미 없으므로 그림자만 조각에 넘긴다 */
 .song-search-section.glass-flip {
-    position: relative;
-    isolation: isolate;
     background: none;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -707,6 +765,13 @@ tbody tr.more-reveal.more-settled.more-hide,
     -webkit-backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
     backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
 }
+/* mirror 가 유리를 맡는 판에서는 조각이 틴트만 든다 — 사라지는 구간은
+   사진 아래 완만한 배경이라 블러 유무가 드러나지 않는다 */
+.has-mirror > .glass-flip-fill,
+.has-mirror > .glass-flip-cap {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
 .song-search-section > .glass-flip-top {
     border-radius: var(--g-radius) var(--g-radius) 0 0;
     box-shadow:
@@ -730,6 +795,25 @@ tbody tr.more-reveal.more-settled.more-hide,
 .song-search-section > .glass-flip-shadow {
     border-radius: var(--g-radius);
     box-shadow: var(--g-drop);
+}
+/* 래퍼 위의 틴트 조상(.card): 전환 중 배경을 조각(.glass-flip-tint)에 넘긴다 —
+   색·그림자·radius 는 JS 가 조상의 계산값을 그대로 옮긴다 */
+.glass-flip-tinted {
+    position: relative;
+    isolation: isolate;
+    background: none !important;
+    box-shadow: none !important;
+}
+/* 클릭 의도 시점의 사전 승격 (song-search.js primeFlip) */
+.flip-prime {
+    will-change: transform;
+}
+.glass-flip-tinted > .glass-flip-tint {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    will-change: transform;
 }
 .glass-flip-skin {
     background: rgb(var(--g-white) / var(--g-alpha));

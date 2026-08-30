@@ -227,6 +227,11 @@ $(function () {
                     })
                     .text(`더보기 (${hiddenCount}곡)`);
 
+                $moreButton.on('pointerenter focus touchstart', function () {
+                    primeFlip($tableWrapper, $(this).attr('aria-expanded') === 'true');
+                }).on('pointerleave blur', function () {
+                    if (!$tableWrapper.data('moreFlip')) unprimeFlip();
+                });
                 $moreButton.on('click', function () {
                     let expanded = $(this).attr('aria-expanded') === 'true';
                     toggleMoreRows($tableWrapper, $hiddenRows, !expanded, $(this));
@@ -378,6 +383,40 @@ $(function () {
         });
     }
 
+    // 경로(래퍼→body) 각 단계의 형제 — FLIP 안무에서 함께 움직이는 요소.
+    // fixed(상단바·scroll-veil)는 제외. preceding=true 면 앞서는 형제(bottom 안무)
+    function flipSiblings(wrapper, preceding) {
+        let list = [];
+        for (let node = wrapper; node && node !== document.body; node = node.parentElement) {
+            for (let s = preceding ? node.previousElementSibling : node.nextElementSibling; s;
+                 s = preceding ? s.previousElementSibling : s.nextElementSibling) {
+                // fixed 와 FLIP 보조 요소(mirror 클리퍼·스킨·틴트 조각)는 제외 —
+                // 보조 요소는 각자 자기 안무를 받는다
+                if (s.className && /(^|\s)(glass-mirror-clip|glass-flip-\w+)(\s|$)/.test(s.className)) continue;
+                if (getComputedStyle(s).position !== 'fixed') list.push(s);
+            }
+        }
+        return list;
+    }
+
+    // 클릭 의도(hover·focus·touchstart)가 보이면 움직일 요소를 미리 합성
+    // 레이어로 올려 둔다 — 클릭 프레임에 레이어 생성·래스터가 몰리면 첫
+    // 10여 프레임이 떨어진다 (2기 3턴 실측). 접힘은 bottom 안무(앞서는 형제),
+    // 펼침은 top 안무(뒤따르는 형제)라 방향에 맞춰 올린다. 전환이 끝나거나
+    // 의도가 사라지면 내린다 — 상시 승격은 메모리와 스크롤 합성 비용
+    function primeFlip($wrapper, collapse) {
+        unprimeFlip();
+        let wrapper = $wrapper[0];
+        let mirror = wrapper.closest('.song-search-section');
+        mirror = mirror && mirror.querySelector(':scope > .glass-mirror-clip > .glass-mirror');
+        let els = flipSiblings(wrapper, collapse && window.scrollY > 0).concat([wrapper]);
+        if (collapse && mirror) els.push(mirror);
+        els.forEach(function (el) { el.classList.add('flip-prime'); });
+    }
+    function unprimeFlip() {
+        document.querySelectorAll('.flip-prime').forEach(function (el) { el.classList.remove('flip-prime'); });
+    }
+
     // 더보기 행 펼침·접힘: 래퍼(.song-table-border) 높이를 실측해 두고
     // FLIP 형으로 전환한다 (runFlip 참고). 표의 일부 행만 여닫는 구조라
     // bootstrap Collapse 를 쓸 수 없어 펼침 .35s ease, 접힘 1s 감속을 직접 건다.
@@ -432,16 +471,17 @@ $(function () {
         }
 
         // FLIP 형 접기·펼침 (2기 3턴 실험실). 래퍼 height 전환은 매 프레임
-        // 문서 전체 레이아웃 + 섹션 유리 판(backdrop·드롭 섀도) 재래스터를
-        // 불러 25ms 프레임이 났다 (트레이스: 메인 스레드는 한가, GPU 합성이
-        // 병목). 대신 레이아웃은 펼친 채 동결하고 합성 전용 속성만 움직인다:
-        //   래퍼 clip-path inset(0 0 d 0) — 표 하단을 잘라 들어간다
-        //   래퍼 뒤의 형제들(섹션까지 각 단계) translateY(-d) — 따라 올라온다
-        //   섹션 스킨을 자식 레이어 두 장으로 분리 — 몸체(배경·backdrop·에지)는
-        //   clip-path, 드롭 섀도는 scaleY. 섹션 자체는 그동안 맨몸이다
-        // 끝나면 실제 레이아웃(d-none)으로 스냅한다. 펼침은 역방향 — 먼저
-        // 레이아웃을 펼치고 d=D 에서 0 으로 되돌린다. 전환 중 재클릭은 현재
-        // d 를 읽어 그 자리에서 반전한다 (레이아웃은 양쪽 다 펼친 상태)
+        // 문서 전체 레이아웃 + 섹션 유리 판 재래스터를 불러 25ms 프레임이 났다.
+        // 대신 레이아웃은 펼친 채 동결하고 합성 전용 속성(clip-path·transform)만
+        // 움직인 뒤 끝에 실제 레이아웃으로 스냅한다. 안무는 두 가지:
+        //   top    — 래퍼 윗변 고정. 래퍼 하단을 잘라 들어가고 뒤따르는 형제가
+        //            translateY(-d) 로 따라 올라온다 (펼침, 그리고 접힘 fallback)
+        //   bottom — 래퍼 아랫변(=버튼) 고정. 앞서는 형제·배경·유리(mirror)가
+        //            translateY(+d) 로 내려오고 끝에 scrollY 를 D 만큼 줄이며 스냅.
+        //            화면상 결과는 완벽한 track 팔로우와 같지만 스크롤이 없다 —
+        //            스크롤(GPU ~50%)과 합성 애니(~50%)가 겹치면 예산을 넘긴다는
+        //            실측이 근거. scrollY < D 면 스냅 뒤 위가 비므로 top 으로 간다
+        // 전환 중 재클릭은 현재 d 를 읽어 같은 안무로 그 자리에서 반전한다
         function runFlip(D) {
             let sec = wrapper.closest('.song-search-section');
             if (!sec || !wrapper.animate) {
@@ -449,87 +489,117 @@ $(function () {
                 return;
             }
             let state = $wrapper.data('moreFlip');
-            let d0 = 0;
-            if (state) {
-                d0 = state.currentD();
-                state.stop();
-            } else if (!show) {
-                d0 = 0;
-            } else {
-                d0 = D;
-            }
+            let anchor = state ? state.anchor : (!show && window.scrollY >= D && sec.classList.contains('has-mirror') ? 'bottom' : 'top');
+            let d0 = state ? state.currentD() : (show ? D : 0);
+            if (state) state.stop();
             let dT = show ? 0 : D;
-            if (d0 === dT) { finish(); return; }
+            if (d0 === dT) { finish(anchor); return; }
 
-            // 뒤따르는 형제는 body 까지 — footer 지대도 같이 올라온다 (스냅 때
-            // 문서만 줄고 footer 가 튀지 않게). fixed(scroll-veil 등)는 제외
-            let movers = [];
-            for (let node = wrapper; node && node !== document.body; node = node.parentElement) {
-                for (let s = node.nextElementSibling; s; s = s.nextElementSibling) {
-                    if (getComputedStyle(s).position !== 'fixed') movers.push(s);
-                }
-            }
-            // 섹션 스킨 3조각 + 그림자 (모두 transform 만 움직인다 — backdrop 요소는
-            // clip-path 를 움직이면 매 프레임 재블러라 불가, 실측 49 낙프레임):
-            //   top  — 0 ~ Hc-R 고정 판(아래 모서리는 각진 채 — 그 자리는 끝에 cap 이 맡는다)
-            //   fill — Hc-R ~ secH-R, scaleY 로 수축 (바닥이 항상 cap 윗변에 맞닿는다)
-            //   cap  — 바닥 R px 띠(둥근 아래 모서리), translateY(-d) 로 따라 올라온다
-            // 조각은 겹치지 않는다 — 반투명 틴트가 겹치면 흰 띠가 보인다 (실측).
-            // 끝 프레임(d = D)은 fill 0·cap 이 top 바닥에 맞닿아 실제 섹션과 같은 모양
             let R = parseFloat(getComputedStyle(sec).borderBottomLeftRadius) || 0;
             let secH = sec.getBoundingClientRect().height + 2; // 보더 포함(inset -1px)
             let Hc = secH - D;
-            let skin = sec.querySelector(':scope > .glass-flip-top');
-            let fill, cap, shadow;
-            if (!skin) {
-                skin = document.createElement('div'); skin.className = 'glass-flip-top';
-                fill = document.createElement('div'); fill.className = 'glass-flip-fill';
-                cap = document.createElement('div'); cap.className = 'glass-flip-cap';
-                shadow = document.createElement('div'); shadow.className = 'glass-flip-shadow';
-                skin.style.cssText = 'top:-1px;height:' + (Hc - R) + 'px';
-                fill.style.cssText = 'top:' + (Hc - R - 1) + 'px;height:' + D + 'px';
-                cap.style.cssText = 'top:' + (secH - R - 1) + 'px;height:' + R + 'px';
-                shadow.style.cssText = 'top:-1px;height:' + secH + 'px';
-                sec.append(shadow, fill, skin, cap);
-                sec.classList.add('glass-flip');
-            } else {
-                fill = sec.querySelector(':scope > .glass-flip-fill');
-                cap = sec.querySelector(':scope > .glass-flip-cap');
-                shadow = sec.querySelector(':scope > .glass-flip-shadow');
-            }
-            let wrapperRadius = getComputedStyle(wrapper).borderBottomLeftRadius || '0px';
-            // 래퍼~섹션 사이에서 자기 배경을 가진 조상(.card 틴트 기둥)도 같이 잘라
-            // 내린다 — 실제 박스는 펼친 높이라 판 바닥 아래로 틴트가 비어져 나온다
-            let clippers = [{ el: wrapper, r: wrapperRadius }];
-            for (let node = wrapper.parentElement; node && node !== sec; node = node.parentElement) {
-                let cs = getComputedStyle(node);
-                if (cs.backgroundColor !== 'rgba(0, 0, 0, 0)' || cs.backgroundImage !== 'none' || cs.boxShadow !== 'none') {
-                    clippers.push({ el: node, r: cs.borderBottomLeftRadius || '0px' });
-                }
-            }
+            let mirror = sec.querySelector(':scope > .glass-mirror-clip > .glass-mirror');
             let timing = {
                 duration: show ? 350 : 1000,
                 easing: show ? 'ease' : 'cubic-bezier(.16, 1, .3, 1)',
                 fill: 'forwards'
             };
-            function clipOf(d, r) { return 'inset(0 0 ' + d + 'px 0 round ' + r + ')'; }
-            function fillScale(d) { return Math.max(0, (D - d) / D); }
             let anims = [];
-            clippers.forEach(function (c) {
-                anims.push(c.el.animate([{ clipPath: clipOf(d0, c.r) }, { clipPath: clipOf(dT, c.r) }], timing));
-            });
-            movers.forEach(function (m) {
-                anims.push(m.animate([{ transform: 'translateY(' + -d0 + 'px)' }, { transform: 'translateY(' + -dT + 'px)' }], timing));
-            });
-            anims.push(fill.animate([{ transform: 'scaleY(' + fillScale(d0) + ')' }, { transform: 'scaleY(' + fillScale(dT) + ')' }], timing));
-            anims.push(cap.animate([{ transform: 'translateY(' + -d0 + 'px)' }, { transform: 'translateY(' + -dT + 'px)' }], timing));
-            anims.push(shadow.animate([{ transform: 'scaleY(' + (secH - d0) / secH + ')' }, { transform: 'scaleY(' + (secH - dT) / secH + ')' }], timing));
+            function tween(el, from, to) { anims.push(el.animate([from, to], timing)); }
+            function clipBottom(d, r) { return 'inset(0 0 ' + d + 'px 0 round ' + r + ')'; }
+            // 래퍼~섹션 사이에서 자기 배경을 가진 조상(.card 틴트 기둥) — 실제 박스가
+            // 펼친 높이라 판 밖으로 틴트가 비어져 나온다. 조상에 clip-path 애니를
+            // 걸면 프레임당 마스크 패스가 얹혀 비싸다 (실측 +10 낙프레임). 대신
+            // 배경을 잠시 끄고 같은 색의 틴트 조각을 넣어 scaleY 로 줄인다 —
+            // 평평한 색이라 왜곡이 보이지 않는다. 조각의 축은 안무가 정한다
+            function tintPieces(originBottom) {
+                let list = [];
+                for (let node = wrapper.parentElement; node && node !== sec; node = node.parentElement) {
+                    let piece = node.querySelector(':scope > .glass-flip-tint');
+                    if (!piece) {
+                        let cs = getComputedStyle(node);
+                        if (cs.backgroundColor === 'rgba(0, 0, 0, 0)' && cs.backgroundImage === 'none' && cs.boxShadow === 'none') continue;
+                        piece = document.createElement('div');
+                        piece.className = 'glass-flip-tint';
+                        piece.style.cssText = 'background:' + cs.backgroundColor + ';background-image:' + cs.backgroundImage +
+                            ';box-shadow:' + cs.boxShadow + ';border-radius:' + cs.borderRadius;
+                        node.prepend(piece);
+                        node.classList.add('glass-flip-tinted');
+                    }
+                    piece.style.transformOrigin = originBottom ? 'center bottom' : 'center top';
+                    list.push({ el: piece, h: node.getBoundingClientRect().height });
+                }
+                return list;
+            }
+            let wrapperRadius = getComputedStyle(wrapper).borderBottomLeftRadius || '0px';
+            // 그림자 조각은 판 바닥이 움직이는 top 안무에만 — bottom 안무는 바닥이
+            // 고정이라 섹션 자체 그림자를 그대로 둔다 (윗변 36px 의 번짐만 정지).
+            // 섹션 클래스 토글은 판 전체 재페인트라 필요한 안무에서만 건다
+            let shadow = null;
+            if (anchor === 'top') {
+                shadow = sec.querySelector(':scope > .glass-flip-shadow');
+                if (!shadow) {
+                    shadow = document.createElement('div'); shadow.className = 'glass-flip-shadow';
+                    shadow.style.cssText = 'top:-1px;height:' + secH + 'px';
+                    sec.append(shadow);
+                }
+                sec.classList.add('glass-flip');
+            }
+            document.documentElement.style.overflowAnchor = 'none';
+
+            if (anchor === 'bottom') {
+                // 위쪽이 내려온다: 래퍼(잘린 채)·앞서는 형제·배경·mirror 는 +d,
+                // 틴트 카드는 상단을 d 만큼 잘라 앞서는 형제가 그 자리로 내려온다.
+                // 그림자는 바닥을 축으로 세로 축소
+                tween(wrapper, { clipPath: clipBottom(d0, wrapperRadius), transform: 'translateY(' + d0 + 'px)' },
+                               { clipPath: clipBottom(dT, wrapperRadius), transform: 'translateY(' + dT + 'px)' });
+                tintPieces(true).forEach(function (c) { tween(c.el, { transform: 'scaleY(' + (c.h - d0) / c.h + ')' }, { transform: 'scaleY(' + (c.h - dT) / c.h + ')' }); });
+                flipSiblings(wrapper, true).forEach(function (m) {
+                    tween(m, { transform: 'translateY(' + d0 + 'px)' }, { transform: 'translateY(' + dT + 'px)' });
+                });
+                if (mirror) tween(mirror, { transform: 'translateY(' + d0 + 'px)' }, { transform: 'translateY(' + dT + 'px)' });
+            } else {
+                // 아래쪽이 올라온다: 래퍼 하단 클립, 뒤따르는 형제(footer 까지) -d.
+                // 유리 바닥은 mirror 가 있으면 정적 클리퍼를 접힌 높이로 줄이고
+                // 사라지는 구간은 틴트만 가진 fill(scaleY)·cap(translateY) 조각이 맡는다
+                // (그 구간은 사진 아래 완만한 배경이라 블러 유무가 드러나지 않는다).
+                // mirror 가 없으면(투명도 최소화) 조각이 backdrop 을 직접 든다
+                tween(wrapper, { clipPath: clipBottom(d0, wrapperRadius) }, { clipPath: clipBottom(dT, wrapperRadius) });
+                tintPieces(false).forEach(function (c) { tween(c.el, { transform: 'scaleY(' + (c.h - d0) / c.h + ')' }, { transform: 'scaleY(' + (c.h - dT) / c.h + ')' }); });
+                flipSiblings(wrapper, false).forEach(function (m) {
+                    tween(m, { transform: 'translateY(' + -d0 + 'px)' }, { transform: 'translateY(' + -dT + 'px)' });
+                });
+                let fill = sec.querySelector(':scope > .glass-flip-fill');
+                let cap = sec.querySelector(':scope > .glass-flip-cap');
+                if (!fill) {
+                    fill = document.createElement('div'); fill.className = 'glass-flip-fill';
+                    cap = document.createElement('div'); cap.className = 'glass-flip-cap';
+                    fill.style.cssText = 'top:' + (Hc - R - 1) + 'px;height:' + D + 'px';
+                    cap.style.cssText = 'top:' + (secH - R - 1) + 'px;height:' + R + 'px';
+                    if (mirror) {
+                        let clip = mirror.parentElement;
+                        clip.style.height = (Hc - R) + 'px';
+                        clip.style.borderBottomLeftRadius = clip.style.borderBottomRightRadius = '0';
+                    } else {
+                        let top = document.createElement('div'); top.className = 'glass-flip-top';
+                        top.style.cssText = 'top:-1px;height:' + (Hc - R) + 'px';
+                        sec.append(top);
+                    }
+                    sec.append(fill, cap);
+                }
+                let fillScale = function (d) { return Math.max(0, (D - d) / D); };
+                tween(fill, { transform: 'scaleY(' + fillScale(d0) + ')' }, { transform: 'scaleY(' + fillScale(dT) + ')' });
+                tween(cap, { transform: 'translateY(' + -d0 + 'px)' }, { transform: 'translateY(' + -dT + 'px)' });
+                shadow.style.transformOrigin = 'center top';
+                tween(shadow, { transform: 'scaleY(' + (secH - d0) / secH + ')' }, { transform: 'scaleY(' + (secH - dT) / secH + ')' });
+            }
 
             let lead = anims[0];
             state = {
+                anchor: anchor,
                 currentD: function () {
-                    let m = /inset\(\S+ \S+ ([\d.]+)px/.exec(getComputedStyle(wrapper).clipPath);
-                    return m ? parseFloat(m[1]) : (show ? 0 : D);
+                    let m = /inset\((\S+) \S+ (\S+)/.exec(getComputedStyle(wrapper).clipPath);
+                    return m ? parseFloat(m[2]) : (show ? 0 : D);
                 },
                 stop: function () {
                     lead.onfinish = null;
@@ -538,26 +608,35 @@ $(function () {
                 }
             };
             $wrapper.data('moreFlip', state);
-            if (!show && $moreButton && window.glassMotion && window.glassMotion.followTrackButton) {
-                // index 접힘과 같은 track 팔로우 — 버튼의 transform 이동도 rect 에
-                // 잡히므로 그대로 흡수한다. 문서는 아직 펼친 높이라, 스냅 후
-                // 클램프 점프가 없도록 최대 스크롤을 D 만큼 앞당겨 상한한다
-                window.glassMotion.followTrackButton($moreButton[0], { reserveBottom: D });
-            }
             lead.onfinish = function () {
                 state.stop();
-                finish();
+                finish(anchor);
             };
         }
 
-        function finish() {
+        // 실제 레이아웃으로 스냅. bottom 안무의 접힘은 문서가 위쪽에서 D 만큼
+        // 줄므로 같은 프레임에 scrollY 도 D 만큼 줄여 화면을 그대로 둔다
+        function finish(anchor) {
             let sec = wrapper.closest('.song-search-section');
+            let y = window.scrollY;
             if (!show) $hiddenRows.addClass('d-none');
             if (sec) {
                 sec.querySelectorAll(':scope > .glass-flip-top, :scope > .glass-flip-fill, :scope > .glass-flip-cap, :scope > .glass-flip-shadow').forEach(function (el) { el.remove(); });
+                let clip = sec.querySelector(':scope > .glass-mirror-clip');
+                if (clip) { clip.style.height = ''; clip.style.borderBottomLeftRadius = clip.style.borderBottomRightRadius = ''; }
                 sec.classList.remove('glass-flip');
             }
-            if (!show && window.glassMotion) window.glassMotion.settleFollowTrack();
+            document.querySelectorAll('.glass-flip-tinted').forEach(function (node) {
+                node.querySelectorAll(':scope > .glass-flip-tint').forEach(function (el) { el.remove(); });
+                node.classList.remove('glass-flip-tinted');
+            });
+            if (!show && anchor === 'bottom') {
+                let heights = $wrapper.data('moreHeights');
+                window.scrollTo(0, Math.max(0, y - (heights.expandedH - heights.collapsedH)));
+            }
+            document.documentElement.style.overflowAnchor = '';
+            setTimeout(unprimeFlip, 200);
+            if (window.glassMotion && window.glassMotion.rebuildGlassMirrors) window.glassMotion.rebuildGlassMirrors();
         }
 
         if (show) {

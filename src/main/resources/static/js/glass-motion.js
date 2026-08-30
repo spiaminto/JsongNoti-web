@@ -506,7 +506,81 @@
     // followTrackButton 을 쓰는 쪽은 접힘 완료 시점에 settleFollowTrack 을
     // 호출해 종료를 허가한다 (2기 1턴: 검색 더보기 접기가 track 으로 합류 —
     // 선계산 활강은 높이 전환과 곡선이 어긋나 화면이 프레임마다 요동했다)
+    // ---- glass mirror: backdrop-filter 없는 유리 판 (2기 3턴 실험실) ----
+    // 큰 유리 판의 backdrop-filter 는 스크롤·합성 애니마다 GPU 에서 매 프레임
+    // 재블러된다 (실측: 검색 섹션 하나가 스크롤 GPU 72%→50% 몫). 대신 판 뒤의
+    // 배경(사진·햇살·보케 — 모두 페이지와 같이 스크롤하는 absolute)을 판 안에
+    // 같은 문서 좌표로 복제하고 filter: blur 를 한 번만 래스터한다. 배경이
+    // 정적이라 가능한 기법 — 복제본은 창 크기·보케 재산포·판 위치가 바뀔 때
+    // 다시 만든다. 재질(blur·saturate·틴트)은 glass.css .glass-mirror 가 든다.
+    // 투명도 최소화 설정에서는 만들지 않는다 (판이 불투명이라 의미 없음)
+    var mirrorReduce = window.matchMedia("(prefers-reduced-transparency: reduce)").matches;
+    function buildGlassMirror(host) {
+        var clip = host.querySelector(":scope > .glass-mirror-clip");
+        if (!clip) {
+            clip = document.createElement("div");
+            clip.className = "glass-mirror-clip";
+            clip.setAttribute("aria-hidden", "true");
+            clip.innerHTML = '<div class="glass-mirror"><div class="glass-mirror-stage"></div><div class="glass-mirror-tint"></div></div>';
+            host.prepend(clip);
+            host.classList.add("has-mirror");
+        }
+        var stage = clip.querySelector(".glass-mirror-stage");
+        var hr = host.getBoundingClientRect();
+        var hx = hr.left + window.scrollX - 1; // 판 보더까지 덮는 inset -1px 기준
+        var hy = hr.top + window.scrollY - 1;
+        var sources = host.getAttribute("data-glass-mirror").split(",");
+        var items = sources.map(function (sel, i) {
+            var src = document.querySelector(sel.trim());
+            if (!src) return null;
+            var r = src.getBoundingClientRect();
+            return { src: src, i: i, left: r.left + window.scrollX - hx, top: r.top + window.scrollY - hy, w: r.width, h: r.height };
+        }).filter(Boolean);
+        // 판의 높이만 바뀐 경우(접힘 스냅)는 복제본 좌표가 그대로라 다시 그리지
+        // 않는다 — 블러 래스터가 한 프레임을 통째로 먹는다. 판 폭·문서 내
+        // 위치·원본 배경의 기하·보케 점 수가 바뀔 때만 다시 만든다
+        var key = [hr.width, hx, hy].concat(items.map(function (it) {
+            return [it.left, it.top, it.w, it.h, it.src.childElementCount, it.src.innerHTML.length].join(",");
+        })).join("|");
+        if (clip.dataset.mirrorKey === key) return;
+        clip.dataset.mirrorKey = key;
+        // stage 크기는 판 높이와 무관하게 고정 — inset:0 이면 판 높이 변화마다
+        // 필터 출력이 다시 그려진다. 클리퍼가 판 모양으로 자른다
+        stage.style.width = (hr.width + 2) + "px";
+        stage.style.height = Math.max(hr.height + 2, document.documentElement.scrollHeight - hy) + "px";
+        stage.replaceChildren();
+        items.forEach(function (it) {
+            var c = it.src.cloneNode(true);
+            c.removeAttribute("id");
+            c.style.cssText = "position:absolute;inset:auto;left:" + it.left + "px;top:" + it.top + "px;width:" +
+                it.w + "px;height:" + it.h + "px;z-index:" + it.i;
+            stage.appendChild(c);
+        });
+    }
+    var mirrorHosts = mirrorReduce ? [] : Array.prototype.slice.call(document.querySelectorAll("[data-glass-mirror]"));
+    var mirrorTimer = null;
+    function rebuildGlassMirrors() {
+        clearTimeout(mirrorTimer);
+        mirrorTimer = setTimeout(function () {
+            mirrorHosts.forEach(buildGlassMirror);
+        }, 120);
+    }
+    if (mirrorHosts.length) {
+        mirrorHosts.forEach(buildGlassMirror);
+        window.addEventListener("resize", rebuildGlassMirrors);
+        // 보케 재산포·확장(점 추가/제거, 좌표 변수 변경) 추적
+        var bokehMo = new MutationObserver(rebuildGlassMirrors);
+        document.querySelectorAll(".bokeh").forEach(function (b) {
+            bokehMo.observe(b, { childList: true, attributes: true, subtree: true, attributeFilter: ["style"] });
+        });
+        // 판의 문서 내 위치·크기가 바뀌면(위 내용 높이 변화, 접힘 스냅) 재정렬
+        var hostRo = new ResizeObserver(rebuildGlassMirrors);
+        mirrorHosts.forEach(function (h) { hostRo.observe(h); });
+        document.querySelectorAll("#container").forEach(function (c) { hostRo.observe(c); });
+    }
+
     window.glassMotion = {
+        rebuildGlassMirrors: rebuildGlassMirrors,
         followScroll: followScroll,
         cancelFollowScroll: cancelFollowScroll,
         followTrackButton: followTrackButton,
