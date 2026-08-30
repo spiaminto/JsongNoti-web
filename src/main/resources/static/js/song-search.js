@@ -550,19 +550,12 @@ $(function () {
             // 빠져 잘려야 할 행이 다음 그룹 위로 겹쳐 그려진다 (2기 3턴: 계산값은
             // 정상, Performance 트레이스 스크린샷에서만 드러남). 래퍼는 이동만 맡는다
             let clipEl = wrapper.firstElementChild || wrapper;
-            // 그림자 조각은 판 바닥이 움직이는 top 안무에만 — bottom 안무는 바닥이
-            // 고정이라 섹션 자체 그림자를 그대로 둔다 (윗변 36px 의 번짐만 정지).
-            // 섹션 클래스 토글은 판 전체 재페인트라 필요한 안무에서만 건다
-            let shadow = null;
-            if (anchor === 'top') {
-                shadow = sec.querySelector(':scope > .glass-flip-shadow');
-                if (!shadow) {
-                    shadow = document.createElement('div'); shadow.className = 'glass-flip-shadow';
-                    shadow.style.cssText = 'top:-1px;height:' + secH + 'px';
-                    sec.append(shadow);
-                }
-                sec.classList.add('glass-flip');
-            }
+            // 섹션 그림자는 어느 안무에서도 건드리지 않는다 — 섹션이 overflow:
+            // hidden 이라 조각이 판 바깥에 그리는 드롭 섀도는 잘려서 보이지 않고,
+            // 섹션 그림자를 끄면 전환 동안 외곽 그림자가 통째로 사라졌다(사용자
+            // 육안 검수). 펼침은 레이아웃이 이미 펼친 크기라 섹션 그림자가 곧
+            // 최종 그림자다. 섹션 클래스 토글은 판 전체 재페인트라 top 안무에만
+            if (anchor === 'top') sec.classList.add('glass-flip');
             document.documentElement.style.overflowAnchor = 'none';
 
             if (anchor === 'bottom') {
@@ -608,8 +601,6 @@ $(function () {
                 let fillScale = function (d) { return Math.max(0, (D - d) / D); };
                 tween(fill, { transform: 'scaleY(' + fillScale(d0) + ')' }, { transform: 'scaleY(' + fillScale(dT) + ')' });
                 tween(cap, { transform: 'translateY(' + -d0 + 'px)' }, { transform: 'translateY(' + -dT + 'px)' });
-                shadow.style.transformOrigin = 'center top';
-                tween(shadow, { transform: 'scaleY(' + (secH - d0) / secH + ')' }, { transform: 'scaleY(' + (secH - dT) / secH + ')' });
             }
 
             let lead = anims.find(function (a) { return mainSync.indexOf(a) < 0; }) || anims[0];
@@ -646,7 +637,7 @@ $(function () {
             let y = window.scrollY;
             if (!show) $hiddenRows.addClass('d-none');
             if (sec) {
-                sec.querySelectorAll(':scope > .glass-flip-top, :scope > .glass-flip-fill, :scope > .glass-flip-cap, :scope > .glass-flip-shadow').forEach(function (el) { el.remove(); });
+                sec.querySelectorAll(':scope > .glass-flip-top, :scope > .glass-flip-fill, :scope > .glass-flip-cap').forEach(function (el) { el.remove(); });
                 let clip = sec.querySelector(':scope > .glass-mirror-clip');
                 if (clip) { clip.style.height = ''; clip.style.borderBottomLeftRadius = clip.style.borderBottomRightRadius = ''; }
                 sec.classList.remove('glass-flip');

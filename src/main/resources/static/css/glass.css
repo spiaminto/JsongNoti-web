@@ -736,20 +736,19 @@ tbody tr.more-reveal.more-settled.more-hide,
    내려 섹션은 맨몸으로 둔다. 박자: 펼침 .35s ease, 접힘 1s
    cubic-bezier(.16,1,.3,1) — index 지난달 접힘(.closing)과 동일 */
 /* 섹션은 page/search.css 에서 이미 z-index 스태킹 컨텍스트라 isolation 이
-   필요 없다 (토글하면 판 전체가 다시 그려진다). mirror 판은 배경·backdrop 이
-   이미 없으므로 그림자만 조각에 넘긴다 */
+   필요 없다 (토글하면 판 전체가 다시 그려진다). box-shadow 는 그대로 둔다 —
+   섹션이 overflow: hidden 이라 조각이 판 바깥에 그리는 드롭 섀도는 잘리고,
+   섹션 그림자를 끄면 전환 동안 외곽 그림자가 사라진다 (2기 3턴 육안 검수) */
 .song-search-section.glass-flip {
     background: none;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-    box-shadow: none;
 }
 /* 스킨 조각들. 자식 선택자로 page/search.css 의 `.song-search-section > *`
    (relative, z 1)를 이긴다. 세로 위치·높이는 JS 가 inline 으로 준다 */
 .song-search-section > .glass-flip-top,
 .song-search-section > .glass-flip-fill,
-.song-search-section > .glass-flip-cap,
-.song-search-section > .glass-flip-shadow {
+.song-search-section > .glass-flip-cap {
     position: absolute;
     left: -1px;
     right: -1px;
@@ -792,18 +791,6 @@ tbody tr.more-reveal.more-settled.more-hide,
         -1px 0 0 rgb(30 42 56 / .06),
         inset 0 -3px 10px -2px var(--g-inset-lo);
 }
-/* 그림자 조각은 .glass 의 box-shadow 전체(드롭 + 1px 에지 선 + inset 하이라이트)
-   를 든다 — 드롭만 옮기면 전환 중 판 윤곽이 350ms 동안 사라진다 (2기 3턴) */
-.song-search-section > .glass-flip-shadow {
-    border-radius: var(--g-radius);
-    box-shadow:
-        var(--g-drop),
-        0 1px 0 rgb(30 42 56 / .13),
-        1px 0 0 rgb(30 42 56 / .06),
-        -1px 0 0 rgb(30 42 56 / .06),
-        inset 0 1px 0 var(--g-inset-hi),
-        inset 0 -3px 10px -2px var(--g-inset-lo);
-}
 /* 래퍼 위의 틴트 조상(.card): 전환 중 배경을 조각(.glass-flip-tint)에 넘긴다 —
    색·그림자·radius 는 JS 가 조상의 계산값을 그대로 옮긴다 */
 .glass-flip-tinted {
@@ -834,11 +821,6 @@ tbody tr.more-reveal.more-settled.more-hide,
         inset 0 1px 0 var(--g-inset-hi),
         inset 0 -3px 10px -2px var(--g-inset-lo);
 }
-.glass-flip-shadow {
-    box-shadow: var(--g-drop);
-    transform-origin: top;
-}
-
 /* 컬랩스 안에 나중에 삽입되는 표(추가검색 placeholder·갱신 결과)는 위
    table-in(2박자 통짜 떠오름)을 끈다 — placeholder 는 즉시 보여야 하고,
    갱신 결과는 행 스태거(.more-reveal)가 이중 fade 없이 단독으로 맡는다 */
