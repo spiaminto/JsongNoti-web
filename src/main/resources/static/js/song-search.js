@@ -506,6 +506,19 @@ $(function () {
             };
             let anims = [];
             function tween(el, from, to) { anims.push(el.animate([from, to], timing)); }
+            // clip-path 는 컴포지터에 맡기지 않는다 — 이 환경에서 컴포지터가 돌리는
+            // clip-path 애니메이션은 라이브 프레임에 반영되지 않아 잘려야 할 행이
+            // 다음 그룹 위로 겹쳐 보였다 (Performance 트레이스 스크린샷으로 확인;
+            // pause 한 스크린샷에선 정상이라 오래 못 잡았다). 애니메이션을 pause 로
+            // 두고 매 프레임 currentTime 을 주 애니메이션에 맞추면 메인 스레드가
+            // 적용한다. 사각 clip 은 페인트 속성 갱신이라 재래스터가 없다
+            let mainSync = [];
+            function tweenMain(el, from, to) {
+                let a = el.animate([from, to], timing);
+                a.pause();
+                anims.push(a);
+                mainSync.push(a);
+            }
             function clipBottom(d, r) { return 'inset(0 0 ' + d + 'px 0 round ' + r + ')'; }
             // 래퍼~섹션 사이에서 자기 배경을 가진 조상(.card 틴트 기둥) — 실제 박스가
             // 펼친 높이라 판 밖으로 틴트가 비어져 나온다. 조상에 clip-path 애니를
@@ -532,6 +545,11 @@ $(function () {
                 return list;
             }
             let wrapperRadius = getComputedStyle(wrapper).borderBottomLeftRadius || '0px';
+            // clip 은 래퍼가 아니라 래퍼의 자식(표)에 건다 — 한 요소에 컴포지터
+            // clip-path 애니와 transform 애니를 함께 걸면 라이브 프레임에서 clip 이
+            // 빠져 잘려야 할 행이 다음 그룹 위로 겹쳐 그려진다 (2기 3턴: 계산값은
+            // 정상, Performance 트레이스 스크린샷에서만 드러남). 래퍼는 이동만 맡는다
+            let clipEl = wrapper.firstElementChild || wrapper;
             // 그림자 조각은 판 바닥이 움직이는 top 안무에만 — bottom 안무는 바닥이
             // 고정이라 섹션 자체 그림자를 그대로 둔다 (윗변 36px 의 번짐만 정지).
             // 섹션 클래스 토글은 판 전체 재페인트라 필요한 안무에서만 건다
@@ -551,8 +569,8 @@ $(function () {
                 // 위쪽이 내려온다: 래퍼(잘린 채)·앞서는 형제·배경·mirror 는 +d,
                 // 틴트 카드는 상단을 d 만큼 잘라 앞서는 형제가 그 자리로 내려온다.
                 // 그림자는 바닥을 축으로 세로 축소
-                tween(wrapper, { clipPath: clipBottom(d0, wrapperRadius), transform: 'translateY(' + d0 + 'px)' },
-                               { clipPath: clipBottom(dT, wrapperRadius), transform: 'translateY(' + dT + 'px)' });
+                tween(wrapper, { transform: 'translateY(' + d0 + 'px)' }, { transform: 'translateY(' + dT + 'px)' });
+                tweenMain(clipEl, { clipPath: clipBottom(d0, wrapperRadius) }, { clipPath: clipBottom(dT, wrapperRadius) });
                 tintPieces(true).forEach(function (c) { tween(c.el, { transform: 'scaleY(' + (c.h - d0) / c.h + ')' }, { transform: 'scaleY(' + (c.h - dT) / c.h + ')' }); });
                 flipSiblings(wrapper, true).forEach(function (m) {
                     tween(m, { transform: 'translateY(' + d0 + 'px)' }, { transform: 'translateY(' + dT + 'px)' });
@@ -564,11 +582,11 @@ $(function () {
                 // 사라지는 구간은 틴트만 가진 fill(scaleY)·cap(translateY) 조각이 맡는다
                 // (그 구간은 사진 아래 완만한 배경이라 블러 유무가 드러나지 않는다).
                 // mirror 가 없으면(투명도 최소화) 조각이 backdrop 을 직접 든다
-                tween(wrapper, { clipPath: clipBottom(d0, wrapperRadius) }, { clipPath: clipBottom(dT, wrapperRadius) });
                 tintPieces(false).forEach(function (c) { tween(c.el, { transform: 'scaleY(' + (c.h - d0) / c.h + ')' }, { transform: 'scaleY(' + (c.h - dT) / c.h + ')' }); });
                 flipSiblings(wrapper, false).forEach(function (m) {
                     tween(m, { transform: 'translateY(' + -d0 + 'px)' }, { transform: 'translateY(' + -dT + 'px)' });
                 });
+                tweenMain(clipEl, { clipPath: clipBottom(d0, wrapperRadius) }, { clipPath: clipBottom(dT, wrapperRadius) });
                 let fill = sec.querySelector(':scope > .glass-flip-fill');
                 let cap = sec.querySelector(':scope > .glass-flip-cap');
                 if (!fill) {
@@ -594,15 +612,22 @@ $(function () {
                 tween(shadow, { transform: 'scaleY(' + (secH - d0) / secH + ')' }, { transform: 'scaleY(' + (secH - dT) / secH + ')' });
             }
 
-            let lead = anims[0];
+            let lead = anims.find(function (a) { return mainSync.indexOf(a) < 0; }) || anims[0];
+            let syncRaf = 0;
+            (function syncMain() {
+                let t = lead.currentTime;
+                if (t != null) mainSync.forEach(function (a) { a.currentTime = t; });
+                syncRaf = requestAnimationFrame(syncMain);
+            })();
             state = {
                 anchor: anchor,
                 currentD: function () {
-                    let m = /inset\((\S+) \S+ (\S+)/.exec(getComputedStyle(wrapper).clipPath);
+                    let m = /inset\((\S+) \S+ (\S+)/.exec(getComputedStyle(clipEl).clipPath);
                     return m ? parseFloat(m[2]) : (show ? 0 : D);
                 },
                 stop: function () {
                     lead.onfinish = null;
+                    cancelAnimationFrame(syncRaf);
                     anims.forEach(function (a) { a.cancel(); });
                     $wrapper.removeData('moreFlip');
                 }

@@ -792,9 +792,17 @@ tbody tr.more-reveal.more-settled.more-hide,
         -1px 0 0 rgb(30 42 56 / .06),
         inset 0 -3px 10px -2px var(--g-inset-lo);
 }
+/* 그림자 조각은 .glass 의 box-shadow 전체(드롭 + 1px 에지 선 + inset 하이라이트)
+   를 든다 — 드롭만 옮기면 전환 중 판 윤곽이 350ms 동안 사라진다 (2기 3턴) */
 .song-search-section > .glass-flip-shadow {
     border-radius: var(--g-radius);
-    box-shadow: var(--g-drop);
+    box-shadow:
+        var(--g-drop),
+        0 1px 0 rgb(30 42 56 / .13),
+        1px 0 0 rgb(30 42 56 / .06),
+        -1px 0 0 rgb(30 42 56 / .06),
+        inset 0 1px 0 var(--g-inset-hi),
+        inset 0 -3px 10px -2px var(--g-inset-lo);
 }
 /* 래퍼 위의 틴트 조상(.card): 전환 중 배경을 조각(.glass-flip-tint)에 넘긴다 —
    색·그림자·radius 는 JS 가 조상의 계산값을 그대로 옮긴다 */
