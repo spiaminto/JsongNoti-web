@@ -639,7 +639,7 @@ mark,
 }
 
 /* ---------- 더보기 행 리빌: 표 일부 행(d-none) 펼침 ----------
-   통합검색 더보기(song-search.js)가 쓴다. 래퍼 height 전환(.more-animating)과
+   통합검색 더보기(song-search.js)가 쓴다. 래퍼 FLIP 전환(runFlip)과
    함께, 드러나는 행이 index 리빌과 같은 어휘(row-in)로 하나씩 떠오른다.
    딜레이는 JS 가 --rd 로 주는 계단 — index 지난달 컬랩스와 같은 타이밍
    (첫 행 50ms + 행당 70ms)에, 최대 45행의 꼬리가 늘어지지 않게 상한
@@ -672,18 +672,79 @@ tbody tr.more-reveal.more-settled.more-hide,
     opacity: 0;
 }
 
-/* 더보기 래퍼 높이 전환 — 펼침은 순정 bootstrap collapse 와 같은 박자.
-   clip 은 .song-table-border 상시 overflow: hidden 이 이미 맡고 있다 */
-.song-table-border.more-animating {
-    transition: height .35s ease;
+/* FLIP 형 더보기 접기·펼침 (song-search.js runFlip). 래퍼 height 전환은
+   프레임마다 문서 레이아웃과 섹션 유리 판(backdrop·드롭 섀도) 재래스터를
+   불러 25ms 프레임이 났다 — 대신 clip-path·transform 만 움직이고, 그동안
+   섹션 스킨을 자식 레이어 두 장(몸체 clip-path, 드롭 섀도 scaleY)으로
+   내려 섹션은 맨몸으로 둔다. 박자: 펼침 .35s ease, 접힘 1s
+   cubic-bezier(.16,1,.3,1) — index 지난달 접힘(.closing)과 동일 */
+.song-search-section.glass-flip {
+    position: relative;
+    isolation: isolate;
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: none;
 }
-
-/* 접힘은 index 지난달 접힘(.closing)과 같은 1s 감속 곡선 — track 팔로우가
-   접힘 속도를 그대로 타므로 관성 활강의 몸통은 이 전환 곡선이 만든다
-   (2기 1턴, index 22턴과 동일 문법). 펼침은 위 .35s ease 유지 */
-.song-table-border.more-animating.more-closing {
-    transition-duration: 1s;
-    transition-timing-function: cubic-bezier(.16, 1, .3, 1);
+/* 스킨 조각들. 자식 선택자로 page/search.css 의 `.song-search-section > *`
+   (relative, z 1)를 이긴다. 세로 위치·높이는 JS 가 inline 으로 준다 */
+.song-search-section > .glass-flip-top,
+.song-search-section > .glass-flip-fill,
+.song-search-section > .glass-flip-cap,
+.song-search-section > .glass-flip-shadow {
+    position: absolute;
+    left: -1px;
+    right: -1px;
+    z-index: -1;
+    pointer-events: none;
+    transform-origin: center top;
+    will-change: transform;
+}
+.song-search-section > .glass-flip-top,
+.song-search-section > .glass-flip-fill,
+.song-search-section > .glass-flip-cap {
+    background: rgb(var(--g-white) / var(--g-alpha));
+    -webkit-backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
+    backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
+}
+.song-search-section > .glass-flip-top {
+    border-radius: var(--g-radius) var(--g-radius) 0 0;
+    box-shadow:
+        1px 0 0 rgb(30 42 56 / .06),
+        -1px 0 0 rgb(30 42 56 / .06),
+        inset 0 1px 0 var(--g-inset-hi);
+}
+.song-search-section > .glass-flip-fill {
+    box-shadow:
+        1px 0 0 rgb(30 42 56 / .06),
+        -1px 0 0 rgb(30 42 56 / .06);
+}
+.song-search-section > .glass-flip-cap {
+    border-radius: 0 0 var(--g-radius) var(--g-radius);
+    box-shadow:
+        0 1px 0 rgb(30 42 56 / .13),
+        1px 0 0 rgb(30 42 56 / .06),
+        -1px 0 0 rgb(30 42 56 / .06),
+        inset 0 -3px 10px -2px var(--g-inset-lo);
+}
+.song-search-section > .glass-flip-shadow {
+    border-radius: var(--g-radius);
+    box-shadow: var(--g-drop);
+}
+.glass-flip-skin {
+    background: rgb(var(--g-white) / var(--g-alpha));
+    -webkit-backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
+    backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
+    box-shadow:
+        0 1px 0 rgb(30 42 56 / .13),
+        1px 0 0 rgb(30 42 56 / .06),
+        -1px 0 0 rgb(30 42 56 / .06),
+        inset 0 1px 0 var(--g-inset-hi),
+        inset 0 -3px 10px -2px var(--g-inset-lo);
+}
+.glass-flip-shadow {
+    box-shadow: var(--g-drop);
+    transform-origin: top;
 }
 
 /* 컬랩스 안에 나중에 삽입되는 표(추가검색 placeholder·갱신 결과)는 위
@@ -797,7 +858,6 @@ tbody tr.more-reveal.more-settled.more-hide,
     [data-lift] .collapsing .song-table, [data-lift] .collapse.show .song-table { animation: none; }
     tbody tr.more-reveal, [data-lift].is-lit .collapse tbody tr.more-reveal { animation: none; opacity: 1; transform: none; }
     [data-lift].is-lit .song-table-collapse.collapsing tbody tr, [data-lift].is-lit .song-table-collapse.collapse.show tbody tr { animation: none; opacity: 1; transform: none; }
-    .song-table-border.more-animating { transition: none; }
     .sheen::after { display: none; }
     .btn:hover, .glass-btn:hover { transform: none; }
 }

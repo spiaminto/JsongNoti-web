@@ -378,10 +378,9 @@ $(function () {
         });
     }
 
-    // 더보기 행 펼침·접힘: 래퍼(.song-table-border) 높이를 실측해 전환한다
-    // (순정 collapse 감각). 표의 일부 행만 여닫는 구조라 bootstrap Collapse 를
-    // 쓸 수 없어 펼침은 같은 박자(.35s ease, glass.css .more-animating)를,
-    // 접힘은 index 지난달 접힘과 같은 1s 감속(.more-closing)을 직접 건다.
+    // 더보기 행 펼침·접힘: 래퍼(.song-table-border) 높이를 실측해 두고
+    // FLIP 형으로 전환한다 (runFlip 참고). 표의 일부 행만 여닫는 구조라
+    // bootstrap Collapse 를 쓸 수 없어 펼침 .35s ease, 접힘 1s 감속을 직접 건다.
     // 접힘 팔로우는 index 와 같은 track(glassMotion.followTrackButton) —
     // 매 프레임 버튼 실위치에서 스크롤을 유도해 화면 중앙으로 포착·고정한다.
     // 선계산 활강(followScroll)은 높이 전환(CSS)과 곡선이 어긋나 버튼이
@@ -394,7 +393,6 @@ $(function () {
             return;
         }
         if (window.glassMotion) window.glassMotion.cancelFollowScroll();
-        $wrapper.off('transitionend.more');
 
         // 기하 읽기는 행 클래스 토글(쓰기)보다 전부 앞에 몬다 — 쓰기 뒤에
         // 읽으면 접기 클릭 프레임에 문서 전체 강제 리플로우가 한 번 더
@@ -409,7 +407,7 @@ $(function () {
         let needMeasure = !cache || cache.vw !== window.innerWidth;
         let shBefore = needMeasure ? se.scrollHeight : 0;
 
-        function animateHeight(startHeight) {
+        function animateHeight() {
             if (needMeasure) {
                 // 실측 중 문서가 잠깐 줄어드는 동안 스크롤 앵커링이 y 를
                 // 끌어올리지 않도록 min-height 받침 + overflow-anchor 해제를
@@ -428,43 +426,152 @@ $(function () {
                 cache = { expandedH: expandedH, collapsedH: collapsedH, vw: window.innerWidth };
                 $wrapper.data('moreHeights', cache);
             }
-            let endHeight = show ? cache.expandedH : cache.collapsedH;
-            if (startHeight === endHeight) return;
-            wrapper.style.height = startHeight + 'px';
-            $wrapper.addClass('more-animating');
-            // 접힘 중 재펼침 반전도 덮도록 toggle — 접힘에만 1s 감속이 걸린다
-            $wrapper.toggleClass('more-closing', !show);
-            void wrapper.offsetHeight; // 시작 높이를 전환 기준으로 굳힌다
-            wrapper.style.height = endHeight + 'px';
-            if (!show && $moreButton && window.glassMotion && window.glassMotion.followTrackButton) {
-                // index 접힘과 같은 track 팔로우 — 문서 수축·버튼 이동을 매
-                // 프레임 그대로 흡수하므로 목표 선계산이 필요 없다
-                window.glassMotion.followTrackButton($moreButton[0]);
+            let D = cache.expandedH - cache.collapsedH;
+            if (D <= 0) return;
+            runFlip(D);
+        }
+
+        // FLIP 형 접기·펼침 (2기 3턴 실험실). 래퍼 height 전환은 매 프레임
+        // 문서 전체 레이아웃 + 섹션 유리 판(backdrop·드롭 섀도) 재래스터를
+        // 불러 25ms 프레임이 났다 (트레이스: 메인 스레드는 한가, GPU 합성이
+        // 병목). 대신 레이아웃은 펼친 채 동결하고 합성 전용 속성만 움직인다:
+        //   래퍼 clip-path inset(0 0 d 0) — 표 하단을 잘라 들어간다
+        //   래퍼 뒤의 형제들(섹션까지 각 단계) translateY(-d) — 따라 올라온다
+        //   섹션 스킨을 자식 레이어 두 장으로 분리 — 몸체(배경·backdrop·에지)는
+        //   clip-path, 드롭 섀도는 scaleY. 섹션 자체는 그동안 맨몸이다
+        // 끝나면 실제 레이아웃(d-none)으로 스냅한다. 펼침은 역방향 — 먼저
+        // 레이아웃을 펼치고 d=D 에서 0 으로 되돌린다. 전환 중 재클릭은 현재
+        // d 를 읽어 그 자리에서 반전한다 (레이아웃은 양쪽 다 펼친 상태)
+        function runFlip(D) {
+            let sec = wrapper.closest('.song-search-section');
+            if (!sec || !wrapper.animate) {
+                $hiddenRows.toggleClass('d-none', !show);
+                return;
             }
-            $wrapper.on('transitionend.more', function (e) {
-                if (e.target !== wrapper || e.originalEvent.propertyName !== 'height') return;
-                $wrapper.off('transitionend.more').removeClass('more-animating more-closing');
-                if (!show) $hiddenRows.addClass('d-none');
-                wrapper.style.height = '';
-                if (!show && window.glassMotion) window.glassMotion.settleFollowTrack();
+            let state = $wrapper.data('moreFlip');
+            let d0 = 0;
+            if (state) {
+                d0 = state.currentD();
+                state.stop();
+            } else if (!show) {
+                d0 = 0;
+            } else {
+                d0 = D;
+            }
+            let dT = show ? 0 : D;
+            if (d0 === dT) { finish(); return; }
+
+            // 뒤따르는 형제는 body 까지 — footer 지대도 같이 올라온다 (스냅 때
+            // 문서만 줄고 footer 가 튀지 않게). fixed(scroll-veil 등)는 제외
+            let movers = [];
+            for (let node = wrapper; node && node !== document.body; node = node.parentElement) {
+                for (let s = node.nextElementSibling; s; s = s.nextElementSibling) {
+                    if (getComputedStyle(s).position !== 'fixed') movers.push(s);
+                }
+            }
+            // 섹션 스킨 3조각 + 그림자 (모두 transform 만 움직인다 — backdrop 요소는
+            // clip-path 를 움직이면 매 프레임 재블러라 불가, 실측 49 낙프레임):
+            //   top  — 0 ~ Hc-R 고정 판(아래 모서리는 각진 채 — 그 자리는 끝에 cap 이 맡는다)
+            //   fill — Hc-R ~ secH-R, scaleY 로 수축 (바닥이 항상 cap 윗변에 맞닿는다)
+            //   cap  — 바닥 R px 띠(둥근 아래 모서리), translateY(-d) 로 따라 올라온다
+            // 조각은 겹치지 않는다 — 반투명 틴트가 겹치면 흰 띠가 보인다 (실측).
+            // 끝 프레임(d = D)은 fill 0·cap 이 top 바닥에 맞닿아 실제 섹션과 같은 모양
+            let R = parseFloat(getComputedStyle(sec).borderBottomLeftRadius) || 0;
+            let secH = sec.getBoundingClientRect().height + 2; // 보더 포함(inset -1px)
+            let Hc = secH - D;
+            let skin = sec.querySelector(':scope > .glass-flip-top');
+            let fill, cap, shadow;
+            if (!skin) {
+                skin = document.createElement('div'); skin.className = 'glass-flip-top';
+                fill = document.createElement('div'); fill.className = 'glass-flip-fill';
+                cap = document.createElement('div'); cap.className = 'glass-flip-cap';
+                shadow = document.createElement('div'); shadow.className = 'glass-flip-shadow';
+                skin.style.cssText = 'top:-1px;height:' + (Hc - R) + 'px';
+                fill.style.cssText = 'top:' + (Hc - R - 1) + 'px;height:' + D + 'px';
+                cap.style.cssText = 'top:' + (secH - R - 1) + 'px;height:' + R + 'px';
+                shadow.style.cssText = 'top:-1px;height:' + secH + 'px';
+                sec.append(shadow, fill, skin, cap);
+                sec.classList.add('glass-flip');
+            } else {
+                fill = sec.querySelector(':scope > .glass-flip-fill');
+                cap = sec.querySelector(':scope > .glass-flip-cap');
+                shadow = sec.querySelector(':scope > .glass-flip-shadow');
+            }
+            let wrapperRadius = getComputedStyle(wrapper).borderBottomLeftRadius || '0px';
+            // 래퍼~섹션 사이에서 자기 배경을 가진 조상(.card 틴트 기둥)도 같이 잘라
+            // 내린다 — 실제 박스는 펼친 높이라 판 바닥 아래로 틴트가 비어져 나온다
+            let clippers = [{ el: wrapper, r: wrapperRadius }];
+            for (let node = wrapper.parentElement; node && node !== sec; node = node.parentElement) {
+                let cs = getComputedStyle(node);
+                if (cs.backgroundColor !== 'rgba(0, 0, 0, 0)' || cs.backgroundImage !== 'none' || cs.boxShadow !== 'none') {
+                    clippers.push({ el: node, r: cs.borderBottomLeftRadius || '0px' });
+                }
+            }
+            let timing = {
+                duration: show ? 350 : 1000,
+                easing: show ? 'ease' : 'cubic-bezier(.16, 1, .3, 1)',
+                fill: 'forwards'
+            };
+            function clipOf(d, r) { return 'inset(0 0 ' + d + 'px 0 round ' + r + ')'; }
+            function fillScale(d) { return Math.max(0, (D - d) / D); }
+            let anims = [];
+            clippers.forEach(function (c) {
+                anims.push(c.el.animate([{ clipPath: clipOf(d0, c.r) }, { clipPath: clipOf(dT, c.r) }], timing));
             });
+            movers.forEach(function (m) {
+                anims.push(m.animate([{ transform: 'translateY(' + -d0 + 'px)' }, { transform: 'translateY(' + -dT + 'px)' }], timing));
+            });
+            anims.push(fill.animate([{ transform: 'scaleY(' + fillScale(d0) + ')' }, { transform: 'scaleY(' + fillScale(dT) + ')' }], timing));
+            anims.push(cap.animate([{ transform: 'translateY(' + -d0 + 'px)' }, { transform: 'translateY(' + -dT + 'px)' }], timing));
+            anims.push(shadow.animate([{ transform: 'scaleY(' + (secH - d0) / secH + ')' }, { transform: 'scaleY(' + (secH - dT) / secH + ')' }], timing));
+
+            let lead = anims[0];
+            state = {
+                currentD: function () {
+                    let m = /inset\(\S+ \S+ ([\d.]+)px/.exec(getComputedStyle(wrapper).clipPath);
+                    return m ? parseFloat(m[1]) : (show ? 0 : D);
+                },
+                stop: function () {
+                    lead.onfinish = null;
+                    anims.forEach(function (a) { a.cancel(); });
+                    $wrapper.removeData('moreFlip');
+                }
+            };
+            $wrapper.data('moreFlip', state);
+            if (!show && $moreButton && window.glassMotion && window.glassMotion.followTrackButton) {
+                // index 접힘과 같은 track 팔로우 — 버튼의 transform 이동도 rect 에
+                // 잡히므로 그대로 흡수한다. 문서는 아직 펼친 높이라, 스냅 후
+                // 클램프 점프가 없도록 최대 스크롤을 D 만큼 앞당겨 상한한다
+                window.glassMotion.followTrackButton($moreButton[0], { reserveBottom: D });
+            }
+            lead.onfinish = function () {
+                state.stop();
+                finish();
+            };
+        }
+
+        function finish() {
+            let sec = wrapper.closest('.song-search-section');
+            if (!show) $hiddenRows.addClass('d-none');
+            if (sec) {
+                sec.querySelectorAll(':scope > .glass-flip-top, :scope > .glass-flip-fill, :scope > .glass-flip-cap, :scope > .glass-flip-shadow').forEach(function (el) { el.remove(); });
+                sec.classList.remove('glass-flip');
+            }
+            if (!show && window.glassMotion) window.glassMotion.settleFollowTrack();
         }
 
         if (show) {
-            let startHeight = wrapper.getBoundingClientRect().height; // 쓰기 전 측정 — 리플로우 없음
             // d-none 해제가 리빌 애니메이션을 처음부터 재생시킨다
             $hiddenRows.removeClass('d-none more-settled more-hide');
-            animateHeight(startHeight);
+            animateHeight();
         } else {
             // 행을 지우지 않고 보인 채 그대로 접는다 (2기 1턴, 사용자 지시) —
             // 20턴의 "지우기(.18s)+접힘 동시 시작"에서 지우기를 뺀 것.
             // 행 다발의 opacity 전환이 접힘 프레임에 얹히지 않고, 클리핑은
-            // .song-table-border 상시 overflow: hidden 이 맡는다.
-            // more-settled 는 유지 — 접힘 끝 d-none 과 이후 복귀가 리빌을
-            // 재시작시키지 않게 하는 핀
-            let startHeight = wrapper.getBoundingClientRect().height;
+            // 래퍼 clip-path 가 맡는다. more-settled 는 유지 — 접힘 끝
+            // d-none 과 이후 복귀가 리빌을 재시작시키지 않게 하는 핀
             $hiddenRows.addClass('more-settled');
-            animateHeight(startHeight);
+            animateHeight();
         }
     }
 

@@ -362,8 +362,12 @@
     // 검색 더보기는 래퍼 transitionend 가 호출한다 (팔로우는 한 번에 하나만
     // 도니 플래그 공유로 충분하다)
     function settleFollowTrack() { trackHiddenDone = true; }
-    function followTrackButton(btnEl) {
+    // opts.reserveBottom: 스크롤 상한을 그만큼 앞당긴다 — FLIP 접기처럼
+    // 문서가 아직 줄지 않은 채 끝에 한 번에 수축하는 경우, 스냅 순간의
+    // 브라우저 클램프 점프를 막는다 (검색 더보기 runFlip)
+    function followTrackButton(btnEl, opts) {
         if (followReduceMotion) return;
+        var reserveBottom = (opts && opts.reserveBottom) || 0;
         var se = document.scrollingElement || document.documentElement;
         document.documentElement.style.overflowAnchor = "none";
         trackHiddenDone = false;
@@ -383,7 +387,7 @@
             var t = Math.min((ts - start) / TRACK_CAPTURE_MS, 1);
             var r = btnEl.getBoundingClientRect();
             var desired = r.top + r.height / 2 + window.scrollY - se.clientHeight / 2;
-            desired = Math.max(0, Math.min(se.scrollHeight - se.clientHeight, desired));
+            desired = Math.max(0, Math.min(se.scrollHeight - se.clientHeight - reserveBottom, desired));
             if (e0 === null) e0 = desired - window.scrollY;
             window.scrollTo(0, desired - e0 * (1 - springEase(t)));
             // hidden 미발화 대비 3s 안전 상한
