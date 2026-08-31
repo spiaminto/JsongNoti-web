@@ -476,14 +476,20 @@ $(function () {
             // 버튼이 이미 중앙 근처면 이탈량이 0 에 가까워 사실상 움직이지 않고,
             // 사용자 입력(휠·터치·키)이 들어오면 팔로우가 스스로 물러난다
             if (!show && window.glassMotion && window.glassMotion.followTrackButton) {
-                let flipAnchor = ($wrapper.data('moreFlip') || {}).anchor;
+                let flipState = $wrapper.data('moreFlip');
+                let flipAnchor = (flipState || {}).anchor;
                 // bottom 안무: 스냅 보정(-D)과 문서 수축(-D)이 상쇄되므로 상한
                 // 예약이 필요 없고, 대신 스냅 전에 D 아래로 내려가면 보정이
                 // 음수로 잘려 화면이 튀니 하한(reserveTop)만 D 로 받친다.
-                // top 안무: 보정이 없으니 수축분만큼 상한을 앞당긴다(reserveBottom)
-                window.glassMotion.followTrackButton($moreButton[0], flipAnchor === 'bottom'
-                    ? { reserveTop: D, zeta: .8, wt: 8, captureMs: 550 }
-                    : { reserveBottom: D, zeta: .8, wt: 8, captureMs: 550 });
+                // top 안무: 보정이 없으니 수축분만큼 상한을 앞당긴다(reserveBottom).
+                // 카메라도 접힘 딜레이(150ms)에 맞춰 출발한다 — 그 사이 재클릭으로
+                // 안무가 바뀌었으면(moreFlip 교체·해제) 출발하지 않는다
+                setTimeout(function () {
+                    if ($wrapper.data('moreFlip') !== flipState) return;
+                    window.glassMotion.followTrackButton($moreButton[0], flipAnchor === 'bottom'
+                        ? { reserveTop: D, zeta: .8, wt: 8, captureMs: 550 }
+                        : { reserveBottom: D, zeta: .8, wt: 8, captureMs: 550 });
+                }, 150);
             }
         }
 
@@ -527,10 +533,16 @@ $(function () {
             // 클리퍼)이 d ∈ [0, D] 를 전제해 오버슛이 판 바닥에 빈틈을 만들므로
             // 기존 감속 곡선을 유지한다
             let spring = (!show && anchor === 'bottom') ? collapseSpring() : null;
+            // 접힘은 150ms 늦게 출발한다 (2기 4턴, 사용자 지시. 200ms 는 약간
+            // 느렸다) — 행 페이드(.3s)가 먼저 내용을 지우고, 판·카메라가 뒤따라
+            // 움직인다. 클릭 프레임 비용(레이어 승격·리플로우)과 모션 시작이
+            // 분리되어 접기 낙프레임이 0 이 되는 부수 효과도 있다. fill 'both' 는
+            // 딜레이 동안에도 from 키프레임을 적용해 currentD 가 0 을 읽게 한다
             let timing = {
                 duration: show ? 350 : (spring ? 750 : 1000),
                 easing: show ? 'ease' : (spring ? spring.easing : 'cubic-bezier(.16, 1, .3, 1)'),
-                fill: 'forwards'
+                delay: show ? 0 : 150,
+                fill: 'both'
             };
             let anims = [];
             function tween(el, from, to) { anims.push(el.animate([from, to], timing)); }
@@ -699,12 +711,17 @@ $(function () {
             $hiddenRows.removeClass('d-none more-settled more-hide');
             animateHeight();
         } else {
-            // 행을 지우지 않고 보인 채 그대로 접는다 (2기 1턴, 사용자 지시) —
-            // 20턴의 "지우기(.18s)+접힘 동시 시작"에서 지우기를 뺀 것.
-            // 행 다발의 opacity 전환이 접힘 프레임에 얹히지 않고, 클리핑은
-            // 래퍼 clip-path 가 맡는다. more-settled 는 유지 — 접힘 끝
-            // d-none 과 이후 복귀가 리빌을 재시작시키지 않게 하는 핀
+            // 접힘과 동시에 행 다발을 .3s 로 지운다 (2기 4턴, 사용자 지시 —
+            // 2기 1턴의 "보인 채 접기"를 뒤집어 20턴의 "지우기+접힘 동시 시작"
+            // 계열로 복귀하되, 스태거 없이 한 번에). 클리핑은 래퍼 clip-path 가
+            // 맡는다. more-settled 는 유지 — 접힘 끝 d-none 과 이후 복귀가
+            // 리빌을 재시작시키지 않게 하는 핀.
+            // more-settled(리빌 애니 해제, 기저 opacity 1)를 리플로우로 확정한
+            // 뒤에 more-hide 를 붙여야 전환이 발동한다 — 한 프레임에 같이
+            // 붙이면 애니메이션이 잡고 있던 값에서 0 으로 즉시 건너뛴다
             $hiddenRows.addClass('more-settled');
+            if ($hiddenRows[0]) void $hiddenRows[0].offsetWidth;
+            $hiddenRows.addClass('more-hide');
             animateHeight();
         }
     }

@@ -671,11 +671,11 @@ tbody tr.more-reveal.more-settled,
     animation: none;
     opacity: 1;
     transform: none;
-    transition: opacity .18s ease;
+    transition: opacity .3s ease;
 }
 
-/* 접힘 1박자: 내용을 먼저 지운다 — 행이 보인 채 쓸려 올라가는 인상
-   (18턴 피드백)을 없애고, 빈 다음에 판이 접힌다 (펼침의 거울상) */
+/* 접힘과 동시에 내용을 지운다 — 스태거 없이 행 다발이 한 번에 사라지고
+   (.3s, 접힘 750ms 보다 빠르게), 비워진 판이 스프링으로 접힌다 (2기 4턴) */
 tbody tr.more-reveal.more-settled.more-hide,
 [data-lift].is-lit .collapse tbody tr.more-reveal.more-settled.more-hide {
     opacity: 0;
