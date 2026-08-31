@@ -357,6 +357,19 @@
         if (trackEaseNorm === null) trackEaseNorm = trackEaseRaw(1);
         return trackEaseRaw(t) / trackEaseNorm;
     }
+    // 언더댐핑 스프링 곡선 생성기 — 목표를 살짝 지나쳤다 되돌아온다.
+    // 오버슛 비율 = e^(-pi*zeta/sqrt(1-zeta^2)) (zeta .55 -> ~13%).
+    // 검색 더보기 접기의 버튼 중앙 포착이 쓴다: 강한 가속으로 나가
+    // 감속하며 약간 지나친 뒤 정착 (사용자 요구. index 팔로우는 임계감쇠 유지)
+    function makeUnderdampedEase(zeta, wt) {
+        var zw = zeta * wt;
+        var wd = wt * Math.sqrt(1 - zeta * zeta);
+        function raw(t) {
+            return 1 - Math.exp(-zw * t) * (Math.cos(wd * t) + (zw / wd) * Math.sin(wd * t));
+        }
+        var norm = raw(1);
+        return function (t) { return raw(t) / norm; };
+    }
     var trackHiddenDone = false;
     // 접힘 완료 신호 — track 팔로우의 종료 허가. index 는 hidden.bs.collapse,
     // 검색 더보기는 래퍼 transitionend 가 호출한다 (팔로우는 한 번에 하나만
@@ -368,10 +381,13 @@
     function followTrackButton(btnEl, opts) {
         if (followReduceMotion) return;
         var reserveBottom = (opts && opts.reserveBottom) || 0;
+        var reserveTop = (opts && opts.reserveTop) || 0;
+        var captureEase = (opts && opts.zeta) ? makeUnderdampedEase(opts.zeta, (opts && opts.wt) || TRACK_WT) : springEase;
         var se = document.scrollingElement || document.documentElement;
         document.documentElement.style.overflowAnchor = "none";
         trackHiddenDone = false;
         var e0 = null;
+        var cap0 = null;
         var start = null;
         var abort = function () { cancelFollowScroll(); };
         window.addEventListener("wheel", abort, { passive: true });
@@ -387,9 +403,20 @@
             var t = Math.min((ts - start) / TRACK_CAPTURE_MS, 1);
             var r = btnEl.getBoundingClientRect();
             var desired = r.top + r.height / 2 + window.scrollY - se.clientHeight / 2;
-            desired = Math.max(0, Math.min(se.scrollHeight - se.clientHeight - reserveBottom, desired));
+            // 상한: 예약(reserveBottom)은 첫 프레임의 문서 높이 기준으로 한 번만
+            // 계산한다(cap0) — FLIP 접기는 전환 중 translate 가 문서 스크롤
+            // 범위를 프레임마다 부풀려서, 매 프레임 다시 재면 상한이 출렁이고
+            // 첫 프레임의 이탈량(e0)이 오염된다 (실측: 가짜 ±130px 진동).
+            // 자연 상한(현재 문서)과의 min 은 index 처럼 문서가 전환 중에
+            // 실제로 줄어드는 쪽을 그대로 따라가게 한다. 예약과 하한(reserveTop:
+            // bottom 안무의 스냅 보정 y-D 가 음수가 되지 않게)은 스냅 전까지만
+            var natural = se.scrollHeight - se.clientHeight;
+            if (cap0 === null) cap0 = natural - reserveBottom;
+            var cap = trackHiddenDone ? natural : Math.min(natural, cap0);
+            var rt = trackHiddenDone ? 0 : reserveTop;
+            desired = Math.max(rt, Math.min(cap, desired));
             if (e0 === null) e0 = desired - window.scrollY;
-            window.scrollTo(0, desired - e0 * (1 - springEase(t)));
+            window.scrollTo(0, desired - e0 * (1 - captureEase(t)));
             // hidden 미발화 대비 3s 안전 상한
             if (t >= 1 && (trackHiddenDone || ts - start > 3000)) {
                 cancelFollowScroll();

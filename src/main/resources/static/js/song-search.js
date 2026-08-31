@@ -468,6 +468,22 @@ $(function () {
             let D = cache.expandedH - cache.collapsedH;
             if (D <= 0) return;
             runFlip(D);
+            // 접기 카메라: 버튼이 화면 위·아래에 있으면 뷰포트 중앙으로 포착한다.
+            // 곡선은 언더댐핑 스프링 — 강하게 나가 감속하며 ~13% 지나쳤다
+            // 되돌아와 정착 (관성 요구). 버튼이 이미 중앙 근처면 이탈량이 0 에
+            // 가까워 사실상 움직이지 않는다. 문서는 스냅 때 위쪽에서 D 만큼
+            // 줄므로 스크롤 상한을 D 앞당겨(reserveBottom) 클램프 점프를 막고,
+            // 사용자 입력(휠·터치·키)이 들어오면 팔로우가 스스로 물러난다
+            if (!show && window.glassMotion && window.glassMotion.followTrackButton) {
+                let flipAnchor = ($wrapper.data('moreFlip') || {}).anchor;
+                // bottom 안무: 스냅 보정(-D)과 문서 수축(-D)이 상쇄되므로 상한
+                // 예약이 필요 없고, 대신 스냅 전에 D 아래로 내려가면 보정이
+                // 음수로 잘려 화면이 튀니 하한(reserveTop)만 D 로 받친다.
+                // top 안무: 보정이 없으니 수축분만큼 상한을 앞당긴다(reserveBottom)
+                window.glassMotion.followTrackButton($moreButton[0], flipAnchor === 'bottom'
+                    ? { reserveTop: D, zeta: .55, wt: 9 }
+                    : { reserveBottom: D, zeta: .55, wt: 9 });
+            }
         }
 
         // FLIP 형 접기·펼침 (2기 3턴 실험실). 래퍼 height 전환은 매 프레임
@@ -633,6 +649,7 @@ $(function () {
         // 실제 레이아웃으로 스냅. bottom 안무의 접힘은 문서가 위쪽에서 D 만큼
         // 줄므로 같은 프레임에 scrollY 도 D 만큼 줄여 화면을 그대로 둔다
         function finish(anchor) {
+            if (window.glassMotion && window.glassMotion.settleFollowTrack) window.glassMotion.settleFollowTrack();
             let sec = wrapper.closest('.song-search-section');
             let y = window.scrollY;
             if (!show) $hiddenRows.addClass('d-none');
