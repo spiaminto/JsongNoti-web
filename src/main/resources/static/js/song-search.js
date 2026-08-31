@@ -469,10 +469,11 @@ $(function () {
             if (D <= 0) return;
             runFlip(D);
             // 접기 카메라: 버튼이 화면 위·아래에 있으면 뷰포트 중앙으로 포착한다.
-            // 곡선은 언더댐핑 스프링 — 강하게 나가 감속하며 ~13% 지나쳤다
-            // 되돌아와 정착 (관성 요구). 버튼이 이미 중앙 근처면 이탈량이 0 에
-            // 가까워 사실상 움직이지 않는다. 문서는 스냅 때 위쪽에서 D 만큼
-            // 줄므로 스크롤 상한을 D 앞당겨(reserveBottom) 클램프 점프를 막고,
+            // 2기 4턴: 카메라는 빠르고 절도 있게(550ms, 애플 response 0.3~0.4s
+            // 권고에 근사) 거의 무바운스(ζ=.8, 오버슛 ~1.5%)로 정착한다 —
+            // 화면 전체 평행이동의 오버슛은 바운스로 읽히지 않는다는 실측(22턴).
+            // "통통"은 판의 접힘 스프링(runFlip bottom 안무)이 맡는다.
+            // 버튼이 이미 중앙 근처면 이탈량이 0 에 가까워 사실상 움직이지 않고,
             // 사용자 입력(휠·터치·키)이 들어오면 팔로우가 스스로 물러난다
             if (!show && window.glassMotion && window.glassMotion.followTrackButton) {
                 let flipAnchor = ($wrapper.data('moreFlip') || {}).anchor;
@@ -481,8 +482,8 @@ $(function () {
                 // 음수로 잘려 화면이 튀니 하한(reserveTop)만 D 로 받친다.
                 // top 안무: 보정이 없으니 수축분만큼 상한을 앞당긴다(reserveBottom)
                 window.glassMotion.followTrackButton($moreButton[0], flipAnchor === 'bottom'
-                    ? { reserveTop: D, zeta: .55, wt: 9 }
-                    : { reserveBottom: D, zeta: .55, wt: 9 });
+                    ? { reserveTop: D, zeta: .8, wt: 8, captureMs: 550 }
+                    : { reserveBottom: D, zeta: .8, wt: 8, captureMs: 550 });
             }
         }
 
@@ -515,13 +516,34 @@ $(function () {
             let secH = sec.getBoundingClientRect().height + 2; // 보더 포함(inset -1px)
             let Hc = secH - D;
             let mirror = sec.querySelector(':scope > .glass-mirror-clip > .glass-mirror');
+            // 접힘 스프링 (2기 4턴): bottom 안무는 언더댐핑 스프링(ζ=.84, ωT=9)을
+            // 샘플링한 linear() easing 으로 판이 목표를 ~0.8% 지나쳤다 되돌아와
+            // 살짝 튀며 정착한다 (오버슛 = e^(-πζ/√(1-ζ²)). 사용자 육안 판정으로
+            // ζ=.6(9.5%)·.75(2.9%)·.8(1.5%)을 절반씩 줄여 이 값에 정착했고,
+            // ωT=10/700ms 는 최고 속도 구간 낙프레임 4건이 나 한 단계 낮췄다).
+            // 애플 원칙: 바운스는 카메라(화면 평행이동)가 아니라 물체에 실려야
+            // 읽힌다. translate·clip 은 d 에 선형이라 easing 외삽(진행도 >1)이
+            // 기하와 정확히 일치한다. top 안무는 조각(fill·cap·정적 mirror
+            // 클리퍼)이 d ∈ [0, D] 를 전제해 오버슛이 판 바닥에 빈틈을 만들므로
+            // 기존 감속 곡선을 유지한다
+            let spring = (!show && anchor === 'bottom') ? collapseSpring() : null;
             let timing = {
-                duration: show ? 350 : 1000,
-                easing: show ? 'ease' : 'cubic-bezier(.16, 1, .3, 1)',
+                duration: show ? 350 : (spring ? 750 : 1000),
+                easing: show ? 'ease' : (spring ? spring.easing : 'cubic-bezier(.16, 1, .3, 1)'),
                 fill: 'forwards'
             };
             let anims = [];
             function tween(el, from, to) { anims.push(el.animate([from, to], timing)); }
+            // scaleY 조각(틴트)은 오버슛 구간에서 값이 음수가 되면 뒤집혀 그려질
+            // 수 있어, easing 외삽 대신 같은 스프링을 키프레임으로 풀어 0 에서
+            // 클램프한다. 스프링이 없으면 두 키프레임 tween 과 동일하다
+            function tweenScale(el, fn) {
+                if (!spring) { tween(el, { transform: 'scaleY(' + fn(d0) + ')' }, { transform: 'scaleY(' + fn(dT) + ')' }); return; }
+                anims.push(el.animate(
+                    spring.points.map(function (p) { return { transform: 'scaleY(' + Math.max(0, fn(d0 + (dT - d0) * p)) + ')' }; }),
+                    { duration: timing.duration, easing: 'linear', fill: 'forwards' }
+                ));
+            }
             // clip-path 는 컴포지터에 맡기지 않는다 — 이 환경에서 컴포지터가 돌리는
             // clip-path 애니메이션은 라이브 프레임에 반영되지 않아 잘려야 할 행이
             // 다음 그룹 위로 겹쳐 보였다 (Performance 트레이스 스크린샷으로 확인;
@@ -580,7 +602,7 @@ $(function () {
                 // 그림자는 바닥을 축으로 세로 축소
                 tween(wrapper, { transform: 'translateY(' + d0 + 'px)' }, { transform: 'translateY(' + dT + 'px)' });
                 tweenMain(clipEl, { clipPath: clipBottom(d0, wrapperRadius) }, { clipPath: clipBottom(dT, wrapperRadius) });
-                tintPieces(true).forEach(function (c) { tween(c.el, { transform: 'scaleY(' + (c.h - d0) / c.h + ')' }, { transform: 'scaleY(' + (c.h - dT) / c.h + ')' }); });
+                tintPieces(true).forEach(function (c) { tweenScale(c.el, function (d) { return (c.h - d) / c.h; }); });
                 flipSiblings(wrapper, true).forEach(function (m) {
                     tween(m, { transform: 'translateY(' + d0 + 'px)' }, { transform: 'translateY(' + dT + 'px)' });
                 });
@@ -685,6 +707,25 @@ $(function () {
             $hiddenRows.addClass('more-settled');
             animateHeight();
         }
+    }
+
+    // 접힘 bottom 안무의 언더댐핑 스프링 곡선 (runFlip 참조) — 정규화 스텝 응답을
+    // 61점으로 샘플링해 linear() easing 문자열과 키프레임용 배열을 캐시한다.
+    // D 와 무관한 순수 곡선이라 한 번만 계산하면 된다
+    let collapseSpringCache = null;
+    function collapseSpring() {
+        if (collapseSpringCache) return collapseSpringCache;
+        let zeta = .84, wt = 9, n = 60;
+        let zw = zeta * wt, wd = wt * Math.sqrt(1 - zeta * zeta);
+        let raw = function (t) { return 1 - Math.exp(-zw * t) * (Math.cos(wd * t) + (zw / wd) * Math.sin(wd * t)); };
+        let norm = raw(1);
+        let points = [];
+        for (let i = 0; i <= n; i++) points.push(raw(i / n) / norm);
+        collapseSpringCache = {
+            points: points,
+            easing: 'linear(' + points.map(function (v) { return v.toFixed(4); }).join(', ') + ')'
+        };
+        return collapseSpringCache;
     }
 
     function createSongTableWrapper(songs) {

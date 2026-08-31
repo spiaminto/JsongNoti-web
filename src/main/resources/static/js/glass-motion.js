@@ -358,9 +358,10 @@
         return trackEaseRaw(t) / trackEaseNorm;
     }
     // 언더댐핑 스프링 곡선 생성기 — 목표를 살짝 지나쳤다 되돌아온다.
-    // 오버슛 비율 = e^(-pi*zeta/sqrt(1-zeta^2)) (zeta .55 -> ~13%).
-    // 검색 더보기 접기의 버튼 중앙 포착이 쓴다: 강한 가속으로 나가
-    // 감속하며 약간 지나친 뒤 정착 (사용자 요구. index 팔로우는 임계감쇠 유지)
+    // 오버슛 비율 = e^(-pi*zeta/sqrt(1-zeta^2)) (zeta .8 -> ~1.5%).
+    // 검색 더보기 접기의 버튼 중앙 포착이 쓴다 (2기 4턴: 카메라는 거의
+    // 무바운스로 절도만 맡고, "통통"은 판의 접힘 스프링이 맡는다.
+    // index 팔로우는 임계감쇠 springEase 유지)
     function makeUnderdampedEase(zeta, wt) {
         var zw = zeta * wt;
         var wd = wt * Math.sqrt(1 - zeta * zeta);
@@ -383,6 +384,9 @@
         var reserveBottom = (opts && opts.reserveBottom) || 0;
         var reserveTop = (opts && opts.reserveTop) || 0;
         var captureEase = (opts && opts.zeta) ? makeUnderdampedEase(opts.zeta, (opts && opts.wt) || TRACK_WT) : springEase;
+        // opts.captureMs: 포착 시간 재정의 — 검색 더보기는 550ms(빠른 절도),
+        // index 는 기본 900ms(접힘 1s 와 한 호흡) 유지
+        var captureMs = (opts && opts.captureMs) || TRACK_CAPTURE_MS;
         var se = document.scrollingElement || document.documentElement;
         document.documentElement.style.overflowAnchor = "none";
         trackHiddenDone = false;
@@ -400,7 +404,7 @@
         };
         function step(ts) {
             if (start === null) start = ts;
-            var t = Math.min((ts - start) / TRACK_CAPTURE_MS, 1);
+            var t = Math.min((ts - start) / captureMs, 1);
             var r = btnEl.getBoundingClientRect();
             var desired = r.top + r.height / 2 + window.scrollY - se.clientHeight / 2;
             // 상한: 예약(reserveBottom)은 첫 프레임의 문서 높이 기준으로 한 번만
