@@ -538,6 +538,8 @@ $(function () {
             // 움직인다. 클릭 프레임 비용(레이어 승격·리플로우)과 모션 시작이
             // 분리되어 접기 낙프레임이 0 이 되는 부수 효과도 있다. fill 'both' 는
             // 딜레이 동안에도 from 키프레임을 적용해 currentD 가 0 을 읽게 한다
+            // 펼침에는 딜레이를 주지 않는다 — 실측(2기 4턴)에서 펼침 낙프레임은
+            // 클릭 레이아웃 확장과 종료 mirror 재구축이 몸통이라 효과가 없었다
             let timing = {
                 duration: show ? 350 : (spring ? 750 : 1000),
                 easing: show ? 'ease' : (spring ? spring.easing : 'cubic-bezier(.16, 1, .3, 1)'),
@@ -703,6 +705,8 @@ $(function () {
             }
             document.documentElement.style.overflowAnchor = '';
             setTimeout(unprimeFlip, 200);
+            // mirror 재구축은 정리와 같은 프레임에서 동기로 — 두 프레임 뒤로
+            // 미루는 시도는 리빌 스태거와 겹치며 23ms 가 35~56ms 로 악화(2기 4턴 기각)
             if (window.glassMotion && window.glassMotion.rebuildGlassMirrors) window.glassMotion.rebuildGlassMirrors();
         }
 
