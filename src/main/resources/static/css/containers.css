@@ -100,6 +100,47 @@ section {
         inset 0 -2px 7px -2px rgb(255 255 255 / .7);
 }
 
+/* ---------- 상단바 clear 변형: 맑은 유리 (ui-overhaul-2 6턴 채택) ----------
+   demo2 ①층(일반 CSS 층) 이식 — 얇은 틴트 + 낮은 blur + conic 스펙큘러
+   테두리 + 상하 림 글린트. 유리 물성은 가장자리 신호가 만들므로 몸체는
+   얇게 유지한다. 우선 검색 페이지에만 부착(search.html).
+   blur 는 상태 간 고정(--g-blur-clear) — backdrop 반경 전환 비용을 피하고,
+   패널 22px 대비 원가도 낮다 */
+.navbar.navbar-clear {
+    background: linear-gradient(135deg,
+        rgb(var(--g-white) / var(--g-clear-hi)),
+        rgb(var(--g-white) / var(--g-clear-lo)));
+    -webkit-backdrop-filter: blur(var(--g-blur-clear)) saturate(var(--g-sat));
+    backdrop-filter: blur(var(--g-blur-clear)) saturate(var(--g-sat));
+    box-shadow:
+        0 12px 32px rgb(30 42 56 / .22),
+        inset 0 1px 1px rgb(var(--g-white) / .65),
+        inset 0 -1px 1px rgb(var(--g-white) / .18);
+}
+
+/* 스펙큘러 테두리: conic 광원(210deg)이 알약 둘레를 도는 1.5px 링.
+   mask-composite 로 padding 두께만 남긴다 — 균일 보더와 달리 빛 받는
+   모서리는 밝고 반대편은 어두워 유리 가장자리로 읽힌다 */
+.navbar.navbar-clear::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: conic-gradient(from 210deg,
+        rgb(var(--g-white) / .9), rgb(var(--g-white) / .15) 22%,
+        rgb(var(--g-white) / .5) 48%, rgb(var(--g-white) / .12) 72%,
+        rgb(var(--g-white) / .9));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+/* scrolled 에서도 맑은 재질을 그대로 유지한다 (사용자 결정) —
+   .navbar.scrolled(0-2-0)보다 뒤에 선언되어 같은 특정도로 이기므로
+   별도 복귀 규칙이 없다. 아래를 지나는 텍스트는 .scroll-veil 이 받는다 */
+
 /* 상단바 오른쪽 아이콘 메뉴 묶음 */
 .navbar .button-wrapper {
     display: flex;

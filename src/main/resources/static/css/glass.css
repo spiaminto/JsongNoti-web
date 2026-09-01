@@ -76,6 +76,13 @@
     --g-blur-btn: 16px;
     --g-blur-input: 10px;
 
+    /* clear 변형 (ui-overhaul-2 6턴 채택: 맑은 유리 — 우선 검색 페이지 상단바 전용).
+       젖빛과 달리 배경을 비추는 재질이라 몸체는 얇은 틴트 그라디언트,
+       blur 는 배경 형체가 남는 낮은 값을 쓴다 */
+    --g-blur-clear: 4px;      /* 맑은 유리 blur — 상태 간 고정(반경 전환 비용 회피) */
+    --g-clear-hi: .20;        /* 틴트 그라디언트 시작(좌상) 알파 */
+    --g-clear-lo: .07;        /* 틴트 그라디언트 끝(우하) 알파 */
+
     /* 가장자리 (유리다움 책임) — 패널·버튼 림 보더는 에지 스택
        (헤어라인 + 상하 inset)으로 대체되어, --g-edge 는 입력창 보더 전용 */
     --g-edge-a: .72;          /* 림 보더 알파 (입력창) */
@@ -958,6 +965,14 @@ tbody tr.more-reveal.more-settled.more-hide,
     nav.navbar, nav.navbar.scrolled {
         background: rgb(var(--g-white) / .95);
     }
+    /* clear 변형(0-2-0, 뒤 로드)은 위 선언(0-1-1)을 이기므로 한 단계 더 올려
+       재선언한다 — 얇은 틴트·낮은 blur 모두 불투명 쪽으로 고정 */
+    nav.navbar.navbar-clear, nav.navbar.navbar-clear.scrolled {
+        background: rgb(var(--g-white) / .95);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+    nav.navbar.navbar-clear::after { display: none; }
     .sheen::after { display: none; }
     .modal-backdrop { -webkit-backdrop-filter: none; backdrop-filter: none; }
     .scroll-veil { display: none; }
@@ -982,6 +997,12 @@ tbody tr.more-reveal.more-settled.more-hide,
     .glass-btn, .glass-btn:hover, .glass-btn:active {
         border-color: var(--g-edge);
     }
+    /* clear 변형은 몸체가 얇은 틴트라 대비가 부족하다 — 거의 불투명으로
+       올리고 장식 테두리(conic ::after)는 제거해 림 보더만 남긴다 */
+    nav.navbar.navbar-clear, nav.navbar.navbar-clear.scrolled {
+        background: rgb(var(--g-white) / .9);
+    }
+    nav.navbar.navbar-clear::after { display: none; }
     .bokeh { display: none; }
     .ray { display: none; }
 }
