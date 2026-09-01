@@ -229,7 +229,15 @@ $(function () {
 
                 $moreButton.on('pointerenter focus touchstart', function () {
                     primeFlip($tableWrapper, $(this).attr('aria-expanded') === 'true');
+                }).on('pointerdown touchstart', function () {
+                    // 펼침 사전 스테이징 (2기 5턴) — 누르는 동안(화면 정지)
+                    // 레이아웃 확장을 선지불해 클릭 프레임에는 play() 만 남긴다
+                    if ($(this).attr('aria-expanded') !== 'true') {
+                        toggleMoreRows($tableWrapper, $hiddenRows, true, $(this), true);
+                    }
                 }).on('pointerleave blur', function () {
+                    let staged = $tableWrapper.data('morePrestaged');
+                    if (staged) { $tableWrapper.removeData('morePrestaged'); staged.abortStage(); }
                     if (!$tableWrapper.data('moreFlip')) unprimeFlip();
                 });
                 $moreButton.on('click', function () {
@@ -425,10 +433,10 @@ $(function () {
     // 선계산 활강(followScroll)은 높이 전환(CSS)과 곡선이 어긋나 버튼이
     // 화면에서 프레임마다 요동했다 (2기 1턴 계측: 드득거림의 정체).
     // 전환 중 재클릭하면 진행 중인 상태에서 이어서 반전한다
-    function toggleMoreRows($wrapper, $hiddenRows, show, $moreButton) {
+    function toggleMoreRows($wrapper, $hiddenRows, show, $moreButton, stageOnly) {
         let wrapper = $wrapper[0];
         if (moreReduceMotion) {
-            $hiddenRows.toggleClass('d-none', !show);
+            if (!stageOnly) $hiddenRows.toggleClass('d-none', !show);
             return;
         }
         if (window.glassMotion) window.glassMotion.cancelFollowScroll();
@@ -539,15 +547,30 @@ $(function () {
             // 분리되어 접기 낙프레임이 0 이 되는 부수 효과도 있다. fill 'both' 는
             // 딜레이 동안에도 from 키프레임을 적용해 currentD 가 0 을 읽게 한다
             // 펼침에는 딜레이를 주지 않는다 — 실측(2기 4턴)에서 펼침 낙프레임은
-            // 클릭 레이아웃 확장과 종료 mirror 재구축이 몸통이라 효과가 없었다
+            // 클릭 레이아웃 확장과 종료 정리가 몸통이라 효과가 없었다.
+            // 펼침 tween 은 시각 구간(350ms) 뒤에 1.8s 홀드 키프레임을 붙여
+            // 애니메이션을 계속 살려 둔다 (2기 5턴) — 자연 종료 순간의 컴포지터
+            // 레이어 해제·재페인트와 finish 의 전면 스타일 재계산(~24ms, 802요소)이
+            // 리빌 스태거와 겹쳐 낙프레임이 되므로, onfinish 자체를 화면이 정지한
+            // 시점(2.15s)으로 옮긴다. 홀드 구간 내내 값은 최종값으로 고정된다
+            const SHOW_MS = 350, SHOW_HOLD_MS = 1800;
             let timing = {
-                duration: show ? 350 : (spring ? 750 : 1000),
-                easing: show ? 'ease' : (spring ? spring.easing : 'cubic-bezier(.16, 1, .3, 1)'),
+                duration: show ? SHOW_MS + SHOW_HOLD_MS : (spring ? 750 : 1000),
+                easing: show ? 'linear' : (spring ? spring.easing : 'cubic-bezier(.16, 1, .3, 1)'),
                 delay: show ? 0 : 150,
                 fill: 'both'
             };
+            // 펼침용 키프레임: [from —ease→ to(350ms 지점) —홀드→ to(끝)]
+            function frames(from, to) {
+                if (!show) return [from, to];
+                return [
+                    Object.assign({ easing: 'ease' }, from),
+                    Object.assign({ offset: SHOW_MS / (SHOW_MS + SHOW_HOLD_MS) }, to),
+                    to
+                ];
+            }
             let anims = [];
-            function tween(el, from, to) { anims.push(el.animate([from, to], timing)); }
+            function tween(el, from, to) { anims.push(el.animate(frames(from, to), timing)); }
             // scaleY 조각(틴트)은 오버슛 구간에서 값이 음수가 되면 뒤집혀 그려질
             // 수 있어, easing 외삽 대신 같은 스프링을 키프레임으로 풀어 0 에서
             // 클램프한다. 스프링이 없으면 두 키프레임 tween 과 동일하다
@@ -566,7 +589,7 @@ $(function () {
             // 적용한다. 사각 clip 은 페인트 속성 갱신이라 재래스터가 없다
             let mainSync = [];
             function tweenMain(el, from, to) {
-                let a = el.animate([from, to], timing);
+                let a = el.animate(frames(from, to), timing);
                 a.pause();
                 anims.push(a);
                 mainSync.push(a);
@@ -673,9 +696,27 @@ $(function () {
                     cancelAnimationFrame(syncRaf);
                     anims.forEach(function (a) { a.cancel(); });
                     $wrapper.removeData('moreFlip');
+                },
+                // 사전 스테이징용 (2기 5턴): 전부 멈췄다가, 클릭에서 mainSync
+                // (메인 스레드 구동 clip)를 제외하고 재생한다
+                pauseAll: function () {
+                    anims.forEach(function (a) { a.pause(); });
+                },
+                playAll: function () {
+                    anims.forEach(function (a) { if (mainSync.indexOf(a) < 0) a.play(); });
+                },
+                // 누름이 클릭으로 이어지지 않았을 때(pointerleave·blur) 스테이징을
+                // 되돌린다 — 화면이 정지한 프레임이라 비용이 드러나지 않는다
+                abortStage: function () {
+                    state.stop();
+                    $hiddenRows.addClass('d-none');
+                    finish(anchor);
                 }
             };
             $wrapper.data('moreFlip', state);
+            // 펼침의 onfinish 는 홀드 키프레임 덕에 화면이 정지한 2.15s 에 온다 —
+            // 정리 비용이 조용한 프레임에서 치러진다. 홀드 중 재클릭 반전은
+            // state.stop 경로가 그대로 처리한다 (currentD 는 최종값 0 을 읽는다)
             lead.onfinish = function () {
                 state.stop();
                 finish(anchor);
@@ -711,6 +752,32 @@ $(function () {
         }
 
         if (show) {
+            // 사전 스테이징 (2기 5턴): pointerdown 에 d-none 해제(레이아웃 확장)와
+            // FLIP 시작 상태(클립 D·형제 -D, 일시정지)를 만들어 두면, 클릭
+            // 프레임은 play() 와 리빌 시작만 남는다 — 클릭 순간의 Layout 22ms
+            // (555객체) + 스타일 10ms + PrePaint 18ms 가 누름 동안으로 옮겨진다.
+            // more-settled 핀이 스테이징 중 리빌 재생을 막고, 클릭에서 풀린다
+            let pre = $wrapper.data('morePrestaged');
+            if (pre) {
+                $wrapper.removeData('morePrestaged');
+                $hiddenRows.removeClass('more-settled more-hide');
+                pre.playAll();
+                return;
+            }
+            if (stageOnly) {
+                if ($wrapper.data('moreFlip')) return; // 전환 중이면 스테이징 생략
+                $hiddenRows.addClass('more-settled').removeClass('d-none');
+                animateHeight();
+                let st = $wrapper.data('moreFlip');
+                if (st) {
+                    st.pauseAll();
+                    $wrapper.data('morePrestaged', st);
+                } else {
+                    // runFlip 미작동(D<=0, animate 미지원 등) — 스테이징 원복
+                    $hiddenRows.addClass('d-none');
+                }
+                return;
+            }
             // d-none 해제가 리빌 애니메이션을 처음부터 재생시킨다
             $hiddenRows.removeClass('d-none more-settled more-hide');
             animateHeight();
