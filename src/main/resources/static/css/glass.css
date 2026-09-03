@@ -912,13 +912,18 @@ tbody tr.more-reveal.more-settled.more-hide,
     /* .85 → .6 → .4: 호버 빛이 강하고 색 배경(검색 사진) 위에서 촌스럽게
        도드라진다는 20턴 피드백으로 두 차례 감쇠. 중간 스톱들: 직선 감쇠의
        끊기는 테두리 대신 바깥으로 갈수록 완만히 잦아드는 곡선 */
+    /* 알파 .4/.18/.07 → .2/.09/.035: 아래 soft-light 를 걷어내며 절반으로
+       낮춰 글자까지 밝아지는 정도를 보정 */
     background: radial-gradient(320px 240px at var(--mx, 50%) var(--my, -20%),
-        rgb(255 255 255 / .4),
-        rgb(255 255 255 / .18) 40%,
-        rgb(255 255 255 / .07) 68%,
+        rgb(255 255 255 / .2),
+        rgb(255 255 255 / .09) 40%,
+        rgb(255 255 255 / .035) 68%,
         transparent 92%);
-    /* soft-light: 유리 면만 밝히고 글자 대비는 유지한다 */
-    mix-blend-mode: soft-light;
+    /* mix-blend-mode: soft-light 제거 (ui-overhaul-2 7턴): 판 전체 크기의
+       블렌드 의사요소는 판을 격리 그룹으로 만들어, 첫 스크롤 커밋의 GPU
+       래스터를 263ms 까지 늘렸다(트레이스 실측, sheen 제거 시 55ms).
+       포인터 이동마다 --mx/--my 갱신으로 다시 그려지는 요소라 블렌드
+       없이 일반 합성으로 둔다 */
     opacity: 0;
     transition: opacity .5s;
     pointer-events: none;
