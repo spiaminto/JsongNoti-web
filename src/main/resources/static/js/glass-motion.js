@@ -82,6 +82,27 @@
         onScroll();
     }
 
+    // scroll 중 hover 억제: 휠 노치마다(스크롤 제스처가 끝날 때마다) Chrome 이
+    // 포인터 아래 행의 hover 를 갱신해 행 배경이 켜졌다 꺼지고, 그때마다 결과
+    // 카드가 재페인트되어 GPU 래스터를 기다린다 (ui-overhaul-2 7턴 실측: 첫
+    // 스크롤 최장 프레임 67~100ms, hover 규칙을 끄면 17ms). 풀어 주는 기준은
+    // scrollend 가 아니라 250ms 무입력 — 천천히 노치 단위로 굴릴 때 노치 사이에도
+    // 억제가 유지돼야 하고, 순간 점프 스크롤(프로그램 scrollTo)은 프레임마다
+    // scroll·scrollend 가 짝으로 와서 클래스가 깜빡이기 때문이다.
+    // CSS 는 song-table.css 의 body.is-scrolling 규칙이 맡는다
+    var scrollIdleTimer = null;
+    var clearScrolling = function () {
+        clearTimeout(scrollIdleTimer);
+        scrollIdleTimer = null;
+        document.body.classList.remove("is-scrolling");
+    };
+    var markScrolling = function () {
+        if (scrollIdleTimer === null) document.body.classList.add("is-scrolling");
+        clearTimeout(scrollIdleTimer);
+        scrollIdleTimer = setTimeout(clearScrolling, 250);
+    };
+    window.addEventListener("scroll", markScrolling, { passive: true });
+
     // interaction glow: 누른 접점에서 국소 발광 — 좌표만 심고 발광은 CSS 가 맡는다
     var glowReduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     document.addEventListener("pointerdown", function (e) {

@@ -231,6 +231,17 @@ a.song-title-text:hover {
     background: rgb(255 255 255 / .5);
 }
 
+/* 스크롤 중에는 행 hover 를 그리지 않는다 — 휠 노치마다(제스처가 끝날 때마다)
+   Chrome 이 포인터 아래 행의 hover 를 갱신해 카드가 재페인트되고 GPU 래스터를
+   기다린다. hover 상태와 클릭은 그대로 두고 그리는 값만 기본값으로 되돌려
+   페인트가 생기지 않게 한다 (glass-motion.js 가 body.is-scrolling 을 토글).
+   pointer-events: none 방식은 스크롤 직후의 행 클릭을 삼켜서 쓰지 않는다 */
+body.is-scrolling .table-hover > tbody > tr:hover > td {
+    --bs-table-accent-bg: transparent;
+    color: inherit;
+    background: var(--bs-table-bg);
+}
+
 /* ---------- 표 제목 (h2) + 추가일 chip ----------
    C 플랫(19턴): 판과 헤더 띠가 사라진 자리에서 제목 밑선이 "표의 시작"을
    맡는다. 밑선 색은 기본 중립 잉크, 브랜드 표는 :has() 로 브랜드 잉크
