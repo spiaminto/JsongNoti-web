@@ -1,44 +1,16 @@
 
 $(function () {
 
-    // 로드시 다크모드 확인 (html theme 적용은 인라인으로 대체 -> FOUC 문제)
-    let isDarkMode = localStorage.getItem('darkMode');
-    if (isDarkMode === 'true') {
-        $('.dark-mode-element').show();
-    }
-
-    // 다크모드 설정
+    // dark 토글 (ui-overhaul-3 D22): 초기값은 theme-init.js(head)가 이미 적용했다.
+    // 저장값은 'true'(dark) / ''(cream 으로 끔) — 저장값이 없을 때만 시스템 설정을 따른다.
+    // 프로스트(frost-baking.js)처럼 테마 색을 미리 구워 두는 쪽은 colorthemechange 를 듣고 다시 굽는다
     $('.dark-mode-button').on('click', function (event) {
         event.preventDefault();
-        let isDarkMode = $('html').attr('data-bs-theme') === 'dark';
-        if (!isDarkMode) {
-            transition([$('.inner-element'), $('.outer-element')]);
-            $('html').attr('data-bs-theme', 'dark');
-            $('.dark-mode-element').show();
-            localStorage.setItem('darkMode', 'true');
-        } else {
-            transition([$('.inner-element'), $('.outer-element')]);
-            $('html').attr('data-bs-theme', '');
-            $('.dark-mode-element').hide();
-            localStorage.setItem('darkMode', '');
-        }
+        let turnDark = $('html').attr('data-theme') !== 'dark';
+        window.applyColorTheme(turnDark);
+        localStorage.setItem('darkMode', turnDark ? 'true' : '');
+        document.dispatchEvent(new CustomEvent('colorthemechange', {detail: {dark: turnDark}}));
     });
-
-    // 다크모드 트랜지션 효과
-    function transition(elementArray) {
-        $.each(elementArray, function (index, element) {
-            $(element).css({
-                'transitionDuration': '0.5s',
-                'transitionProperty': 'background-color'
-            });
-            setTimeout(() => {
-                $(element).css({
-                    'transitionDuration': '',
-                    'transitionProperty': ''
-                });
-            }, 500);
-        });
-    }
 
     // 화살표 컬랩스 버튼 이벤트리스너
     $('.arrow-collapse-button').on('click', function () {

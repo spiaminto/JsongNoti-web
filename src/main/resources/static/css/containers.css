@@ -17,10 +17,6 @@ body {
     min-width: 360px;
 }
 
-/* .outer-element / .inner-element 는 과거 배경 2단 구성의 흔적으로,
-   지금은 JS(다크모드 트랜지션)가 참조하는 marker 로만 남긴다.
-   표면 표현은 glass.css 의 .glass 를 쓴다. */
-
 /* 콘텐츠 폭: 시안과 동일하게 1140px 에 맞춘다 */
 #container {
     max-width: 1172px; /* 1140 + 좌우 padding 16px */
@@ -46,8 +42,12 @@ section {
     }
 }
 
-/* ---------- 상단바: 떠 있는 유리 알약 ----------
-   시안의 .top 을 기존 .navbar markup 에 입힌 것.
+/* ---------- 내비바: 떠 있는 맑은 유리 알약 ----------
+   사이트에서 유일하게 실시간 유리를 쓰는 크롬 (ADR 0001, D8). 사진 배경
+   위라 맑은 유리(P19): 얇은 틴트 그라디언트 + 낮은 blur(4px, 상태 간 고정)
+   + conic 스펙큘러 링 + 상하 림 글린트. 유리 물성은 가장자리 신호가
+   만들므로 몸체는 얇게 유지한다. 굴절(glass-refraction.js)은 이 backdrop-filter
+   위에 url(#filter) 를 인라인으로 덧붙인다 (ADR 0003).
    로드 시퀀스(.veil)와 함께 쓰므로 transition 을 합쳐 선언한다 —
    나중에 선언한 transition shorthand 가 .veil 의 것을 통째로 덮어쓰는
    결함을 피하기 위함. scrolled 전환(bg·shadow)만 딜레이 0 */
@@ -65,81 +65,91 @@ section {
     flex-wrap: nowrap;
     /* 좌우 padding 은 알약의 둥근 곡선이 끝나는 평평한 지점부터 내용이 놓이도록 */
     padding: .3rem 1.5rem .3rem 1.75rem;
-    border-radius: var(--g-radius-ctl);
-    /* 재질은 노브를 따른다 (glass.css) — 알약이라 에지 스택은 버튼판 */
-    background: rgb(var(--g-white) / var(--g-alpha));
-    -webkit-backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
-    backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
-    border: 1px solid transparent;
+    border-radius: 999px;
+    border: 0;
+    background: linear-gradient(135deg, rgb(255 255 255 / .20), rgb(255 255 255 / .07));
+    -webkit-backdrop-filter: blur(4px) saturate(170%);
+    backdrop-filter: blur(4px) saturate(170%);
     box-shadow:
-        var(--g-drop),
-        0 1px 0 rgb(30 42 56 / .13),
-        1px 0 0 rgb(30 42 56 / .06),
-        -1px 0 0 rgb(30 42 56 / .06),
-        inset 0 1px 0 var(--g-inset-hi),
-        inset 0 -2px 7px -2px rgb(255 255 255 / .7);
+        0 12px 32px rgb(30 42 56 / .22),
+        inset 0 1px 1px rgb(255 255 255 / .65),
+        inset 0 -1px 1px rgb(255 255 255 / .18);
+    /* 스크롤 방향 반응의 축소는 위쪽 가장자리를 축으로 */
+    transform-origin: 50% 0;
     transition:
         opacity 1s var(--ease-float) var(--vd, 0s),
         transform 1s var(--ease-float) var(--vd, 0s),
         filter 1s var(--ease-float) var(--vd, 0s),
-        background .4s,
-        box-shadow .4s;
+        background .3s,
+        box-shadow .3s;
 }
 
-/* scroll edge: 콘텐츠가 상단바 아래로 지나갈 때만 재질이 두꺼워진다
-   (.scrolled 는 glass-motion.js 가 scrollY > 8 에서 토글).
-   몸체·드롭만 값 이동하고 에지 스택은 유지한다 */
-.navbar.scrolled {
-    background: rgb(var(--g-white) / .68);
-    box-shadow:
-        0 14px 34px rgb(30 42 56 / .16),
-        0 1px 0 rgb(30 42 56 / .13),
-        1px 0 0 rgb(30 42 56 / .06),
-        -1px 0 0 rgb(30 42 56 / .06),
-        inset 0 1px 0 var(--g-inset-hi),
-        inset 0 -2px 7px -2px rgb(255 255 255 / .7);
-}
-
-/* ---------- 상단바 clear 변형: 맑은 유리 (ui-overhaul-2 6턴 채택) ----------
-   demo2 ①층(일반 CSS 층) 이식 — 얇은 틴트 + 낮은 blur + conic 스펙큘러
-   테두리 + 상하 림 글린트. 유리 물성은 가장자리 신호가 만들므로 몸체는
-   얇게 유지한다. 우선 검색 페이지에만 부착(search.html).
-   blur 는 상태 간 고정(--g-blur-clear) — backdrop 반경 전환 비용을 피하고,
-   패널 22px 대비 원가도 낮다 */
-.navbar.navbar-clear {
-    background: linear-gradient(135deg,
-        rgb(var(--g-white) / var(--g-clear-hi)),
-        rgb(var(--g-white) / var(--g-clear-lo)));
-    -webkit-backdrop-filter: blur(var(--g-blur-clear)) saturate(var(--g-sat));
-    backdrop-filter: blur(var(--g-blur-clear)) saturate(var(--g-sat));
-    box-shadow:
-        0 12px 32px rgb(30 42 56 / .22),
-        inset 0 1px 1px rgb(var(--g-white) / .65),
-        inset 0 -1px 1px rgb(var(--g-white) / .18);
-}
-
-/* 스펙큘러 테두리: conic 광원(210deg)이 알약 둘레를 도는 1.5px 링.
+/* 스펙큘러 링: conic 광원(210deg)이 알약 둘레를 도는 1.5px 링.
    mask-composite 로 padding 두께만 남긴다 — 균일 보더와 달리 빛 받는
    모서리는 밝고 반대편은 어두워 유리 가장자리로 읽힌다 */
-.navbar.navbar-clear::after {
+.navbar::after {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
     padding: 1.5px;
     background: conic-gradient(from 210deg,
-        rgb(var(--g-white) / .9), rgb(var(--g-white) / .15) 22%,
-        rgb(var(--g-white) / .5) 48%, rgb(var(--g-white) / .12) 72%,
-        rgb(var(--g-white) / .9));
+        rgb(255 255 255 / .9), rgb(255 255 255 / .15) 22%,
+        rgb(255 255 255 / .5) 48%, rgb(255 255 255 / .12) 72%,
+        rgb(255 255 255 / .9));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: destination-out;
     mask-composite: exclude;
     pointer-events: none;
 }
 
-/* scrolled 에서도 맑은 재질을 그대로 유지한다 (사용자 결정) —
-   .navbar.scrolled(0-2-0)보다 뒤에 선언되어 같은 특정도로 이기므로
-   별도 복귀 규칙이 없다. 아래를 지나는 텍스트는 .scroll-veil 이 받는다 */
+/* scroll edge: 콘텐츠가 내비바 아래로 지나갈 때 틴트만 조금 진해진다
+   (.scrolled 는 glass-motion.js 가 scrollY > 8 에서 토글). blur 는 그대로 —
+   아래를 지나는 글자는 .scroll-veil 이 받는다 */
+.navbar.scrolled {
+    background: linear-gradient(135deg, rgb(255 255 255 / .34), rgb(255 255 255 / .16));
+}
+
+/* 스크롤 방향 반응 (P12, D10): 내려가면 살짝 오므라들고 올라오면 펴진다.
+   방향은 glass-motion.js 가 html[data-scroll-direction] 에 쓴다. 첫 스크롤
+   뒤부터 transform 전환을 스프링으로 바꾼다 — 로드 시퀀스(.veil 의 1s
+   떠오름)와 같은 속성을 쓰므로, 속성이 붙기 전까지는 떠오름 곡선을 지킨다 */
+html[data-scroll-direction] .navbar {
+    transition: transform .4s var(--spring-spatial), background .3s, box-shadow .3s;
+}
+
+html[data-scroll-direction="down"] .navbar {
+    transform: scale(.94) translateY(-4px);
+}
+
+.navbar .icon-link:hover {
+    background: rgb(255 255 255 / .55);
+}
+
+/* dark: 틴트를 더 얇게, 글자는 밝게, 링은 약하게 */
+html[data-theme="dark"] .navbar {
+    background: linear-gradient(135deg, rgb(255 255 255 / .14), rgb(255 255 255 / .04));
+}
+
+html[data-theme="dark"] .navbar.scrolled {
+    background: linear-gradient(135deg, rgb(255 255 255 / .22), rgb(255 255 255 / .09));
+}
+
+html[data-theme="dark"] .navbar::after {
+    background: conic-gradient(from 210deg,
+        rgb(255 255 255 / .6), rgb(255 255 255 / .08) 22%,
+        rgb(255 255 255 / .3) 48%, rgb(255 255 255 / .06) 72%,
+        rgb(255 255 255 / .6));
+}
+
+html[data-theme="dark"] .navbar .navbar-brand,
+html[data-theme="dark"] .navbar .icon-link {
+    color: #f2f5f8;
+}
+
+html[data-theme="dark"] .navbar .icon-link:hover {
+    background: rgb(255 255 255 / .12);
+}
 
 /* 상단바 오른쪽 아이콘 메뉴 묶음 */
 .navbar .button-wrapper {

@@ -82,3 +82,11 @@ commit 9
     스크롤 중에는 검색 결과 행 hover 를 그리지 않도록 억제 (body.is-scrolling 토글, 250ms 무입력 시 해제)
     첫 스크롤 최장 프레임 67~100ms 에서 17ms 로 단축 (ui-overhaul-2 7턴 실측)
     hover 상태와 클릭은 유지하고 그리는 값만 기본값으로 되돌려 스크롤 직후 클릭이 삼켜지지 않게 함
+
+커밋 260911
+    UI 오버홀 3기 ① 토큰·구조 반전 (ADR 0001): 실시간 유리는 크롬(내비바·사이드 버튼·베일)에만, 콘텐츠 판은 불투명(.content-panel) — .glass·거울(mirror)·광택(sheen)·FLIP 조각·버튼 발광(glow) 제거
+    dark 모드 복원 (D22): html[data-theme] 색 토큰, 빛 웅덩이·사진 눌림·내비바·판 dark 값, 초기값은 저장값 → 시스템 설정 (theme-init.js), 푸터 토글 버튼 복원
+    내비바를 맑은 유리로 통일(navbar-clear 승격) + 스크롤 방향 반응 (P12, html[data-scroll-direction]) + 스프링 토큰(--spring-spatial/--ease-effects)
+    사진 배경을 애창곡 페이지에도 적용 (D15), 사진 마스크 72%·페이드 층 마스크로 검색 페이지 하단 띠 문제를 공통 규칙으로 해결
+    검색 더보기 펼침·접힘을 순정 높이 전환으로 되돌리고 접기 스프링 카메라만 유지 (ADR 0004, song-search.js 약 330줄 정리)
+    오류 카드를 시안 크기(560px, 28px 반경)로

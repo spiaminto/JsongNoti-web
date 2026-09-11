@@ -1,7 +1,7 @@
 /* ==========================================================================
    page/index.css — 랜딩페이지 전용 (히어로, 신곡 목록, 사용 방법)
-   기준 시안: static/design-preview/11-1-liquid-glass-fluid.html
-   공통 표면·모션은 glass.css, 표는 song-table.css 참조.
+   공통 재질·모션은 glass.css, 표는 song-table.css 참조.
+   히어로·신곡 패널·사용법 타일은 모두 콘텐츠 판(.content-panel)이다 (D14).
    ========================================================================== */
 
 /* fixed 상단바 자리를 hero-zone 이 스스로 확보하므로 공통 상단 padding 해제 */
@@ -23,33 +23,10 @@
 }
 
 .hero {
-    position: relative;
     overflow: hidden;
     width: min(620px, 100%);
     padding: clamp(2rem, 5vw, 3.2rem);
     text-align: center;
-    /* 문맥 오버라이드: 사진 위 히어로는 몸체 알파를 전용 노브로 이동 —
-       배경 하드코딩 대신 노브 값 이동 (glass.css .glass 가 조립을 맡는다) */
-    --g-alpha: var(--g-alpha-hero);
-}
-
-/* 반사광(::after)이 z-index 0 에 깔리므로 내용은 그 위로 */
-.hero > * {
-    position: relative;
-    z-index: 1;
-}
-
-/* 사진 위에서는 soft-light 가 더 세게 발현되므로 반사광을 낮춰
-   다른 유리 타일과 체감 밝기를 맞춘다 */
-.hero.sheen::after {
-    /* .45 → .32: 기본 sheen 의 30% 감쇠(20턴)에 비례해 함께 낮춰
-       다른 유리 타일과의 체감 밝기 관계를 유지한다. 스톱 곡선은
-       glass.css 기본 sheen 과 같은 비율 */
-    background: radial-gradient(320px 240px at var(--mx, 50%) var(--my, -20%),
-        rgb(255 255 255 / .21),
-        rgb(255 255 255 / .1) 40%,
-        rgb(255 255 255 / .035) 68%,
-        transparent 92%);
 }
 
 .hero .headerText {
@@ -244,14 +221,14 @@
     transition-delay: .42s;
 }
 
-/* 영상: 기기 프레임 없이 유리 위에 녹아 떠 있는 느낌 */
+/* 영상: 기기 프레임 없이 판 위에 녹아 떠 있는 느낌.
+   판 반경은 동심(P20): 안쪽 영상 20px + 패딩 7px = 27px */
 .u-video {
-    position: relative;
     z-index: 1;
     justify-self: center;
     width: min(270px, 100%);
     padding: 7px;
-    border-radius: 26px;
+    border-radius: 27px;
 }
 
 .u-video video {
@@ -272,7 +249,6 @@
 }
 
 .u-text {
-    position: relative;
     z-index: 1;
     padding: clamp(1.4rem, 3vw, 2rem);
     text-align: left;

@@ -3,10 +3,9 @@
    글래스모피즘 오버홀: 표면·모션 어휘는 glass.css 가 정본.
    ========================================================================== */
 
-/* ---------- 다크모드 잔재 ----------
-   light 전용 오버홀 동안 다크모드 전용 요소(영상 위 어둡게 덮는 막 등)는
-   기존 JS(common-handlers.js)가 localStorage 값으로 show() 하더라도
-   보이지 않도록 !important 로 잠근다. (docs/_temp/ui-overhaul.md 참고) */
+/* ---------- 옛 다크모드 전용 요소 ----------
+   과거 다크모드가 영상 위에 덮던 어둡게 하는 막(.video-shadow). 3기 dark 는
+   사진·판 자체를 어둡게 눌러 이 막을 쓰지 않으므로 계속 숨긴다 */
 .dark-mode-element {
     display: none !important;
 }
@@ -131,21 +130,31 @@
     display: none;
 }
 
-/* 유리 알약 하나가 버튼 하나 — 재질은 노브를 따른다 (glass.css, 버튼판 스택) */
+/* 유리 알약 하나가 버튼 하나 — 내비바와 같은 맑은 유리 (D13: 모바일
+   오른쪽 엄지 자리라 유지. 크롬이므로 실시간 유리 허용, 블러 예산 안) */
 .side-button-wrapper {
     margin-bottom: .6rem;
     border-radius: 22px;
-    background: rgb(var(--g-white) / var(--g-alpha-strong));
-    -webkit-backdrop-filter: blur(var(--g-blur-btn)) saturate(var(--g-sat));
-    backdrop-filter: blur(var(--g-blur-btn)) saturate(var(--g-sat));
-    border: 1px solid transparent;
+    border: 0;
+    background: linear-gradient(135deg, rgb(255 255 255 / .20), rgb(255 255 255 / .07));
+    -webkit-backdrop-filter: blur(4px) saturate(170%);
+    backdrop-filter: blur(4px) saturate(170%);
     box-shadow:
-        0 10px 26px rgb(30 42 56 / .12),
-        0 1px 0 rgb(30 42 56 / .13),
-        1px 0 0 rgb(30 42 56 / .06),
-        -1px 0 0 rgb(30 42 56 / .06),
-        inset 0 1px 0 var(--g-inset-hi),
-        inset 0 -2px 7px -2px rgb(255 255 255 / .7);
+        0 12px 32px rgb(30 42 56 / .22),
+        inset 0 1px 1px rgb(255 255 255 / .65),
+        inset 0 -1px 1px rgb(255 255 255 / .18);
+}
+
+html[data-theme="dark"] .side-button-wrapper {
+    background: linear-gradient(135deg, rgb(255 255 255 / .14), rgb(255 255 255 / .04));
+}
+
+html[data-theme="dark"] .side-button-wrapper .icon-link {
+    color: #f2f5f8;
+}
+
+html[data-theme="dark"] .side-button-wrapper .icon-link:hover {
+    background: rgb(255 255 255 / .12);
 }
 
 /* ---------- 입력 크기 제한 (기존 유지) ---------- */
@@ -186,7 +195,7 @@
     /* 부모 요소의 padding 을 먹기위한 row 표시용 */
 }
 
-/* 과거 그림자 유틸리티: 유리 표면(.glass, .song-table-border)이 자체 그림자를
+/* 과거 그림자 유틸리티: 콘텐츠 판(.content-panel)이 자체 그림자를
    가지므로 시각 효과를 없앤다. markup 잔존분 대비용으로 클래스만 남긴다 */
 .box-shadow-sm,
 .box-shadow {

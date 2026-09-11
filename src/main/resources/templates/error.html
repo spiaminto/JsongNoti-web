@@ -4,11 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>오류 - 제이노티</title>
+  <!-- dark 초기값: 스타일시트보다 먼저 동기 실행 (theme-init.js, FOUC 방지) -->
+  <script src="/static/js/theme-init.js" th:src="@{/js/theme-init.js}"></script>
   <link href="/static/css/glass.css" th:href="@{/css/glass.css}" rel="stylesheet"/>
   <link href="/static/css/page/error.css" th:href="@{/css/page/error.css}" rel="stylesheet"/>
 </head>
 <body>
-<main class="error-card glass">
+<main class="error-card content-panel">
   <h2>에러 발생</h2>
   <p>문제가 계속되면 메일로 문의해주세요.</p>
   <button type="button" class="glass-btn" onclick="location.href='index.html'"

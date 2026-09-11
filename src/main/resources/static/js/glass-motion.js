@@ -1,20 +1,21 @@
 /**
- * glass-motion.js — 글래스모피즘 공통 모션
- * 기준 시안: static/design-preview/11-1-liquid-glass-fluid.html
+ * glass-motion.js — 공통 모션 (배경 연출·크롬·스크롤)
+ * 기준: docs/_temp/ui-overhaul-3.md, 용어는 docs/with-ai/CONTEXT.md
  *
  * 담당:
  *  1) 로드 시퀀스: .veil 요소에 .on 을 붙여 --vd 딜레이 순서대로 띄운다
  *  2) 스크롤 리빌: [data-lift] 요소가 30% 이상 보이면 .is-lit 을 붙인다 (기존 fade-in.js 대체)
- *  3) scroll edge: 콘텐츠가 상단바 아래로 지나갈 때 .navbar 재질을 두껍게 하고,
+ *  3) scroll edge: 콘텐츠가 내비바 아래로 지나갈 때 .navbar 틴트를 진하게 하고(.scrolled),
  *     화면 상단 점진 블러 베일(.scroll-veil)을 심어 콘텐츠를 가장자리에서 디졸브 (ui-rnd 5턴)
- *  4) 반사광: .sheen 유리에서 포인터를 따라 --mx/--my 를 갱신
+ *  4) 스크롤 방향 반응(P12): 내비바가 스크롤 위치가 아니라 방향에 반응하도록
+ *     html[data-scroll-direction] 을 up/down 으로 쓴다 — 축소 모션은 containers.css
  *  5) 보케: .bokeh i 의 위치·크기를 로드마다 랜덤으로 흩뿌린다
  *  6) 접힘 스크롤 팔로우: index 더보기를 접으면 토글 버튼을 화면 중앙까지
- *     활강시켜 포착한 뒤, 중앙에 고정한 채 접힘을 따라 함께 이동한다. followScroll 은
- *     window.glassMotion 으로 공개되어 검색 더보기 접힘과 애창곡 노래
- *     클릭 스크롤(song-search.js)도 쓴다
- *  7) interaction glow: 유리 버튼 pointerdown 접점 좌표(--glow-x/--glow-y)를
- *     심고 .glowing 을 토글한다 — 발광 자체는 CSS(@property transition) (ui-rnd 5턴)
+ *     활강시켜 포착한 뒤, 중앙에 고정한 채 접힘을 따라 함께 이동한다. followScroll·
+ *     followTrackButton 은 window.glassMotion 으로 공개되어 검색 더보기 접힘과
+ *     애창곡 노래 클릭 스크롤(song-search.js)도 쓴다
+ *
+ * 콘텐츠 판은 불투명 프로스트라(ADR 0001) 여기서는 손대지 않는다 — 굽기는 frost-baking.js.
  *
  * 컬랩스의 높이 전환 자체에는 관여하지 않는다 — 전 페이지 순정 부트스트랩
  * collapse 를 쓴다. (과거 6·7번 높이 예약 구역은 body 그라디언트가 문서
@@ -80,6 +81,19 @@
         };
         window.addEventListener("scroll", onScroll, { passive: true });
         onScroll();
+
+        // 스크롤 방향 반응 (P12, D10): 6px 넘게 움직였을 때만 방향을 판정해
+        // 손 떨림에 흔들리지 않게 하고, 아래 방향은 상단 80px 아래에서만 —
+        // 페이지 맨 위에서는 내비바가 펴진 채로 있어야 한다.
+        // 속성은 html 에 두어 containers.css 의 축소 규칙이 내비바에 걸린다
+        var lastDirectionY = window.scrollY;
+        window.addEventListener("scroll", function () {
+            var y = window.scrollY;
+            var delta = y - lastDirectionY;
+            if (Math.abs(delta) <= 6) return;
+            document.documentElement.setAttribute("data-scroll-direction", delta > 0 && y > 80 ? "down" : "up");
+            lastDirectionY = y;
+        }, { passive: true });
     }
 
     // scroll 중 hover 억제: 휠 노치마다(스크롤 제스처가 끝날 때마다) Chrome 이
@@ -102,46 +116,6 @@
         scrollIdleTimer = setTimeout(clearScrolling, 250);
     };
     window.addEventListener("scroll", markScrolling, { passive: true });
-
-    // interaction glow: 누른 접점에서 국소 발광 — 좌표만 심고 발광은 CSS 가 맡는다
-    var glowReduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    document.addEventListener("pointerdown", function (e) {
-        if (glowReduceMotion) return;
-        var btn = e.target.closest(".btn, .glass-btn");
-        if (!btn) return;
-        var rect = btn.getBoundingClientRect();
-        btn.style.setProperty("--glow-x", Math.round(e.clientX - rect.left) + "px");
-        btn.style.setProperty("--glow-y", Math.round(e.clientY - rect.top) + "px");
-        btn.classList.add("glowing");
-    });
-
-    // 어디서 떼든(버튼 밖 드래그 아웃 포함) 발광을 감쇠 국면으로 넘긴다
-    function fadeGlow() {
-        document.querySelectorAll(".glowing").forEach(function (el) {
-            el.classList.remove("glowing");
-        });
-    }
-    document.addEventListener("pointerup", fadeGlow);
-    document.addEventListener("pointercancel", fadeGlow);
-
-    // 반사광: 포인터와 1:1 로 따라온다 (rAF 로 요소당 프레임당 1회만 갱신)
-    document.querySelectorAll(".sheen").forEach(function (el) {
-        var pending = false;
-        el.addEventListener("pointermove", function (e) {
-            if (pending) return;
-            pending = true;
-            requestAnimationFrame(function () {
-                var rect = el.getBoundingClientRect();
-                el.style.setProperty("--mx", ((e.clientX - rect.left) / rect.width * 100).toFixed(2) + "%");
-                el.style.setProperty("--my", ((e.clientY - rect.top) / rect.height * 100).toFixed(2) + "%");
-                el.classList.add("lit-by-pointer");
-                pending = false;
-            });
-        });
-        el.addEventListener("pointerleave", function () {
-            el.classList.remove("lit-by-pointer");
-        });
-    });
 
     // 보케: 팔레트·불투명도는 markup 값을 유지하고, 위치와 크기만 로드마다 다르게.
     // 위치는 % 가 아니라 px 로 박는다 — % 로 두면 더보기(컬랩스)로 섹션 높이가
@@ -378,41 +352,21 @@
         if (trackEaseNorm === null) trackEaseNorm = trackEaseRaw(1);
         return trackEaseRaw(t) / trackEaseNorm;
     }
-    // 언더댐핑 스프링 곡선 생성기 — 목표를 살짝 지나쳤다 되돌아온다.
-    // 오버슛 비율 = e^(-pi*zeta/sqrt(1-zeta^2)) (zeta .8 -> ~1.5%).
-    // 검색 더보기 접기의 버튼 중앙 포착이 쓴다 (2기 4턴: 카메라는 거의
-    // 무바운스로 절도만 맡고, "통통"은 판의 접힘 스프링이 맡는다.
-    // index 팔로우는 임계감쇠 springEase 유지)
-    function makeUnderdampedEase(zeta, wt) {
-        var zw = zeta * wt;
-        var wd = wt * Math.sqrt(1 - zeta * zeta);
-        function raw(t) {
-            return 1 - Math.exp(-zw * t) * (Math.cos(wd * t) + (zw / wd) * Math.sin(wd * t));
-        }
-        var norm = raw(1);
-        return function (t) { return raw(t) / norm; };
-    }
     var trackHiddenDone = false;
     // 접힘 완료 신호 — track 팔로우의 종료 허가. index 는 hidden.bs.collapse,
-    // 검색 더보기는 래퍼 transitionend 가 호출한다 (팔로우는 한 번에 하나만
+    // 검색 더보기는 높이 전환의 onfinish 가 호출한다 (팔로우는 한 번에 하나만
     // 도니 플래그 공유로 충분하다)
     function settleFollowTrack() { trackHiddenDone = true; }
-    // opts.reserveBottom: 스크롤 상한을 그만큼 앞당긴다 — FLIP 접기처럼
-    // 문서가 아직 줄지 않은 채 끝에 한 번에 수축하는 경우, 스냅 순간의
-    // 브라우저 클램프 점프를 막는다 (검색 더보기 runFlip)
-    function followTrackButton(btnEl, opts) {
+    // index 지난달 컬랩스와 검색 더보기(song-search.js)가 같은 곡선·시간으로
+    // 쓴다 — 두 접힘 모두 1s 감속 높이 전환이라 한 호흡이다 (ADR 0004)
+    function followTrackButton(btnEl) {
         if (followReduceMotion) return;
-        var reserveBottom = (opts && opts.reserveBottom) || 0;
-        var reserveTop = (opts && opts.reserveTop) || 0;
-        var captureEase = (opts && opts.zeta) ? makeUnderdampedEase(opts.zeta, (opts && opts.wt) || TRACK_WT) : springEase;
-        // opts.captureMs: 포착 시간 재정의 — 검색 더보기는 550ms(빠른 절도),
-        // index 는 기본 900ms(접힘 1s 와 한 호흡) 유지
-        var captureMs = (opts && opts.captureMs) || TRACK_CAPTURE_MS;
+        var captureEase = springEase;
+        var captureMs = TRACK_CAPTURE_MS;
         var se = document.scrollingElement || document.documentElement;
         document.documentElement.style.overflowAnchor = "none";
         trackHiddenDone = false;
         var e0 = null;
-        var cap0 = null;
         var start = null;
         var abort = function () { cancelFollowScroll(); };
         window.addEventListener("wheel", abort, { passive: true });
@@ -428,18 +382,9 @@
             var t = Math.min((ts - start) / captureMs, 1);
             var r = btnEl.getBoundingClientRect();
             var desired = r.top + r.height / 2 + window.scrollY - se.clientHeight / 2;
-            // 상한: 예약(reserveBottom)은 첫 프레임의 문서 높이 기준으로 한 번만
-            // 계산한다(cap0) — FLIP 접기는 전환 중 translate 가 문서 스크롤
-            // 범위를 프레임마다 부풀려서, 매 프레임 다시 재면 상한이 출렁이고
-            // 첫 프레임의 이탈량(e0)이 오염된다 (실측: 가짜 ±130px 진동).
-            // 자연 상한(현재 문서)과의 min 은 index 처럼 문서가 전환 중에
-            // 실제로 줄어드는 쪽을 그대로 따라가게 한다. 예약과 하한(reserveTop:
-            // bottom 안무의 스냅 보정 y-D 가 음수가 되지 않게)은 스냅 전까지만
+            // 문서가 전환 중에 실제로 줄어드는 만큼 상한도 프레임마다 따라간다
             var natural = se.scrollHeight - se.clientHeight;
-            if (cap0 === null) cap0 = natural - reserveBottom;
-            var cap = trackHiddenDone ? natural : Math.min(natural, cap0);
-            var rt = trackHiddenDone ? 0 : reserveTop;
-            desired = Math.max(rt, Math.min(cap, desired));
+            desired = Math.max(0, Math.min(natural, desired));
             if (e0 === null) e0 = desired - window.scrollY;
             window.scrollTo(0, desired - e0 * (1 - captureEase(t)));
             // hidden 미발화 대비 3s 안전 상한
@@ -558,81 +503,7 @@
     // followTrackButton 을 쓰는 쪽은 접힘 완료 시점에 settleFollowTrack 을
     // 호출해 종료를 허가한다 (2기 1턴: 검색 더보기 접기가 track 으로 합류 —
     // 선계산 활강은 높이 전환과 곡선이 어긋나 화면이 프레임마다 요동했다)
-    // ---- glass mirror: backdrop-filter 없는 유리 판 (2기 3턴 실험실) ----
-    // 큰 유리 판의 backdrop-filter 는 스크롤·합성 애니마다 GPU 에서 매 프레임
-    // 재블러된다 (실측: 검색 섹션 하나가 스크롤 GPU 72%→50% 몫). 대신 판 뒤의
-    // 배경(사진·햇살·보케 — 모두 페이지와 같이 스크롤하는 absolute)을 판 안에
-    // 같은 문서 좌표로 복제하고 filter: blur 를 한 번만 래스터한다. 배경이
-    // 정적이라 가능한 기법 — 복제본은 창 크기·보케 재산포·판 위치가 바뀔 때
-    // 다시 만든다. 재질(blur·saturate·틴트)은 glass.css .glass-mirror 가 든다.
-    // 투명도 최소화 설정에서는 만들지 않는다 (판이 불투명이라 의미 없음)
-    var mirrorReduce = window.matchMedia("(prefers-reduced-transparency: reduce)").matches;
-    function buildGlassMirror(host) {
-        var clip = host.querySelector(":scope > .glass-mirror-clip");
-        if (!clip) {
-            clip = document.createElement("div");
-            clip.className = "glass-mirror-clip";
-            clip.setAttribute("aria-hidden", "true");
-            clip.innerHTML = '<div class="glass-mirror"><div class="glass-mirror-stage"></div><div class="glass-mirror-tint"></div></div>';
-            host.prepend(clip);
-            host.classList.add("has-mirror");
-        }
-        var stage = clip.querySelector(".glass-mirror-stage");
-        var hr = host.getBoundingClientRect();
-        var hx = hr.left + window.scrollX - 1; // 판 보더까지 덮는 inset -1px 기준
-        var hy = hr.top + window.scrollY - 1;
-        var sources = host.getAttribute("data-glass-mirror").split(",");
-        var items = sources.map(function (sel, i) {
-            var src = document.querySelector(sel.trim());
-            if (!src) return null;
-            var r = src.getBoundingClientRect();
-            return { src: src, i: i, left: r.left + window.scrollX - hx, top: r.top + window.scrollY - hy, w: r.width, h: r.height };
-        }).filter(Boolean);
-        // 판의 높이만 바뀐 경우(접힘 스냅)는 복제본 좌표가 그대로라 다시 그리지
-        // 않는다 — 블러 래스터가 한 프레임을 통째로 먹는다. 판 폭·문서 내
-        // 위치·원본 배경의 기하·보케 점 수가 바뀔 때만 다시 만든다
-        var key = [hr.width, hx, hy].concat(items.map(function (it) {
-            return [it.left, it.top, it.w, it.h, it.src.childElementCount, it.src.innerHTML.length].join(",");
-        })).join("|");
-        if (clip.dataset.mirrorKey === key) return;
-        clip.dataset.mirrorKey = key;
-        // stage 크기는 판 높이와 무관하게 고정 — inset:0 이면 판 높이 변화마다
-        // 필터 출력이 다시 그려진다. 클리퍼가 판 모양으로 자른다
-        stage.style.width = (hr.width + 2) + "px";
-        stage.style.height = Math.max(hr.height + 2, document.documentElement.scrollHeight - hy) + "px";
-        stage.replaceChildren();
-        items.forEach(function (it) {
-            var c = it.src.cloneNode(true);
-            c.removeAttribute("id");
-            c.style.cssText = "position:absolute;inset:auto;left:" + it.left + "px;top:" + it.top + "px;width:" +
-                it.w + "px;height:" + it.h + "px;z-index:" + it.i;
-            stage.appendChild(c);
-        });
-    }
-    var mirrorHosts = mirrorReduce ? [] : Array.prototype.slice.call(document.querySelectorAll("[data-glass-mirror]"));
-    var mirrorTimer = null;
-    function rebuildGlassMirrors() {
-        clearTimeout(mirrorTimer);
-        mirrorTimer = setTimeout(function () {
-            mirrorHosts.forEach(buildGlassMirror);
-        }, 120);
-    }
-    if (mirrorHosts.length) {
-        mirrorHosts.forEach(buildGlassMirror);
-        window.addEventListener("resize", rebuildGlassMirrors);
-        // 보케 재산포·확장(점 추가/제거, 좌표 변수 변경) 추적
-        var bokehMo = new MutationObserver(rebuildGlassMirrors);
-        document.querySelectorAll(".bokeh").forEach(function (b) {
-            bokehMo.observe(b, { childList: true, attributes: true, subtree: true, attributeFilter: ["style"] });
-        });
-        // 판의 문서 내 위치·크기가 바뀌면(위 내용 높이 변화, 접힘 스냅) 재정렬
-        var hostRo = new ResizeObserver(rebuildGlassMirrors);
-        mirrorHosts.forEach(function (h) { hostRo.observe(h); });
-        document.querySelectorAll("#container").forEach(function (c) { hostRo.observe(c); });
-    }
-
     window.glassMotion = {
-        rebuildGlassMirrors: rebuildGlassMirrors,
         followScroll: followScroll,
         cancelFollowScroll: cancelFollowScroll,
         followTrackButton: followTrackButton,

@@ -1,6 +1,8 @@
 /* ==========================================================================
    footer.css — 푸터
-   글래스모피즘 오버홀: 푸터는 유리판 없이 바탕 위에 바로 놓는다 (시안과 동일).
+   푸터는 판 없이 바탕 위에 바로 놓는다. 글자는 보조 잉크(--ink-2)라
+   dark 에서도 토큰만 바뀌면 된다. dark 토글 버튼(.dark-mode-button)은
+   3기에서 복원 (D22, 동작은 common-handlers.js).
    기존 Bootstrap grid(.row/.col-lg-6) 골격은 유지하고 색·간격만 다듬는다.
    ========================================================================== */
 
@@ -65,11 +67,6 @@
     .contact-mail-pc {
         display: inline-block;
     }
-}
-
-/* 다크모드 토글: light 전용 오버홀 동안 숨김 (docs/_temp/ui-overhaul.md 참고) */
-.dark-mode-button {
-    display: none !important;
 }
 
 .google-analytics-button {

@@ -1,6 +1,7 @@
 /* ==========================================================================
    page/error.css — 오류 페이지 전용 (경량)
-   glass.css 만 함께 로드한다. 유리 카드 하나가 화면 가운데 뜨는 구성.
+   glass.css 만 함께 로드한다. 불투명 카드 하나가 빛 웅덩이 위 화면
+   가운데 뜨는 구성 (3기 13턴 시안). 사진 배경·프로스트는 없다.
    ========================================================================== */
 
 body {
@@ -13,20 +14,42 @@ body {
     padding: 16px;
 }
 
+/* dark 는 사진이 없어 빛 웅덩이만으로 바탕을 만들므로 얼룩을 1.8배 진하게 */
+html[data-theme="dark"] body::before {
+    background:
+        radial-gradient(900px 600px at 12% -4%, rgb(255 190 120 / .40), transparent 62%),
+        radial-gradient(1100px 800px at 88% 12%, rgb(90 140 220 / .40), transparent 60%),
+        radial-gradient(800px 620px at 76% 38%, rgb(120 90 200 / .29), transparent 62%),
+        radial-gradient(700px 560px at 10% 52%, rgb(255 160 110 / .22), transparent 60%),
+        radial-gradient(850px 680px at 88% 82%, rgb(80 130 200 / .32), transparent 62%),
+        linear-gradient(180deg, #131b26 0%, #0f151d 45%, #0c1118 100%);
+}
+
+/* 카드: 시트와 같은 28px 반경, 판 그림자 + 먼 그림자. 작게 잡지 않는다 (PC 560px) */
 .error-card {
-    padding: 2.5rem clamp(2rem, 8vw, 3.5rem);
+    width: min(560px, 100vw - 32px);
+    padding: 3.4rem clamp(2.4rem, 9vw, 4.5rem) 3.2rem;
+    border-radius: 28px;
+    box-shadow: var(--panel-shadow), 0 30px 80px -20px rgb(30 42 56 / .25);
+}
+
+html[data-theme="dark"] .error-card {
+    box-shadow: var(--panel-shadow), 0 30px 80px -20px rgb(0 0 0 / .7);
 }
 
 .error-card h2 {
     color: var(--ink);
-    font-weight: 800;
-    letter-spacing: -.02em;
-    margin: 0 0 .6rem;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -.015em;
+    margin: 0 0 .7rem;
 }
 
 .error-card p {
     color: var(--ink-2);
-    margin: 0 0 1.4rem;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    margin: 0 0 2.2rem;
 }
 
 .error-card .glass-btn {

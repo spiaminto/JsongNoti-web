@@ -1,13 +1,18 @@
 /* ==========================================================================
-   glass.css — 글래스모피즘 foundation
-   기준 시안: static/design-preview/11-1-liquid-glass-fluid.html ("오전 10시의 빛")
+   glass.css — 재질·색·모션 foundation (UI 오버홀 3기)
+   기준: docs/_temp/ui-overhaul-3.md, 용어는 docs/with-ai/CONTEXT.md
+
+   3기 구조 (ADR 0001): 실시간 유리(backdrop-filter)는 크롬 — 내비바·사이드
+   버튼·모달 뒤 베일·스크롤 베일 — 에만 쓴다. 표·카드·폼 본문을 담는
+   콘텐츠 판(.content-panel)은 불투명하고, 재질감은 프로스트(사진을 미리
+   흐려 구운 그림, frost-baking.js)가 준다.
 
    이 파일이 담당하는 것:
-     1) 디자인 토큰(:root)과 NanumSquareRound 웹폰트 weight 매핑
-     2) 유리 표면(.glass)과 Bootstrap 컴포넌트(.btn, .form-control, .modal 등)의
+     1) 디자인 토큰(:root, dark 는 html[data-theme="dark"])과 NanumSquareRound 웹폰트 weight 매핑
+     2) 콘텐츠 판(.content-panel)과 Bootstrap 컴포넌트(.btn, .form-control, .modal 등)의
         시각 오버라이드 — 동작(JS)은 Bootstrap 그대로 두고 겉만 바꾼다
-     3) 배경 연출: 햇살(.sky/.ray), 보케(.bokeh)
-     4) 모션 어휘: 로드 시퀀스(.veil), 스크롤 리빌([data-lift]), 반사광(.sheen)
+     3) 배경 연출: 빛 웅덩이(body::before), 사진 배경(.photo-bg), 햇살(.sky/.ray), 보케(.bokeh)
+     4) 모션 어휘: 로드 시퀀스(.veil), 스크롤 리빌([data-lift]), 스크롤 베일(.scroll-veil)
      5) 접근성: reduced-motion / reduced-transparency / contrast 대응
 
    레이아웃과 페이지 구성은 다루지 않는다 (containers.css, page/*.css 담당).
@@ -58,16 +63,20 @@
     /* 바탕 */
     --bg: #eaf0f4;
 
-    /* 유리 재질 노브 (기조: docs/_temp/rnd-liquid-glass.md 2절).
-       숫자 하나짜리 스칼라 노브(-a 접미사 등)와 그것을 조립한 파생 값으로
-       나눈다. 문맥(히어로·모달)·상태(hover·scrolled)·변형(strong)은 전부
-       노브 값의 이동으로 표현하고, 새 하드코딩을 만들지 않는다 */
+    /* 콘텐츠 판: 불투명 바탕 + 판 그림자. 프로스트 굽기(frost-baking.js)가
+       background-image 로 흐린 사진을 깔고, 그 위를 --panel-frost-cover 색으로
+       한 번 덮어 글자 대비를 지킨다 (시안 FROST_L/FROST_D 값) */
+    --panel-bg: #fff;
+    --panel-frost-cover: rgb(255 255 255 / .74);
+    --panel-shadow:
+        0 1px 0 rgb(255 255 255 / .9) inset,
+        0 0 0 1px rgb(30 42 56 / .06),
+        0 18px 48px -12px rgb(30 42 56 / .18);
 
-    /* 몸체 (regular: 가독성 책임) */
+    /* 유리 재질 노브 (2기 잔재) — .btn·.form-control·.modal-content 가 아직 참조한다.
+       3기 2단계(버튼·모달)에서 그 규칙과 함께 제거한다 */
     --g-white: 255 255 255;   /* 몸체 백색 채널 */
-    --g-alpha: .6;            /* 패널 몸체 불투명도 — 알파는 위계가 아니라 "배경 자극도 ×
-                                 콘텐츠 민감도": 표는 보케 위 밀집 텍스트라 히어로보다 높다 */
-    --g-alpha-hero: .55;      /* 히어로 몸체 — 사진 위지만 글자가 커서 패널보다 낮다 */
+    --g-alpha: .6;            /* 패널 몸체 불투명도 */
     --g-alpha-strong: .66;    /* 컨트롤(버튼) 몸체 */
     --g-alpha-input: .55;     /* 입력창 몸체 */
     --g-alpha-modal: .82;     /* 모달 몸체 */
@@ -75,13 +84,6 @@
     --g-blur-panel: 22px;
     --g-blur-btn: 16px;
     --g-blur-input: 10px;
-
-    /* clear 변형 (ui-overhaul-2 6턴 채택: 맑은 유리 — 우선 검색 페이지 상단바 전용).
-       젖빛과 달리 배경을 비추는 재질이라 몸체는 얇은 틴트 그라디언트,
-       blur 는 배경 형체가 남는 낮은 값을 쓴다 */
-    --g-blur-clear: 4px;      /* 맑은 유리 blur — 상태 간 고정(반경 전환 비용 회피) */
-    --g-clear-hi: .20;        /* 틴트 그라디언트 시작(좌상) 알파 */
-    --g-clear-lo: .07;        /* 틴트 그라디언트 끝(우하) 알파 */
 
     /* 가장자리 (유리다움 책임) — 패널·버튼 림 보더는 에지 스택
        (헤어라인 + 상하 inset)으로 대체되어, --g-edge 는 입력창 보더 전용 */
@@ -116,7 +118,37 @@
     --danger-tint: rgb(255 122 96 / .18);
     --danger-ink: #a03015;
 
+    /* 스프링 (P11): 위치·크기·코너의 움직임은 살짝 튀는 spatial 곡선 하나,
+       색·투명도는 튀지 않는 effects 곡선. spatial 은 언더댐핑 스텝 응답을
+       linear() 로 샘플링한 값 — 정본 계산기는
+       docs/decisions/references/_ux/_material-expressive/_raw/13-spring-linear.js.
+       reduced-motion 에서는 spatial 을 effects 로 바꾼다 (파일 끝 접근성 절) */
+    --spring-spatial: linear(0, 0.013 0.6%, 0.05 1.2%, 0.2 2.5%, 0.55 6%, 0.86 10%, 1.05 14%, 1.12 18%, 1.1 22%, 1.03 30%, 0.99 38%, 1);
+    --ease-effects: ease;
+    /* 떠오름(로드 시퀀스·스크롤 리빌)용 감속 곡선 */
     --ease-float: cubic-bezier(.22, .8, .3, 1);
+}
+
+/* dark (D7, D22): 색 토큰이 통째로 바뀌고 사진은 어둡게 눌린다.
+   스위치는 html[data-theme="dark"] — 초기값은 theme-init.js, 토글은
+   common-handlers.js. Bootstrap 기본색을 위해 data-bs-theme 도 함께 세팅된다 */
+html[data-theme="dark"] {
+    --ink: #eef2f6;
+    --ink-2: #c3ccd6;
+    --ink-3: #8b96a3;
+    --bg: #121a24;
+    --tj-ink: #ffb088;
+    --ky-ink: #9fc0ff;
+    --badge-tint: rgb(255 200 120 / .18);
+    --badge-ink: #ffd18a;
+    --danger-tint: rgb(255 69 58 / .26);
+    --danger-ink: #ff5a50;
+    --panel-bg: #1b2430;
+    --panel-frost-cover: rgb(27 36 48 / .72);
+    --panel-shadow:
+        0 1px 0 rgb(255 255 255 / .06) inset,
+        0 0 0 1px rgb(255 255 255 / .06),
+        0 24px 60px -16px rgb(0 0 0 / .6);
 }
 
 /* ---------- 전역 베이스 ---------- */
@@ -128,6 +160,10 @@ html {
     background: #e4ebf1;
     /* 스크롤바 자리를 상시 확보 — 모달이 스크롤을 잠가도 레이아웃이 밀리지 않는다 */
     scrollbar-gutter: stable;
+}
+
+html[data-theme="dark"] {
+    background: #0f151d;
 }
 
 body {
@@ -169,6 +205,17 @@ body::before {
         linear-gradient(180deg, #edf2f6 0%, var(--bg) 45%, #e4ebf1 100%);
 }
 
+/* dark 의 빛 웅덩이: 같은 자리에 어두운 색 얼룩 (시안 값 그대로) */
+html[data-theme="dark"] body::before {
+    background:
+        radial-gradient(900px 600px at 12% -4%, rgb(255 190 120 / .22), transparent 62%),
+        radial-gradient(1100px 800px at 88% 12%, rgb(90 140 220 / .22), transparent 60%),
+        radial-gradient(800px 620px at 76% 38%, rgb(120 90 200 / .16), transparent 62%),
+        radial-gradient(700px 560px at 10% 52%, rgb(255 160 110 / .12), transparent 60%),
+        radial-gradient(850px 680px at 88% 82%, rgb(80 130 200 / .18), transparent 62%),
+        linear-gradient(180deg, #131b26 0%, #0f151d 45%, #0c1118 100%);
+}
+
 /* 키보드 포커스는 유리 위에서도 명확하게 */
 a:focus-visible,
 button:focus-visible,
@@ -178,23 +225,19 @@ textarea:focus-visible {
     outline-offset: 2px;
 }
 
-/* ---------- 유리 표면 ----------
-   에지는 림 보더 대신 6그림자 스택: 바깥 헤어라인 3면 + 상단 순백 inset +
-   하단 반사광. 하단 inset 이 상단보다 퍼지는 것(바닥 반사광)이 요점이고,
-   음수 스프레드는 좌우 번짐을 조인다 */
-.glass {
-    background: rgb(var(--g-white) / var(--g-alpha));
-    -webkit-backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
-    backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
-    border: 1px solid transparent;
-    border-radius: var(--g-radius);
-    box-shadow:
-        var(--g-drop),
-        0 1px 0 rgb(30 42 56 / .13),
-        1px 0 0 rgb(30 42 56 / .06),
-        -1px 0 0 rgb(30 42 56 / .06),
-        inset 0 1px 0 var(--g-inset-hi),
-        inset 0 -3px 10px -2px var(--g-inset-lo);
+/* ---------- 콘텐츠 판 ----------
+   불투명한 판 (ADR 0001). 실시간 유리가 없으므로 스크롤·펼침에 재래스터
+   비용이 들지 않는다. 재질감은 frost-baking.js 가 background-image 로 깔아
+   주는 프로스트가 맡고, 그 전(사진 로드 전·실패 시)에는 바탕색만 보인다.
+   border 0 + padding-box 클립: 테두리가 있으면 굽힌 그림이 테두리 밑으로
+   비쳐 1px 띠가 생긴다 (시안 5턴 교훈). 그림자 안쪽 1px 흰 선이 테두리 역할 */
+.content-panel {
+    position: relative;
+    background-color: var(--panel-bg);
+    background-clip: padding-box;
+    border: 0;
+    border-radius: 24px;
+    box-shadow: var(--panel-shadow);
 }
 
 /* ---------- 버튼: Bootstrap .btn 전체를 유리 버튼으로 ----------
@@ -416,6 +459,12 @@ textarea:focus-visible {
     opacity: 1;
 }
 
+/* dark 에서는 베일이 살짝 어둡게도 눌러 글자가 내비바 뒤로 잠기게 한다 */
+html[data-theme="dark"] .scroll-veil {
+    -webkit-backdrop-filter: blur(12px) brightness(.8);
+    backdrop-filter: blur(12px) brightness(.8);
+}
+
 /* 모달이 열릴 때 화면이 옆으로 밀리는 것 방지.
    Bootstrap 은 스크롤바를 없애며 body 에 padding-right 를 인라인으로 넣어
    보정하는데, 위의 scrollbar-gutter: stable 이 이미 자리를 확보하므로
@@ -451,14 +500,12 @@ mark,
     border-radius: 8px;
 }
 
-/* ---------- 햇살 막대 ----------
-   페이지 최상단에 고정된 자리를 차지하고, 스크롤하면 함께 밀려 올라간다.
-   개별 막대의 위치·폭·불투명도·블러·딜레이는 markup 의 inline 변수로 지정 */
-/* ---------- 배경: 씻어낸 노래방 사진 ----------
-   시안 검토에서 확정한 "배경 모드". 첫 화면 뒤에 채도 낮춘 사진이 깔리고
-   유리(히어로·상단바)가 그것을 실제로 블러한다. 스크롤하면 함께 밀려
-   올라간다. 원래 index 전용(page/index.css)이었으나 19턴에 검색 페이지도
-   같은 배경을 쓰게 되어 배경 연출 절로 이동 */
+/* ---------- 사진 배경: 씻어낸 노래방 사진 ----------
+   사이트 공통으로 가장 뒤에 까는 사진 (D15 — index·검색·애창곡).
+   위로 갈수록 선명하고 아래로 갈수록 바탕색에 녹는다. 스크롤하면 함께
+   밀려 올라간다. 내비바(유리)가 이 사진을 실제로 블러하고, 콘텐츠 판은
+   frost-baking.js 가 같은 사진을 판 자리에 맞춰 흐려 구운 그림을 받는다 —
+   아래 마스크·페이드·필터 값을 바꾸면 굽기 코드의 값도 함께 맞춘다 (ADR 0002) */
 .photo-bg {
     position: absolute;
     top: 0;
@@ -470,21 +517,24 @@ mark,
     z-index: 0;
 }
 
-/* 사진·마스크·필터는 자식(::before)에 둔다 — 요소 자체에 두면 FLIP 이 이
-   요소를 합성 레이어로 올릴 때 필터·마스크가 프레임마다 GPU 패스로 얹힌다.
-   자식에 두면 레이어 타일에 한 번 구워진다 (2기 3턴) */
+/* 사진·마스크·필터는 자식(::before)에 둔다 — 요소 자체에 두면 합성 레이어로
+   올라갈 때 필터·마스크가 프레임마다 GPU 패스로 얹힌다. 자식에 두면
+   레이어 타일에 한 번 구워진다 (2기 3턴) */
 .photo-bg::before {
     content: "";
     position: absolute;
     inset: 0;
     background: url("../assets/img/karaoke.jpg") center / cover;
-    /* 가장자리를 타원형으로 씻어내 바탕과 잇는다 */
-    -webkit-mask-image: radial-gradient(115% 90% at 50% 30%, #000 40%, transparent 88%);
-    mask-image: radial-gradient(115% 90% at 50% 30%, #000 40%, transparent 88%);
+    /* 가장자리를 타원형으로 씻어내 바탕과 잇는다 (세로 72%: 3기 9턴에
+       90% 에서 조여 사진이 첫 화면 안에서 끝나게 함) */
+    -webkit-mask-image: radial-gradient(115% 72% at 50% 30%, #000 40%, transparent 88%);
+    mask-image: radial-gradient(115% 72% at 50% 30%, #000 40%, transparent 88%);
     filter: saturate(.88) brightness(1.05);
 }
 
-/* 아래로 갈수록 바탕색에 녹아 사라진다 */
+/* 아래로 갈수록 바탕색에 녹아 사라진다. 페이드 층 자체도 바닥(105vh)
+   전에 마스크로 소멸시킨다 — 그러지 않으면 사진이 끝나는 경계에서 거의
+   불투명한 회색 띠가 뒤의 빛 웅덩이를 덮는다 (2기 19턴 검색 페이지 결함) */
 .photo-bg::after {
     content: "";
     position: absolute;
@@ -494,7 +544,31 @@ mark,
         rgb(255 255 255 / .06) 35%,
         rgb(236 241 245 / .55) 70%,
         rgb(234 240 244 / .95) 96%);
+    -webkit-mask-image: linear-gradient(#000 75%, transparent 100%);
+    mask-image: linear-gradient(#000 75%, transparent 100%);
 }
+
+/* dark: 사진을 눌러 어둡게, 페이드는 어두운 바탕색으로 */
+html[data-theme="dark"] .photo-bg {
+    opacity: .7;
+}
+
+html[data-theme="dark"] .photo-bg::before {
+    filter: saturate(.75) brightness(.55) contrast(1.05);
+}
+
+html[data-theme="dark"] .photo-bg::after {
+    background: linear-gradient(180deg,
+        rgb(15 21 29 / .1) 0%,
+        rgb(15 21 29 / .05) 35%,
+        rgb(15 21 29 / .6) 70%,
+        rgb(15 21 29 / .96) 96%);
+}
+
+/* ---------- 햇살 막대 ----------
+   페이지 최상단에 고정된 자리를 차지하고, 스크롤하면 함께 밀려 올라간다.
+   개별 막대의 위치·폭·불투명도·블러·딜레이는 markup 의 inline 변수로 지정.
+   dark 에는 햇살이 없다 (밤의 노래방) */
 
 .sky {
     position: absolute;
@@ -503,6 +577,10 @@ mark,
     overflow: hidden;
     pointer-events: none;
     z-index: 0;
+}
+
+html[data-theme="dark"] .sky {
+    display: none;
 }
 
 .ray {
@@ -539,9 +617,9 @@ mark,
 }
 
 /* ---------- 보케 ----------
-   히어로 사진의 조명 방울을 CSS 로 추상화한 잔상. 형태 없는 빛 덩어리라
-   유리 너머로 비쳐도 표 가독성을 해치지 않는다.
-   위치·크기는 glass-motion.js 가 로드마다 랜덤으로 흩뿌린다 */
+   히어로 사진의 조명 방울을 CSS 로 추상화한 잔상. 콘텐츠 판 바깥의
+   배경에서 떠다니고, 판 안에는 굽기 시점의 모습이 프로스트에 정지 상태로
+   들어간다 (D11). 위치·크기는 glass-motion.js 가 로드마다 랜덤으로 흩뿌린다 */
 .bokeh {
     position: absolute;
     /* 점이 영역 밖으로 튀어나와도 문서 스크롤 높이에 관여하지 못하게
@@ -565,6 +643,10 @@ mark,
     border-radius: 50%;
     background: radial-gradient(circle, rgb(var(--c) / var(--o)) 0%, rgb(var(--c) / 0) 68%);
     filter: blur(6px);
+}
+
+html[data-theme="dark"] .bokeh {
+    opacity: .6;
 }
 
 /* ---------- 로드 시퀀스 (딜레이 기반) ----------
@@ -655,8 +737,8 @@ mark,
 }
 
 /* ---------- 더보기 행 리빌: 표 일부 행(d-none) 펼침 ----------
-   통합검색 더보기(song-search.js)가 쓴다. 래퍼 FLIP 전환(runFlip)과
-   함께, 드러나는 행이 index 리빌과 같은 어휘(row-in)로 하나씩 떠오른다.
+   통합검색 더보기(song-search.js)가 쓴다. 래퍼 높이 전환과 함께,
+   드러나는 행이 index 리빌과 같은 어휘(row-in)로 하나씩 떠오른다.
    딜레이는 JS 가 --rd 로 주는 계단 — index 지난달 컬랩스와 같은 타이밍
    (첫 행 50ms + 행당 70ms)에, 최대 45행의 꼬리가 늘어지지 않게 상한
    1030ms(index 의 n+15 꼬리와 동일)를 둔다 (21턴에 index 와 통일).
@@ -682,152 +764,12 @@ tbody tr.more-reveal.more-settled,
 }
 
 /* 접힘과 동시에 내용을 지운다 — 스태거 없이 행 다발이 한 번에 사라지고
-   (.3s, 접힘 750ms 보다 빠르게), 비워진 판이 스프링으로 접힌다 (2기 4턴) */
+   (.3s, 접힘 1s 보다 빠르게), 비워진 판이 뒤따라 접힌다 (2기 4턴) */
 tbody tr.more-reveal.more-settled.more-hide,
 [data-lift].is-lit .collapse tbody tr.more-reveal.more-settled.more-hide {
     opacity: 0;
 }
 
-/* ---------- glass mirror: backdrop 없는 큰 유리 판 (glass-motion.js) ----------
-   판 뒤 배경(사진·햇살·보케)을 판 안에 같은 문서 좌표로 복제하고 blur 를
-   한 번만 래스터한다 — 큰 판의 backdrop-filter 는 스크롤·합성 애니마다 GPU
-   에서 재블러된다 (2기 3턴 실측: 검색 섹션 하나가 스크롤 GPU 72→50% 몫).
-   재질 노브(--g-blur-panel, --g-sat, --g-white/--g-alpha)는 .glass 와 공유.
-   클리퍼(정적, 판의 둥근 모서리)와 mirror(FLIP 때 transform 으로 움직인다)를
-   나눠 둔다. 자식 선택자로 page/search.css 의 `.song-search-section > *` 를 이긴다 */
-.glass.has-mirror {
-    background: none;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-}
-.has-mirror > .glass-mirror-clip {
-    position: absolute;
-    inset: -1px;
-    z-index: -1;
-    border-radius: var(--g-radius);
-    overflow: hidden;
-    pointer-events: none;
-    contain: paint;
-}
-.glass-mirror {
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    overflow: hidden;
-}
-.glass-mirror-stage {
-    position: absolute;
-    top: 0;
-    left: 0; /* 크기는 JS 가 준다 (판 높이와 무관하게 고정) */
-    filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
-}
-.glass-mirror-tint {
-    position: absolute;
-    inset: 0;
-    background: rgb(var(--g-white) / var(--g-alpha));
-}
-/* 복제본 안의 연출은 정지 상태로 굳힌다 — 떠오름 재생·합성 레이어 승격 금지 */
-.glass-mirror .ray {
-    animation: none;
-    transform: rotate(32deg) scaleY(1);
-    opacity: 1;
-    will-change: auto;
-}
-.glass-mirror .bokeh { inset: auto; }
-.glass-mirror .bokeh i { animation: none; transition: none; }
-
-/* FLIP 형 더보기 접기·펼침 (song-search.js runFlip). 래퍼 height 전환은
-   프레임마다 문서 레이아웃과 섹션 유리 판(backdrop·드롭 섀도) 재래스터를
-   불러 25ms 프레임이 났다 — 대신 clip-path·transform 만 움직이고, 그동안
-   섹션 스킨을 자식 레이어 두 장(몸체 clip-path, 드롭 섀도 scaleY)으로
-   내려 섹션은 맨몸으로 둔다. 박자: 펼침 .35s ease, 접힘 1s
-   cubic-bezier(.16,1,.3,1) — index 지난달 접힘(.closing)과 동일 */
-/* 섹션은 page/search.css 에서 이미 z-index 스태킹 컨텍스트라 isolation 이
-   필요 없다 (토글하면 판 전체가 다시 그려진다). box-shadow 는 그대로 둔다 —
-   섹션이 overflow: hidden 이라 조각이 판 바깥에 그리는 드롭 섀도는 잘리고,
-   섹션 그림자를 끄면 전환 동안 외곽 그림자가 사라진다 (2기 3턴 육안 검수) */
-.song-search-section.glass-flip {
-    background: none;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-}
-/* 스킨 조각들. 자식 선택자로 page/search.css 의 `.song-search-section > *`
-   (relative, z 1)를 이긴다. 세로 위치·높이는 JS 가 inline 으로 준다 */
-.song-search-section > .glass-flip-top,
-.song-search-section > .glass-flip-fill,
-.song-search-section > .glass-flip-cap {
-    position: absolute;
-    left: -1px;
-    right: -1px;
-    z-index: -1;
-    pointer-events: none;
-    transform-origin: center top;
-    will-change: transform;
-}
-.song-search-section > .glass-flip-top,
-.song-search-section > .glass-flip-fill,
-.song-search-section > .glass-flip-cap {
-    background: rgb(var(--g-white) / var(--g-alpha));
-    -webkit-backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
-    backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
-}
-/* mirror 가 유리를 맡는 판에서는 조각이 틴트만 든다 — 사라지는 구간은
-   사진 아래 완만한 배경이라 블러 유무가 드러나지 않는다 */
-.has-mirror > .glass-flip-fill,
-.has-mirror > .glass-flip-cap {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-}
-.song-search-section > .glass-flip-top {
-    border-radius: var(--g-radius) var(--g-radius) 0 0;
-    box-shadow:
-        1px 0 0 rgb(30 42 56 / .06),
-        -1px 0 0 rgb(30 42 56 / .06),
-        inset 0 1px 0 var(--g-inset-hi);
-}
-.song-search-section > .glass-flip-fill {
-    box-shadow:
-        1px 0 0 rgb(30 42 56 / .06),
-        -1px 0 0 rgb(30 42 56 / .06);
-}
-.song-search-section > .glass-flip-cap {
-    border-radius: 0 0 var(--g-radius) var(--g-radius);
-    box-shadow:
-        0 1px 0 rgb(30 42 56 / .13),
-        1px 0 0 rgb(30 42 56 / .06),
-        -1px 0 0 rgb(30 42 56 / .06),
-        inset 0 -3px 10px -2px var(--g-inset-lo);
-}
-/* 래퍼 위의 틴트 조상(.card): 전환 중 배경을 조각(.glass-flip-tint)에 넘긴다 —
-   색·그림자·radius 는 JS 가 조상의 계산값을 그대로 옮긴다 */
-.glass-flip-tinted {
-    position: relative;
-    isolation: isolate;
-    background: none !important;
-    box-shadow: none !important;
-}
-/* 클릭 의도 시점의 사전 승격 (song-search.js primeFlip) */
-.flip-prime {
-    will-change: transform;
-}
-.glass-flip-tinted > .glass-flip-tint {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    will-change: transform;
-}
-.glass-flip-skin {
-    background: rgb(var(--g-white) / var(--g-alpha));
-    -webkit-backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
-    backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
-    box-shadow:
-        0 1px 0 rgb(30 42 56 / .13),
-        1px 0 0 rgb(30 42 56 / .06),
-        -1px 0 0 rgb(30 42 56 / .06),
-        inset 0 1px 0 var(--g-inset-hi),
-        inset 0 -3px 10px -2px var(--g-inset-lo);
-}
 /* 컬랩스 안에 나중에 삽입되는 표(추가검색 placeholder·갱신 결과)는 위
    table-in(2박자 통짜 떠오름)을 끈다 — placeholder 는 즉시 보여야 하고,
    갱신 결과는 행 스태거(.more-reveal)가 이중 fade 없이 단독으로 맡는다 */
@@ -896,46 +838,12 @@ tbody tr.more-reveal.more-settled.more-hide,
 .song-table-collapse tbody tr:nth-child(14) { --rd: .96s; }
 .song-table-collapse tbody tr:nth-child(n+15) { --rd: 1.03s; }
 
-/* ---------- 반사광: 포인터를 따라오는 하이라이트 ----------
-   유리가 빛을 받는 재질임을 드러낸다. sheen 이 붙은 유리에 공통 적용.
-   --mx/--my 는 glass-motion.js 가 pointermove 마다 갱신 */
-.sheen {
-    position: relative;
-    overflow: hidden;
-}
-
-.sheen::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    /* .85 → .6 → .4: 호버 빛이 강하고 색 배경(검색 사진) 위에서 촌스럽게
-       도드라진다는 20턴 피드백으로 두 차례 감쇠. 중간 스톱들: 직선 감쇠의
-       끊기는 테두리 대신 바깥으로 갈수록 완만히 잦아드는 곡선 */
-    /* 알파 .4/.18/.07 → .2/.09/.035: 아래 soft-light 를 걷어내며 절반으로
-       낮춰 글자까지 밝아지는 정도를 보정 */
-    background: radial-gradient(320px 240px at var(--mx, 50%) var(--my, -20%),
-        rgb(255 255 255 / .2),
-        rgb(255 255 255 / .09) 40%,
-        rgb(255 255 255 / .035) 68%,
-        transparent 92%);
-    /* mix-blend-mode: soft-light 제거 (ui-overhaul-2 7턴): 판 전체 크기의
-       블렌드 의사요소는 판을 격리 그룹으로 만들어, 첫 스크롤 커밋의 GPU
-       래스터를 263ms 까지 늘렸다(트레이스 실측, sheen 제거 시 55ms).
-       포인터 이동마다 --mx/--my 갱신으로 다시 그려지는 요소라 블렌드
-       없이 일반 합성으로 둔다 */
-    opacity: 0;
-    transition: opacity .5s;
-    pointer-events: none;
-}
-
-.sheen.lit-by-pointer::after {
-    opacity: 1;
-}
-
-/* ---------- 접근성: 모션·투명도·대비 각각 대응 ---------- */
-/* 모션 최소화: 크로스페이드만 남긴다 */
+/* ---------- 접근성: 모션·투명도·대비 각각 대응 (P14) ---------- */
+/* 모션 최소화: 탄성만 끄고(spatial → effects) 큰 전환은 짧은 크로스페이드 */
 @media (prefers-reduced-motion: reduce) {
+    :root {
+        --spring-spatial: var(--ease-effects);
+    }
     .ray { animation-duration: .01s; animation-delay: 0s; }
     .veil, [data-lift] { transition: opacity .2s ease; }
     .veil { opacity: 1; transform: none; filter: none; }
@@ -944,70 +852,69 @@ tbody tr.more-reveal.more-settled.more-hide,
     [data-lift] .collapsing .song-table, [data-lift] .collapse.show .song-table { animation: none; }
     tbody tr.more-reveal, [data-lift].is-lit .collapse tbody tr.more-reveal { animation: none; opacity: 1; transform: none; }
     [data-lift].is-lit .song-table-collapse.collapsing tbody tr, [data-lift].is-lit .song-table-collapse.collapse.show tbody tr { animation: none; opacity: 1; transform: none; }
-    .sheen::after { display: none; }
+    /* 내비바 스크롤 방향 반응(containers.css)은 위치 이동이라 끈다 */
+    html[data-scroll-direction="down"] .navbar { transform: none; }
     .btn:hover, .glass-btn:hover { transform: none; }
 }
 
-/* 투명도 최소화: 몸체 노브를 거의 불투명하게 올리고 blur 제거 */
+/* 투명도 최소화: 폴백 사다리의 맨 아래 단 — 크롬 유리를 불투명하게.
+   콘텐츠 판은 원래 불투명이라 손댈 것이 없다.
+   상단바·사이드 버튼은 재질 선언이 뒤에 로드되는 파일(containers·
+   common.css)에 있어, 같은 특정도로는 지므로 태그를 붙여 한 단계 올린다 */
 @media (prefers-reduced-transparency: reduce) {
     :root {
-        --g-alpha: .95;
-        --g-alpha-hero: .95;
         --g-alpha-strong: .95;
         --g-alpha-modal: .95;
     }
-    /* 상단바·사이드 버튼은 재질 선언이 뒤에 로드되는 파일(containers·
-       common.css)에 있어, 같은 특정도로는 지므로 태그를 붙여 한 단계 올린다 */
-    .glass, .glass-btn, .btn, .modal-content, .form-control,
-    nav.navbar, div.side-button-wrapper {
+    .glass-btn, .btn, .modal-content, .form-control,
+    nav.navbar, nav.navbar.scrolled, div.side-button-wrapper {
         -webkit-backdrop-filter: none;
         backdrop-filter: none;
     }
     .form-control {
         background: #ffffff;
     }
-    /* scrolled 상태의 몸체 값 이동(.68)도 불투명 쪽으로 고정 */
-    nav.navbar, nav.navbar.scrolled {
-        background: rgb(var(--g-white) / .95);
+    nav.navbar, nav.navbar.scrolled, div.side-button-wrapper {
+        background: rgb(255 255 255 / .95);
     }
-    /* clear 변형(0-2-0, 뒤 로드)은 위 선언(0-1-1)을 이기므로 한 단계 더 올려
-       재선언한다 — 얇은 틴트·낮은 blur 모두 불투명 쪽으로 고정 */
-    nav.navbar.navbar-clear, nav.navbar.navbar-clear.scrolled {
-        background: rgb(var(--g-white) / .95);
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
+    html[data-theme="dark"] nav.navbar, html[data-theme="dark"] nav.navbar.scrolled,
+    html[data-theme="dark"] div.side-button-wrapper {
+        background: rgb(27 36 48 / .96);
     }
-    nav.navbar.navbar-clear::after { display: none; }
-    .sheen::after { display: none; }
+    nav.navbar::after { display: none; }
     .modal-backdrop { -webkit-backdrop-filter: none; backdrop-filter: none; }
     .scroll-veil { display: none; }
 }
 
-/* 고대비: 잉크를 진하게, 몸체를 거의 불투명하게, 장식 빛은 제거.
+/* 고대비: 잉크를 진하게, 크롬 유리를 거의 불투명하게, 장식 빛은 제거.
    림 보더가 기본 transparent(에지 스택)이므로 여기서 직접 되살린다 —
    상태 선택자까지 나란히 선언해 hover/active 의 transparent 를 이긴다 */
 @media (prefers-contrast: more) {
     :root {
         --ink-2: #333f4a;
         --g-edge: rgb(70 85 100 / .55);
-        --g-alpha: .9;
-        --g-alpha-hero: .9;
         --g-alpha-strong: .96;
         --g-alpha-input: .95;
         --g-alpha-modal: .96;
     }
-    /* 상단바·사이드 버튼은 태그를 붙여 특정도를 올린다 (뒤 로드 파일 대응) */
-    .glass, .modal-content, nav.navbar, div.side-button-wrapper,
+    .content-panel {
+        box-shadow: 0 0 0 1px rgb(70 85 100 / .55);
+    }
+    .modal-content, nav.navbar, div.side-button-wrapper,
     .btn, .btn:hover, .btn:active,
     .glass-btn, .glass-btn:hover, .glass-btn:active {
         border-color: var(--g-edge);
     }
-    /* clear 변형은 몸체가 얇은 틴트라 대비가 부족하다 — 거의 불투명으로
+    /* 맑은 유리는 몸체가 얇은 틴트라 대비가 부족하다 — 거의 불투명으로
        올리고 장식 테두리(conic ::after)는 제거해 림 보더만 남긴다 */
-    nav.navbar.navbar-clear, nav.navbar.navbar-clear.scrolled {
-        background: rgb(var(--g-white) / .9);
+    nav.navbar, nav.navbar.scrolled, div.side-button-wrapper {
+        background: rgb(255 255 255 / .9);
     }
-    nav.navbar.navbar-clear::after { display: none; }
+    html[data-theme="dark"] nav.navbar, html[data-theme="dark"] nav.navbar.scrolled,
+    html[data-theme="dark"] div.side-button-wrapper {
+        background: rgb(27 36 48 / .94);
+    }
+    nav.navbar::after { display: none; }
     .bokeh { display: none; }
     .ray { display: none; }
 }

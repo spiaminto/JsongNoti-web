@@ -14,6 +14,8 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet"
         type="text/css"/>
+  <!-- dark 초기값: 스타일시트보다 먼저 동기 실행 (theme-init.js, FOUC 방지) -->
+  <script src="/static/js/theme-init.js" th:src="@{/js/theme-init.js}"></script>
   <!-- 웹폰트는 glass.css 가 weight 매핑과 함께 로드한다 -->
   <link href="/static/css/glass.css" th:href="@{/css/glass.css}" rel="stylesheet"/>
   <link href="/static/css/common.css" th:href="@{/css/common.css}" rel="stylesheet"/>
@@ -74,7 +76,7 @@
       })
   </script>
 </head>
-<body class="outer-element">
+<body>
 <div id="alertMessage" th:text="${alertMessage}" style="width: 0; height: 0; display: none"></div>
 
 <!-- 배경 연출: 씻어낸 히어로 사진 + 햇살. 콘텐츠 뒤(z-index 0)에 깔린다 -->
@@ -109,7 +111,7 @@
     </div>
   </div>
 
-  <!-- Navigation: 떠 있는 유리 알약. 햇살 뒤(0.4s)에 떠오른다 -->
+  <!-- Navigation: 떠 있는 맑은 유리 알약 (사이트 유일의 실시간 유리). 햇살 뒤(0.4s)에 떠오른다 -->
   <nav class="navbar veil" style="--vd:.4s">
     <h1>
       <a class="navbar-brand" href="/">
@@ -170,9 +172,9 @@
     </div>
   </div>
 
-  <!-- 히어로: 스크롤이 아니라 딜레이(0.8s)로 떠오르는 유리 카드 -->
+  <!-- 히어로: 스크롤이 아니라 딜레이(0.8s)로 떠오르는 콘텐츠 판(프로스트) -->
   <header class="hero-zone">
-    <div class="hero glass veil sheen" style="--vd:.8s">
+    <div class="hero content-panel veil" style="--vd:.8s">
       <h1 class="headerText">노래방에 일본 신곡이 등록되면<br>오전 10시에 메일로 알려드려요.</h1>
       <form class="forms-subscribe forms" id="subscribeForm">
         <!-- Email address input-->
@@ -266,7 +268,7 @@
       </div>
       <div class="songs-grid">
         <!-- 태진 -->
-        <div class="song-panel glass sheen" data-lift>
+        <div class="song-panel content-panel" data-lift>
           <h2 class="song-header-text">
             <span th:text="${tjLatestMonth + ' TJ 신곡'}">11월 TJ 신곡</span>
             <mark class="song-header-subtext" th:text="${tjLatestDateStr + ' 추가'}">00/00(요) 추가
@@ -363,7 +365,7 @@
           </div>
         </div>
         <!-- 금영 -->
-        <div class="song-panel glass sheen" data-lift>
+        <div class="song-panel content-panel" data-lift>
           <h2 class="song-header-text">
             <span th:text="${kyLatestMonth + ' 금영 신곡'}">11월 금영 신곡</span>
             <mark class="song-header-subtext" th:text="${kyLatestDateStr + ' 추가'}">00/00(0) 추가
@@ -482,7 +484,7 @@
         <i style="--s:230px; --dd:.16s"></i>
         <i style="--s:340px; --dd:.32s"></i>
       </div>
-      <div class="u-video glass">
+      <div class="u-video content-panel">
         <video autoplay muted loop playsinline preload="metadata">
           <source src="/static/assets/mov/subscribe.webm" th:src="@{/assets/mov/subscribe.webm}" type="video/webm">
           <source src="/static/assets/mov/subscribe.mp4" th:src="@{/assets/mov/subscribe.mp4}" type="video/mp4">
@@ -490,7 +492,7 @@
         </video>
         <div class="video-shadow dark-mode-element"></div>
       </div>
-      <div class="u-text glass sheen">
+      <div class="u-text content-panel">
         <h3>구독하기</h3>
         <p>
           이메일을 입력한 후 구독하기 버튼을 눌러요.
@@ -508,7 +510,7 @@
         <i style="--s:220px; --dd:.16s"></i>
         <i style="--s:330px; --dd:.32s"></i>
       </div>
-      <div class="u-video glass">
+      <div class="u-video content-panel">
         <video autoplay muted loop playsinline preload="metadata">
           <source src="/static/assets/mov/noti.webm" th:src="@{/assets/mov/noti.webm}" type="video/webm">
           <source src="/static/assets/mov/noti.mp4" th:src="@{/assets/mov/noti.mp4}" type="video/mp4">
@@ -516,7 +518,7 @@
         </video>
         <div class="video-shadow dark-mode-element"></div>
       </div>
-      <div class="u-text glass sheen">
+      <div class="u-text content-panel">
         <h3>이메일 수신</h3>
         <p>
           노래방에 일본 신곡이 추가되면 오전 10시에 등록된 이메일로 알려드려요.
@@ -533,7 +535,7 @@
         <i style="--s:240px; --dd:.16s"></i>
         <i style="--s:350px; --dd:.32s"></i>
       </div>
-      <div class="u-video glass">
+      <div class="u-video content-panel">
         <video autoplay muted loop playsinline preload="metadata">
           <source src="/static/assets/mov/unsubscribe.webm" th:src="@{/assets/mov/unsubscribe.webm}"
                   type="video/webm">
@@ -542,7 +544,7 @@
         </video>
         <div class="video-shadow dark-mode-element"></div>
       </div>
-      <div class="u-text glass sheen">
+      <div class="u-text content-panel">
         <h3>구독 취소</h3>
         <p>
           구독 취소는 페이지 맨 아래의 구독 취소 버튼을 눌러서 할 수 있어요.
@@ -559,11 +561,11 @@
         <i style="--s:230px; --dd:.16s"></i>
         <i style="--s:340px; --dd:.32s"></i>
       </div>
-      <div class="u-video glass">
+      <div class="u-video content-panel">
         <img src="/static/assets/img/bg-showcase-3.jpg" th:src="@{/assets/img/bg-showcase-3.jpg}" alt="문의사항 이미지">
         <div class="video-shadow dark-mode-element"></div>
       </div>
-      <div class="u-text glass sheen">
+      <div class="u-text content-panel">
         <h3>문의사항</h3>
         <p>
           문의사항은 jsongnoti+cs@gmail.com 으로 보내주세요.
@@ -671,7 +673,7 @@
               <i class="bi-envelope fs-3"></i>
             </a>
           </li>
-          <!-- 다크모드 토글: light 전용 오버홀 동안 숨김 (footer.css 에서 display:none) -->
+          <!-- dark 토글 (common-handlers.js) -->
           <li class="list-inline-item dark-mode-button">
             <a class="text-decoration-none"
                href="">
