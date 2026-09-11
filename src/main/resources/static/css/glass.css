@@ -73,32 +73,25 @@
         0 0 0 1px rgb(30 42 56 / .06),
         0 18px 48px -12px rgb(30 42 56 / .18);
 
-    /* 유리 재질 노브 (2기 잔재) — .btn·.form-control·.modal-content 가 아직 참조한다.
-       3기 2단계(버튼·모달)에서 그 규칙과 함께 제거한다 */
+    /* 버튼 사다리 (D20, iOS HIG 3단 + xsmall): 높이(줄 높이)·글자 크기 쌍.
+       large 는 단독 카드 버튼·모달 발 버튼(터치 44px 충족), medium 은 입력
+       그룹 옆·헤더 컨트롤, small 은 표 안 보조 컨트롤, xsmall 은 패널 헤더
+       옆 순서변경·삭제. 패딩·글자를 감으로 정하지 않고 이 중 하나를 고른다 */
+    --btn-h-lg: 50px;
+    --btn-h-md: 36px;
+    --btn-h-sm: 28px;
+    --btn-h-xs: 24px;
+    --btn-font-lg: 17px;
+    --btn-font-md: 15px;
+    --btn-font-sm: 13px;
+    --btn-font-xs: 12px;
+
+    /* 입력창 유리 노브 (2기 잔재) — .form-control 이 아직 참조한다.
+       3기 3단계(표·행)에서 입력창을 cream/dark 판으로 바꾸며 함께 제거한다 */
     --g-white: 255 255 255;   /* 몸체 백색 채널 */
-    --g-alpha: .6;            /* 패널 몸체 불투명도 */
-    --g-alpha-strong: .66;    /* 컨트롤(버튼) 몸체 */
     --g-alpha-input: .55;     /* 입력창 몸체 */
-    --g-alpha-modal: .82;     /* 모달 몸체 */
-    --g-sat: 175%;            /* 채도 부스트 */
-    --g-blur-panel: 22px;
-    --g-blur-btn: 16px;
     --g-blur-input: 10px;
-
-    /* 가장자리 (유리다움 책임) — 패널·버튼 림 보더는 에지 스택
-       (헤어라인 + 상하 inset)으로 대체되어, --g-edge 는 입력창 보더 전용 */
-    --g-edge-a: .72;          /* 림 보더 알파 (입력창) */
-    --g-edge: rgb(255 255 255 / var(--g-edge-a));
-    --g-inset-hi-a: 1;        /* 상단 inset 빛 알파 — 순백: 에지의 또렷함은 유리다움의 몸통 */
-    --g-inset-hi: rgb(255 255 255 / var(--g-inset-hi-a));
-    --g-inset-lo-a: .75;      /* 하단 반사광 알파 — 상단보다 넓게 퍼지는 inset */
-    --g-inset-lo: rgb(255 255 255 / var(--g-inset-lo-a));
-
-    /* 그림자·형태 */
-    --g-drop-a: .12;          /* 드롭 섀도 알파 */
-    --g-drop: 0 24px 60px rgb(30 42 56 / var(--g-drop-a));
-    --g-radius: 28px;
-    --g-radius-ctl: 999px;
+    --g-edge: rgb(255 255 255 / .72);  /* 입력창 림 보더 */
     --g-radius-input: 16px;
 
     /* 햇살 색 (rgb 채널값 — rgb(var(--sun) / a) 형태로 사용) */
@@ -240,128 +233,338 @@ textarea:focus-visible {
     box-shadow: var(--panel-shadow);
 }
 
-/* ---------- 버튼: Bootstrap .btn 전체를 유리 버튼으로 ----------
-   variant(btn-outline-primary 등) 구분 없이 같은 유리 표면을 쓰고,
-   위험 동작만 danger tint 로 구분한다. press 는 pointer-down 즉시 반응 */
-.btn,
-.glass-btn {
-    display: inline-block;
-    font-weight: 800;
-    color: var(--ink);
-    background: rgb(var(--g-white) / var(--g-alpha-strong));
-    -webkit-backdrop-filter: blur(var(--g-blur-btn)) saturate(var(--g-sat));
-    backdrop-filter: blur(var(--g-blur-btn)) saturate(var(--g-sat));
-    border: 1px solid transparent;
-    border-radius: var(--g-radius-ctl);
-    text-decoration: none;
-    box-shadow:
-        0 10px 26px rgb(30 42 56 / .12),
-        0 1px 0 rgb(30 42 56 / .13),
-        1px 0 0 rgb(30 42 56 / .06),
-        -1px 0 0 rgb(30 42 56 / .06),
-        inset 0 1px 0 var(--g-inset-hi),
-        inset 0 -2px 7px -2px rgb(255 255 255 / .7);
-    transition: transform .35s var(--ease-float), box-shadow .35s, background .35s, color .35s;
-    /* interaction glow(아래) 준비 — 발광을 알약 안으로 클리핑 */
+/* ---------- 버튼: rim 버튼 (D19·D20, 시안 9~13턴) ----------
+   Bootstrap .btn 전체를 하나의 재질로 통일한다. Liquid Glass 아이콘의 림
+   라이팅 근사: 위·아래 테두리는 밝고 양옆은 어두운 conic 링을 ::after 로
+   테두리 1px 에만 마스킹하고, 안쪽 그림자(위 1.5px 하이라이트·아래 1px·
+   양옆 1.5px 그늘)로 옆면을 만든다. 실시간 유리 없음 — 비용 0.
+   variant(btn-outline-* 등)는 구분하지 않고 위험 동작(danger)과 주된
+   동작(primary)만 색을 달리한다. 모양은 캡슐 하나, 크기는 사다리 4단.
+   변형(danger·primary·dark)은 아래 --btn-* 변수만 덮어쓴다.
+
+   오류 페이지는 Bootstrap 없이 glass.css 만 로드하므로, .btn 이 단독으로도
+   버튼이 되도록 font-family·cursor 까지 여기서 준다.
+
+   plain 버튼(되돌릴 때, 시안 P2 알파 버튼): background rgb(30 42 56 / .07),
+   radius 14px, box-shadow 없음, hover .11, active scale(.96); primary 는
+   radius 999px + var(--ink) 바탕에 흰 글자(hover #2b3642); danger 는
+   var(--danger-tint)/var(--danger-ink); dark 는 흰 .09(hover .14),
+   primary 는 #f0f3f7 바탕에 #121a24 글자 */
+.btn {
+    /* 재질 변수 — 변형은 이것만 바꾼다 */
+    --btn-ink: var(--ink);
+    --btn-bg: linear-gradient(180deg, rgb(244 246 249 / .92), rgb(226 231 237 / .92));
+    --btn-bg-hover: linear-gradient(180deg, rgb(250 251 253 / .95), rgb(232 236 242 / .95));
+    --btn-bg-active: linear-gradient(180deg, rgb(226 231 237), rgb(216 222 230));
+    --btn-shadow:
+        inset 0 1.5px 0 rgb(255 255 255 / .85),
+        inset 0 -1px 0 rgb(255 255 255 / .25),
+        inset 1.5px 0 2px -1px rgb(30 42 56 / .08),
+        inset -1.5px 0 2px -1px rgb(30 42 56 / .08),
+        0 1px 2px rgb(30 42 56 / .10),
+        0 5px 12px -3px rgb(30 42 56 / .22);
+    --btn-shadow-hover:
+        inset 0 1.5px 0 #fff,
+        inset 0 -1px 0 rgb(255 255 255 / .3),
+        inset 1.5px 0 2px -1px rgb(30 42 56 / .07),
+        inset -1.5px 0 2px -1px rgb(30 42 56 / .07),
+        0 2px 4px rgb(30 42 56 / .10),
+        0 12px 22px -6px rgb(30 42 56 / .3);
+    --btn-shadow-active:
+        inset 0 1px 2px rgb(30 42 56 / .14),
+        inset 1.5px 0 2px -1px rgb(30 42 56 / .09),
+        inset -1.5px 0 2px -1px rgb(30 42 56 / .09),
+        0 1px 2px rgb(30 42 56 / .08);
+    /* 링: 0°(위)·180°(아래)는 흰색, 90°·270°(양옆)는 잉크 */
+    --btn-ring: conic-gradient(from 0deg,
+        rgb(255 255 255 / .9) 0deg, rgb(255 255 255 / .6) 25deg,
+        rgb(30 42 56 / .12) 75deg, rgb(30 42 56 / .16) 105deg,
+        rgb(255 255 255 / .3) 155deg, rgb(255 255 255 / .45) 180deg, rgb(255 255 255 / .3) 205deg,
+        rgb(30 42 56 / .12) 255deg, rgb(30 42 56 / .16) 285deg,
+        rgb(255 255 255 / .6) 335deg, rgb(255 255 255 / .9) 360deg);
+
+    /* Bootstrap 의 :active 규칙(.btn:first-child:active 등)은 우리보다
+       특정도가 높아 background-color·color 를 덮는다 — 그 값을 투명·같은
+       잉크로 맞춰 우리 그라디언트가 그대로 보이게 한다 */
+    --bs-btn-active-bg: transparent;
+    --bs-btn-active-color: var(--btn-ink);
+    --bs-btn-active-border-color: transparent;
+
     position: relative;
-    overflow: hidden;
+    isolation: isolate; /* 링(::after)의 z-index 를 버튼 안에 가둔다 */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    /* 사다리 기본 단 = medium. 높이는 line-height 로 잡는다 — jQuery
+       show() 가 display 를 inline-block 으로 되돌려도 글자가 가운데 온다 */
+    line-height: var(--btn-h-md);
+    padding: 0 18px;
+    min-width: 96px;
+    font-family: inherit;
+    font-size: var(--btn-font-md);
+    font-weight: 600;
+    color: var(--btn-ink);
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    border: 0;
+    border-radius: 999px;
+    background: var(--btn-bg);
+    box-shadow: var(--btn-shadow);
+    /* 위치·크기는 스프링, 색·그림자는 effects 곡선 (P11) */
+    transition: transform .5s var(--spring-spatial), box-shadow .25s var(--ease-effects), background .2s var(--ease-effects);
+    will-change: transform;
 }
 
-/* hover·active 는 몸체만 변하고 에지 스택은 유지한다 */
-.btn:hover,
-.glass-btn:hover {
-    color: var(--ink);
-    transform: translateY(-2px);
-    background: rgb(var(--g-white) / .8);
-    border-color: transparent;
-    box-shadow:
-        0 10px 26px rgb(30 42 56 / .12),
-        0 1px 0 rgb(30 42 56 / .13),
-        1px 0 0 rgb(30 42 56 / .06),
-        -1px 0 0 rgb(30 42 56 / .06),
-        inset 0 1px 0 var(--g-inset-hi),
-        inset 0 -2px 7px -2px rgb(255 255 255 / .7);
-}
-
-/* hover 의 느린 전환 대신 즉시 줄어드는 press 피드백 */
-.btn:active,
-.glass-btn:active {
-    color: var(--ink);
-    background: rgb(var(--g-white) / var(--g-alpha-strong));
-    border-color: transparent;
-    transform: scale(.965);
-    transition: transform .08s ease-out;
-}
-
-.btn:disabled {
-    color: var(--ink-3);
-    background: rgb(255 255 255 / .4);
-    border-color: rgb(255 255 255 / .5);
-    box-shadow: none;
-}
-
-/* Bootstrap 없이 단독으로 쓰는 유리 버튼(.glass-btn)의 크기.
-   .btn 쪽에 넣으면 btn-lg/btn-sm 의 크기 체계를 덮어쓰므로 여기서만 준다 */
-.glass-btn {
-    padding: .7rem 1.4rem;
-}
-
-/* 위험 동작(구독취소·탈퇴·삭제)만 붉은 tint 로 구분.
-   보더는 .btn 의 transparent 를 그대로 둔다 — 에지 스택이 위험 버튼에도
-   공통 적용된다 (ui-rnd 5턴 판정) */
-.btn-danger,
-.btn-outline-danger {
-    color: var(--danger-ink);
-    background: var(--danger-tint);
-}
-
-.btn-danger:hover,
-.btn-outline-danger:hover {
-    color: var(--danger-ink);
-    background: rgb(255 190 175 / .45);
-}
-
-.btn-danger:active,
-.btn-outline-danger:active {
-    color: var(--danger-ink);
-    background: var(--danger-tint);
-}
-
-/* ---------- 모션: interaction glow (ui-rnd 5턴) ----------
-   누른 접점에서 국소 발광 — 접점 좌표(--glow-x/--glow-y)와 .glowing 은
-   glass-motion.js 가 심는다. 누름: 작고 밝게 맺힘(빠른 램프) →
-   뗌: 퍼지면서 사그라듦(느린 감쇠) — 반경이 커지며 알파가 빠지는 조합.
-   발광 알파·반경은 @property 타입 등록으로 그라디언트 내부 값이
-   transition 보간된다. 미등록 브라우저는 즉시 전환 자연 폴백.
-   그라디언트 재페인트는 버튼 면적뿐이라 성능 계약(blur 무관) 안이다 */
-@property --glow-a {
-    syntax: '<number>';
-    inherits: false;
-    initial-value: 0;
-}
-
-@property --glow-r {
-    syntax: '<length>';
-    inherits: false;
-    initial-value: 130px;
-}
-
-.btn::after,
-.glass-btn::after {
-    content: "";
+.btn::after {
+    content: '';
     position: absolute;
     inset: 0;
+    z-index: 1;
     border-radius: inherit;
+    padding: 1px; /* 링 두께 */
+    background: var(--btn-ring);
+    /* 전체에서 content-box 를 빼 테두리 1px 만 남긴다 */
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
     pointer-events: none;
-    background: radial-gradient(circle var(--glow-r) at var(--glow-x, 50%) var(--glow-y, 50%),
-        rgb(255 255 255 / var(--glow-a)), transparent 70%);
-    transition: --glow-a .55s ease-out, --glow-r .55s ease-out;
 }
 
-.glowing::after {
-    --glow-a: .55;
-    --glow-r: 70px;
+/* hover 는 행 lift 와 같은 스프링으로 살짝 커지며 뜬다 */
+.btn:hover {
+    color: var(--btn-ink);
+    background: var(--btn-bg-hover);
+    box-shadow: var(--btn-shadow-hover);
+    transform: translateY(-1px) scale(1.06);
+}
+
+/* 누르면 즉시(.1s) 가라앉고, 떼면 스프링으로 복귀 */
+.btn:active {
+    color: var(--btn-ink);
+    background: var(--btn-bg-active);
+    box-shadow: var(--btn-shadow-active);
+    transform: translateY(0) scale(.94);
     transition-duration: .1s;
+}
+
+/* Bootstrap 은 focus-visible 에 box-shadow 링을 쓰지만 우리는 rim 그림자를
+   유지하고 outline 으로 표시한다 (전역 포커스 규칙과 같은 색) */
+.btn:focus-visible {
+    box-shadow: var(--btn-shadow);
+    outline: 3px solid rgb(100 149 237 / .55);
+    outline-offset: 2px;
+}
+
+.btn:disabled,
+.btn.disabled {
+    color: var(--ink-3);
+    background: rgb(30 42 56 / .04);
+    box-shadow: none;
+    transform: none;
+}
+
+.btn:disabled::after,
+.btn.disabled::after {
+    display: none;
+}
+
+/* 위험 동작(구독취소·탈퇴·삭제): 붉은 그라디언트 + 붉은 링.
+   hover 도 붉은 계열 안에서만 밝아진다 (시안 10턴 손질) */
+.btn-danger,
+.btn-outline-danger {
+    --btn-ink: var(--danger-ink);
+    --btn-bg: linear-gradient(180deg, rgb(255 236 232 / .95), rgb(255 220 213 / .95));
+    --btn-bg-hover: linear-gradient(180deg, rgb(255 242 239 / .97), rgb(255 228 222 / .97));
+    --btn-bg-active: linear-gradient(180deg, rgb(252 222 216), rgb(248 210 202));
+    --btn-shadow:
+        inset 0 1.5px 0 rgb(255 255 255 / .7),
+        inset 0 -1px 0 rgb(255 255 255 / .23),
+        inset 1.5px 0 2px -1px rgb(214 90 70 / .11),
+        inset -1.5px 0 2px -1px rgb(214 90 70 / .11),
+        0 1px 2px rgb(214 90 70 / .10),
+        0 5px 12px -3px rgb(214 90 70 / .28);
+    --btn-shadow-hover:
+        inset 0 1.5px 0 rgb(255 255 255 / .8),
+        inset 0 -1px 0 rgb(255 255 255 / .25),
+        inset 1.5px 0 2px -1px rgb(214 90 70 / .1),
+        inset -1.5px 0 2px -1px rgb(214 90 70 / .1),
+        0 2px 4px rgb(214 90 70 / .1),
+        0 12px 22px -6px rgb(214 90 70 / .35);
+    --btn-shadow-active:
+        inset 0 1px 2px rgb(214 90 70 / .18),
+        inset 1.5px 0 2px -1px rgb(214 90 70 / .14),
+        inset -1.5px 0 2px -1px rgb(214 90 70 / .14),
+        0 1px 2px rgb(214 90 70 / .08);
+    --btn-ring: conic-gradient(from 0deg,
+        rgb(255 255 255 / .9) 0deg, rgb(255 255 255 / .6) 25deg,
+        rgb(214 90 70 / .16) 75deg, rgb(214 90 70 / .22) 105deg,
+        rgb(255 255 255 / .3) 155deg, rgb(255 255 255 / .45) 180deg, rgb(255 255 255 / .3) 205deg,
+        rgb(214 90 70 / .16) 255deg, rgb(214 90 70 / .22) 285deg,
+        rgb(255 255 255 / .6) 335deg, rgb(255 255 255 / .9) 360deg);
+}
+
+/* 주된 동작(primary): 잉크 캡슐 — 색은 글자가 아니라 바탕에 (P18).
+   Bootstrap .btn-primary 와 페이지별 버튼: 구독하기(index), 구글 로그인·
+   수집 동의 확인(모달), 검색하기·애창곡 추가·설정 변경(애창곡·검색),
+   순서변경·삭제 완료(편집 모드 마무리). hover 그림자는 기본과 같다 */
+.btn-primary,
+#submitButton,
+.favorite-login-button,
+#agreementModal .modal-footer .btn,
+#searchSongButton,
+#addSongButton,
+#submitChangeSettingButton,
+.switch-order-complete-button,
+.delete-favorite-song-complete-button {
+    --btn-ink: #fff;
+    --btn-bg: linear-gradient(180deg, #34404e, #1e2a38);
+    --btn-bg-hover: linear-gradient(180deg, #3e4b5a, #26333f);
+    --btn-bg-active: linear-gradient(180deg, #1e2a38, #17212c);
+    --btn-shadow:
+        inset 0 1.5px 0 rgb(255 255 255 / .3),
+        inset 0 -1px 0 rgb(255 255 255 / .06),
+        inset 1.5px 0 2px -1px rgb(0 0 0 / .22),
+        inset -1.5px 0 2px -1px rgb(0 0 0 / .22),
+        0 1px 2px rgb(30 42 56 / .25),
+        0 8px 18px -6px rgb(30 42 56 / .55);
+    --btn-shadow-active:
+        inset 0 1px 2px rgb(0 0 0 / .4),
+        inset 1.5px 0 2px -1px rgb(0 0 0 / .07),
+        inset -1.5px 0 2px -1px rgb(0 0 0 / .07),
+        0 1px 2px rgb(30 42 56 / .25);
+    --btn-ring: conic-gradient(from 0deg,
+        rgb(255 255 255 / .55) 0deg, rgb(255 255 255 / .3) 25deg,
+        rgb(0 0 0 / .25) 75deg, rgb(0 0 0 / .32) 105deg,
+        rgb(255 255 255 / .14) 155deg, rgb(255 255 255 / .23) 180deg, rgb(255 255 255 / .14) 205deg,
+        rgb(0 0 0 / .25) 255deg, rgb(0 0 0 / .32) 285deg,
+        rgb(255 255 255 / .3) 335deg, rgb(255 255 255 / .55) 360deg);
+}
+
+/* dark: 흰 알파 그라디언트 + 검은 그림자. 특정도가 위 변형들보다 높으므로
+   danger·primary 의 dark 값을 이 뒤에 다시 적는다 */
+html[data-theme="dark"] .btn {
+    --btn-bg: linear-gradient(180deg, rgb(255 255 255 / .16), rgb(255 255 255 / .07));
+    --btn-bg-hover: linear-gradient(180deg, rgb(255 255 255 / .22), rgb(255 255 255 / .1));
+    --btn-bg-active: linear-gradient(180deg, rgb(255 255 255 / .07), rgb(255 255 255 / .04));
+    --btn-shadow:
+        inset 0 1.5px 0 rgb(255 255 255 / .35),
+        inset 0 -1px 0 rgb(255 255 255 / .09),
+        inset 1.5px 0 2px -1px rgb(0 0 0 / .07),
+        inset -1.5px 0 2px -1px rgb(0 0 0 / .07),
+        0 1px 2px rgb(0 0 0 / .35),
+        0 5px 12px -3px rgb(0 0 0 / .55);
+    --btn-shadow-hover:
+        inset 0 1.5px 0 rgb(255 255 255 / .4),
+        inset 0 -1px 0 rgb(255 255 255 / .1),
+        inset 1.5px 0 2px -1px rgb(0 0 0 / .22),
+        inset -1.5px 0 2px -1px rgb(0 0 0 / .22),
+        0 2px 4px rgb(0 0 0 / .35),
+        0 12px 22px -6px rgb(0 0 0 / .7);
+    --btn-shadow-active:
+        inset 0 1px 2px rgb(0 0 0 / .5),
+        inset 1.5px 0 2px -1px rgb(0 0 0 / .27),
+        inset -1.5px 0 2px -1px rgb(0 0 0 / .27);
+    --btn-ring: conic-gradient(from 0deg,
+        rgb(255 255 255 / .6) 0deg, rgb(255 255 255 / .35) 25deg,
+        rgb(0 0 0 / .28) 75deg, rgb(0 0 0 / .36) 105deg,
+        rgb(255 255 255 / .15) 155deg, rgb(255 255 255 / .25) 180deg, rgb(255 255 255 / .15) 205deg,
+        rgb(0 0 0 / .28) 255deg, rgb(0 0 0 / .36) 285deg,
+        rgb(255 255 255 / .35) 335deg, rgb(255 255 255 / .6) 360deg);
+}
+
+html[data-theme="dark"] .btn:disabled,
+html[data-theme="dark"] .btn.disabled {
+    background: rgb(255 255 255 / .05);
+}
+
+/* dark 위험색은 iOS 시스템 빨강(#FF453A) 계열 채움 + 흰 글자 (시안 12턴) */
+html[data-theme="dark"] .btn-danger,
+html[data-theme="dark"] .btn-outline-danger {
+    --btn-ink: #fff;
+    --btn-bg: linear-gradient(180deg, rgb(255 69 58 / .76), rgb(255 69 58 / .54));
+    --btn-bg-hover: linear-gradient(180deg, rgb(255 69 58 / .88), rgb(255 69 58 / .64));
+    --btn-bg-active: linear-gradient(180deg, rgb(255 69 58 / .62), rgb(255 69 58 / .44));
+}
+
+/* dark primary: 흰 캡슐에 어두운 글자 */
+html[data-theme="dark"] .btn-primary,
+html[data-theme="dark"] #submitButton,
+html[data-theme="dark"] .favorite-login-button,
+html[data-theme="dark"] #agreementModal .modal-footer .btn,
+html[data-theme="dark"] #searchSongButton,
+html[data-theme="dark"] #addSongButton,
+html[data-theme="dark"] #submitChangeSettingButton,
+html[data-theme="dark"] .switch-order-complete-button,
+html[data-theme="dark"] .delete-favorite-song-complete-button {
+    --btn-ink: #121a24;
+    --btn-bg: linear-gradient(180deg, #ffffff, #e2e7ee);
+    --btn-bg-hover: #fff;
+    --btn-bg-active: linear-gradient(180deg, #dfe4ea, #d3d9e0);
+    --btn-shadow:
+        inset 0 1.5px 0 #fff,
+        inset 0 -1px 0 rgb(255 255 255 / .3),
+        inset 1.5px 0 2px -1px rgb(30 42 56 / .09),
+        inset -1.5px 0 2px -1px rgb(30 42 56 / .09),
+        0 1px 2px rgb(0 0 0 / .4),
+        0 8px 18px -6px rgb(0 0 0 / .7);
+    --btn-shadow-active:
+        inset 0 1px 2px rgb(0 0 0 / .25),
+        0 1px 2px rgb(0 0 0 / .4);
+    --btn-ring: conic-gradient(from 0deg,
+        #fff 0deg, rgb(255 255 255 / .7) 25deg,
+        rgb(30 42 56 / .16) 75deg, rgb(30 42 56 / .22) 105deg,
+        rgb(255 255 255 / .35) 155deg, rgb(255 255 255 / .5) 180deg, rgb(255 255 255 / .35) 205deg,
+        rgb(30 42 56 / .16) 255deg, rgb(30 42 56 / .22) 285deg,
+        rgb(255 255 255 / .7) 335deg, #fff 360deg);
+}
+
+/* ---------- 버튼 사다리 (D20) ----------
+   기본(.btn)이 medium. btn-lg/btn-sm 은 Bootstrap 클래스 이름을 그대로 쓰되
+   값은 사다리 토큰이고, btn-xsm 은 우리 확장이다 */
+.btn-lg {
+    line-height: var(--btn-h-lg);
+    padding: 0 28px;
+    min-width: 120px;
+    font-size: var(--btn-font-lg);
+}
+
+.btn-sm {
+    line-height: var(--btn-h-sm);
+    padding: 0 12px;
+    min-width: 72px;
+    font-size: var(--btn-font-sm);
+}
+
+.btn-xsm {
+    line-height: var(--btn-h-xs);
+    padding: 0 10px;
+    min-width: 56px;
+    font-size: var(--btn-font-xs);
+}
+
+/* xsmall 은 터치 44px 을 못 채우므로, 터치 기기에서는 보이지 않는 hit 영역을
+   위아래 10px 씩 넓힌다 (형제 버튼과 좌우로 붙어 있어 옆은 넓히지 않음) */
+@media (pointer: coarse) {
+    .btn-xsm::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: -10px;
+        bottom: -10px;
+    }
+}
+
+/* 입력 그룹 옆 버튼은 단(글자·패딩)은 그대로 두고 높이만 입력창에 맞춰
+   늘어나게 한다 — 줄 높이보다 큰 입력창(form-control-lg) 옆에서 키가
+   어긋나지 않도록 */
+.input-group > .btn {
+    align-self: stretch;
 }
 
 /* ---------- 입력: Bootstrap .form-control 을 유리 입력창으로 ---------- */
@@ -395,43 +598,355 @@ textarea:focus-visible {
     border-color: #6d7d8d;
 }
 
-/* 입력창과 버튼을 유리답게 띄워 배치 (Bootstrap 이 모서리를 붙이는 것을 되돌림) */
+/* 입력창과 버튼을 띄워 배치 (Bootstrap 이 모서리를 붙이는 것을 되돌림).
+   !important 는 Bootstrap 의 :not() 체인(특정도 0,5,0)을 이기기 위함이며,
+   구독취소·탈퇴 모달의 입력 그룹만 예외로 붙인다 (아래 모달 절) */
 .input-group {
     gap: .55rem;
 }
 
 .input-group > .form-control,
 .input-group > .btn {
-    border-radius: 16px !important; /* Bootstrap 의 first/last-child 모서리 제거 규칙보다 우선 */
+    border-radius: 14px !important;
 }
 
-/* ---------- 모달: 유리 판 + 흐려지는 배경 ---------- */
+/* ---------- 모달: iOS 시트 문법 (D19) ----------
+   불투명 판(28px, 구분선 없음) + 원형 닫기 + 캡슐 발 버튼. 뒤에는 실시간
+   블러 베일 한 장(.modal-backdrop — 크롬이므로 허용). 발 버튼은 768px 미만
+   전폭 나란히, 768px 부터 오른쪽 정렬·128px 이상으로 크게, primary 는
+   Apple 관례대로 오른쪽 끝. 버튼 크기는 사다리 large(btn-lg)로 통일한다 —
+   D20 이 D19 의 임시 치수(.7rem 1rem / 1.05rem)보다 뒤에 정해졌다.
+   primary 색은 사이트 rim primary(잉크)이고 iOS 파랑은 쓰지 않는다 */
+.modal {
+    --bs-modal-width: 440px;
+}
+
+.modal-dialog {
+    font-size: 1rem;
+}
+
 .modal-content {
-    background: rgb(var(--g-white) / var(--g-alpha-modal));
-    -webkit-backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
-    backdrop-filter: blur(var(--g-blur-panel)) saturate(var(--g-sat));
-    border: 1px solid transparent;
-    border-radius: var(--g-radius);
-    box-shadow:
-        var(--g-drop),
-        0 1px 0 rgb(30 42 56 / .13),
-        1px 0 0 rgb(30 42 56 / .06),
-        -1px 0 0 rgb(30 42 56 / .06),
-        inset 0 1px 0 var(--g-inset-hi),
-        inset 0 -3px 10px -2px var(--g-inset-lo);
+    background: var(--panel-bg);
+    color: var(--ink);
+    border: 0;
+    border-radius: 28px;
+    box-shadow: var(--panel-shadow), 0 30px 80px -20px rgb(30 42 56 / .35);
 }
 
-.modal-header,
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 0;
+    padding: 22px 24px 6px;
+}
+
+.modal-title {
+    color: var(--ink);
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+}
+
+.modal-body {
+    padding: 10px 24px 6px;
+    color: var(--ink);
+}
+
 .modal-footer {
-    border-color: rgb(140 160 180 / .25);
+    border: 0;
+    padding: 14px 24px 24px;
+    gap: 10px;
 }
 
-/* 모달 뒤 페이지를 어둡게만 하지 않고 실제로 흐린다 */
+.modal-footer > * {
+    margin: 0;
+}
+
+.modal-footer .btn {
+    flex: 1 1 0;
+}
+
+@media (min-width: 768px) {
+    .modal {
+        --bs-modal-width: 560px;
+    }
+
+    .modal-header {
+        padding: 26px 28px 8px;
+    }
+
+    .modal-body {
+        padding-left: 28px;
+        padding-right: 28px;
+    }
+
+    .modal-footer {
+        padding: 18px 28px 26px;
+        justify-content: flex-end;
+    }
+
+    .modal-footer .btn {
+        flex: 0 0 auto;
+        min-width: 128px;
+    }
+
+    /* primary 는 오른쪽 끝 — DOM 은 변경·닫기 순이라 CSS 로 뒤집는다.
+       기존 순서가 낫다면 이 규칙만 뺀다 */
+    .modal-footer .favorite-login-button,
+    .modal-footer #submitChangeSettingButton {
+        order: 2;
+    }
+}
+
+/* 원형 닫기. Bootstrap 의 .modal-header .btn-close 가 음수 margin 을 주므로
+   같은 특정도로 되돌린다 */
+.btn-close {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    margin: 0;
+    border-radius: 50%;
+    background-color: rgb(30 42 56 / .08);
+    background-size: .7em;
+    opacity: 1;
+    transition: background-color .2s var(--ease-effects), transform .38s var(--spring-spatial);
+}
+
+.modal-header .btn-close {
+    padding: 0;
+    margin: 0 0 0 auto;
+}
+
+.btn-close:hover {
+    background-color: rgb(30 42 56 / .14);
+    opacity: 1;
+    transform: scale(1.08);
+}
+
+.btn-close:focus {
+    box-shadow: none;
+}
+
+/* 모달 뒤 페이지를 어둡게만 하지 않고 실제로 흐린다 (현행 8px 유지) */
 .modal-backdrop {
     --bs-backdrop-bg: #2a3947;
-    --bs-backdrop-opacity: .4;
+    --bs-backdrop-opacity: .35;
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
+}
+
+/* 로그인 안내: 힌트 이미지는 판 안의 둥근 사진, 안내문은 회색,
+   도움말 링크는 잉크색 (index·search 공용) */
+.modal-image-wrapper {
+    position: relative;
+    margin: 4px 0 16px;
+}
+
+.modal-image-wrapper > img {
+    width: 100%;
+    border-radius: 18px;
+    box-shadow: 0 0 0 1px rgb(30 42 56 / .08), 0 8px 24px -8px rgb(30 42 56 / .25);
+}
+
+.login-modal-info {
+    padding: 0 4px;
+    color: var(--ink-2);
+    font-size: .95rem;
+    line-height: 1.6;
+}
+
+.login-modal-info a {
+    color: var(--ink);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* 이메일 수집 동의: 본문 회색, 소제목만 잉크 */
+#agreementModal .modal-body-content {
+    color: var(--ink-2);
+    font-size: .95rem;
+    line-height: 1.7;
+}
+
+#agreementModal .modal-body-content h4 {
+    color: var(--ink);
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+}
+
+/* 구독 취소·회원 탈퇴: 안내문 회색, 입력 그룹은 붙여서 바깥 모서리만 14px */
+#unsubscribeModal .modal-body p,
+#deleteUserModal .modal-body p {
+    color: var(--ink-2);
+    font-size: .95rem;
+    margin-bottom: 14px;
+}
+
+#unsubscribeModal .input-group,
+#deleteUserModal .input-group {
+    gap: 0;
+    margin-bottom: 10px;
+}
+
+#unsubscribeModal .input-group > .form-control,
+#deleteUserModal .input-group > .form-control {
+    border-radius: 14px 0 0 14px !important;
+}
+
+#unsubscribeModal .input-group > .btn,
+#deleteUserModal .input-group > .btn {
+    border-radius: 0 14px 14px 0 !important;
+}
+
+/* 인셋 그룹 목록 (애창곡 설정 모달): iOS 설정 앱의 그룹 표.
+   markup: p.inset-group-title + div.inset-group > div.form-check × n
+   라디오 input 은 숨기고 행 전체가 선택 영역, 선택된 행 오른쪽에 ✓ */
+.inset-group-title {
+    margin: 16px 0 8px;
+    padding-left: 14px;
+    color: var(--ink-2);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.inset-group-title:first-child {
+    margin-top: 2px;
+}
+
+.inset-group {
+    overflow: hidden; /* 행 배경을 그룹 모서리로 자른다 */
+    border-radius: 16px;
+    background: rgb(30 42 56 / .05);
+}
+
+.inset-group .form-check {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    min-height: 0;
+}
+
+.inset-group .form-check + .form-check {
+    border-top: 1px solid rgb(30 42 56 / .08);
+}
+
+.inset-group .form-check-input {
+    position: absolute;
+    width: 0;
+    height: 0;
+    margin: 0;
+    opacity: 0;
+}
+
+.inset-group .form-check-label {
+    flex: 1;
+    padding: 12px 16px;
+    cursor: pointer;
+    color: var(--ink);
+    font-size: 1rem;
+}
+
+/* ✓: 잉크색 꺾쇠 — 선택 시 스프링으로 튀어나온다 */
+.inset-group .form-check::after {
+    content: '';
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    width: 7px;
+    height: 12px;
+    margin-top: -8px;
+    border: solid var(--ink);
+    border-width: 0 2.2px 2.2px 0;
+    transform: rotate(45deg) scale(0);
+    opacity: 0;
+    transition: transform .38s var(--spring-spatial), opacity .15s var(--ease-effects);
+}
+
+.inset-group .form-check:has(input:checked)::after {
+    transform: rotate(45deg) scale(1);
+    opacity: 1;
+}
+
+/* 숨긴 라디오의 키보드 포커스는 행에 표시한다 */
+.inset-group .form-check:has(input:focus-visible) {
+    box-shadow: inset 0 0 0 3px rgb(100 149 237 / .55);
+}
+
+@media (hover: hover) {
+    .inset-group .form-check:hover {
+        background: rgb(30 42 56 / .08);
+    }
+}
+
+.inset-group .form-check:active {
+    background: rgb(30 42 56 / .12);
+}
+
+#changeSettingModal .modal-body {
+    padding-bottom: 2px;
+}
+
+/* 추가 순서 설정: 표 판은 시트 위라 투명, 안내문 회색.
+   선택 행(흰 판 + ✓)은 ③ 표·행 단계의 행 lift 와 함께 옮긴다 */
+.modal .song-table-border {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+#presentOrderModal .modal-body .text-center {
+    color: var(--ink-2);
+    font-size: .95rem;
+}
+
+/* dark 시트 */
+html[data-theme="dark"] .modal-content {
+    box-shadow: var(--panel-shadow), 0 30px 80px -20px rgb(0 0 0 / .7);
+}
+
+html[data-theme="dark"] .modal-backdrop {
+    --bs-backdrop-bg: #05080c;
+    --bs-backdrop-opacity: .55;
+}
+
+html[data-theme="dark"] .btn-close {
+    filter: invert(1) grayscale(1) brightness(1.4);
+    background-color: rgb(0 0 0 / .10);
+}
+
+html[data-theme="dark"] .btn-close:hover {
+    background-color: rgb(0 0 0 / .16);
+}
+
+html[data-theme="dark"] .modal-image-wrapper > img {
+    box-shadow: 0 0 0 1px rgb(255 255 255 / .10), 0 8px 24px -8px rgb(0 0 0 / .6);
+}
+
+html[data-theme="dark"] .inset-group {
+    background: rgb(255 255 255 / .06);
+}
+
+html[data-theme="dark"] .inset-group .form-check + .form-check {
+    border-top-color: rgb(255 255 255 / .08);
+}
+
+@media (hover: hover) {
+    html[data-theme="dark"] .inset-group .form-check:hover {
+        background: rgb(255 255 255 / .10);
+    }
+}
+
+html[data-theme="dark"] .inset-group .form-check:active {
+    background: rgb(255 255 255 / .14);
+}
+
+html[data-theme="dark"] .modal .song-table th {
+    color: var(--ink-2);
+    border-color: rgb(255 255 255 / .12);
 }
 
 /* ---------- 모션: scroll edge (ui-rnd 5턴) ----------
@@ -854,7 +1369,7 @@ tbody tr.more-reveal.more-settled.more-hide,
     [data-lift].is-lit .song-table-collapse.collapsing tbody tr, [data-lift].is-lit .song-table-collapse.collapse.show tbody tr { animation: none; opacity: 1; transform: none; }
     /* 내비바 스크롤 방향 반응(containers.css)은 위치 이동이라 끈다 */
     html[data-scroll-direction="down"] .navbar { transform: none; }
-    .btn:hover, .glass-btn:hover { transform: none; }
+    .btn:hover, .btn-close:hover { transform: none; }
 }
 
 /* 투명도 최소화: 폴백 사다리의 맨 아래 단 — 크롬 유리를 불투명하게.
@@ -862,11 +1377,7 @@ tbody tr.more-reveal.more-settled.more-hide,
    상단바·사이드 버튼은 재질 선언이 뒤에 로드되는 파일(containers·
    common.css)에 있어, 같은 특정도로는 지므로 태그를 붙여 한 단계 올린다 */
 @media (prefers-reduced-transparency: reduce) {
-    :root {
-        --g-alpha-strong: .95;
-        --g-alpha-modal: .95;
-    }
-    .glass-btn, .btn, .modal-content, .form-control,
+    .form-control,
     nav.navbar, nav.navbar.scrolled, div.side-button-wrapper {
         -webkit-backdrop-filter: none;
         backdrop-filter: none;
@@ -893,18 +1404,16 @@ tbody tr.more-reveal.more-settled.more-hide,
     :root {
         --ink-2: #333f4a;
         --g-edge: rgb(70 85 100 / .55);
-        --g-alpha-strong: .96;
         --g-alpha-input: .95;
-        --g-alpha-modal: .96;
     }
-    .content-panel {
-        box-shadow: 0 0 0 1px rgb(70 85 100 / .55);
+    .content-panel, .modal-content, nav.navbar, div.side-button-wrapper {
+        box-shadow: 0 0 0 1px var(--g-edge);
     }
-    .modal-content, nav.navbar, div.side-button-wrapper,
-    .btn, .btn:hover, .btn:active,
-    .glass-btn, .glass-btn:hover, .glass-btn:active {
-        border-color: var(--g-edge);
+    /* rim 버튼은 링·그림자 대신 또렷한 테두리 하나로 */
+    .btn, .btn:hover, .btn:active {
+        box-shadow: 0 0 0 1.5px var(--g-edge);
     }
+    .btn::after { display: none; }
     /* 맑은 유리는 몸체가 얇은 틴트라 대비가 부족하다 — 거의 불투명으로
        올리고 장식 테두리(conic ::after)는 제거해 림 보더만 남긴다 */
     nav.navbar, nav.navbar.scrolled, div.side-button-wrapper {

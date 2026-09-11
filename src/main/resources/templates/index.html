@@ -149,11 +149,11 @@
               <img src="/static/assets/img/favorite-hint.png" th:src="@{/assets/img/favorite-hint.png}">
               <div class="video-shadow dark-mode-element"></div>
             </div>
-            <p class="px-3 mb-0 login-modal-info">
+            <p class="mb-0 login-modal-info">
               애창곡의 정보를 추가하고싶은 내용과 함께 저장할 수 있습니다.
               <a href="https://github.com/spiaminto/JsongNoti-web?tab=readme-ov-file#3-%EC%95%A0%EC%B0%BD%EA%B3%A1"
                  target="_blank"
-                 class="text-decoration-none small align-top">
+                 class="text-decoration-none">
                 애창곡 도움말
                 <i class="bi bi-box-arrow-up-right"></i>
               </a>
@@ -218,7 +218,7 @@
 
       <!-- 사용방법 바로가기 버튼 -->
       <div class="usage-link">
-        <button id="goToUsageButton" class="glass-btn usage-Button" type="button">사용 방법</button>
+        <button id="goToUsageButton" class="btn usage-Button" type="button">사용 방법</button>
       </div>
     </div>
   </header>
@@ -233,7 +233,7 @@
         </div>
         <div class="modal-body">
           <div class="modal-body-content">
-            <h4>개인정보 수집 및 이용 안내 동의</h4> <br>
+            <h4>개인정보 수집 및 이용 안내 동의</h4>
             제이노티는 알림메일 서비스 제공을 위해 다음과 같은 개인정보를 수집하고 있습니다.<br>
             개인정보 수집을 거부하는 경우 메일 서비스 이용에 제한이 될 수 있습니다.<br>
             ▪ 수집하고자 하는 항목: 이메일 주소<br>
@@ -585,7 +585,7 @@
   <!-- 구독 취소 모달 -->
   <div class="modal fade" id="unsubscribeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h3 class="modal-title" id="unsubscribeModalHeaderText">구독 취소하기</h3>
@@ -634,7 +634,7 @@
   <footer class="footer">
     <div class="row">
       <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
-        <button type="button" class="btn btn-danger" id="unsubscribeModalButton" data-bs-toggle="modal"
+        <button type="button" class="btn btn-lg btn-danger" id="unsubscribeModalButton" data-bs-toggle="modal"
                 data-bs-target="#unsubscribeModal">
           구독 취소
         </button>

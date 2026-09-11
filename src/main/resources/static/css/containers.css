@@ -28,14 +28,6 @@ section {
     margin-top: 2rem;
 }
 
-/* 버튼 확장 크기 (20턴): Bootstrap 기본 btn-lg(1rem/0.5rem)보다 한 단계 큰
-   btn-xl. btn-lg 는 Bootstrap 이 이미 요청 값 그대로 제공하므로 재정의하지
-   않는다 */
-.btn-xl {
-    --bs-btn-padding-x: 1.5rem;
-    --bs-btn-padding-y: 1rem;
-}
-
 @media (min-width: 992px) {
     section {
         margin-top: 3rem;

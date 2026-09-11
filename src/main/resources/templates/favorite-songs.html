@@ -159,43 +159,43 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+          <!-- 인셋 그룹 목록 (glass.css): 머리글 + 라디오 행 묶음, 선택 행에 ✓ -->
           <form class="forms-favorite-song-setting forms" id="changeSettingForm">
-            <div class="mb-2">
-              <mark><b>표시 방식</b></mark>
+            <p class="inset-group-title">표시 방식</p>
+            <div class="inset-group">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="favoriteSongPresentType"
+                       id="favoriteSongPresentTypeByPresentOrder"
+                       value="PRESENT_ORDER" th:checked="${favoriteSongPresentType.name().equals('PRESENT_ORDER')}">
+                <label class="form-check-label" for="favoriteSongPresentTypeByPresentOrder">순서대로</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="favoriteSongPresentType"
+                       id="favoriteSongPresentTypeByArtist"
+                       value="ARTIST" th:checked="${favoriteSongPresentType.name().equals('ARTIST')}">
+                <label class="form-check-label" for="favoriteSongPresentTypeByArtist">아티스트별</label>
+              </div>
             </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="favoriteSongPresentType"
-                     id="favoriteSongPresentTypeByPresentOrder"
-                     value="PRESENT_ORDER" th:checked="${favoriteSongPresentType.name().equals('PRESENT_ORDER')}">
-              <label class="form-check-label" for="favoriteSongPresentTypeByPresentOrder">순서대로</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="favoriteSongPresentType"
-                     id="favoriteSongPresentTypeByArtist"
-                     value="ARTIST" th:checked="${favoriteSongPresentType.name().equals('ARTIST')}">
-              <label class="form-check-label" for="favoriteSongPresentTypeByArtist">아티스트별</label>
-            </div>
-            <hr>
-            <div class="mb-2">
-              <mark><b>표시할 애창곡</b></mark>
-            </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="favoriteSongPresentBrand"
-                     id="favoriteSongPresentBrandAll"
-                     value="ALL" th:checked="${favoriteSongPresentBrand.name().equals('ALL')}">
-              <label class="form-check-label" for="favoriteSongPresentBrandAll">모두</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="favoriteSongPresentBrand"
-                     id="favoriteSongPresentBrandTj"
-                     value="TJ" th:checked="${favoriteSongPresentBrand.name().equals('TJ')}">
-              <label class="form-check-label" for="favoriteSongPresentBrandTj">TJ</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="favoriteSongPresentBrand"
-                     id="favoriteSongPresentBrandKy"
-                     value="KY" th:checked="${favoriteSongPresentBrand.name().equals('KY')}">
-              <label class="form-check-label" for="favoriteSongPresentBrandKy">금영</label>
+            <p class="inset-group-title">표시할 애창곡</p>
+            <div class="inset-group">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="favoriteSongPresentBrand"
+                       id="favoriteSongPresentBrandAll"
+                       value="ALL" th:checked="${favoriteSongPresentBrand.name().equals('ALL')}">
+                <label class="form-check-label" for="favoriteSongPresentBrandAll">모두</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="favoriteSongPresentBrand"
+                       id="favoriteSongPresentBrandTj"
+                       value="TJ" th:checked="${favoriteSongPresentBrand.name().equals('TJ')}">
+                <label class="form-check-label" for="favoriteSongPresentBrandTj">TJ</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="favoriteSongPresentBrand"
+                       id="favoriteSongPresentBrandKy"
+                       value="KY" th:checked="${favoriteSongPresentBrand.name().equals('KY')}">
+                <label class="form-check-label" for="favoriteSongPresentBrandKy">금영</label>
+              </div>
             </div>
           </form>
         </div>
@@ -204,7 +204,7 @@
                   class="btn btn-lg">
             변경
           </button>
-          <button type="button" id="changeSettingModalCloseButton" class="ms-2 btn btn-lg"
+          <button type="button" id="changeSettingModalCloseButton" class="btn btn-lg"
                   data-bs-dismiss="modal">닫기
           </button>
         </div>
@@ -609,7 +609,7 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
-          <button type="button" class="btn btn-danger" id="deleteUserModalButton" data-bs-toggle="modal"
+          <button type="button" class="btn btn-lg btn-danger" id="deleteUserModalButton" data-bs-toggle="modal"
                   data-bs-target="#deleteUserModal">
             회원 탈퇴
           </button>
@@ -665,7 +665,7 @@
   <!-- 회원 탈퇴 모달 -->
   <div class="modal fade" id="deleteUserModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h3 class="modal-title">회원 탈퇴</h3>

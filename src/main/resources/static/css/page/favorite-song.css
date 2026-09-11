@@ -169,10 +169,6 @@
     margin-bottom: 0;
 }
 
-#presentOrderModal .modal-body {
-    padding: 0.5rem;
-}
-
 #presentOrderModalButton {
     vertical-align: super;
 }
@@ -182,12 +178,7 @@
 }
 
 /* ---------- 기타 ---------- */
-/* 작은 버튼 (순서변경·삭제 등 표 제목 옆) */
-.btn-xsm {
-    padding: calc(0.3rem + 0.1vw) calc(0.5rem + 0.1vw);
-    font-size: calc(0.7rem + 0.1vw);
-}
-
+/* 표 제목 옆 순서변경·삭제 버튼(.btn-xsm)의 크기는 glass.css 사다리 xsmall */
 #verifyDeleteUserCollapseButton {
     display: none;
 }

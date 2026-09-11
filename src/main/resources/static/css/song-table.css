@@ -298,10 +298,6 @@ body.is-scrolling .table-hover > tbody > tr:hover > td {
     margin-bottom: 1rem;
 }
 
-.last-month-show-button {
-    font-size: calc(0.8rem + 0.3vw);
-}
-
 /* ---------- 영역 분리 ---------- */
 /* 유리 디자인에서는 선 대신 여백으로 나눈다 */
 .splitter {

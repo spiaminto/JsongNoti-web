@@ -41,7 +41,8 @@
     margin-top: 1.8rem;
 }
 
-/* 입력창 + 버튼 한 줄 묶음 */
+/* 입력창 + 버튼 한 줄 묶음. 버튼은 사다리 medium(글자·패딩) 그대로,
+   높이만 grid stretch 로 입력창에 맞춘다 (glass.css .input-group > .btn 과 같은 이유) */
 .field-row {
     display: grid;
     grid-template-columns: 1fr auto;
@@ -52,11 +53,6 @@
     min-width: 0;
     font-size: inherit;
     padding: .8rem 1.1rem;
-}
-
-.field-row .btn {
-    border-radius: 16px;
-    white-space: nowrap;
 }
 
 /* 인증코드 행: 구독 요청 성공 시 Bootstrap collapse 로 열린다 */

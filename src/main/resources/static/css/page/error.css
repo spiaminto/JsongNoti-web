@@ -52,6 +52,8 @@ html[data-theme="dark"] .error-card {
     margin: 0 0 2.2rem;
 }
 
-.error-card .glass-btn {
-    font-size: .95rem;
+/* 카드 버튼: 사다리 large(btn-lg) 위에 카드 전용 폭 (D20 13턴 판정) */
+.error-card .btn {
+    padding: 0 1.8rem;
+    min-width: 180px;
 }

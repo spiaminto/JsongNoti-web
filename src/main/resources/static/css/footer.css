@@ -23,9 +23,9 @@
     color: var(--ink-2) !important;
 }
 
+/* 구독 취소·회원 탈퇴 버튼: 크기는 사다리 large(btn-lg) */
 .footer .btn-danger {
     margin-bottom: 1rem;
-    font-size: calc(0.8rem + 0.2vw);
 }
 
 .footer-icon-container {

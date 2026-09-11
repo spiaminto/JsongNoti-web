@@ -10,18 +10,29 @@
     display: none !important;
 }
 
-/* ---------- 삼각 화살표 컬랩스 버튼 ---------- */
-.arrow-collapse-button-open {
-    transform: rotate(180deg);
-}
-
+/* ---------- 삼각 화살표 컬랩스 버튼 ----------
+   .btn(rim, 캡슐 사다리) 위에 얹는 원형 예외: 사다리의 min-width 를 풀고
+   hover·active 의 스프링 변형 대신 열림 회전만 쓴다 */
 .arrow-collapse-button {
     transition: transform 0.5s, background .35s, box-shadow .35s;
     width: 1.9rem;
     height: 1.9rem;
+    min-width: 0;
     padding: 0;
+    line-height: 1.9rem;
     border-radius: 50%;
     vertical-align: middle;
+}
+
+.arrow-collapse-button:hover,
+.arrow-collapse-button:active {
+    transform: none;
+}
+
+.arrow-collapse-button-open,
+.arrow-collapse-button-open:hover,
+.arrow-collapse-button-open:active {
+    transform: rotate(180deg);
 }
 
 .arrow-collapse-button i {
@@ -30,35 +41,7 @@
     line-height: 1;
 }
 
-/* ---------- 모달 크기 보정 (기존 유지) ---------- */
-.modal-dialog {
-    font-size: calc(0.9rem + 0.3vw);
-}
-
-.modal-image-wrapper {
-    position: relative;
-    max-width: 450px;
-    margin: 0 auto 1rem;
-}
-
-.modal-image-wrapper > img {
-    width: 100%;
-    border-radius: 20px;
-}
-
-@media (min-width: 1200px) {
-    .modal-dialog {
-        max-width: 600px;
-    }
-
-    .modal-image-wrapper {
-        max-width: 500px;
-    }
-
-    .modal-dialog button {
-        font-size: calc(0.9rem + 0.3vw);
-    }
-}
+/* 모달 크기·글자 보정은 3기 시트 규칙(glass.css 모달 절)으로 흡수 (D19) */
 
 /* ---------- 상단바 브랜드 아이콘 ---------- */
 .navbar-brand-icon {
@@ -166,11 +149,8 @@ html[data-theme="dark"] .side-button-wrapper .icon-link:hover {
     font-size: calc(0.8rem + 0.3vw);
 }
 
-/* ---------- Bootstrap 공통부 수정 (기존 유지) ---------- */
-.btn-lg {
-    font-size: 1rem; /* 원본 1.25rem */
-}
-
+/* ---------- Bootstrap 공통부 수정 (기존 유지) ----------
+   버튼 크기(btn-lg 등)는 glass.css 의 사다리(D20)가 정한다 */
 .form-control-lg {
     font-size: 1rem;
 }
