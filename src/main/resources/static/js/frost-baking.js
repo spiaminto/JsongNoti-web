@@ -24,7 +24,12 @@
  *  6) 그림 교체는 페이드다(4기 2턴) — background-image 는 전환이 안 되므로 본 배경은
  *     새 그림으로 바로 바꾸고, 옛 그림을 판의 ::before(glass.css .frost-crossfade)에
  *     옛 크기만큼 얹어 opacity 1→0 으로 걷는다. 옛 그림 밖은 투명이라 판이 자라는
- *     동안 새 그림이 바로 비친다(바탕색 띠 없음). 미리 굽기·다시 굽기 어느 경로든 여기를 지난다
+ *     동안 새 그림이 바로 비친다(바탕색 띠 없음). 미리 굽기·다시 굽기 어느 경로든 여기를 지난다.
+ *     옛 그림이 새 그림보다 짧을 때(판이 자랄 때)만 옛 그림 층의 아랫변을 마스크로 흐린다 —
+ *     같은 크기 교체에 마스크를 두면 판이 위아래로 갈라져 보인다(4기 4턴)
+ *  7) 테마 전환은 페이드가 아니라 즉시 교체다(4기 4턴) — 토글(common-handlers.js)이 View
+ *     Transition 안에서 colorthemechange(synchronous) 를 보내면 그 자리에서 전부 굽고,
+ *     페이지 전체 스냅샷의 크로스페이드가 토큰 전환과 프로스트 교체를 한 동작으로 보여 준다
  *
  * 배경 규칙(사진 마스크·페이드·필터, 햇살 각도, 보케 그라디언트)은 glass.css 의
  * .photo-bg / .ray / .bokeh 와 여기 두 곳에 있다 — 한쪽을 바꾸면 다른 쪽도 맞춘다.
@@ -84,7 +89,18 @@
         window.addEventListener("resize", function () { scheduleFrostRebake(); });
 
         // 테마가 바뀌면 사진 처리·바탕색이 달라지므로 전부 (푸터 토글, common-handlers.js)
-        document.addEventListener("colorthemechange", function () { scheduleFrostRebake(); });
+        document.addEventListener("colorthemechange", function (event) {
+            if (event.detail && event.detail.synchronous) {
+                // View Transition 콜백 안(common-handlers.js): 새 스냅샷에 새 프로스트가 들어가야
+                // 하므로 디바운스 없이 지금, 페이드 없이 즉시 (index 판 11장 75~150ms 실측)
+                clearTimeout(rebakeTimer);
+                dirtyPanels.clear();
+                rebakeAll = false;
+                loadPhoto(function () { bakePanels(panels, { force: true, instant: true }); });
+            } else {
+                scheduleFrostRebake();
+            }
+        });
 
         // Bootstrap collapse 펼침: 전환이 시작된 다음 프레임에 목표 높이를 재서 미리 굽는다
         // (컬랩스 요소의 scrollHeight 가 펼쳐진 내용 높이). 접힘은 그림이 잘리기만 하므로 그대로
@@ -158,7 +174,7 @@
                 last.width === panel.offsetWidth && height <= last.height && height >= last.height - HEIGHT_TOLERANCE * 2) {
                 return; // 미리 구운 크기 안 — 다시 구우면 보케가 갑자기 바뀐다
             }
-            bakeFrostForPanel(panel, theme, scene, options.heightOverride);
+            bakeFrostForPanel(panel, theme, scene, options.heightOverride, options.instant);
             lastBakedSizes.set(panel, { width: panel.offsetWidth, height: height, theme: themeName });
         });
     }
@@ -226,7 +242,8 @@
 
     // ---------- 굽기 ----------
     // heightOverride: 높이 전환의 목표 높이 (전환 시작 때 미리 굽는 용도)
-    function bakeFrostForPanel(panel, theme, scene, heightOverride) {
+    // instant: 페이드 없이 즉시 교체 (테마 전환 — View Transition 이 전환을 맡는다)
+    function bakeFrostForPanel(panel, theme, scene, heightOverride, instant) {
         var panelRect = layoutRect(panel);
         if (heightOverride) panelRect.height = heightOverride;
         if (!panelRect.width || !panelRect.height) return;
@@ -345,19 +362,22 @@
 
         // 자연 크기로 깐다 — 높이 전환 중 그림이 늘어나지 않고 잘리기만 한다
         applyFrostImage(panel, "url(" + cropped.toDataURL("image/jpeg", JPEG_QUALITY) + ")",
-            panelRect.width + "px " + panelRect.height + "px");
+            panelRect.width + "px " + panelRect.height + "px", instant);
     }
 
     // ---------- 적용: 페이드 교체 ----------
     // 본 배경은 언제나 새 그림을 바로 갖는다(전환 중 판이 자라도 바탕색 띠가 없다).
-    // 첫 그림(바탕색 판 → 프로스트)과 모션 최소화는 그것으로 끝이고, 그 뒤 교체는
-    // 옛 그림을 ::before 에 옛 크기만큼 얹어 사라지게 한다
-    function applyFrostImage(panel, imageValue, sizeValue) {
+    // 첫 그림(바탕색 판 → 프로스트)·모션 최소화·즉시 교체(instant)는 그것으로 끝이고,
+    // 그 뒤 교체는 옛 그림을 ::before 에 옛 크기만큼 얹어 사라지게 한다
+    function applyFrostImage(panel, imageValue, sizeValue, instant) {
         var previousImage = panel.style.getPropertyValue("--panel-frost-image");
         var previousSize = panel.style.getPropertyValue("--panel-frost-size");
         panel.style.setProperty("--panel-frost-image", imageValue);
         panel.style.setProperty("--panel-frost-size", sizeValue);
-        if (!previousImage || reducedMotion) return;
+        if (!previousImage || reducedMotion || instant) {
+            if (crossfadeTimers.has(panel)) endCrossfade(panel); // 걷던 옛 그림이 남지 않게
+            return;
+        }
         if (crossfadeTimers.has(panel)) {
             // 페이드 중에 또 구웠다: 걷던 그림은 버리고 방금까지의 본 그림부터 새로 걷는다
             // (클래스를 뗐다 다시 붙이므로 리플로 한 번으로 애니메이션을 재시작시킨다)
@@ -366,9 +386,12 @@
         }
         panel.style.setProperty("--panel-frost-image-prev", previousImage);
         panel.style.setProperty("--panel-frost-size-prev", previousSize);
-        // 층 높이 = 옛 그림 높이 (아랫변을 마스크로 흐리는 기준, glass.css)
-        panel.style.setProperty("--panel-frost-height-prev", previousSize.split(" ")[1]);
+        // 층 높이 = 옛 그림 높이. 옛 그림이 더 짧을 때(판이 자랄 때)만 아랫변을 마스크로 흐린다 (glass.css)
+        var previousHeight = parseFloat(previousSize.split(" ")[1]);
+        var nextHeight = parseFloat(sizeValue.split(" ")[1]);
+        panel.style.setProperty("--panel-frost-height-prev", previousHeight + "px");
         panel.classList.add("frost-crossfade");
+        panel.classList.toggle("frost-crossfade-feather", previousHeight < nextHeight);
         crossfadeTimers.set(panel, setTimeout(function () { endCrossfade(panel); }, CROSSFADE_MS + 50));
     }
 
@@ -376,6 +399,7 @@
         clearTimeout(crossfadeTimers.get(panel));
         crossfadeTimers.delete(panel);
         panel.classList.remove("frost-crossfade");
+        panel.classList.remove("frost-crossfade-feather");
         panel.style.removeProperty("--panel-frost-image-prev");
         panel.style.removeProperty("--panel-frost-size-prev");
         panel.style.removeProperty("--panel-frost-height-prev");

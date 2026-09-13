@@ -140,3 +140,6 @@ commit 9
 커밋 260913
     UI 오버홀 4기 3턴: 펼침 중 옛 그림 층 아랫변이 가로선으로 비치던 것 — 층 높이를 옛 그림 높이로 두고 아래 96px 을 mask-image 로 흐려 걷는다 (glass.css .frost-crossfade::before, frost-baking.js --panel-frost-height-prev). 옛·새 그림은 겹치는 구간 픽셀이 같아 흐린 뒤엔 경계가 없다
     미리 굽기 여유 8 → 24px (HEIGHT_TOLERANCE): 1400px 폭에서 컬랩스 scrollHeight 추정이 11px 짧아 끝에서 다시 굽고 페이드가 두 번 일어났다. 1280·1400·1680px 실측 모두 페이드 한 번, 짧은 프레임 0
+
+커밋 260913
+    UI 오버홀 4기 4턴: 다크모드 전환이 판을 위아래로 갈라 보이던 것 — 옛 그림 층의 아래 96px 마스크(3턴)를 판이 자랄 때(.frost-crossfade-feather)만 붙인다. 전환이 두 단계(토큰 즉시, 프로스트 100ms 뒤 0.4s 페이드)라 부드럽지 않던 것 — 토글을 View Transition 으로 감싸 옛·새 화면을 .3s 크로스페이드 한 동작으로 (common-handlers.js), 콜백 안 colorthemechange(synchronous) 에 frost-baking.js 가 디바운스·페이드 없이 즉시 굽는다. 클릭 뒤 175~185ms 시작, 440~480ms 끝(트레이스 필름스트립). 미지원·모션 최소화는 즉시 전환
