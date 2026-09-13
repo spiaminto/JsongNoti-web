@@ -1377,6 +1377,27 @@ tbody tr.more-reveal.more-settled.more-hide,
 .song-table-collapse tbody tr:nth-child(14) { --rd: .96s; }
 .song-table-collapse tbody tr:nth-child(n+15) { --rd: 1.03s; }
 
+/* ---------- 크롬 유리 폴백 사다리 (ADR 0003, P15) ----------
+   위에서 아래로, 감지로만 내려간다:
+   1) 굴절 + 블러 — Chromium: glass-refraction.js 가 .navbar 의 backdrop-filter 에
+      SVG 변위 맵 url() 을 더한다
+   2) 블러 — backdrop-filter 를 지원하는 나머지 브라우저: containers.css(.navbar)·
+      common.css(.side-button-wrapper)의 기본 재질. 이 상태가 완성된 디자인이다
+   3) 색만 — backdrop-filter 없음: 얇은 틴트로는 뒤 글자가 그대로 비치므로
+      알파를 올린다 (아래). 링·그림자는 그대로
+   4) 불투명 — 투명도 최소화 설정: 접근성 절
+   상단바·사이드 버튼은 재질 선언이 뒤에 로드되는 파일에 있어, 태그를 붙여
+   특정도를 한 단계 올린다 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    nav.navbar, nav.navbar.scrolled, div.side-button-wrapper {
+        background: rgb(255 255 255 / .82);
+    }
+    html[data-theme="dark"] nav.navbar, html[data-theme="dark"] nav.navbar.scrolled,
+    html[data-theme="dark"] div.side-button-wrapper {
+        background: rgb(27 36 48 / .86);
+    }
+}
+
 /* ---------- 접근성: 모션·투명도·대비 각각 대응 (P14) ---------- */
 /* 모션 최소화: 탄성만 끄고(spatial → effects) 큰 전환은 짧은 크로스페이드 */
 @media (prefers-reduced-motion: reduce) {
