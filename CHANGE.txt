@@ -122,3 +122,8 @@ commit 9
 커밋 260913
     UI 오버홀 3기 ⑥ 굴절·폴백 사다리 (ADR 0003, D6·D9): 새 glass-refraction.js — Chromium(userAgentData 브랜드)에서만 내비바 크기의 SDF 변위 맵(480px 상한, 가장자리 띠 18px, u³, scale 46)을 canvas 로 만들어 인라인 SVG filter(feImage + feDisplacementMap)로 .navbar 의 backdrop-filter 에 url() 을 더한다. 블러·채도 값은 CSS 를 읽어 덧붙이고, 크기가 바뀌면(ResizeObserver) 맵을 다시 만든다
     폴백 사다리: 굴절+블러(Chromium) → 블러(CSS 기본) → 색만(glass.css @supports not backdrop-filter: 상단바·사이드 버튼 틴트 알파 .82 / dark .86) → 불투명(prefers-reduced-transparency, 접근성 절). index·search·favorite-songs 템플릿에 frost-baking.js 뒤 로드
+
+커밋 260913
+    UI 오버홀 3기 ⑦ 마무리: 접근성 절을 3기 구조로 정리 — 고대비(prefers-contrast)에서 프로스트(구운 사진)를 끄고 바탕색 판만, 투명도 최소화(prefers-reduced-transparency)에서는 굴절도 물러선다(glass-refraction.js matchMedia 가드, inline 스타일이 미디어 쿼리를 이기는 문제)
+    쓰지 않는 스크립트 제거: fade-in.js(glass-motion.js 리빌이 대체, 어느 템플릿도 미로드), common-util.js(blinkElement 호출처 없음) + search·favorite-songs 템플릿의 로드 태그
+    favorite-hint.png(로그인 안내 모달 이미지) 를 3기 애창곡 화면으로 재촬영 (assets 는 gitignore 대상, 서버 반영은 배포 때)

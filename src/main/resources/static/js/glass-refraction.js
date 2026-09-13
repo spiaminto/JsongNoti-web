@@ -30,6 +30,10 @@
     }));
     if (!isChromium) return; // 사다리 2단 이하: CSS 그대로
 
+    // 사다리 4단(투명도 최소화, glass.css 접근성 절)에서는 굴절도 걸지 않는다 —
+    // 여기서 주는 inline 스타일이 미디어 쿼리의 backdrop-filter: none 을 이기기 때문
+    var reducedTransparency = window.matchMedia("(prefers-reduced-transparency: reduce)");
+
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", init);
     } else {
@@ -69,8 +73,19 @@
             navbar.style.backdropFilter = value;
         }
 
-        applyNavbarRefraction();
-        new ResizeObserver(function () { applyNavbarRefraction(); }).observe(navbar);
+        function removeNavbarRefraction() {
+            mapSize = null;
+            navbar.style.webkitBackdropFilter = "";
+            navbar.style.backdropFilter = "";
+        }
+
+        if (!reducedTransparency.matches) applyNavbarRefraction();
+        new ResizeObserver(function () {
+            if (!reducedTransparency.matches) applyNavbarRefraction();
+        }).observe(navbar);
+        reducedTransparency.addEventListener("change", function (event) {
+            if (event.matches) removeNavbarRefraction(); else applyNavbarRefraction();
+        });
     }
 
     // feImage(변위 맵) + feDisplacementMap 두 단계 필터

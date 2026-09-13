@@ -1398,8 +1398,14 @@ tbody tr.more-reveal.more-settled.more-hide,
     }
 }
 
-/* ---------- 접근성: 모션·투명도·대비 각각 대응 (P14) ---------- */
-/* 모션 최소화: 탄성만 끄고(spatial → effects) 큰 전환은 짧은 크로스페이드 */
+/* ---------- 접근성: 모션·투명도·대비 각각 대응 (P14) ----------
+   3기 구조에서 손댈 것: 스프링 토큰(탄성)·로드 시퀀스·리빌·행 lift 의 모션,
+   크롬 유리(내비바·사이드 버튼·모달 베일·스크롤 베일)의 투명도, 판·버튼·
+   입력창의 테두리 대비. 콘텐츠 판은 불투명 프로스트라 투명도 설정과 무관하고,
+   굴절(glass-refraction.js)은 투명도 최소화에서 스스로 물러선다 */
+/* 모션 최소화: 탄성만 끄고(spatial → effects) 큰 전환은 짧은 크로스페이드.
+   편집 모드 컨트롤·집은 행·옮겨진 행(favorite-song.css)과 행 lift 는 같은
+   토큰을 쓰므로 토큰 교체만으로 탄성이 빠진다 */
 @media (prefers-reduced-motion: reduce) {
     :root {
         --spring-spatial: var(--ease-effects);
@@ -1458,6 +1464,8 @@ tbody tr.more-reveal.more-settled.more-hide,
         box-shadow: 0 0 0 1.5px var(--edge-contrast);
     }
     .btn::after { display: none; }
+    /* 프로스트(구운 사진)는 덮개 아래로 비쳐 글자 대비를 깎는다 — 바탕색 판만 */
+    .content-panel { background-image: none; }
     /* 맑은 유리는 몸체가 얇은 틴트라 대비가 부족하다 — 거의 불투명으로
        올리고 장식 테두리(conic ::after)는 제거해 림 보더만 남긴다 */
     nav.navbar, nav.navbar.scrolled, div.side-button-wrapper {
