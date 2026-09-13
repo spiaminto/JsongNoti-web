@@ -215,10 +215,20 @@ textarea:focus-visible {
    비용이 들지 않는다. 재질감은 frost-baking.js 가 background-image 로 깔아
    주는 프로스트가 맡고, 그 전(사진 로드 전·실패 시)에는 바탕색만 보인다.
    border 0 + padding-box 클립: 테두리가 있으면 굽힌 그림이 테두리 밑으로
-   비쳐 1px 띠가 생긴다 (시안 5턴 교훈). 그림자 안쪽 1px 흰 선이 테두리 역할 */
+   비쳐 1px 띠가 생긴다 (시안 5턴 교훈). 그림자 안쪽 1px 흰 선이 테두리 역할.
+   프로스트 그림은 frost-baking.js 가 판마다 inline 변수(--panel-frost-image,
+   --panel-frost-size)로 준다. 크기는 구운 자연 크기 — 높이 전환 중 그림이
+   늘어나지 않고 잘리기만 한다. 변수가 없으면(사진 로드 전·실패·오류 페이지)
+   덮개색만 바탕색 위에 얹혀 바탕색 판이 된다 */
 .content-panel {
     position: relative;
     background-color: var(--panel-bg);
+    background-image:
+        linear-gradient(var(--panel-frost-cover), var(--panel-frost-cover)),
+        var(--panel-frost-image, none);
+    background-repeat: no-repeat;
+    background-size: auto, var(--panel-frost-size, 100% 100%);
+    background-position: 0 0;
     background-clip: padding-box;
     border: 0;
     border-radius: 24px;
