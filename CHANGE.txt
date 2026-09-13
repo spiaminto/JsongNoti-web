@@ -127,3 +127,6 @@ commit 9
     UI 오버홀 3기 ⑦ 마무리: 접근성 절을 3기 구조로 정리 — 고대비(prefers-contrast)에서 프로스트(구운 사진)를 끄고 바탕색 판만, 투명도 최소화(prefers-reduced-transparency)에서는 굴절도 물러선다(glass-refraction.js matchMedia 가드, inline 스타일이 미디어 쿼리를 이기는 문제)
     쓰지 않는 스크립트 제거: fade-in.js(glass-motion.js 리빌이 대체, 어느 템플릿도 미로드), common-util.js(blinkElement 호출처 없음) + search·favorite-songs 템플릿의 로드 태그
     favorite-hint.png(로그인 안내 모달 이미지) 를 3기 애창곡 화면으로 재촬영 (assets 는 gitignore 대상, 서버 반영은 배포 때)
+
+커밋 260913
+    UI 오버홀 4기 1턴: 검색 결과·더보기가 펼쳐질 때 프로스트 아래 바탕색 띠가 생기고 끝난 뒤 보케가 갑자기 드러나던 문제 — 높이 전환이 시작될 때 목표 높이(+8px 여유)로 미리 굽는다 (Bootstrap collapse 는 show.bs.collapse 로, 검색 더보기는 song-search.js 가 window.frostBaking.prebakePanelAtHeight 로 알림). 전환이 끝났을 때 크기가 미리 구운 범위 안이면 다시 굽지 않는다. 디바운스 250→100ms

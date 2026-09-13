@@ -15,6 +15,12 @@
  *  3) 여유를 잘라 판 크기로 만들고 --panel-frost-image / --panel-frost-size 로 준다
  *  4) 크기가 바뀐 판만 디바운스해 다시 굽고(ResizeObserver), 창 크기·테마가
  *     바뀌면 전부 다시 굽는다 (colorthemechange, common-handlers.js)
+ *  5) 높이 전환(컬랩스 펼침·검색 더보기)은 시작할 때 목표 높이로 미리 굽는다 —
+ *     그림은 자연 크기라 전환 중 판이 그림보다 커지면 아래에 바탕색 띠가 생기고,
+ *     끝난 뒤 다시 구우면 보케가 갑자기 드러난다(4기 1턴). 전환이 끝났을 때
+ *     크기가 미리 구운 것과 같으면 다시 굽지 않는다. Bootstrap collapse 는
+ *     show.bs.collapse 로 알고, 검색 더보기(song-search.js)는 window.frostBaking
+ *     .prebakePanelAtHeight 로 알려 준다
  *
  * 배경 규칙(사진 마스크·페이드·필터, 햇살 각도, 보케 그라디언트)은 glass.css 의
  * .photo-bg / .ray / .bokeh 와 여기 두 곳에 있다 — 한쪽을 바꾸면 다른 쪽도 맞춘다.
@@ -32,7 +38,8 @@
     var BOKEH_BLUR = 6;            // glass.css .bokeh i 의 blur(6px)
     var RAY_ANGLE = 32 * Math.PI / 180; // glass.css .ray 의 rotate(32deg)
     var JPEG_QUALITY = 0.85;
-    var REBAKE_DEBOUNCE_MS = 250;
+    var REBAKE_DEBOUNCE_MS = 100; // 전환 중엔 프레임마다 밀리므로 끝난 뒤 한 번만 굽는다
+    var HEIGHT_TOLERANCE = 8;     // 미리 굽는 목표 높이의 여유 px — 컬랩스 scrollHeight 는 끝 높이와 몇 px 어긋난다
 
     // 사진 처리: glass.css .photo-bg::before 의 filter, 판 바탕색은 --panel-bg 와 같은 값
     var THEME = {
@@ -43,6 +50,7 @@
     var photoElement = null;
     var photoImage = null;         // 로드가 끝난 사진 (없으면 아직 못 굽는다)
     var panels = [];
+    var lastBakedSizes = new WeakMap(); // 판 → 마지막으로 구운 { width, height, theme }
 
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", init);
@@ -70,6 +78,27 @@
 
         // 테마가 바뀌면 사진 처리·바탕색이 달라지므로 전부 (푸터 토글, common-handlers.js)
         document.addEventListener("colorthemechange", function () { scheduleFrostRebake(); });
+
+        // Bootstrap collapse 펼침: 전환이 시작된 다음 프레임에 목표 높이를 재서 미리 굽는다
+        // (컬랩스 요소의 scrollHeight 가 펼쳐진 내용 높이). 접힘은 그림이 잘리기만 하므로 그대로
+        document.addEventListener("show.bs.collapse", function (event) {
+            var collapseElement = event.target;
+            var panel = collapseElement.closest(PANEL_SELECTOR);
+            if (!panel) return;
+            requestAnimationFrame(function () {
+                var targetHeight = panel.offsetHeight - collapseElement.offsetHeight + collapseElement.scrollHeight;
+                prebakePanelAtHeight(panel, targetHeight);
+            });
+        });
+
+        window.frostBaking = { prebakePanelAtHeight: prebakePanelAtHeight };
+    }
+
+    // 높이 전환을 시작하는 쪽이 목표 높이를 알려 주면 그 높이로 지금 굽는다
+    function prebakePanelAtHeight(panel, targetHeight) {
+        if (!panel || !targetHeight) return;
+        // 여유만큼 더 굽는다 — 그림이 판보다 길면 잘리기만 하고, 짧으면 바탕색 띠가 보인다
+        loadPhoto(function () { bakePanels([panel], { heightOverride: Math.ceil(targetHeight) + HEIGHT_TOLERANCE }); });
     }
 
     // 사진 url 은 CSS(.photo-bg::before)가 원본이다 — 여기서 경로를 따로 두지 않는다.
@@ -90,6 +119,8 @@
     var dirtyPanels = new Set();
     var rebakeAll = false;
 
+    // 판 단위 예약(ResizeObserver)은 크기가 마지막 굽기와 같으면 건너뛰고,
+    // 전부 예약(창 크기·테마)은 무조건 굽는다
     function scheduleFrostRebake(changedPanels) {
         if (changedPanels) {
             changedPanels.forEach(function (panel) { dirtyPanels.add(panel); });
@@ -99,18 +130,30 @@
         clearTimeout(rebakeTimer);
         rebakeTimer = setTimeout(function () {
             var targets = rebakeAll ? panels : Array.from(dirtyPanels);
+            var force = rebakeAll;
             dirtyPanels.clear();
             rebakeAll = false;
-            loadPhoto(function () { bakePanels(targets); });
+            loadPhoto(function () { bakePanels(targets, { force: force }); });
         }, REBAKE_DEBOUNCE_MS);
     }
 
-    function bakePanels(targets) {
+    function bakePanels(targets, options) {
+        options = options || {};
         // 사진이 꺼진 상태(고대비 등)면 굽지 않는다
         if (getComputedStyle(photoElement).display === "none") return;
-        var theme = document.documentElement.getAttribute("data-theme") === "dark" ? THEME.dark : THEME.light;
+        var themeName = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+        var theme = THEME[themeName];
         var scene = collectScene();
-        targets.forEach(function (panel) { bakeFrostForPanel(panel, theme, scene); });
+        targets.forEach(function (panel) {
+            var height = options.heightOverride || panel.offsetHeight;
+            var last = lastBakedSizes.get(panel);
+            if (!options.force && !options.heightOverride && last && last.theme === themeName &&
+                last.width === panel.offsetWidth && height <= last.height && height >= last.height - HEIGHT_TOLERANCE * 2) {
+                return; // 미리 구운 크기 안 — 다시 구우면 보케가 갑자기 바뀐다
+            }
+            bakeFrostForPanel(panel, theme, scene, options.heightOverride);
+            lastBakedSizes.set(panel, { width: panel.offsetWidth, height: height, theme: themeName });
+        });
     }
 
     // ---------- 좌표 ----------
@@ -175,8 +218,10 @@
     }
 
     // ---------- 굽기 ----------
-    function bakeFrostForPanel(panel, theme, scene) {
+    // heightOverride: 높이 전환의 목표 높이 (전환 시작 때 미리 굽는 용도)
+    function bakeFrostForPanel(panel, theme, scene, heightOverride) {
         var panelRect = layoutRect(panel);
+        if (heightOverride) panelRect.height = heightOverride;
         if (!panelRect.width || !panelRect.height) return;
 
         // 여유를 포함한 굽기 영역(문서 좌표)과 캔버스 변환
