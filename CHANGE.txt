@@ -107,3 +107,9 @@ commit 9
     행 클릭 공용화 (common-handlers.js): 링크·버튼을 직접 누른 게 아니면 링크 행은 새 탭, 검색 결과·순서 설정 모달 행은 제목 셀 핸들러로 위임. 순서 설정 모달 선택 행은 살구 배경 대신 흰 lift 판 + 링 + ✓(check-in 스프링)
     입력창 .form-control 을 유리에서 판 위의 얕은 홈(잉크 알파 .05, 14px, 포커스 흰 바탕 + 파란 링)으로, 남은 유리 노브(--g-*) 전부 제거. 검색 결과 .card 투명, .form-check-input dark
     dark: 행 구분선·lift 판·meta 세로선·추가일 칩 테두리·제목 밑선(브랜드는 dark 잉크 계열)·폼 경계선·hint-target 흰 알파로
+
+커밋 260913
+    UI 오버홀 3기 ④ 편집 모드 controls (D18): 순서변경·삭제의 빗금·행 tint 를 iOS 편집 모드 문법으로 — 순서변경은 제목 셀 오른쪽 ≡, 삭제는 번호 자리 ⊖(번호 숨김), 진입 스프링 애니메이션
+    순서변경 흐름: 편집 행 hover 는 lift 판, 집은 행은 살구 판이 들림(scale 1.012 + 먼 그림자, ≡ 배지 잉크색), 놓을 자리 hover 는 행 아래 삽입선 + 왼쪽 ▶, 빈 첫 행("첫번째 순서로 추가")은 점선 슬롯(hover 시 채움), 옮긴 행은 살구가 1.3초 머물다 식는 애니메이션(.song-row-switched)
+    favorite-song.js: 옮긴 행·저장한 행 하이라이트를 CommonUtil.blinkElement 대신 .song-row-switched 클래스(2.1초)로 (highlightChangedRow), CommonUtil import 제거. common-handlers.js: 삭제 모드 행은 행 어디를 눌러도 제목 셀 삭제 핸들러로. song-table.css: 스크롤 중 hover 억제에서 집은 행 제외
+    dark: 편집 판 흰 알파, 살구 옅게, 삽입선 테두리·점선 슬롯 dark 값

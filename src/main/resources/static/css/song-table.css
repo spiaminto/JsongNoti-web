@@ -204,8 +204,9 @@
    Chrome 이 포인터 아래 행의 hover 를 갱신해 판이 재페인트되고 GPU 래스터를
    기다린다. hover 상태와 클릭은 그대로 두고 그리는 값만 되돌린다
    (glass-motion.js 가 body.is-scrolling 을 토글). 선택 상태(hover 없이 켜진
-   판)는 건드리지 않는다 */
-body.is-scrolling .song-table tbody tr:hover td.song-title::before {
+   판)는 건드리지 않는다 — 순서 설정 모달의 .selected 는 id 특정도로 이기고,
+   순서변경에서 집은 행(favorite-song.css)은 여기서 제외한다 */
+body.is-scrolling .song-table tbody tr:hover:not(.song-row-will-switch-selected) td.song-title::before {
     opacity: 0;
     transform: scale(.965);
     transition: none;

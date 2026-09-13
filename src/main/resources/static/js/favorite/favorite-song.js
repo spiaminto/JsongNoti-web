@@ -1,5 +1,4 @@
 import FavoriteSongUtil from "./favorite-song-util.js";
-import CommonUtil from "../common-util.js";
 
 $(function () {
 
@@ -102,7 +101,7 @@ $(function () {
 
                 // 저장된 메모 하이라이트
                 let $savedFavoriteSong = $songTable.find('.song-number[data-present-order=' + presentOrder + ']').closest('tr');
-                CommonUtil.blinkElement($savedFavoriteSong, $savedFavoriteSong.css('background'));
+                highlightChangedRow($savedFavoriteSong);
             },
             error: function (xhr) {
                 // console.log(xhr);
@@ -169,8 +168,19 @@ $(function () {
             .addClass('song-row-will-switch');
 
         // 하이라이트
-        CommonUtil.blinkElement($willSwitchRow, $willSwitchRow.css('background'));
+        highlightChangedRow($willSwitchRow);
     });
+
+// 바뀐 행(옮긴 곡·저장한 곡) 하이라이트: 살구 판이 머물다 식는 CSS 애니메이션
+// (.song-row-switched, favorite-song.css). 애니메이션 길이 2.1초 뒤 클래스를 뗀다
+    function highlightChangedRow($row) {
+        $row.removeClass('song-row-switched');
+        if ($row.length) { void $row[0].offsetWidth; } // 연달아 바뀐 행이면 애니메이션을 처음부터 다시
+        $row.addClass('song-row-switched');
+        setTimeout(function () {
+            $row.removeClass('song-row-switched');
+        }, 2100);
+    }
 
 // 메모 순서변경 완료 버튼 클릭 이벤트 타겟 테이블을 h2 의 span 으로 찾음.
     $('.switch-order-complete-button').on('click', function (event) {

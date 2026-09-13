@@ -15,8 +15,8 @@ $(function () {
     // 노래 표 행 클릭 (ui-overhaul-3 D12·D16): 행 어디를 눌러도 제목과 같은 동작.
     // 링크·버튼·입력을 직접 누른 경우는 제 동작대로 둔다.
     //  - 제목이 링크인 행(신곡 목록): 새 탭으로 연다
-    //  - 검색 결과·순서 설정 모달 행(애창곡 페이지): 제목 셀의 클릭 핸들러
-    //    (폼 채우기·순서 선택, song-search.js·favorite-song.js)로 넘긴다
+    //  - 검색 결과·순서 설정 모달 행, 삭제 모드의 애창곡 행: 제목 셀의 클릭
+    //    핸들러(폼 채우기·순서 선택·삭제, song-search.js·favorite-song.js)로 넘긴다
     $(document).on('click', '.song-table tbody tr', function (event) {
         let $target = $(event.target);
         if ($target.closest('a, button, input, label').length) return;
@@ -29,7 +29,7 @@ $(function () {
 
         // 제목 셀을 직접 누른 클릭은 이미 그 핸들러가 받았다 — 다시 보내면 두 번 실행된다
         if ($target.closest('.song-title').length) return;
-        if ($(this).closest('.table-hover, #choosePresentOrderTable').length) {
+        if ($(this).closest('.table-hover, #choosePresentOrderTable').length || $(this).hasClass('song-row-deleting')) {
             $(this).find('.song-title').trigger('click');
         }
     });
