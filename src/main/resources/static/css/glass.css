@@ -245,14 +245,20 @@ textarea:focus-visible {
    (컴포지터 처리). 덮개도 옛 그림 크기로만 깔아 그 밖은 투명 — 높이 전환
    중 판이 옛 그림보다 커진 자리엔 본 배경의 새 그림이 바로 비친다(바탕색
    띠 없음). top 1px 은 판의 inset 흰 선(--panel-shadow) 자리라 비워 두고
-   그림을 1px 올려 맞춘다 */
+   그림을 1px 올려 맞춘다. 층 높이는 옛 그림 높이(판보다 길면 판까지)이고
+   아래 96px 을 마스크로 흐린다 — 층이 그대로 끝나면 그 아랫변이 전환 중
+   가는 가로선으로 비친다(4기 3턴) */
 .content-panel.frost-crossfade::before {
     content: '';
     position: absolute;
-    inset: 1px 0 0 0;
+    inset: 1px 0 auto 0;
+    height: calc(var(--panel-frost-height-prev, 100%) - 1px);
+    max-height: calc(100% - 1px);
     z-index: -1;
     border-radius: inherit;
     pointer-events: none;
+    -webkit-mask-image: linear-gradient(#000 calc(100% - 96px), transparent);
+    mask-image: linear-gradient(#000 calc(100% - 96px), transparent);
     background-image:
         linear-gradient(var(--panel-frost-cover), var(--panel-frost-cover)),
         var(--panel-frost-image-prev, none);

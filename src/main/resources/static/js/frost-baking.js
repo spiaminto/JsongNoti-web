@@ -43,7 +43,7 @@
     var RAY_ANGLE = 32 * Math.PI / 180; // glass.css .ray 의 rotate(32deg)
     var JPEG_QUALITY = 0.85;
     var REBAKE_DEBOUNCE_MS = 100; // 전환 중엔 프레임마다 밀리므로 끝난 뒤 한 번만 굽는다
-    var HEIGHT_TOLERANCE = 8;     // 미리 굽는 목표 높이의 여유 px — 컬랩스 scrollHeight 는 끝 높이와 몇 px 어긋난다
+    var HEIGHT_TOLERANCE = 24;    // 미리 굽는 목표 높이의 여유 px — 컬랩스 scrollHeight 는 끝 높이와 어긋난다(1280px 6px, 1400px 11px 실측). 여유가 모자라면 끝에서 다시 굽는다
     var CROSSFADE_MS = 400;       // glass.css @keyframes frost-crossfade-out 과 같은 값
 
     // 사진 처리: glass.css .photo-bg::before 의 filter, 판 바탕색은 --panel-bg 와 같은 값
@@ -366,6 +366,8 @@
         }
         panel.style.setProperty("--panel-frost-image-prev", previousImage);
         panel.style.setProperty("--panel-frost-size-prev", previousSize);
+        // 층 높이 = 옛 그림 높이 (아랫변을 마스크로 흐리는 기준, glass.css)
+        panel.style.setProperty("--panel-frost-height-prev", previousSize.split(" ")[1]);
         panel.classList.add("frost-crossfade");
         crossfadeTimers.set(panel, setTimeout(function () { endCrossfade(panel); }, CROSSFADE_MS + 50));
     }
@@ -376,5 +378,6 @@
         panel.classList.remove("frost-crossfade");
         panel.style.removeProperty("--panel-frost-image-prev");
         panel.style.removeProperty("--panel-frost-size-prev");
+        panel.style.removeProperty("--panel-frost-height-prev");
     }
 })();
