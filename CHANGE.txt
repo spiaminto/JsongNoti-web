@@ -146,3 +146,6 @@ commit 9
 
 커밋 260913
     UI 오버홀 4기 5턴: index 영상·정지 이미지 위 dark 막(.video-shadow) 복구 — 3기 ① 이 common.css 에서 !important 로 잠근 .dark-mode-element 를 html[data-theme="dark"] 에서만 보이게 바꾸고, 막을 판 패딩 안쪽(7px)·영상 반경(20px)·검정 .3 으로 얹음 (page/index.css .u-video .video-shadow)
+
+커밋 260913
+    UI 오버홀 4기 6턴: 로드 시퀀스 딜레이 통일 — 메인 판(index hero, 검색 안내 판, 애창곡 표)의 --vd 를 .35s 로(index .8s, 검색·애창곡 .25s 에서), index 상단바 .4s → .1s (다른 페이지와 같게). 햇살 시작 대비 메인 판 떠오름 시작이 index +0.8s / 검색 +0.2s / 애창곡 +0.25s 에서 세 페이지 모두 +0.35s 안팎으로
