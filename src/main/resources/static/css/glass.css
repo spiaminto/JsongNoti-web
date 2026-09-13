@@ -86,14 +86,6 @@
     --btn-font-sm: 13px;
     --btn-font-xs: 12px;
 
-    /* 입력창 유리 노브 (2기 잔재) — .form-control 이 아직 참조한다.
-       3기 3단계(표·행)에서 입력창을 cream/dark 판으로 바꾸며 함께 제거한다 */
-    --g-white: 255 255 255;   /* 몸체 백색 채널 */
-    --g-alpha-input: .55;     /* 입력창 몸체 */
-    --g-blur-input: 10px;
-    --g-edge: rgb(255 255 255 / .72);  /* 입력창 림 보더 */
-    --g-radius-input: 16px;
-
     /* 햇살 색 (rgb 채널값 — rgb(var(--sun) / a) 형태로 사용) */
     --sun: 255 240 205;
 
@@ -568,26 +560,36 @@ html[data-theme="dark"] .delete-favorite-song-complete-button {
     align-self: stretch;
 }
 
-/* ---------- 입력: Bootstrap .form-control 을 유리 입력창으로 ---------- */
+/* ---------- 입력: 판 위의 움푹한 입력창 (3기, 유리 없음) ----------
+   콘텐츠 판이 불투명이므로 입력창도 실시간 유리 대신 잉크 알파의 얕은 홈.
+   포커스는 흰 바탕 + 파란 링 */
 .form-control {
     color: var(--ink);
-    background: rgb(var(--g-white) / var(--g-alpha-input));
-    -webkit-backdrop-filter: blur(var(--g-blur-input));
-    backdrop-filter: blur(var(--g-blur-input));
-    border: 1px solid var(--g-edge);
-    border-radius: var(--g-radius-input);
-    box-shadow: inset 0 1px 3px rgb(30 42 56 / .06);
+    background: rgb(30 42 56 / .05);
+    border: 1px solid rgb(30 42 56 / .10);
+    border-radius: 14px;
+    box-shadow: none;
 }
 
 .form-control:focus {
     color: var(--ink);
-    background: rgb(var(--g-white) / .78);
-    border-color: rgb(100 149 237 / .45);
-    box-shadow: inset 0 1px 3px rgb(30 42 56 / .06);
+    background: #fff;
+    border-color: rgb(30 42 56 / .25);
+    box-shadow: 0 0 0 3px rgb(100 149 237 / .25);
 }
 
 .form-control::placeholder {
     color: var(--ink-3);
+}
+
+html[data-theme="dark"] .form-control {
+    background: rgb(255 255 255 / .06);
+    border-color: rgb(255 255 255 / .12);
+}
+
+html[data-theme="dark"] .form-control:focus {
+    background: rgb(255 255 255 / .10);
+    border-color: rgb(255 255 255 / .3);
 }
 
 .form-check-input {
@@ -597,6 +599,16 @@ html[data-theme="dark"] .delete-favorite-song-complete-button {
 .form-check-input:checked {
     background-color: #6d7d8d;
     border-color: #6d7d8d;
+}
+
+html[data-theme="dark"] .form-check-input {
+    background-color: rgb(255 255 255 / .16);
+    border-color: rgb(255 255 255 / .6);
+}
+
+html[data-theme="dark"] .form-check-input:checked {
+    background-color: #f0f3f7;
+    border-color: #f0f3f7;
 }
 
 /* 입력창과 버튼을 띄워 배치 (Bootstrap 이 모서리를 붙이는 것을 되돌림).
@@ -995,10 +1007,11 @@ html:has(body.modal-open) {
 }
 
 /* ---------- 그 밖의 Bootstrap 표면 ---------- */
+/* 검색 결과를 감싸는 .card: 콘텐츠 판 안에 또 판을 두지 않는다 (판 속 판 금지) */
 .card {
-    background: rgb(255 255 255 / .45);
-    border: 1px solid rgb(255 255 255 / .65);
-    border-radius: 20px;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
 }
 
 .alert-info {
@@ -1378,13 +1391,9 @@ tbody tr.more-reveal.more-settled.more-hide,
    상단바·사이드 버튼은 재질 선언이 뒤에 로드되는 파일(containers·
    common.css)에 있어, 같은 특정도로는 지므로 태그를 붙여 한 단계 올린다 */
 @media (prefers-reduced-transparency: reduce) {
-    .form-control,
     nav.navbar, nav.navbar.scrolled, div.side-button-wrapper {
         -webkit-backdrop-filter: none;
         backdrop-filter: none;
-    }
-    .form-control {
-        background: #ffffff;
     }
     nav.navbar, nav.navbar.scrolled, div.side-button-wrapper {
         background: rgb(255 255 255 / .95);
@@ -1404,15 +1413,18 @@ tbody tr.more-reveal.more-settled.more-hide,
 @media (prefers-contrast: more) {
     :root {
         --ink-2: #333f4a;
-        --g-edge: rgb(70 85 100 / .55);
-        --g-alpha-input: .95;
+        --edge-contrast: rgb(70 85 100 / .55);
     }
     .content-panel, .modal-content, nav.navbar, div.side-button-wrapper {
-        box-shadow: 0 0 0 1px var(--g-edge);
+        box-shadow: 0 0 0 1px var(--edge-contrast);
+    }
+    .form-control {
+        background: #fff;
+        border-color: var(--edge-contrast);
     }
     /* rim 버튼은 링·그림자 대신 또렷한 테두리 하나로 */
     .btn, .btn:hover, .btn:active {
-        box-shadow: 0 0 0 1.5px var(--g-edge);
+        box-shadow: 0 0 0 1.5px var(--edge-contrast);
     }
     .btn::after { display: none; }
     /* 맑은 유리는 몸체가 얇은 틴트라 대비가 부족하다 — 거의 불투명으로
