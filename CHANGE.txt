@@ -130,3 +130,6 @@ commit 9
 
 커밋 260913
     UI 오버홀 4기 1턴: 검색 결과·더보기가 펼쳐질 때 프로스트 아래 바탕색 띠가 생기고 끝난 뒤 보케가 갑자기 드러나던 문제 — 높이 전환이 시작될 때 목표 높이(+8px 여유)로 미리 굽는다 (Bootstrap collapse 는 show.bs.collapse 로, 검색 더보기는 song-search.js 가 window.frostBaking.prebakePanelAtHeight 로 알림). 전환이 끝났을 때 크기가 미리 구운 범위 안이면 다시 굽지 않는다. 디바운스 250→100ms
+
+커밋 260913
+    UI 오버홀 4기 2턴: 프로스트 그림 교체(전환 시작의 미리 굽기, 접힘·창 크기·테마 변경의 다시 굽기)가 즉시 바뀌어 보케가 갑자기 드러나던 것 → 새 그림을 판 ::before 에 깔아 0.4s 페이드한 뒤 본 배경으로 옮긴다 (frost-baking.js applyFrostImage, glass.css .frost-crossfade). 판 배경과 내용 사이에 끼우려고 .content-panel 에 isolation: isolate — 모달은 전부 판 밖이라 갇히지 않음. 첫 그림·모션 최소화는 즉시, 고대비에서는 ::before 도 끔. 펼침 2.5s 창 드롭 프레임 반영 전후 차이 없음(31·20·28 → 30·25·25)

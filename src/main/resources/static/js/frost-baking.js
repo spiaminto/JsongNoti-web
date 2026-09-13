@@ -21,6 +21,9 @@
  *     크기가 미리 구운 것과 같으면 다시 굽지 않는다. Bootstrap collapse 는
  *     show.bs.collapse 로 알고, 검색 더보기(song-search.js)는 window.frostBaking
  *     .prebakePanelAtHeight 로 알려 준다
+ *  6) 그림 교체는 페이드다(4기 2턴) — background-image 는 전환이 안 되므로 새 그림을
+ *     판의 ::before(glass.css .frost-crossfade)에 먼저 깔아 opacity 0→1 로 올린 뒤
+ *     본 배경으로 옮긴다. 미리 굽기·다시 굽기 어느 경로든 여기를 지난다
  *
  * 배경 규칙(사진 마스크·페이드·필터, 햇살 각도, 보케 그라디언트)은 glass.css 의
  * .photo-bg / .ray / .bokeh 와 여기 두 곳에 있다 — 한쪽을 바꾸면 다른 쪽도 맞춘다.
@@ -40,6 +43,8 @@
     var JPEG_QUALITY = 0.85;
     var REBAKE_DEBOUNCE_MS = 100; // 전환 중엔 프레임마다 밀리므로 끝난 뒤 한 번만 굽는다
     var HEIGHT_TOLERANCE = 8;     // 미리 굽는 목표 높이의 여유 px — 컬랩스 scrollHeight 는 끝 높이와 몇 px 어긋난다
+    var CROSSFADE_MS = 400;       // glass.css @keyframes frost-crossfade-in 과 같은 값
+    var CROSSFADE_SETTLE_MS = 150; // 본 배경으로 옮긴 뒤 ::before 를 걷기까지 — 본 배경의 새 그림이 디코드될 시간
 
     // 사진 처리: glass.css .photo-bg::before 의 filter, 판 바탕색은 --panel-bg 와 같은 값
     var THEME = {
@@ -51,6 +56,8 @@
     var photoImage = null;         // 로드가 끝난 사진 (없으면 아직 못 굽는다)
     var panels = [];
     var lastBakedSizes = new WeakMap(); // 판 → 마지막으로 구운 { width, height, theme }
+    var crossfadeTimers = new WeakMap(); // 판 → 진행 중인 페이드의 타이머
+    var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", init);
@@ -336,8 +343,45 @@
         cropped.height = Math.max(1, Math.round(panelRect.height * BAKE_SCALE));
         cropped.getContext("2d").drawImage(canvas, -toLength(BAKE_PADDING), -toLength(BAKE_PADDING));
 
-        panel.style.setProperty("--panel-frost-image", "url(" + cropped.toDataURL("image/jpeg", JPEG_QUALITY) + ")");
         // 자연 크기로 깐다 — 높이 전환 중 그림이 늘어나지 않고 잘리기만 한다
-        panel.style.setProperty("--panel-frost-size", panelRect.width + "px " + panelRect.height + "px");
+        applyFrostImage(panel, "url(" + cropped.toDataURL("image/jpeg", JPEG_QUALITY) + ")",
+            panelRect.width + "px " + panelRect.height + "px");
+    }
+
+    // ---------- 적용: 페이드 교체 ----------
+    // 첫 그림(바탕색 판 → 프로스트)과 모션 최소화는 즉시 깔고, 그 뒤 교체는
+    // ::before 에 새 그림을 깔아 페이드한 뒤 본 배경으로 옮긴다
+    function applyFrostImage(panel, imageValue, sizeValue) {
+        var hasImage = panel.style.getPropertyValue("--panel-frost-image") !== "";
+        if (!hasImage || reducedMotion) {
+            panel.style.setProperty("--panel-frost-image", imageValue);
+            panel.style.setProperty("--panel-frost-size", sizeValue);
+            return;
+        }
+        if (crossfadeTimers.has(panel)) {
+            // 페이드 중에 또 구웠다: 진행 중인 그림을 본 배경으로 확정하고 새로 시작
+            // (클래스를 뗐다 다시 붙이므로 리플로 한 번으로 애니메이션을 재시작시킨다)
+            settleCrossfade(panel);
+            void panel.offsetWidth;
+        }
+        panel.style.setProperty("--panel-frost-image-next", imageValue);
+        panel.style.setProperty("--panel-frost-size-next", sizeValue);
+        panel.classList.add("frost-crossfade");
+        crossfadeTimers.set(panel, setTimeout(function () {
+            // 페이드가 끝났다: 본 배경을 새 그림으로 바꾸고, 디코드될 동안은 ::before 가 덮는다
+            panel.style.setProperty("--panel-frost-image", imageValue);
+            panel.style.setProperty("--panel-frost-size", sizeValue);
+            crossfadeTimers.set(panel, setTimeout(function () { settleCrossfade(panel); }, CROSSFADE_SETTLE_MS));
+        }, CROSSFADE_MS));
+    }
+
+    function settleCrossfade(panel) {
+        clearTimeout(crossfadeTimers.get(panel));
+        crossfadeTimers.delete(panel);
+        panel.style.setProperty("--panel-frost-image", panel.style.getPropertyValue("--panel-frost-image-next"));
+        panel.style.setProperty("--panel-frost-size", panel.style.getPropertyValue("--panel-frost-size-next"));
+        panel.classList.remove("frost-crossfade");
+        panel.style.removeProperty("--panel-frost-image-next");
+        panel.style.removeProperty("--panel-frost-size-next");
     }
 })();

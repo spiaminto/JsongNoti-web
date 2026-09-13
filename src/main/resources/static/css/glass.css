@@ -233,7 +233,34 @@ textarea:focus-visible {
     border: 0;
     border-radius: 24px;
     box-shadow: var(--panel-shadow);
+    /* 프로스트 교체 페이드(::before)를 판 배경과 내용 사이에 끼우려면 판이
+       스태킹 컨텍스트여야 한다. 모달은 모두 판 밖(body 직속)에 있어 갇히지
+       않는다 — 판 안에 모달을 넣지 않는다 (page/search.css #container 주석) */
+    isolation: isolate;
 }
+
+/* 프로스트 교체 페이드 (4기 2턴): frost-baking.js 가 새 그림을 ::before 에
+   깔고 0.4s 동안 올린 뒤 본 배경으로 옮기고 걷는다. background-image 는
+   전환이 안 되므로 두 장을 겹쳐 opacity 로 바꾼다(컴포지터 처리).
+   top 1px 은 판의 inset 흰 선(--panel-shadow) 자리라 비워 두고 그림을 1px
+   올려 맞춘다 */
+.content-panel.frost-crossfade::before {
+    content: '';
+    position: absolute;
+    inset: 1px 0 0 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background-color: var(--panel-bg);
+    background-image:
+        linear-gradient(var(--panel-frost-cover), var(--panel-frost-cover)),
+        var(--panel-frost-image-next, none);
+    background-repeat: no-repeat;
+    background-size: auto, var(--panel-frost-size-next, 100% 100%);
+    background-position: 0 0, 0 -1px;
+    animation: frost-crossfade-in .4s ease;
+}
+@keyframes frost-crossfade-in { from { opacity: 0; } }
 
 /* ---------- 버튼: rim 버튼 (D19·D20, 시안 9~13턴) ----------
    Bootstrap .btn 전체를 하나의 재질로 통일한다. Liquid Glass 아이콘의 림
@@ -1466,6 +1493,7 @@ tbody tr.more-reveal.more-settled.more-hide,
     .btn::after { display: none; }
     /* 프로스트(구운 사진)는 덮개 아래로 비쳐 글자 대비를 깎는다 — 바탕색 판만 */
     .content-panel { background-image: none; }
+    .content-panel.frost-crossfade::before { display: none; }
     /* 맑은 유리는 몸체가 얇은 틴트라 대비가 부족하다 — 거의 불투명으로
        올리고 장식 테두리(conic ::after)는 제거해 림 보더만 남긴다 */
     nav.navbar, nav.navbar.scrolled, div.side-button-wrapper {
