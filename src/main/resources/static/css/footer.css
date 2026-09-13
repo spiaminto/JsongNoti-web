@@ -23,7 +23,7 @@
     color: var(--ink-2) !important;
 }
 
-/* 구독 취소·회원 탈퇴 버튼: 크기는 사다리 large(btn-lg) */
+/* 구독 취소·회원 탈퇴 버튼: 크기는 사다리 medium(기본 .btn) — 14턴 피드백 */
 .footer .btn-danger {
     margin-bottom: 1rem;
 }

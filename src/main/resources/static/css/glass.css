@@ -258,14 +258,14 @@ textarea:focus-visible {
     --btn-bg-active: linear-gradient(180deg, rgb(226 231 237), rgb(216 222 230));
     --btn-shadow:
         inset 0 1.5px 0 rgb(255 255 255 / .85),
-        inset 0 -1px 0 rgb(255 255 255 / .25),
+        inset 0 -1px 0 rgb(255 255 255 / .125),
         inset 1.5px 0 2px -1px rgb(30 42 56 / .08),
         inset -1.5px 0 2px -1px rgb(30 42 56 / .08),
         0 1px 2px rgb(30 42 56 / .10),
         0 5px 12px -3px rgb(30 42 56 / .22);
     --btn-shadow-hover:
         inset 0 1.5px 0 #fff,
-        inset 0 -1px 0 rgb(255 255 255 / .3),
+        inset 0 -1px 0 rgb(255 255 255 / .15),
         inset 1.5px 0 2px -1px rgb(30 42 56 / .07),
         inset -1.5px 0 2px -1px rgb(30 42 56 / .07),
         0 2px 4px rgb(30 42 56 / .10),
@@ -275,11 +275,12 @@ textarea:focus-visible {
         inset 1.5px 0 2px -1px rgb(30 42 56 / .09),
         inset -1.5px 0 2px -1px rgb(30 42 56 / .09),
         0 1px 2px rgb(30 42 56 / .08);
-    /* 링: 0°(위)·180°(아래)는 흰색, 90°·270°(양옆)는 잉크 */
+    /* 링: 0°(위)·180°(아래)는 흰색, 90°·270°(양옆)는 잉크.
+       아래(155°~205°)와 안쪽 아래 1px 선은 시안의 절반 (14턴 피드백) */
     --btn-ring: conic-gradient(from 0deg,
         rgb(255 255 255 / .9) 0deg, rgb(255 255 255 / .6) 25deg,
         rgb(30 42 56 / .12) 75deg, rgb(30 42 56 / .16) 105deg,
-        rgb(255 255 255 / .3) 155deg, rgb(255 255 255 / .45) 180deg, rgb(255 255 255 / .3) 205deg,
+        rgb(255 255 255 / .15) 155deg, rgb(255 255 255 / .225) 180deg, rgb(255 255 255 / .15) 205deg,
         rgb(30 42 56 / .12) 255deg, rgb(30 42 56 / .16) 285deg,
         rgb(255 255 255 / .6) 335deg, rgb(255 255 255 / .9) 360deg);
 
@@ -383,14 +384,14 @@ textarea:focus-visible {
     --btn-bg-active: linear-gradient(180deg, rgb(252 222 216), rgb(248 210 202));
     --btn-shadow:
         inset 0 1.5px 0 rgb(255 255 255 / .7),
-        inset 0 -1px 0 rgb(255 255 255 / .23),
+        inset 0 -1px 0 rgb(255 255 255 / .115),
         inset 1.5px 0 2px -1px rgb(214 90 70 / .11),
         inset -1.5px 0 2px -1px rgb(214 90 70 / .11),
         0 1px 2px rgb(214 90 70 / .10),
         0 5px 12px -3px rgb(214 90 70 / .28);
     --btn-shadow-hover:
         inset 0 1.5px 0 rgb(255 255 255 / .8),
-        inset 0 -1px 0 rgb(255 255 255 / .25),
+        inset 0 -1px 0 rgb(255 255 255 / .125),
         inset 1.5px 0 2px -1px rgb(214 90 70 / .1),
         inset -1.5px 0 2px -1px rgb(214 90 70 / .1),
         0 2px 4px rgb(214 90 70 / .1),
@@ -403,7 +404,7 @@ textarea:focus-visible {
     --btn-ring: conic-gradient(from 0deg,
         rgb(255 255 255 / .9) 0deg, rgb(255 255 255 / .6) 25deg,
         rgb(214 90 70 / .16) 75deg, rgb(214 90 70 / .22) 105deg,
-        rgb(255 255 255 / .3) 155deg, rgb(255 255 255 / .45) 180deg, rgb(255 255 255 / .3) 205deg,
+        rgb(255 255 255 / .15) 155deg, rgb(255 255 255 / .225) 180deg, rgb(255 255 255 / .15) 205deg,
         rgb(214 90 70 / .16) 255deg, rgb(214 90 70 / .22) 285deg,
         rgb(255 255 255 / .6) 335deg, rgb(255 255 255 / .9) 360deg);
 }
@@ -427,7 +428,7 @@ textarea:focus-visible {
     --btn-bg-active: linear-gradient(180deg, #1e2a38, #17212c);
     --btn-shadow:
         inset 0 1.5px 0 rgb(255 255 255 / .3),
-        inset 0 -1px 0 rgb(255 255 255 / .06),
+        inset 0 -1px 0 rgb(255 255 255 / .03),
         inset 1.5px 0 2px -1px rgb(0 0 0 / .22),
         inset -1.5px 0 2px -1px rgb(0 0 0 / .22),
         0 1px 2px rgb(30 42 56 / .25),
@@ -440,7 +441,7 @@ textarea:focus-visible {
     --btn-ring: conic-gradient(from 0deg,
         rgb(255 255 255 / .55) 0deg, rgb(255 255 255 / .3) 25deg,
         rgb(0 0 0 / .25) 75deg, rgb(0 0 0 / .32) 105deg,
-        rgb(255 255 255 / .14) 155deg, rgb(255 255 255 / .23) 180deg, rgb(255 255 255 / .14) 205deg,
+        rgb(255 255 255 / .07) 155deg, rgb(255 255 255 / .115) 180deg, rgb(255 255 255 / .07) 205deg,
         rgb(0 0 0 / .25) 255deg, rgb(0 0 0 / .32) 285deg,
         rgb(255 255 255 / .3) 335deg, rgb(255 255 255 / .55) 360deg);
 }
@@ -453,14 +454,14 @@ html[data-theme="dark"] .btn {
     --btn-bg-active: linear-gradient(180deg, rgb(255 255 255 / .07), rgb(255 255 255 / .04));
     --btn-shadow:
         inset 0 1.5px 0 rgb(255 255 255 / .35),
-        inset 0 -1px 0 rgb(255 255 255 / .09),
+        inset 0 -1px 0 rgb(255 255 255 / .045),
         inset 1.5px 0 2px -1px rgb(0 0 0 / .07),
         inset -1.5px 0 2px -1px rgb(0 0 0 / .07),
         0 1px 2px rgb(0 0 0 / .35),
         0 5px 12px -3px rgb(0 0 0 / .55);
     --btn-shadow-hover:
         inset 0 1.5px 0 rgb(255 255 255 / .4),
-        inset 0 -1px 0 rgb(255 255 255 / .1),
+        inset 0 -1px 0 rgb(255 255 255 / .05),
         inset 1.5px 0 2px -1px rgb(0 0 0 / .22),
         inset -1.5px 0 2px -1px rgb(0 0 0 / .22),
         0 2px 4px rgb(0 0 0 / .35),
@@ -472,7 +473,7 @@ html[data-theme="dark"] .btn {
     --btn-ring: conic-gradient(from 0deg,
         rgb(255 255 255 / .6) 0deg, rgb(255 255 255 / .35) 25deg,
         rgb(0 0 0 / .28) 75deg, rgb(0 0 0 / .36) 105deg,
-        rgb(255 255 255 / .15) 155deg, rgb(255 255 255 / .25) 180deg, rgb(255 255 255 / .15) 205deg,
+        rgb(255 255 255 / .075) 155deg, rgb(255 255 255 / .125) 180deg, rgb(255 255 255 / .075) 205deg,
         rgb(0 0 0 / .28) 255deg, rgb(0 0 0 / .36) 285deg,
         rgb(255 255 255 / .35) 335deg, rgb(255 255 255 / .6) 360deg);
 }
@@ -507,7 +508,7 @@ html[data-theme="dark"] .delete-favorite-song-complete-button {
     --btn-bg-active: linear-gradient(180deg, #dfe4ea, #d3d9e0);
     --btn-shadow:
         inset 0 1.5px 0 #fff,
-        inset 0 -1px 0 rgb(255 255 255 / .3),
+        inset 0 -1px 0 rgb(255 255 255 / .15),
         inset 1.5px 0 2px -1px rgb(30 42 56 / .09),
         inset -1.5px 0 2px -1px rgb(30 42 56 / .09),
         0 1px 2px rgb(0 0 0 / .4),
@@ -518,7 +519,7 @@ html[data-theme="dark"] .delete-favorite-song-complete-button {
     --btn-ring: conic-gradient(from 0deg,
         #fff 0deg, rgb(255 255 255 / .7) 25deg,
         rgb(30 42 56 / .16) 75deg, rgb(30 42 56 / .22) 105deg,
-        rgb(255 255 255 / .35) 155deg, rgb(255 255 255 / .5) 180deg, rgb(255 255 255 / .35) 205deg,
+        rgb(255 255 255 / .175) 155deg, rgb(255 255 255 / .25) 180deg, rgb(255 255 255 / .175) 205deg,
         rgb(30 42 56 / .16) 255deg, rgb(30 42 56 / .22) 285deg,
         rgb(255 255 255 / .7) 335deg, #fff 360deg);
 }

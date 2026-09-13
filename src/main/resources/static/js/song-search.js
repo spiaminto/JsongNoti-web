@@ -220,7 +220,7 @@ $(function () {
                 let $moreWrapper = $('<div>')
                     .addClass('unified-search-more-wrapper');
                 let $moreButton = $('<button>')
-                    .addClass('btn btn-lg')
+                    .addClass('btn')
                     .attr({
                         type: 'button',
                         'aria-expanded': 'false'
@@ -244,7 +244,7 @@ $(function () {
 
         if (!group.message && !additionalSearched) {
             let $additionalButton = $('<button>')
-                .addClass('btn btn-lg')
+                .addClass('btn')
                 .attr('type', 'button')
                 .text('추가 검색')
                 .on('click', function () {
