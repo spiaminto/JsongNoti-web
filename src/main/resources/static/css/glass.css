@@ -239,11 +239,13 @@ textarea:focus-visible {
     isolation: isolate;
 }
 
-/* 프로스트 교체 페이드 (4기 2턴): frost-baking.js 가 새 그림을 ::before 에
-   깔고 0.4s 동안 올린 뒤 본 배경으로 옮기고 걷는다. background-image 는
-   전환이 안 되므로 두 장을 겹쳐 opacity 로 바꾼다(컴포지터 처리).
-   top 1px 은 판의 inset 흰 선(--panel-shadow) 자리라 비워 두고 그림을 1px
-   올려 맞춘다 */
+/* 프로스트 교체 페이드 (4기 2턴): 본 배경은 새 그림으로 바로 바뀌고,
+   frost-baking.js 가 옛 그림을 ::before 에 옛 크기만큼 얹어 0.4s 동안 걷는다.
+   background-image 는 전환이 안 되므로 두 장을 겹쳐 opacity 로 바꾼다
+   (컴포지터 처리). 덮개도 옛 그림 크기로만 깔아 그 밖은 투명 — 높이 전환
+   중 판이 옛 그림보다 커진 자리엔 본 배경의 새 그림이 바로 비친다(바탕색
+   띠 없음). top 1px 은 판의 inset 흰 선(--panel-shadow) 자리라 비워 두고
+   그림을 1px 올려 맞춘다 */
 .content-panel.frost-crossfade::before {
     content: '';
     position: absolute;
@@ -251,16 +253,15 @@ textarea:focus-visible {
     z-index: -1;
     border-radius: inherit;
     pointer-events: none;
-    background-color: var(--panel-bg);
     background-image:
         linear-gradient(var(--panel-frost-cover), var(--panel-frost-cover)),
-        var(--panel-frost-image-next, none);
+        var(--panel-frost-image-prev, none);
     background-repeat: no-repeat;
-    background-size: auto, var(--panel-frost-size-next, 100% 100%);
-    background-position: 0 0, 0 -1px;
-    animation: frost-crossfade-in .4s ease;
+    background-size: var(--panel-frost-size-prev, 100% 100%), var(--panel-frost-size-prev, 100% 100%);
+    background-position: 0 -1px;
+    animation: frost-crossfade-out .4s ease forwards;
 }
-@keyframes frost-crossfade-in { from { opacity: 0; } }
+@keyframes frost-crossfade-out { to { opacity: 0; } }
 
 /* ---------- 버튼: rim 버튼 (D19·D20, 시안 9~13턴) ----------
    Bootstrap .btn 전체를 하나의 재질로 통일한다. Liquid Glass 아이콘의 림
