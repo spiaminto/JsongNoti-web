@@ -143,3 +143,6 @@ commit 9
 
 커밋 260913
     UI 오버홀 4기 4턴: 다크모드 전환이 판을 위아래로 갈라 보이던 것 — 옛 그림 층의 아래 96px 마스크(3턴)를 판이 자랄 때(.frost-crossfade-feather)만 붙인다. 전환이 두 단계(토큰 즉시, 프로스트 100ms 뒤 0.4s 페이드)라 부드럽지 않던 것 — 토글을 View Transition 으로 감싸 옛·새 화면을 .3s 크로스페이드 한 동작으로 (common-handlers.js), 콜백 안 colorthemechange(synchronous) 에 frost-baking.js 가 디바운스·페이드 없이 즉시 굽는다. 클릭 뒤 175~185ms 시작, 440~480ms 끝(트레이스 필름스트립). 미지원·모션 최소화는 즉시 전환
+
+커밋 260913
+    UI 오버홀 4기 5턴: index 영상·정지 이미지 위 dark 막(.video-shadow) 복구 — 3기 ① 이 common.css 에서 !important 로 잠근 .dark-mode-element 를 html[data-theme="dark"] 에서만 보이게 바꾸고, 막을 판 패딩 안쪽(7px)·영상 반경(20px)·검정 .3 으로 얹음 (page/index.css .u-video .video-shadow)

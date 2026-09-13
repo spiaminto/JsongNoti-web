@@ -244,6 +244,17 @@
     object-fit: cover;
 }
 
+/* dark 에서 영상·정지 이미지 위를 어둡게 덮는 막 (4기 5턴 복구 — 옛 index.css
+   .video-shadow 의 rgba(0,0,0,.3) 그대로). 판 패딩 안쪽(7px)에 영상 반경(20px)으로
+   얹는다. 보이고 숨김은 common.css .dark-mode-element */
+.u-video .video-shadow {
+    position: absolute;
+    inset: 7px;
+    border-radius: 20px;
+    background-color: rgb(0 0 0 / .3);
+    pointer-events: none;
+}
+
 .u-text {
     z-index: 1;
     padding: clamp(1.4rem, 3vw, 2rem);
