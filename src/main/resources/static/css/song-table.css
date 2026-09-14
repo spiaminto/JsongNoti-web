@@ -294,9 +294,12 @@ a.song-title-text:hover {
 }
 
 /* 작품정보에 루비가 있으면 아티스트 줄과 띄운다 — 루비(rt, 11px)는 줄 상자 위로 10px
-   튀어나와 아티스트의 루비처럼 읽혔다 (4기 9턴 A2). .9rem(14px) 이면 rt 위로 4px 가 남는다 */
+   튀어나와 아티스트의 루비처럼 읽혔다 (4기 9턴 A2). 총 .9rem(14px) 이면 rt 위로 4px 가 남는다.
+   그중 .65rem 은 안쪽 여백 — 왼쪽 선이 rt 까지 올라오게 (줄별 선으로 나뉜 뒤 선이 rb 줄부터
+   시작해 rt 가 선 밖에 떠 보였다, 9턴 후속) */
 .song-info:has(ruby) {
-    margin-block-start: .9rem;
+    margin-block-start: .25rem;
+    padding-block-start: .65rem;
 }
 
 .song-singer {
