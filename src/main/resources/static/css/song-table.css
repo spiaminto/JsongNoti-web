@@ -17,8 +17,8 @@
          td.song-title
            div > a|ruby.song-title-text   ← 제목 (JS 가 a 를 ruby 로 교체하기도 함)
            div.song-meta
+             div.song-singer              ← 아티스트 (4기 8턴: 작품정보 위로)
              div.song-info > span         ← 작품·추가 정보
-             div.song-singer              ← 아티스트
    ========================================================================== */
 
 /* ---------- 표 래퍼 ----------
@@ -267,7 +267,7 @@ a.song-title-text:hover {
     font-weight: 700;
 }
 
-/* 작품정보·아티스트 meta 묶음: 왼쪽 세로선 + 들여쓰기 */
+/* 아티스트·작품정보 meta 묶음: 왼쪽 세로선 + 들여쓰기. 순서는 아티스트 → 작품정보 (4기 8턴) */
 .song-meta {
     margin-top: .35rem;
     padding-left: .7rem;
@@ -279,6 +279,7 @@ a.song-title-text:hover {
 .song-info {
     color: var(--ink-2);
     font-weight: 300; /* 라이트(L) — 제목(800)·아티스트(600)와 3단 굵기 위계 */
+    margin-top: .1rem;
 }
 
 .song-singer {
@@ -286,7 +287,6 @@ a.song-title-text:hover {
        600 은 700(B) 으로 렌더된다. 작품정보(300·회색)와는 굵기+잉크로 구분 */
     font-weight: 600;
     color: var(--ink);
-    margin-top: .1rem;
 }
 
 /* ---------- 표 제목 (h2) + 추가일 chip ----------

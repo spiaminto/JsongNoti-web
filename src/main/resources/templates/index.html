@@ -298,6 +298,7 @@
                     </a>
                   </div>
                   <div class="song-meta">
+                    <div class="song-singer" th:text="${song.singer}">가수</div>
                     <div class="song-info">
                       <!-- 작품정보도 제목처럼 한글 읽기가 있으면 루비로 표기 -->
                       <span th:if="${#strings.isEmpty(song.infoKorean)}" th:text="${song.info}">정보 텍스트</span>
@@ -305,7 +306,6 @@
                         <ruby><rb th:text="${song.info}">정보</rb><rp>(</rp><rt th:text="${song.infoKorean}">루비</rt><rp>)</rp></ruby>
                       </span>
                     </div>
-                    <div class="song-singer" th:text="${song.singer}">가수</div>
                   </div>
                 </td>
               </tr>
@@ -341,6 +341,7 @@
                     </a>
                   </div>
                   <div class="song-meta">
+                    <div class="song-singer" th:text="${song.singer}">가수</div>
                     <div class="song-info">
                       <!-- 작품정보도 제목처럼 한글 읽기가 있으면 루비로 표기 -->
                       <span th:if="${#strings.isEmpty(song.infoKorean)}" th:text="${song.info}">정보 텍스트</span>
@@ -348,7 +349,6 @@
                         <ruby><rb th:text="${song.info}">정보</rb><rp>(</rp><rt th:text="${song.infoKorean}">루비</rt><rp>)</rp></ruby>
                       </span>
                     </div>
-                    <div class="song-singer" th:text="${song.singer}">가수</div>
                   </div>
                 </td>
               </tr>
@@ -394,6 +394,7 @@
                     </a>
                   </div>
                   <div class="song-meta">
+                    <div class="song-singer" th:text="${song.singer}">가수</div>
                     <div class="song-info">
                       <!-- 작품정보도 제목처럼 한글 읽기가 있으면 루비로 표기 -->
                       <span th:if="${#strings.isEmpty(song.infoKorean)}" th:text="${song.info}">정보 텍스트</span>
@@ -401,7 +402,6 @@
                         <ruby><rb th:text="${song.info}">정보</rb><rp>(</rp><rt th:text="${song.infoKorean}">루비</rt><rp>)</rp></ruby>
                       </span>
                     </div>
-                    <div class="song-singer" th:text="${song.singer}">가수</div>
                   </div>
                 </td>
               </tr>
@@ -435,6 +435,7 @@
                     </a>
                   </div>
                   <div class="song-meta">
+                    <div class="song-singer" th:text="${song.singer}">가수</div>
                     <div class="song-info">
                       <!-- 작품정보도 제목처럼 한글 읽기가 있으면 루비로 표기 -->
                       <span th:if="${#strings.isEmpty(song.infoKorean)}" th:text="${song.info}">정보 텍스트</span>
@@ -442,7 +443,6 @@
                         <ruby><rb th:text="${song.info}">정보</rb><rp>(</rp><rt th:text="${song.infoKorean}">루비</rt><rp>)</rp></ruby>
                       </span>
                     </div>
-                    <div class="song-singer" th:text="${song.singer}">가수</div>
                   </div>
                 </td>
               </tr>

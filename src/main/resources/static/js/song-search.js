@@ -279,6 +279,7 @@ $(function () {
                     $('<td>').addClass('song-title').append(
                         $('<div>').append($('<span>').addClass('placeholder col-5')),
                         $('<div>').addClass('song-meta').append(
+                            $('<div>').addClass('song-singer').append($('<span>').addClass('placeholder col-2')),
                             $('<div>').addClass('song-info').append($('<span>').addClass('placeholder col-3'))
                         )
                     )
