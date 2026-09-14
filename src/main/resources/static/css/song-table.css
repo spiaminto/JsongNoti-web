@@ -244,6 +244,12 @@ body.is-scrolling .song-table tbody tr:hover:not(.song-row-will-switch-selected)
     text-align: start;
 }
 
+/* 번호 칸(가운데 정렬, 5.2rem)과 제목 사이 빈 폭이 넓어 왼쪽 패딩은 없애고
+   오른쪽은 .8 → .6rem (4기 9턴 후속). 셀 공통 padding 과 같은 무게의 선택자 */
+.song-table tbody td.song-title {
+    padding-inline: 0 .6rem;
+}
+
 .song-title-text {
     display: block;
     color: var(--ink);
@@ -273,15 +279,15 @@ a.song-title-text:hover {
 }
 
 /* 아티스트·작품정보 meta 묶음. 순서는 아티스트 → 작품정보 (4기 8턴).
-   왼쪽 세로선은 묶음이 아니라 아티스트·작품정보 각 줄이 따로 긋는다 (4기 9턴) —
-   두 줄 사이 여백에서 선이 끊겨 줄 단위가 드러난다 */
+   세 층 계단(4기 9턴 후속): 제목과 아티스트는 같은 왼쪽 끝, 작품정보만 들여쓰기 + 왼쪽
+   세로선 — 선 하나가 "아티스트에 딸린 값" 한 가지 뜻만 갖는다. 아티스트·작품정보는
+   굵기(600/300)·색(ink/ink-2)으로 갈린다 */
 .song-meta {
     margin-top: .35rem;
     font-size: var(--fs-md);
     line-height: 1.5;
 }
 
-.song-singer,
 .song-info {
     padding-inline-start: .7rem;
     border-inline-start: 3px solid rgb(140 160 180 / .4);
@@ -290,13 +296,13 @@ a.song-title-text:hover {
 .song-info {
     color: var(--ink-2);
     font-weight: 300; /* 라이트(L) — 제목(800)·아티스트(600)와 3단 굵기 위계 */
-    margin-top: .35rem; /* 아티스트 줄과의 사이 — 줄별 왼쪽 선이 생기며 .1rem 은 붙어 보여 .35 로 (4기 9턴 후속) */
+    margin-top: .35rem; /* 아티스트 줄과의 사이 (4기 9턴 후속) */
 }
 
 /* 작품정보에 루비가 있으면 아티스트 줄과 띄운다 — 루비(rt, 11px)는 줄 상자 위로 10px
    튀어나와 아티스트의 루비처럼 읽혔다 (4기 9턴 A2). 총 .9rem(14px) 이면 rt 위로 4px 가 남는다.
-   그중 .65rem 은 안쪽 여백 — 왼쪽 선이 rt 까지 올라오게 (줄별 선으로 나뉜 뒤 선이 rb 줄부터
-   시작해 rt 가 선 밖에 떠 보였다, 9턴 후속) */
+   그중 .65rem 은 안쪽 여백 — 왼쪽 선이 rt 까지 올라오게 (선이 rb 줄부터 시작하면 rt 가
+   선 밖에 떠 보인다, 9턴 후속) */
 .song-info:has(ruby) {
     margin-block-start: .25rem;
     padding-block-start: .65rem;
@@ -408,7 +414,6 @@ html[data-theme="dark"] .song-table tbody td.song-title::before {
         0 2px 10px rgb(0 0 0 / .35);
 }
 
-html[data-theme="dark"] .song-singer,
 html[data-theme="dark"] .song-info {
     border-inline-start-color: rgb(255 255 255 / .22);
 }
