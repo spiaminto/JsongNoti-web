@@ -16,6 +16,8 @@
   <!-- dark 초기값: 스타일시트보다 먼저 동기 실행 (theme-init.js, FOUC 방지) -->
   <script src="/static/js/theme-init.js" th:src="@{/js/theme-init.js}"></script>
   <!-- 웹폰트는 glass.css 가 weight 매핑과 함께 로드한다 -->
+  <!-- 한글 안전망 글꼴: SUITE 에 없는 음절만 (font-fallback.css) -->
+  <link href="/static/css/font-fallback.css" th:href="@{/css/font-fallback.css}" rel="stylesheet"/>
   <link href="/static/css/glass.css" th:href="@{/css/glass.css}" rel="stylesheet"/>
   <link href="/static/css/common.css" th:href="@{/css/common.css}" rel="stylesheet"/>
   <link href="/static/css/containers.css" th:href="@{/css/containers.css}" rel="stylesheet"/>

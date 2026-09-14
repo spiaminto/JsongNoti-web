@@ -8,7 +8,7 @@
    흐려 구운 그림, frost-baking.js)가 준다.
 
    이 파일이 담당하는 것:
-     1) 디자인 토큰(:root, dark 는 html[data-theme="dark"])과 NanumSquareRound 웹폰트 weight 매핑
+     1) 디자인 토큰(:root, dark 는 html[data-theme="dark"])과 웹폰트(SUITE 가변) 선언
      2) 콘텐츠 판(.content-panel)과 Bootstrap 컴포넌트(.btn, .form-control, .modal 등)의
         시각 오버라이드 — 동작(JS)은 Bootstrap 그대로 두고 겉만 바꾼다
      3) 배경 연출: 빛 웅덩이(body::before), 사진 배경(.photo-bg), 햇살(.sky/.ray), 보케(.bokeh)
@@ -19,38 +19,20 @@
    Bootstrap CSS 뒤, 다른 커스텀 CSS 앞에 로드해야 한다.
    ========================================================================== */
 
-/* ---------- 웹폰트: self-host + 가짜 굵기 교정 ----------
-   pstatic 원본 CSS 는 굵기를 별도 family 이름(L/R/B/EB)으로만 제공해
-   font-weight 지정 시 브라우저 합성 굵기가 표시되던 문제를,
-   같은 파일을 weight 300/400/700/800 에 매핑해 해결한다.
-   파일은 /static/fonts/ 에 self-host — 브라우저 추적 방지가
-   pstatic.net 을 차단해 폰트가 아예 안 뜨던 문제까지 함께 해결. */
-@font-face {
-    font-family: 'NanumSquareRound';
-    font-weight: 300;
-    font-display: swap;
-    src: url(../fonts/NanumSquareRoundL.woff2) format("woff2");
-}
+/* ---------- 웹폰트 ----------
+   본문 글꼴 SUITE (sun.fo, SIL OFL): 가변 한 벌로 300~900 을 모두 그린다.
+   NanumSquareRound 는 굵기 얼굴이 넷(300/400/700/800)뿐이라 600 처럼 얼굴 없는
+   값이 700 으로 그려졌고, 그래서 굵기 위계를 두 단으로 줄여 쓰고 있었다.
+   파일은 /static/fonts/ 에 self-host — 추적 방지가 CDN 을 막아도 본문 글꼴은 떠야 한다.
 
+   안전망: SUITE 는 한글 2,668자(자주 쓰는 음절)만 담는다. 나머지는 font-fallback.css
+   가 Wanted Sans 로 받는다 — 한글 구간에서만, 글자 단위로.
+   가나·한자는 두 글꼴 모두 담지 않아 기기 글꼴이 그린다. */
 @font-face {
-    font-family: 'NanumSquareRound';
-    font-weight: 400;
+    font-family: 'SUITE';
+    font-weight: 300 900;
     font-display: swap;
-    src: url(../fonts/NanumSquareRoundR.woff2) format("woff2");
-}
-
-@font-face {
-    font-family: 'NanumSquareRound';
-    font-weight: 700;
-    font-display: swap;
-    src: url(../fonts/NanumSquareRoundB.woff2) format("woff2");
-}
-
-@font-face {
-    font-family: 'NanumSquareRound';
-    font-weight: 800;
-    font-display: swap;
-    src: url(../fonts/NanumSquareRoundEB.woff2) format("woff2");
+    src: url(../fonts/SUITE-Variable.woff2) format("woff2-variations");
 }
 
 /* ---------- 디자인 토큰 ---------- */

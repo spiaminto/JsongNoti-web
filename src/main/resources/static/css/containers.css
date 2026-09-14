@@ -12,7 +12,7 @@
    ========================================================================== */
 
 body {
-    font-family: 'NanumSquareRound', 'Noto Sans KR', system-ui, sans-serif;
+    font-family: 'SUITE', 'Wanted Sans Fallback', 'Noto Sans KR', system-ui, sans-serif;
     font-size: var(--fs-body); /* 글자 사다리(glass.css --fs-*) */
     min-width: 360px;
 }
