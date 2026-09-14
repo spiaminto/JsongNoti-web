@@ -272,10 +272,9 @@ $(function () {
 // 실제 노래 삭제 버튼 클릭 이벤트
     function deleteFavoriteSongEvent(brand, target) {
         let $target = $(target);
-        let songTitle = $target.find('.song-title-text').text();
+        // 제목은 루비(rb 원제 + rt 독음 + rp 괄호)라 rb 만 읽는다 — 전체를 읽으면 "제목()" 이 된다 (song-search.js 와 같음)
+        let songTitle = $target.find('.song-title-text rb').text() || $target.find('.song-title-text').text();
         let songSinger = $target.closest('tr').find('.song-singer').text();
-        console.log($target)
-        console.log(songTitle);
         if (!confirm('확인을 누르면 다음 곡이 삭제됩니다.\n' + songSinger + ' - ' + songTitle)) return false; // 취소시 리턴
 
         let favoriteSongId = $target.closest('tr').find('.song-number').data('favorite-song-id')
