@@ -20,6 +20,7 @@ public class SongSearchDto {
     private String singer;
     private String info;
     private String titleKorean;
+    private String singerKorean; // 아티스트 대표값. 병기 조건(원본값 일본어·다름)은 화면(song-table-util.js)이 정한다
     private String infoKorean;
 
     public static SongSearchDto from(SongSearchResultDto dto) {
@@ -31,6 +32,7 @@ public class SongSearchDto {
         result.setSinger(dto.getSinger());
         result.setInfo(dto.getInfo() == null ? "" : dto.getInfo()); // 오라클은 '' == null 이여서 별도처리
         result.setTitleKorean(RegexPatterns.hasKorean(dto.getTitleKorean()) ? dto.getTitleKorean() : ""); // 한글 포함 안될경우 제거
+        result.setSingerKorean(RegexPatterns.hasKorean(dto.getSingerKorean()) ? dto.getSingerKorean() : null);
         result.setInfoKorean(RegexPatterns.hasKorean(dto.getInfoKorean()) ? dto.getInfoKorean() : null);
         return result;
     }

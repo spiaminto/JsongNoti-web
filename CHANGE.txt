@@ -164,3 +164,6 @@ commit 9
 
 커밋 260915
     UI 오버홀 4기 9턴: 노래 표의 일본어 아티스트에 한글 대표값을 루비 대신 같은 줄에 병기(`原本 · 대표값`, index·애창곡; 검색 결과는 응답에 값이 없어 다음 커밋). NewSongDto 에 singerKorean 조건(원본값 일본어·대표값 한글·서로 다름)과 title/singer/infoJapanese 플래그. 루비는 원본값이 일본어일 때만, 정렬 start(낱말이 벌어지지 않게), 글자 바닥 11px, 작품명 루비가 있으면 아티스트 줄과 .9rem 띄움. 일본어 원본값 lang="ja", search.html lang="ko", song-table.css 물리 → 논리 속성. 검토 기록은 docs/_temp/ui-overhaul-4.md 9턴
+
+커밋 260915
+    UI 오버홀 4기 9턴 후속: 검색 결과 표에도 아티스트 한글 대표값 병기 — SongRepository 네이티브 쿼리 13개 SELECT 에 sk.singer as singer_korean, 유사도 CTE 5개(song_korean_fuzzy_matches, song_korean_info_fuzzy_matches)도 singer 를 뽑도록. SongSearchResultDto·SongSearchDto 에 singerKorean(한글일 때만). 대표값 색 --ink-3 → --ink-2, 글자 smaller(대표값 span 에만), 보조줄 왼쪽 선을 .song-meta 묶음에서 .song-singer·.song-info 각 줄로 분리(dark 포함). 검색 "사랑" 1300·375 실측 병기 6/15 행, index·애창곡 동일
