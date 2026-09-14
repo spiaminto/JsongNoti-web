@@ -41,14 +41,12 @@
 
 /* 검색 결과 표는 1열이라 index 의 2열 표보다 정보 밀도가 낮다 — 768px 이상에서
    표 토큰만 한 칸 넓힌다(제목 17→18, 보조줄 15→16, 4기 8턴). 사다리(glass.css)는
-   그대로이고 이 판 안에서 값만 다시 정한다 */
+   그대로이고 이 판 안에서 값만 다시 정한다. 보조줄 위 여백 .7rem 예외는 9턴 후속에서
+   세로 간격을 다시 정하며(제목→아티스트 .125rem, 아티스트→작품명 .5rem) 걷었다 */
 @media (min-width: 768px) {
     .song-search-result-collapse {
         --fs-body: 18px;
         --fs-md: 16px;
-    }
-    .song-search-result-collapse .song-meta {
-        margin-top: .7rem;
     }
 }
 

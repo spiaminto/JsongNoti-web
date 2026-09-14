@@ -1,7 +1,7 @@
 /* ==========================================================================
    song-table.css — 노래 표 (신곡 목록·검색 결과·애창곡 공용)
-   번호/노래 2열 구성. 아티스트는 열이 아니라 곡 항목 내부의 meta 행
-   (.song-meta)으로 들어간다 — 열 폭 부족으로 긴 제목이 깨지던 문제를
+   번호/노래 2열 구성. 아티스트는 열이 아니라 곡 항목 내부의 보조줄
+   (.song-singer·.song-info)로 들어간다 — 열 폭 부족으로 긴 제목이 깨지던 문제를
    해결한 Tone Up 시안의 정보 구조 결정을 계승한 것.
    3기(ui-overhaul-3): 행은 콘텐츠 판(.content-panel) 위에 직접 앉고,
    hover·선택 상태는 제목 셀의 lift 판(td.song-title::before)이 맡는다.
@@ -16,11 +16,10 @@
          td.song-number > span            ← 번호 (최신곡이면 span.latest)
          td.song-title
            div > a|ruby.song-title-text   ← 제목 (JS 가 a 를 ruby 로 교체하기도 함)
-           div.song-meta
-             div.song-singer              ← 아티스트 (4기 8턴: 작품정보 위로)
-               span.song-singer-original  ← 원본값 (일본어면 lang="ja")
-               span.song-singer-korean    ← 대표값 같은 줄 병기 (있을 때만, 4기 9턴)
-             div.song-info > span         ← 작품·추가 정보 (원본값이 일본어면 루비로 대표값)
+           div.song-singer                ← 아티스트 (4기 8턴: 작품정보 위로. 래퍼 div.song-meta 는
+             span.song-singer-original    ← 원본값 (일본어면 lang="ja")      스타일 훅뿐이라 9턴 후속에서 제거)
+             span.song-singer-korean      ← 대표값 같은 줄 병기 (있을 때만, 4기 9턴)
+           div.song-info > span           ← 작품·추가 정보 (원본값이 일본어면 루비로 대표값)
    ========================================================================== */
 
 /* ---------- 표 래퍼 ----------
@@ -278,33 +277,34 @@ a.song-title-text:hover {
     font-weight: 700;
 }
 
-/* 아티스트·작품정보 meta 묶음. 순서는 아티스트 → 작품정보 (4기 8턴).
-   세 층 계단(4기 9턴 후속): 제목과 아티스트는 같은 왼쪽 끝, 작품정보만 들여쓰기 + 왼쪽
-   세로선 — 선 하나가 "아티스트에 딸린 값" 한 가지 뜻만 갖는다. 아티스트·작품정보는
-   굵기(600/300)·색(ink/ink-2)으로 갈린다 */
-.song-meta {
-    margin-top: .35rem;
+/* 보조줄 두 개: 아티스트 → 작품정보 (4기 8턴). 세 층 계단(4기 9턴 후속): 제목과
+   아티스트는 같은 왼쪽 끝, 작품정보만 들여쓰기 + 왼쪽 세로선 — 선 하나가 "아티스트에
+   딸린 값" 한 가지 뜻만 갖는다. 아티스트·작품정보는 굵기(600/300)·색(ink/ink-2)으로 갈린다.
+   세로 간격(better-layout: 그룹 안 간격의 2배 이상을 그룹 사이에): 제목→아티스트는 한
+   그룹이라 줄 상자의 반행간 위에 .125rem(2px)만, 아티스트→작품정보는 .5rem(8px) */
+.song-singer,
+.song-info {
     font-size: var(--fs-md);
     line-height: 1.5;
 }
 
-.song-info {
-    padding-inline-start: .7rem;
-    border-inline-start: 3px solid rgb(140 160 180 / .4);
+.song-singer {
+    margin-block-start: .125rem;
 }
 
 .song-info {
     color: var(--ink-2);
     font-weight: 300; /* 라이트(L) — 제목(800)·아티스트(600)와 3단 굵기 위계 */
-    margin-top: .35rem; /* 아티스트 줄과의 사이 (4기 9턴 후속) */
+    margin-block-start: .5rem;
+    padding-inline-start: .7rem;
+    border-inline-start: 3px solid rgb(140 160 180 / .4);
 }
 
-/* 작품정보에 루비가 있으면 아티스트 줄과 띄운다 — 루비(rt, 11px)는 줄 상자 위로 10px
-   튀어나와 아티스트의 루비처럼 읽혔다 (4기 9턴 A2). 총 .9rem(14px) 이면 rt 위로 4px 가 남는다.
-   그중 .65rem 은 안쪽 여백 — 왼쪽 선이 rt 까지 올라오게 (선이 rb 줄부터 시작하면 rt 가
-   선 밖에 떠 보인다, 9턴 후속) */
+/* 작품정보에 루비가 있으면 루비(rt, 11px)가 줄 상자 위로 10px 튀어나와 아티스트의 루비처럼
+   읽힌다 (4기 9턴 A2). 안쪽 여백 .65rem 으로 그만큼 받쳐 왼쪽 선이 rt 까지 올라오고(선이 rb
+   줄부터 시작하면 rt 가 선 밖에 떠 보인다), 바깥 여백 .5rem 은 루비 없는 행과 같아 선의
+   시작 높이가 행마다 같다 (9턴 후속) */
 .song-info:has(ruby) {
-    margin-block-start: .25rem;
     padding-block-start: .65rem;
 }
 

@@ -179,3 +179,6 @@ commit 9
 
 커밋 260915
     UI 오버홀 4기 9턴 후속(5): 노래 표 번호 열 폭 5.2rem → 20%(표 폭 비례, 사용자 결정), 번호 칸 패딩 .8rem .2rem 0. 번호 칸 규칙 두 개를 구체 선택자(.song-table tbody td.song-number) 하나로 합침 — z-index 만 따로 있던 것은 특이성 때문이었고 padding 의 !important 도 불필요해짐. 번호 열 폭에 매인 lift 판·애창곡 편집 표시 오프셋 3곳을 -5.2rem 에서 -25%(제목 열 기준)로 (song-table.css, page/favorite-song.css). 실측 번호 열 검색 1300 145.6px / 375 57.1px, hover 판 왼끝 행과 일치
+
+커밋 260915
+    UI 오버홀 4기 9턴 후속(6): 노래 표의 보조줄 래퍼 div.song-meta 제거 — 스타일 훅뿐이고 JS 가 읽지 않음 (index·favorite-songs·search 템플릿 9곳, song-search.js placeholder 행). 세로 간격을 better-interface(layout·typography)로 다시 정함: 제목→아티스트 .125rem(한 그룹), 아티스트→작품명 .5rem(그룹 사이, 안 간격의 2배 이상), 루비 행은 안쪽 .65rem 만 더해 선 시작 높이 통일 (song-table.css). 8턴의 검색 판 보조줄 .7rem 예외 제거 (song-search.css). 실측 글자 간격 제목→아티스트 6~7px, 아티스트→작품명 12~14px
