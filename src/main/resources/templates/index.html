@@ -294,16 +294,20 @@
                     <a class="song-title-text" target="_blank" th:href="${song.searchUrl}"
                        href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9">
                       <!-- 내부문자 분리를 위해 rb 태그 사용 -->
-                      <ruby><rb th:text="${song.title}">Title</rb><rp>(</rp><rt th:text="${song.titleKorean}">루비</rt><rp>)</rp></ruby>
+                      <ruby><rb th:text="${song.title}" th:lang="${song.titleJapanese} ? 'ja' : null">Title</rb><rp>(</rp><rt th:text="${song.titleKorean}">루비</rt><rp>)</rp></ruby>
                     </a>
                   </div>
                   <div class="song-meta">
-                    <div class="song-singer" th:text="${song.singer}">가수</div>
+                    <!-- 아티스트: 원본값 뒤에 대표값을 같은 줄에 병기 (루비 아님, 4기 9턴 A1) -->
+                    <div class="song-singer">
+                      <span class="song-singer-original" th:text="${song.singer}" th:lang="${song.singerJapanese} ? 'ja' : null">가수</span>
+                      <span class="song-singer-korean" th:if="${!#strings.isEmpty(song.singerKorean)}" th:text="${song.singerKorean}">가수 대표값</span>
+                    </div>
                     <div class="song-info">
-                      <!-- 작품정보도 제목처럼 한글 읽기가 있으면 루비로 표기 -->
-                      <span th:if="${#strings.isEmpty(song.infoKorean)}" th:text="${song.info}">정보 텍스트</span>
-                      <span th:unless="${#strings.isEmpty(song.infoKorean)}">
-                        <ruby><rb th:text="${song.info}">정보</rb><rp>(</rp><rt th:text="${song.infoKorean}">루비</rt><rp>)</rp></ruby>
+                      <!-- 작품정보도 제목처럼 원본값이 일본어이고 대표값이 있으면 루비로 표기 (4기 9턴 A4) -->
+                      <span th:if="${#strings.isEmpty(song.infoKorean) or !song.infoJapanese}" th:text="${song.info}">정보 텍스트</span>
+                      <span th:unless="${#strings.isEmpty(song.infoKorean) or !song.infoJapanese}">
+                        <ruby><rb th:text="${song.info}" lang="ja">정보</rb><rp>(</rp><rt th:text="${song.infoKorean}">루비</rt><rp>)</rp></ruby>
                       </span>
                     </div>
                   </div>
@@ -337,16 +341,20 @@
                   <div>
                     <a class="song-title-text" target="_blank" th:href="${song.searchUrl}"
                        href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9">
-                      <ruby><rb th:text="${song.title}">Title</rb><rp>(</rp><rt th:text="${song.titleKorean}">루비</rt><rp>)</rp></ruby>
+                      <ruby><rb th:text="${song.title}" th:lang="${song.titleJapanese} ? 'ja' : null">Title</rb><rp>(</rp><rt th:text="${song.titleKorean}">루비</rt><rp>)</rp></ruby>
                     </a>
                   </div>
                   <div class="song-meta">
-                    <div class="song-singer" th:text="${song.singer}">가수</div>
+                    <!-- 아티스트: 원본값 뒤에 대표값을 같은 줄에 병기 (루비 아님, 4기 9턴 A1) -->
+                    <div class="song-singer">
+                      <span class="song-singer-original" th:text="${song.singer}" th:lang="${song.singerJapanese} ? 'ja' : null">가수</span>
+                      <span class="song-singer-korean" th:if="${!#strings.isEmpty(song.singerKorean)}" th:text="${song.singerKorean}">가수 대표값</span>
+                    </div>
                     <div class="song-info">
-                      <!-- 작품정보도 제목처럼 한글 읽기가 있으면 루비로 표기 -->
-                      <span th:if="${#strings.isEmpty(song.infoKorean)}" th:text="${song.info}">정보 텍스트</span>
-                      <span th:unless="${#strings.isEmpty(song.infoKorean)}">
-                        <ruby><rb th:text="${song.info}">정보</rb><rp>(</rp><rt th:text="${song.infoKorean}">루비</rt><rp>)</rp></ruby>
+                      <!-- 작품정보도 제목처럼 원본값이 일본어이고 대표값이 있으면 루비로 표기 (4기 9턴 A4) -->
+                      <span th:if="${#strings.isEmpty(song.infoKorean) or !song.infoJapanese}" th:text="${song.info}">정보 텍스트</span>
+                      <span th:unless="${#strings.isEmpty(song.infoKorean) or !song.infoJapanese}">
+                        <ruby><rb th:text="${song.info}" lang="ja">정보</rb><rp>(</rp><rt th:text="${song.infoKorean}">루비</rt><rp>)</rp></ruby>
                       </span>
                     </div>
                   </div>
@@ -390,16 +398,20 @@
                   <div>
                     <a class="song-title-text" target="_blank" th:href="${song.searchUrl}"
                        href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9">
-                      <ruby><rb th:text="${song.title}">Title</rb><rp>(</rp><rt th:text="${song.titleKorean}">루비</rt><rp>)</rp></ruby>
+                      <ruby><rb th:text="${song.title}" th:lang="${song.titleJapanese} ? 'ja' : null">Title</rb><rp>(</rp><rt th:text="${song.titleKorean}">루비</rt><rp>)</rp></ruby>
                     </a>
                   </div>
                   <div class="song-meta">
-                    <div class="song-singer" th:text="${song.singer}">가수</div>
+                    <!-- 아티스트: 원본값 뒤에 대표값을 같은 줄에 병기 (루비 아님, 4기 9턴 A1) -->
+                    <div class="song-singer">
+                      <span class="song-singer-original" th:text="${song.singer}" th:lang="${song.singerJapanese} ? 'ja' : null">가수</span>
+                      <span class="song-singer-korean" th:if="${!#strings.isEmpty(song.singerKorean)}" th:text="${song.singerKorean}">가수 대표값</span>
+                    </div>
                     <div class="song-info">
-                      <!-- 작품정보도 제목처럼 한글 읽기가 있으면 루비로 표기 -->
-                      <span th:if="${#strings.isEmpty(song.infoKorean)}" th:text="${song.info}">정보 텍스트</span>
-                      <span th:unless="${#strings.isEmpty(song.infoKorean)}">
-                        <ruby><rb th:text="${song.info}">정보</rb><rp>(</rp><rt th:text="${song.infoKorean}">루비</rt><rp>)</rp></ruby>
+                      <!-- 작품정보도 제목처럼 원본값이 일본어이고 대표값이 있으면 루비로 표기 (4기 9턴 A4) -->
+                      <span th:if="${#strings.isEmpty(song.infoKorean) or !song.infoJapanese}" th:text="${song.info}">정보 텍스트</span>
+                      <span th:unless="${#strings.isEmpty(song.infoKorean) or !song.infoJapanese}">
+                        <ruby><rb th:text="${song.info}" lang="ja">정보</rb><rp>(</rp><rt th:text="${song.infoKorean}">루비</rt><rp>)</rp></ruby>
                       </span>
                     </div>
                   </div>
@@ -431,16 +443,20 @@
                   <div>
                     <a class="song-title-text" target="_blank" th:href="${song.searchUrl}"
                        href="https://www.google.com/search?q=%EC%82%AC%EB%9E%91%EC%9D%98+%EB%B6%88%EC%8B%9C%EC%B0%A9">
-                      <ruby><rb th:text="${song.title}">Title</rb><rp>(</rp><rt th:text="${song.titleKorean}">루비</rt><rp>)</rp></ruby>
+                      <ruby><rb th:text="${song.title}" th:lang="${song.titleJapanese} ? 'ja' : null">Title</rb><rp>(</rp><rt th:text="${song.titleKorean}">루비</rt><rp>)</rp></ruby>
                     </a>
                   </div>
                   <div class="song-meta">
-                    <div class="song-singer" th:text="${song.singer}">가수</div>
+                    <!-- 아티스트: 원본값 뒤에 대표값을 같은 줄에 병기 (루비 아님, 4기 9턴 A1) -->
+                    <div class="song-singer">
+                      <span class="song-singer-original" th:text="${song.singer}" th:lang="${song.singerJapanese} ? 'ja' : null">가수</span>
+                      <span class="song-singer-korean" th:if="${!#strings.isEmpty(song.singerKorean)}" th:text="${song.singerKorean}">가수 대표값</span>
+                    </div>
                     <div class="song-info">
-                      <!-- 작품정보도 제목처럼 한글 읽기가 있으면 루비로 표기 -->
-                      <span th:if="${#strings.isEmpty(song.infoKorean)}" th:text="${song.info}">정보 텍스트</span>
-                      <span th:unless="${#strings.isEmpty(song.infoKorean)}">
-                        <ruby><rb th:text="${song.info}">정보</rb><rp>(</rp><rt th:text="${song.infoKorean}">루비</rt><rp>)</rp></ruby>
+                      <!-- 작품정보도 제목처럼 원본값이 일본어이고 대표값이 있으면 루비로 표기 (4기 9턴 A4) -->
+                      <span th:if="${#strings.isEmpty(song.infoKorean) or !song.infoJapanese}" th:text="${song.info}">정보 텍스트</span>
+                      <span th:unless="${#strings.isEmpty(song.infoKorean) or !song.infoJapanese}">
+                        <ruby><rb th:text="${song.info}" lang="ja">정보</rb><rp>(</rp><rt th:text="${song.infoKorean}">루비</rt><rp>)</rp></ruby>
                       </span>
                     </div>
                   </div>

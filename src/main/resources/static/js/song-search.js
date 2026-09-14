@@ -530,7 +530,7 @@ $(function () {
         let songInfo = songRow.find('.song-info').attr('data-info-original') || '';
         let songInfoKorean = songRow.find('.song-info').attr('data-info-korean') || '';
         let songNumber = songRow.find('.song-number span').text();
-        let songSinger = songRow.find('.song-singer').text();
+        let songSinger = songRow.find('.song-singer-original').text() || songRow.find('.song-singer').text(); // 대표값 병기(.song-singer-korean)는 제외
 
         // 폼 data 와 컬랩스 내부(아직 안 보이는) 상태는 즉시 채운다
         favoriteSongAddForm.attr('data-info-original', songInfo);

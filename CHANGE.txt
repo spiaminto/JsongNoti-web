@@ -161,3 +161,6 @@ commit 9
 
 커밋 260914
     UI 오버홀 4기 8턴: 검색 결과 표(1열)는 768px 이상에서 제목 18 / 보조줄 16 으로 한 칸 넓히고 보조줄 묶음 위 여백 .35 → .7rem (song-search.css, 판 안에서 --fs-body/--fs-md 재정의). 모든 노래 표의 보조줄 순서를 작품정보 → 아티스트에서 아티스트 → 작품정보로 (index·search·favorite-songs 템플릿, 검색 로딩 placeholder 행, song-table.css 여백)
+
+커밋 260915
+    UI 오버홀 4기 9턴: 노래 표의 일본어 아티스트에 한글 대표값을 루비 대신 같은 줄에 병기(`原本 · 대표값`, index·애창곡; 검색 결과는 응답에 값이 없어 다음 커밋). NewSongDto 에 singerKorean 조건(원본값 일본어·대표값 한글·서로 다름)과 title/singer/infoJapanese 플래그. 루비는 원본값이 일본어일 때만, 정렬 start(낱말이 벌어지지 않게), 글자 바닥 11px, 작품명 루비가 있으면 아티스트 줄과 .9rem 띄움. 일본어 원본값 lang="ja", search.html lang="ko", song-table.css 물리 → 논리 속성. 검토 기록은 docs/_temp/ui-overhaul-4.md 9턴

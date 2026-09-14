@@ -22,9 +22,12 @@ public class NewSongDto {
     private String title;
     private String titleKorean;
     private String singer;
-    private String singerKorean;
+    private String singerKorean; // 아티스트 대표값. 원본값이 일본어이고 대표값이 한글이며 원본값과 다를 때만 (같은 줄 병기용, 4기 9턴)
     private String info;
-    private String infoKorean; // 작품정보 한글 읽기. 루비 표기용 (검색 페이지와 동일 기준)
+    private String infoKorean; // 작품정보 대표값. 루비 표기용 (검색 페이지와 동일 기준)
+    private boolean titleJapanese;  // 원본값이 일본어인지 — 템플릿이 lang="ja" 를 붙이는 기준 (4기 9턴)
+    private boolean singerJapanese;
+    private boolean infoJapanese;
     private String searchUrl; // google 검색 파라미터에 노래제목 붙인 검색용 url
     private boolean latest; // 가장 최근에 추가된 노래인지 여부
 
@@ -34,9 +37,12 @@ public class NewSongDto {
         dto.setTitle(song.getTitle());
         dto.setTitleKorean(hasJapanese(song.getTitle()) ? song.getTitleKorean() : ""); // 일본어가 있는경우 루비로 사용하기 위해 koreanTitle set
         dto.setSinger(song.getSinger());
-        dto.setSingerKorean(song.getSingerKorean());
+        dto.setSingerKorean(displaySingerKorean(song.getSinger(), song.getSingerKorean()));
         dto.setInfo(song.getInfo());
         dto.setInfoKorean(RegexPatterns.hasKorean(song.getInfoKorean()) ? song.getInfoKorean() : ""); // 한글 포함 안될경우 제거 (SongSearchDto 와 동일)
+        dto.setTitleJapanese(hasJapanese(song.getTitle()));
+        dto.setSingerJapanese(hasJapanese(song.getSinger()));
+        dto.setInfoJapanese(hasJapanese(song.getInfo()));
         dto.setLatest(song.getRegDate().isEqual(latestDate)); // 이부분 때문에 분리. 나중에 수정요망
         dto.setSearchUrl("https://www.google.com/search?q=" + song.getSinger() + " - " + song.getTitle());
         return dto;
@@ -48,17 +54,28 @@ public class NewSongDto {
         dto.setTitle(song.getTitle());
         dto.setTitleKorean(hasJapanese(song.getTitle()) ? song.getTitleKorean() : "");
         dto.setSinger(song.getSinger());
-        dto.setSingerKorean(song.getSingerKorean());
+        dto.setSingerKorean(displaySingerKorean(song.getSinger(), song.getSingerKorean()));
         dto.setInfo(song.getInfo());
         dto.setInfoKorean(RegexPatterns.hasKorean(song.getInfoKorean()) ? song.getInfoKorean() : "");
+        dto.setTitleJapanese(hasJapanese(song.getTitle()));
+        dto.setSingerJapanese(hasJapanese(song.getSinger()));
+        dto.setInfoJapanese(hasJapanese(song.getInfo()));
         dto.setLatest(false);
         dto.setSearchUrl("https://www.google.com/search?q=" + song.getSinger() + " - " + song.getTitle());
         return dto;
     }
 
     protected static boolean hasJapanese(String text) {
+        if (text == null) return false;
         Pattern pattern = Pattern.compile("[\\p{InHiragana}\\p{InKatakana}\\p{InCJKUnifiedIdeographs}]");
         return pattern.matcher(text).find();
+    }
+
+    // 아티스트는 루비 대신 같은 줄에 대표값을 붙인다 (4기 9턴 A1). 원본값이 일본어가 아니거나(Ado 등)
+    // 대표값이 한글이 아니거나 원본값과 같으면 붙일 것이 없다
+    private static String displaySingerKorean(String singer, String singerKorean) {
+        if (!hasJapanese(singer) || !RegexPatterns.hasKorean(singerKorean) || singerKorean.equals(singer)) return "";
+        return singerKorean;
     }
 
 }

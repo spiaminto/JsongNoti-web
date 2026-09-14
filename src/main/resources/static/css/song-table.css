@@ -18,7 +18,9 @@
            div > a|ruby.song-title-text   ← 제목 (JS 가 a 를 ruby 로 교체하기도 함)
            div.song-meta
              div.song-singer              ← 아티스트 (4기 8턴: 작품정보 위로)
-             div.song-info > span         ← 작품·추가 정보
+               span.song-singer-original  ← 원본값 (일본어면 lang="ja")
+               span.song-singer-korean    ← 대표값 같은 줄 병기 (있을 때만, 4기 9턴)
+             div.song-info > span         ← 작품·추가 정보 (원본값이 일본어면 루비로 대표값)
    ========================================================================== */
 
 /* ---------- 표 래퍼 ----------
@@ -70,7 +72,7 @@
     border-collapse: collapse;
     font-size: var(--fs-body); /* P21 Body — 글자 사다리(glass.css --fs-*), 모바일 15 / ≥768 17 */
     line-height: 1.35;
-    text-align: left;
+    text-align: start;
     margin-bottom: 0;
     border-style: hidden;
 }
@@ -218,8 +220,7 @@ body.is-scrolling .song-table tbody tr:hover:not(.song-row-will-switch-selected)
        번호 열 폭을 선언한다 (기존 thead th:first-child 의 5.2rem 이관) */
     width: 5.2rem;
     text-align: center;
-    padding-left: .5rem !important;
-    padding-right: .5rem !important;
+    padding-inline: .5rem !important;
 }
 
 .song-number span {
@@ -240,7 +241,7 @@ body.is-scrolling .song-table tbody tr:hover:not(.song-row-will-switch-selected)
 
 /* ---------- 제목 칸 ---------- */
 .song-title {
-    text-align: left;
+    text-align: start;
 }
 
 .song-title-text {
@@ -256,13 +257,17 @@ a.song-title-text:hover {
     text-decoration: none;
 }
 
+/* 루비: 원본값 위에 한글 대표값. 대표값은 글자별 읽기가 아니라 구(句) 번역이라
+   원본값 폭에 맞춰 낱말을 벌리지 않고(ruby-align: start) 한 줄 캡션처럼 붙여 읽는다.
+   글자 바닥 11px 은 HIG 최소값 — 주석 글자라 본문 바닥(12)까지는 올리지 않는다 (4기 9턴) */
 .song-title ruby,
 .song-info ruby {
     display: ruby;
+    ruby-align: start;
 }
 
 .song-table rt {
-    font-size: .62em;
+    font-size: max(.62em, 11px);
     color: var(--ink-2);
     font-weight: 700;
 }
@@ -270,8 +275,8 @@ a.song-title-text:hover {
 /* 아티스트·작품정보 meta 묶음: 왼쪽 세로선 + 들여쓰기. 순서는 아티스트 → 작품정보 (4기 8턴) */
 .song-meta {
     margin-top: .35rem;
-    padding-left: .7rem;
-    border-left: 3px solid rgb(140 160 180 / .4);
+    padding-inline-start: .7rem;
+    border-inline-start: 3px solid rgb(140 160 180 / .4);
     font-size: var(--fs-md);
     line-height: 1.5;
 }
@@ -282,11 +287,29 @@ a.song-title-text:hover {
     margin-top: .1rem;
 }
 
+/* 작품정보에 루비가 있으면 아티스트 줄과 띄운다 — 루비(rt, 11px)는 줄 상자 위로 10px
+   튀어나와 아티스트의 루비처럼 읽혔다 (4기 9턴 A2). .9rem(14px) 이면 rt 위로 4px 가 남는다 */
+.song-info:has(ruby) {
+    margin-block-start: .9rem;
+}
+
 .song-singer {
     /* 제목(800)보다 한 단계 낮은 bold. 이 폰트는 300/400/700/800 뿐이라
        600 은 700(B) 으로 렌더된다. 작품정보(300·회색)와는 굵기+잉크로 구분 */
     font-weight: 600;
     color: var(--ink);
+}
+
+/* 아티스트 대표값: 루비로 쌓지 않고 원본값 뒤에 가운뎃점으로 같은 줄에 붙인다 —
+   이름은 읽는 문장이 아니라 식별하는 값이라 세로 층을 늘리지 않는다 (4기 9턴 A1) */
+.song-singer-korean {
+    color: var(--ink-3);
+    font-weight: 400; /* 줄바꿈 허용 — nowrap 이면 좁은 폭에서 긴 대표값이 칸 밖으로 잘린다 */
+}
+
+.song-singer-korean::before {
+    content: '·';
+    margin-inline-end: .35em;
 }
 
 /* ---------- 표 제목 (h2) + 추가일 chip ----------
@@ -375,7 +398,7 @@ html[data-theme="dark"] .song-table tbody td.song-title::before {
 }
 
 html[data-theme="dark"] .song-meta {
-    border-left-color: rgb(255 255 255 / .22);
+    border-inline-start-color: rgb(255 255 255 / .22);
 }
 
 html[data-theme="dark"] .song-header-subtext {
