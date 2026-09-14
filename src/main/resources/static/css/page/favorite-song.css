@@ -226,7 +226,7 @@ tr:is(.song-row-will-switch, .song-row-be-switched, .song-row-deleting) {
     top: auto;
     bottom: -2px;
     height: 3px;
-    left: calc(-5.2rem + 12px);
+    left: calc(-25% + 12px); /* 번호 열 = 제목 열의 25% (song-table.css lift 판과 같은 기준) */
     right: 10px;
     border-radius: 2px;
     background: var(--badge-ink);
@@ -293,7 +293,7 @@ tr:is(.song-row-will-switch, .song-row-be-switched, .song-row-deleting) {
     top: 2px;
     bottom: 2px;
     height: auto;
-    left: calc(-5.2rem + 6px);
+    left: calc(-25% + 6px);
     right: 6px;
     border-radius: 14px;
     background: transparent;

@@ -99,7 +99,7 @@
 }
 
 .song-table thead th:first-child {
-    width: 5.2rem;
+    width: 20%; /* 번호 열 — tbody td.song-number 와 같은 값 (4기 9턴 후속: 5.2rem → 20%) */
     text-align: center;
 }
 
@@ -148,24 +148,18 @@
     z-index: 1;
 }
 
-/* 번호 셀은 제목 셀보다 먼저 그려지므로, 제목 셀에서 왼쪽으로 내민 판에
-   덮이지 않게 한 단계 위로 */
-.song-table tbody td.song-number {
-    z-index: 2;
-}
-
 /* ---------- 행 lift (D12·D16, 시안 6턴 4번) ----------
    hover·선택 상태를 행 배경 tint 대신 살짝 떠오르는 흰 판으로 보인다.
    판은 tr 이 아니라 제목 셀(td.song-title)의 ::before — Chrome 은 tr::before
    가 absolute 여도 익명 셀을 만들고, table-layout: fixed 표는 그 빈 셀에
-   제목 열 폭의 절반을 준다(시안 실측). 번호 열(5.2rem)만큼 왼쪽으로 내밀어
-   행 전체를 덮는다. 판 색은 --lift-bg 로 바꾼다 (편집 모드 상태 색: page/favorite-song.css) */
+   제목 열 폭의 절반을 준다(시안 실측). 번호 열만큼 왼쪽으로 내밀어 행 전체를
+   덮는다 — 번호 열이 표의 20% 이므로 제목 열(80%) 기준 25%. 판 색은 --lift-bg 로 바꾼다 (편집 모드 상태 색: page/favorite-song.css) */
 .song-table tbody td.song-title::before {
     content: '';
     position: absolute;
     top: 3px;
     bottom: 3px;
-    left: calc(-5.2rem + 6px);
+    left: calc(-25% + 6px);
     right: 6px;
     z-index: -1;
     border-radius: 14px;
@@ -214,13 +208,19 @@ body.is-scrolling .song-table tbody tr:hover:not(.song-row-will-switch-selected)
     transition: none;
 }
 
-/* ---------- 번호 칸 ---------- */
-.song-number {
+/* ---------- 번호 칸 ----------
+   셀 공통 규칙(.song-table tbody td)과 같은 무게로 한 곳에 (4기 9턴 후속 — 전에는
+   z-index 만 구체 선택자에 따로 있었고 padding 은 !important 로 이겼다) */
+.song-table tbody td.song-number {
     /* thead 가 숨어 fixed 레이아웃의 열 폭 기준이 없으므로 첫 행 td 가
-       번호 열 폭을 선언한다 (기존 thead th:first-child 의 5.2rem 이관) */
-    width: 5.2rem;
+       번호 열 폭을 선언한다 (thead th:first-child 와 같은 값). 5.2rem → 20% (4기 9턴 후속,
+       사용자 결정) — 표 폭에 비례하므로 좁은 폭에서 좁아지고 넓은 판에서는 넓어진다 */
+    width: 20%;
     text-align: center;
-    padding-inline: .5rem !important;
+    padding: .8rem .2rem 0;
+    /* 번호 셀은 제목 셀보다 먼저 그려지므로, 제목 셀에서 왼쪽으로 내민 lift 판에
+       덮이지 않게 한 단계 위로 */
+    z-index: 2;
 }
 
 .song-number span {
