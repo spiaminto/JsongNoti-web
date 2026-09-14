@@ -16,7 +16,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
             "WHERE s.brand = :brand " +
             "AND s.regDate >= :startDate " +
             "AND s.regDate <= :endDate " +
-            "ORDER BY s.regDate DESC")
+            "ORDER BY s.regDate DESC, s.id")
     List<Song> findSongsByBrandBetweenTime(Brand brand, LocalDate startDate, LocalDate endDate);
 
     @Query("""
@@ -26,7 +26,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
                          FROM Song s
                         LEFT JOIN SongKorean sk on s.id = sk.songId
             WHERE s.regDate >= :startDate AND s.regDate <= :endDate
-            ORDER BY s.regDate DESC
+            ORDER BY s.regDate DESC, s.id
             """)
     List<SongWithKoreanDto> findSongsBetweenTime(LocalDate startDate, LocalDate endDate);
 

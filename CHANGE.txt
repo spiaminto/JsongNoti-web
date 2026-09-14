@@ -152,3 +152,6 @@ commit 9
 
 커밋 260914
     애창곡 삭제 confirm 문구 끝에 빈 괄호가 붙던 것("가수 - 제목()") — 행 제목이 루비(rb 원제·rt 독음·rp 괄호)라 .text() 가 괄호까지 읽었다. 검색 페이지와 같이 rb 를 먼저 읽고 없으면 전체를 읽는다 (favorite-song.js deleteFavoriteSongEvent). 같은 함수의 디버그 console.log 2줄 제거. 4기 애창곡 실화면 검토에서 발견
+
+커밋 260914
+    첫 화면 신곡 표에서 같은 날짜에 등록된 곡의 순서가 로드마다 바뀌던 것 — 기간 조회 두 건(SongRepository findSongsBetweenTime, findSongsByBrandBetweenTime)의 정렬에 두 번째 조건 s.id 를 붙여 다른 조회와 같게 맞춤. 3회 로드 실측 순서 동일
