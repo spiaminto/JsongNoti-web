@@ -112,6 +112,36 @@
     --ease-effects: ease;
     /* 떠오름(로드 시퀀스·스크롤 리빌)용 감속 곡선 */
     --ease-float: cubic-bezier(.22, .8, .3, 1);
+
+    /* 글자 사다리 (P21, 4기 7턴): iOS Dynamic Type 을 px 로 옮긴 8단. 글자
+       브레이크포인트는 768·1200 둘뿐이고 아래 미디어 블록에서 토큰 값만 바뀐다 —
+       쓰는 쪽은 var(--fs-*) 만 적고 vw·미디어 쿼리를 두지 않는다. 버튼 글자는
+       위의 --btn-font-* (D20) 가 따로 정한다. 표: docs/_temp/ui-overhaul-4.md 7턴 */
+    --fs-xs: 12px;    /* caption: 배지 */
+    --fs-sm: 13px;    /* footnote: 푸터·아이콘 라벨·동의 문구·결과 수 */
+    --fs-md: 14px;    /* subheadline: 표 머리글·번호·보조줄, 안내문, placeholder */
+    --fs-body: 15px;  /* body: 본문·표 제목 셀·입력창·모달 항목 */
+    --fs-lg: 18px;    /* title3: 판 제목·상단바 브랜드·페이지 h3/h4 */
+    --fs-xl: 20px;    /* title2: 모달 제목 */
+    --fs-2xl: 24px;   /* title1: 섹션 헤더 h2 */
+    --fs-hero: 20px;  /* index 히어로 한 줄 (620px 판 두 줄에 맞춘 값) */
+}
+
+@media (min-width: 768px) {
+    :root {
+        --fs-md: 15px;
+        --fs-body: 17px;
+        --fs-lg: 20px;
+        --fs-xl: 22px;
+        --fs-2xl: 28px;
+        --fs-hero: 28px;
+    }
+}
+
+@media (min-width: 1200px) {
+    :root {
+        --fs-hero: 32px;
+    }
 }
 
 /* dark (D7, D22): 색 토큰이 통째로 바뀌고 사진은 어둡게 눌린다.
@@ -691,7 +721,7 @@ html[data-theme="dark"] .form-check-input:checked {
 }
 
 .modal-dialog {
-    font-size: 1rem;
+    font-size: var(--fs-body);
 }
 
 .modal-content {
@@ -712,7 +742,7 @@ html[data-theme="dark"] .form-check-input:checked {
 
 .modal-title {
     color: var(--ink);
-    font-size: 1.4rem;
+    font-size: var(--fs-xl);
     font-weight: 700;
     letter-spacing: -.01em;
 }
@@ -821,7 +851,7 @@ html[data-theme="dark"] .form-check-input:checked {
 .login-modal-info {
     padding: 0 4px;
     color: var(--ink-2);
-    font-size: .95rem;
+    font-size: var(--fs-md);
     line-height: 1.6;
 }
 
@@ -834,13 +864,13 @@ html[data-theme="dark"] .form-check-input:checked {
 /* 이메일 수집 동의: 본문 회색, 소제목만 잉크 */
 #agreementModal .modal-body-content {
     color: var(--ink-2);
-    font-size: .95rem;
+    font-size: var(--fs-md);
     line-height: 1.7;
 }
 
 #agreementModal .modal-body-content h4 {
     color: var(--ink);
-    font-size: 1rem;
+    font-size: var(--fs-body);
     font-weight: 700;
     margin: 0 0 8px;
 }
@@ -849,7 +879,7 @@ html[data-theme="dark"] .form-check-input:checked {
 #unsubscribeModal .modal-body p,
 #deleteUserModal .modal-body p {
     color: var(--ink-2);
-    font-size: .95rem;
+    font-size: var(--fs-md);
     margin-bottom: 14px;
 }
 
@@ -876,7 +906,7 @@ html[data-theme="dark"] .form-check-input:checked {
     margin: 16px 0 8px;
     padding-left: 14px;
     color: var(--ink-2);
-    font-size: 1rem;
+    font-size: var(--fs-body);
     font-weight: 600;
 }
 
@@ -916,7 +946,7 @@ html[data-theme="dark"] .form-check-input:checked {
     padding: 12px 16px;
     cursor: pointer;
     color: var(--ink);
-    font-size: 1rem;
+    font-size: var(--fs-body);
 }
 
 /* ✓: 잉크색 꺾쇠 — 선택 시 스프링으로 튀어나온다 */
@@ -969,7 +999,7 @@ html[data-theme="dark"] .form-check-input:checked {
 
 #presentOrderModal .modal-body .text-center {
     color: var(--ink-2);
-    font-size: .95rem;
+    font-size: var(--fs-md);
 }
 
 /* dark 시트 */

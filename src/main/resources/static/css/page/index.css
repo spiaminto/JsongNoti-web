@@ -30,7 +30,7 @@
 }
 
 .hero .headerText {
-    font-size: clamp(1.45rem, 3.4vw, 1.9rem);
+    font-size: var(--fs-hero); /* 글자 사다리(glass.css) — 20 / ≥768 28 / ≥1200 32 */
     font-weight: 800;
     line-height: 1.45;
     letter-spacing: -.02em;
@@ -74,7 +74,7 @@
     align-items: flex-start;
     gap: .5rem;
     margin-top: 1rem;
-    font-size: .78rem;
+    font-size: var(--fs-sm);
     color: var(--ink-2);
     letter-spacing: .01em;
     line-height: 1.5;
@@ -104,7 +104,7 @@
 /* 사용 방법 바로가기 */
 .hero .usage-link {
     margin-top: 1.6rem;
-    font-size: .9rem;
+    font-size: var(--fs-md);
 }
 
 /* ---------- 신곡 목록 ---------- */
@@ -116,7 +116,7 @@
 
 .songs-intro {
     text-align: center;
-    font-size: calc(0.85rem + 0.2vw);
+    font-size: var(--fs-md);
     line-height: 1.7;
     color: var(--ink-2);
     letter-spacing: .01em;
@@ -262,7 +262,7 @@
 }
 
 .u-text h3 {
-    font-size: 1.25rem;
+    font-size: var(--fs-lg);
     margin-bottom: 0;
 }
 
@@ -298,9 +298,5 @@
 @media (max-width: 480px) {
     .hero {
         padding: 1.8rem 1.2rem 2rem;
-    }
-
-    .hero .headerText {
-        font-size: 1.22rem;
     }
 }

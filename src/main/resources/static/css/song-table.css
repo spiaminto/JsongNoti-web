@@ -55,7 +55,7 @@
 }
 
 .song-panel .song-header-text {
-    font-size: 1.3rem;
+    font-size: var(--fs-lg);
 }
 
 .song-panel .song-table-border {
@@ -68,7 +68,7 @@
     table-layout: fixed; /* 긴 일본어 제목이 열 폭을 밀지 않도록 고정 */
     width: 100%;
     border-collapse: collapse;
-    font-size: 17px; /* P21 Body 17/22 — vw 글자 사다리는 이월 항목 */
+    font-size: var(--fs-body); /* P21 Body — 글자 사다리(glass.css --fs-*), 모바일 15 / ≥768 17 */
     line-height: 1.35;
     text-align: left;
     margin-bottom: 0;
@@ -89,7 +89,7 @@
    중첩 재질이라 시각 차이는 거의 없는데, 더보기처럼 높이가 변하는
    애니메이션에서 매 프레임 재샘플링되어 버벅임의 원인이 된다) */
 .song-table thead th {
-    font-size: calc(0.8rem + 0.2vw);
+    font-size: var(--fs-md);
     font-weight: 800;
     padding: .7rem .8rem;
     background: rgb(120 145 170 / .2);
@@ -223,7 +223,7 @@ body.is-scrolling .song-table tbody tr:hover:not(.song-row-will-switch-selected)
 }
 
 .song-number span {
-    font-size: calc(0.85rem + 0.2vw);
+    font-size: var(--fs-md);
     font-weight: 800;
     font-variant-numeric: tabular-nums;
     color: var(--ink-2);
@@ -272,7 +272,7 @@ a.song-title-text:hover {
     margin-top: .35rem;
     padding-left: .7rem;
     border-left: 3px solid rgb(140 160 180 / .4);
-    font-size: calc(0.8rem + 0.2vw);
+    font-size: var(--fs-md);
     line-height: 1.5;
 }
 
@@ -300,7 +300,7 @@ a.song-title-text:hover {
     justify-content: center;
     gap: .6rem;
     text-align: center;
-    font-size: 1.3rem;
+    font-size: var(--fs-lg);
     margin-bottom: 0;
     padding-bottom: .55rem;
     border-bottom: 2px solid rgb(100 125 155 / .45);
@@ -315,7 +315,7 @@ a.song-title-text:hover {
 }
 
 .song-header-subtext {
-    font-size: calc(0.68rem + 0.2vw);
+    font-size: var(--fs-xs);
     font-weight: 800;
     color: var(--badge-ink);
     background: var(--badge-tint);

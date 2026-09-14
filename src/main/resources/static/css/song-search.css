@@ -28,7 +28,7 @@
 }
 
 #searchHintContainer p {
-    font-size: calc(0.85rem + 0.3vw);
+    font-size: var(--fs-md);
     margin-bottom: 0.2rem;
 }
 
@@ -69,12 +69,12 @@
 
 .unified-search-group-header h4 {
     margin: 0;
-    font-size: calc(1rem + 0.3vw);
+    font-size: var(--fs-body);
 }
 
 .unified-search-result-count {
     color: var(--ink-3);
-    font-size: calc(0.75rem + 0.3vw);
+    font-size: var(--fs-sm);
     font-weight: normal;
 }
 

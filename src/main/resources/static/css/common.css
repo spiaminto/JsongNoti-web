@@ -42,7 +42,7 @@ html[data-theme="dark"] .dark-mode-element {
 }
 
 .arrow-collapse-button i {
-    font-size: 1rem;
+    font-size: var(--fs-body);
     color: var(--ink-2);
     line-height: 1;
 }
@@ -70,7 +70,7 @@ html[data-theme="dark"] .dark-mode-element {
     border: 0;
     border-radius: 18px;
     background: transparent;
-    font-size: .8rem;
+    font-size: var(--fs-sm);
     font-weight: 800;
     color: var(--ink-2);
     text-decoration: none;
@@ -103,10 +103,6 @@ html[data-theme="dark"] .dark-mode-element {
     .icon-link img {
         width: 34px;
         height: 34px;
-    }
-
-    .icon-link {
-        font-size: .9rem;
     }
 }
 
@@ -152,19 +148,18 @@ html[data-theme="dark"] .side-button-wrapper .icon-link:hover {
 }
 
 .text-input::placeholder {
-    font-size: calc(0.8rem + 0.3vw);
+    font-size: var(--fs-md);
 }
 
 /* ---------- Bootstrap 공통부 수정 (기존 유지) ----------
    버튼 크기(btn-lg 등)는 glass.css 의 사다리(D20)가 정한다 */
 .form-control-lg {
-    font-size: 1rem;
+    font-size: var(--fs-body); /* 글자 사다리 — 원본 1rem/1.25rem 분기 대신 토큰이 폭을 탄다 */
 }
 
 @media (min-width: 768px) {
     .form-control-lg {
         padding: 0.75rem 1rem; /* 원본 0.5rem 1rem */
-        font-size: 1.25rem; /* 원본으로 복구 */
     }
 }
 

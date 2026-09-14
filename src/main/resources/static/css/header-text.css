@@ -30,7 +30,7 @@ h2, h3 {
 }
 
 h1 .navbar-brand {
-    font-size: 1.25rem; /* 전 구간 동일 (992px 분기 제거) */
+    font-size: var(--fs-lg); /* 전 구간 동일 (992px 분기 제거) */
     font-weight: 800;
     letter-spacing: -.04em;
     color: var(--ink);
@@ -38,19 +38,19 @@ h1 .navbar-brand {
     margin-right: 0;
 }
 
-/* ---------- 본문 헤더 크기 (기존 스케일 유지) ---------- */
-h2 { /* 외부헤더 (신곡목록, 사용방법 ...) */
-    font-size: calc(1.425rem + 0.7vw);
+/* ---------- 본문 헤더 크기: 글자 사다리 (glass.css --fs-*, 4기 7턴) ---------- */
+h2 { /* 섹션 헤더 (신곡목록, 사용방법, 노래 검색 ...) */
+    font-size: var(--fs-2xl);
 }
 
-h3 { /* 사용방법-구독하기, 모달헤더 ... */
-    font-size: calc(1.35rem + 0.5vw);
+h3 { /* 페이지 안 소제목 (구독하기, 문의사항 ...). 모달 제목은 glass.css .modal-title */
+    font-size: var(--fs-lg);
 }
 
-h4 { /* 모달 하위헤더 */
-    font-size: calc(1.05rem + 0.5vw);
+h4 { /* 하위 소제목 */
+    font-size: var(--fs-lg);
 }
 
 .lead {
-    font-size: calc(1rem + 0.3vw);
+    font-size: var(--fs-body);
 }

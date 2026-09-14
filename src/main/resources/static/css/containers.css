@@ -13,7 +13,7 @@
 
 body {
     font-family: 'NanumSquareRound', 'Noto Sans KR', system-ui, sans-serif;
-    font-size: calc(0.9rem + 0.3vw);
+    font-size: var(--fs-body); /* 글자 사다리(glass.css --fs-*) */
     min-width: 360px;
 }
 

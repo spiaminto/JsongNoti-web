@@ -39,7 +39,7 @@ html[data-theme="dark"] .error-card {
 
 .error-card h2 {
     color: var(--ink);
-    font-size: 2rem;
+    font-size: var(--fs-2xl);
     font-weight: 700;
     letter-spacing: -.015em;
     margin: 0 0 .7rem;
@@ -47,7 +47,7 @@ html[data-theme="dark"] .error-card {
 
 .error-card p {
     color: var(--ink-2);
-    font-size: 1.15rem;
+    font-size: var(--fs-body);
     line-height: 1.6;
     margin: 0 0 2.2rem;
 }

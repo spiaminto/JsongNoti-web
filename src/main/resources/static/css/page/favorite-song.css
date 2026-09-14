@@ -405,14 +405,14 @@ html[data-theme="dark"] #choosePresentOrderTable tr.selected td.song-title::befo
 }
 
 #defaultInfoPreview {
-    font-size: calc(1rem + 0.3vw);
+    font-size: var(--fs-body);
     padding: 0.75rem 1rem;
 }
 
 #favoriteSongAddForm .song-info {
     /* 애창곡 등록시 추가내용 부분 강조 */
     color: var(--ink-2);
-    font-size: calc(0.9rem + 0.3vw);
+    font-size: var(--fs-md);
 }
 
 /* 노래 등록 폼 아래 마진 공백 생기는거 삭제 */

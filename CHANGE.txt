@@ -155,3 +155,6 @@ commit 9
 
 커밋 260914
     첫 화면 신곡 표에서 같은 날짜에 등록된 곡의 순서가 로드마다 바뀌던 것 — 기간 조회 두 건(SongRepository findSongsBetweenTime, findSongsByBrandBetweenTime)의 정렬에 두 번째 조건 s.id 를 붙여 다른 조회와 같게 맞춤. 3회 로드 실측 순서 동일
+
+커밋 260914
+    UI 오버홀 4기 7턴: 글자 사다리 — 폭에 따라 끊김 없이 커지던 vw 글자 17곳과 고정 rem 글자가 섞여 있던 것을 glass.css :root 의 --fs-* 8단(xs 12 / sm 13 / md 14→15 / body 15→17 / lg 18→20 / xl 20→22 / 2xl 24→28 / hero 20→28→32, 브레이크포인트 768·1200) 토큰으로 통일. 49곳 치환, 글자용 미디어 쿼리 3개 제거. 단계표·대응표는 docs/_temp/ui-overhaul-4.md 7턴

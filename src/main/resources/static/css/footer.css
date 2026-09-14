@@ -13,7 +13,7 @@
 
 .footer p {
     margin-bottom: 0;
-    font-size: .8rem;
+    font-size: var(--fs-sm);
     color: var(--ink-2);
 }
 
