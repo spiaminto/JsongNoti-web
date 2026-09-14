@@ -167,3 +167,6 @@ commit 9
 
 커밋 260915
     UI 오버홀 4기 9턴 후속: 검색 결과 표에도 아티스트 한글 대표값 병기 — SongRepository 네이티브 쿼리 13개 SELECT 에 sk.singer as singer_korean, 유사도 CTE 5개(song_korean_fuzzy_matches, song_korean_info_fuzzy_matches)도 singer 를 뽑도록. SongSearchResultDto·SongSearchDto 에 singerKorean(한글일 때만). 대표값 색 --ink-3 → --ink-2, 글자 smaller(대표값 span 에만), 보조줄 왼쪽 선을 .song-meta 묶음에서 .song-singer·.song-info 각 줄로 분리(dark 포함). 검색 "사랑" 1300·375 실측 병기 6/15 행, index·애창곡 동일
+
+커밋 260915
+    UI 오버홀 4기 9턴 후속(2): 노래 표 보조줄에서 아티스트 줄과 작품명 줄 사이 여백 .1 → .35rem (song-table.css .song-info) — 줄별 왼쪽 선으로 나뉜 뒤 두 줄이 붙어 보였다. 작품명 루비 행의 .9rem 은 그대로. 검색 INFO "사랑" 1300·375 실측 5.6px

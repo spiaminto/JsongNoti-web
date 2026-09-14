@@ -290,7 +290,7 @@ a.song-title-text:hover {
 .song-info {
     color: var(--ink-2);
     font-weight: 300; /* 라이트(L) — 제목(800)·아티스트(600)와 3단 굵기 위계 */
-    margin-top: .1rem;
+    margin-top: .35rem; /* 아티스트 줄과의 사이 — 줄별 왼쪽 선이 생기며 .1rem 은 붙어 보여 .35 로 (4기 9턴 후속) */
 }
 
 /* 작품정보에 루비가 있으면 아티스트 줄과 띄운다 — 루비(rt, 11px)는 줄 상자 위로 10px
