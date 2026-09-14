@@ -31,7 +31,7 @@
 
 .hero .headerText {
     font-size: var(--fs-hero); /* 글자 사다리(glass.css) — 20 / ≥768 28 / ≥1200 32 */
-    font-weight: 800;
+    font-weight: var(--fw-display); /* 히어로 한 줄 */
     line-height: 1.45;
     letter-spacing: -.02em;
     margin-bottom: 0;
@@ -91,7 +91,7 @@
 /* [ 자세히 보기 ]: 버튼이지만 밑줄 글자로 보이게 */
 .agreement-btn {
     font: inherit;
-    font-weight: 800;
+    font-weight: var(--fw-strong);
     color: var(--ink-2);
     background: none;
     border: 0;
@@ -277,7 +277,7 @@
 
 .u-text a {
     color: var(--ky-ink);
-    font-weight: 800;
+    font-weight: var(--fw-strong);
 }
 
 /* ---------- 접근성·모바일 ---------- */

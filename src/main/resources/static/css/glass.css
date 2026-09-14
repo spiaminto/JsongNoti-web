@@ -107,6 +107,17 @@
     --fs-xl: 20px;    /* title2: 모달 제목 */
     --fs-2xl: 24px;   /* title1: 섹션 헤더 h2 */
     --fs-hero: 20px;  /* index 히어로 한 줄 (620px 판 두 줄에 맞춘 값) */
+
+    /* 굵기 사다리 (4기 9턴 후속): SUITE 가변이 300~900 을 모두 그리므로 얼굴 없는 값이
+       한 단 굵게 그려지던 문제가 없다. 다섯 단만 쓰고, 고를 때는 크기를 함께 본다 —
+       작은 글자일수록 같은 강조에 더 굵어야 하므로 13px 이하의 강조는 strong(600),
+       18px 이상의 제목은 title(700) 이다. body 아래(300 이하)는 쓰지 않는다:
+       18px 아래에서 흐려진다. 글자 크기는 위의 --fs-* 가 정한다 */
+    --fw-body: 400;     /* 본문, 보조줄, 대표값, 입력창 */
+    --fw-mid: 500;      /* 본문보다 한 단: 아티스트, 노래 번호, 표 머리글 */
+    --fw-strong: 600;   /* 작은 글자의 강조: 버튼, 배지, 링크, 루비(11px) */
+    --fw-title: 700;    /* 제목: 노래 제목, h1~h6, 모달 제목 */
+    --fw-display: 800;  /* 한 화면에 하나뿐인 표시: index 히어로, 상단바 브랜드 */
 }
 
 @media (min-width: 768px) {
@@ -365,7 +376,7 @@ textarea:focus-visible {
     min-width: 96px;
     font-family: inherit;
     font-size: var(--btn-font-md);
-    font-weight: 600;
+    font-weight: var(--fw-strong);
     color: var(--btn-ink);
     text-decoration: none;
     text-align: center;
@@ -725,7 +736,7 @@ html[data-theme="dark"] .form-check-input:checked {
 .modal-title {
     color: var(--ink);
     font-size: var(--fs-xl);
-    font-weight: 700;
+    font-weight: var(--fw-title);
     letter-spacing: -.01em;
 }
 
@@ -839,7 +850,7 @@ html[data-theme="dark"] .form-check-input:checked {
 
 .login-modal-info a {
     color: var(--ink);
-    font-weight: 600;
+    font-weight: var(--fw-strong);
     white-space: nowrap;
 }
 
@@ -853,7 +864,7 @@ html[data-theme="dark"] .form-check-input:checked {
 #agreementModal .modal-body-content h4 {
     color: var(--ink);
     font-size: var(--fs-body);
-    font-weight: 700;
+    font-weight: var(--fw-title);
     margin: 0 0 8px;
 }
 
@@ -889,7 +900,7 @@ html[data-theme="dark"] .form-check-input:checked {
     padding-left: 14px;
     color: var(--ink-2);
     font-size: var(--fs-body);
-    font-weight: 600;
+    font-weight: var(--fw-strong);
 }
 
 .inset-group-title:first-child {

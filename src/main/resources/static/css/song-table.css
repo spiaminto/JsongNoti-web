@@ -91,7 +91,7 @@
    애니메이션에서 매 프레임 재샘플링되어 버벅임의 원인이 된다) */
 .song-table thead th {
     font-size: var(--fs-md);
-    font-weight: 700; /* 굵기 위계(4기 9턴 후속): 표 안은 700/400 두 단 — 800(EB)은 쓰지 않는다 */
+    font-weight: var(--fw-mid); /* 숨은 머리글 — 작은 라벨 */
     padding: .7rem .8rem;
     background: rgb(120 145 170 / .2);
     color: var(--ink-2);
@@ -224,7 +224,7 @@ body.is-scrolling .song-table tbody tr:hover:not(.song-row-will-switch-selected)
 
 .song-number span {
     font-size: var(--fs-md);
-    font-weight: 400; /* 식별값 — 제목만 굵고 나머지는 400 (굵기 위계, 4기 9턴 후속) */
+    font-weight: var(--fw-mid); /* 번호는 노래방에 입력하는 실행값이라 본문보다 한 단 위 */
     font-variant-numeric: tabular-nums;
     color: var(--ink-2);
 }
@@ -252,7 +252,7 @@ body.is-scrolling .song-table tbody tr:hover:not(.song-row-will-switch-selected)
 .song-title-text {
     display: block;
     color: var(--ink);
-    font-weight: 700; /* 행에서 유일한 굵은 글자 (굵기 위계, 4기 9턴 후속: 800 → 700) */
+    font-weight: var(--fw-title); /* 행에서 유일한 제목 굵기 */
     text-decoration: none;
 }
 
@@ -274,16 +274,17 @@ a.song-title-text:hover {
 .song-table rt {
     font-size: max(.62em, 11px);
     color: var(--ink-2);
-    font-weight: 700; /* 11px 주석 글자는 400 이면 가늘어 읽기 어려워 굵기 위계(700/400)에서 700 쪽 */
+    font-weight: var(--fw-strong); /* 11px 주석 글자 — 작을수록 같은 강조에 더 굵어야 한다 */
 }
 
 /* 보조줄 두 개: 아티스트 → 작품정보 (4기 8턴). 세 층 계단(4기 9턴 후속): 제목과
    아티스트는 같은 왼쪽 끝, 작품정보만 들여쓰기 + 왼쪽 세로선 — 선 하나가 "아티스트에
-   딸린 값" 한 가지 뜻만 갖는다. 아티스트·작품정보는 굵기(600/300)·색(ink/ink-2)으로 갈린다.
+   딸린 값" 한 가지 뜻만 갖는다.
    세로 간격(better-layout: 그룹 안 간격의 2배 이상을 그룹 사이에): 제목→아티스트는 한
    그룹이라 줄 상자의 반행간 위에 .125rem(2px)만, 아티스트→작품정보는 .5rem(8px).
-   굵기 위계(better-typography, 9턴 후속): 표 안은 700/400 두 단 — 제목·머리글·루비(11px)만
-   700, 번호·아티스트·대표값·작품정보는 400. 아티스트·작품정보는 색·들여쓰기·선으로 갈린다 */
+   굵기(glass.css --fw-* 사다리): 제목 title(700) · 아티스트와 번호 mid(500) · 대표값과
+   작품정보 body(400) · 루비와 배지 strong(600). 아티스트와 작품정보는 굵기 한 단에
+   색(ink / ink-2)·들여쓰기·왼쪽 선이 더해져 갈린다 */
 .song-singer,
 .song-info {
     font-size: var(--fs-md);
@@ -296,7 +297,7 @@ a.song-title-text:hover {
 
 .song-info {
     color: var(--ink-2);
-    font-weight: 400; /* 300(L)은 18px 아래에서 흐려져 400 으로 (typography 바닥, 4기 9턴 후속). 아티스트와는 색(ink-2)·들여쓰기·선으로 갈린다 */
+    font-weight: var(--fw-body); /* 라이트(300)는 18px 아래에서 흐려져 쓰지 않는다 */
     margin-block-start: .5rem;
     padding-inline-start: .7rem;
     border-inline-start: 3px solid rgb(140 160 180 / .4);
@@ -313,7 +314,7 @@ a.song-title-text:hover {
 .song-singer {
     /* 제목(800)보다 한 단계 낮은 bold. 이 폰트는 300/400/700/800 뿐이라
        600 은 700(B) 으로 렌더된다. 작품정보(300·회색)와는 굵기+잉크로 구분 */
-    font-weight: 400; /* 600 은 얼굴이 없어 700(B)으로 그려지고 있었다 — 제목만 굵게 (4기 9턴 후속) */
+    font-weight: var(--fw-mid); /* 아티스트는 제목 다음가는 값 — 중간 단 */
     color: var(--ink);
 }
 
@@ -322,7 +323,7 @@ a.song-title-text:hover {
 .song-singer-korean {
     color: var(--ink-2);
     font-size: smaller; /* 원본값보다 한 단 작게 (16→13.3, 15→12.5, 14→11.7) */
-    font-weight: 400;
+    font-weight: var(--fw-body); /* 대표값은 원본값에 딸린 값 */
     /* 줄바꿈 허용 — nowrap 이면 좁은 폭에서 긴 대표값이 칸 밖으로 잘린다 */
 }
 
@@ -358,7 +359,7 @@ a.song-title-text:hover {
 
 .song-header-subtext {
     font-size: var(--fs-xs);
-    font-weight: 700; /* 굵기 위계 — 800 은 쓰지 않는다 (4기 9턴 후속) */
+    font-weight: var(--fw-strong); /* 12px 배지 */
     color: var(--badge-ink);
     background: var(--badge-tint);
     border: 1px solid rgb(255 255 255 / .6);

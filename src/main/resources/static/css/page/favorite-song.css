@@ -66,7 +66,7 @@
     color: var(--badge-ink);
     border-radius: 6px;
     padding: .15rem .35rem;
-    font-weight: 800;
+    font-weight: var(--fw-strong); /* 색 견본 배지 */
 }
 
 .hint-target {
@@ -74,7 +74,7 @@
     color: var(--ink);
     border-radius: 6px;
     padding: .15rem .35rem;
-    font-weight: 800;
+    font-weight: var(--fw-strong); /* 색 견본 배지 */
 }
 
 /* ---------- 순서변경·삭제 편집 모드 (3기 D18, iOS 편집 모드 문법) ----------

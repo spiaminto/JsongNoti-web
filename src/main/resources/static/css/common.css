@@ -71,7 +71,7 @@ html[data-theme="dark"] .dark-mode-element {
     border-radius: 18px;
     background: transparent;
     font-size: var(--fs-sm);
-    font-weight: 800;
+    font-weight: var(--fw-strong); /* 13px 아이콘 라벨 — 작은 글자의 강조 */
     color: var(--ink-2);
     text-decoration: none;
     cursor: pointer;

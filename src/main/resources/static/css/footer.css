@@ -33,7 +33,7 @@
 }
 
 .footer-icon-container a {
-    font-weight: 800;
+    font-weight: var(--fw-strong); /* 작은 글자의 강조 */
     color: var(--ink-2) !important; /* .text-primary-emphasis 를 잉크 톤으로 */
 }
 

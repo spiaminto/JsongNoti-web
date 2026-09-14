@@ -40,7 +40,7 @@ html[data-theme="dark"] .error-card {
 .error-card h2 {
     color: var(--ink);
     font-size: var(--fs-2xl);
-    font-weight: 700;
+    font-weight: var(--fw-title);
     letter-spacing: -.015em;
     margin: 0 0 .7rem;
 }

@@ -86,7 +86,7 @@
 .unified-search-result-count {
     color: var(--ink-3);
     font-size: var(--fs-sm);
-    font-weight: normal;
+    font-weight: var(--fw-body);
 }
 
 .unified-search-group-message,
