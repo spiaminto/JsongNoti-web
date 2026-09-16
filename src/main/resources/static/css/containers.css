@@ -57,7 +57,8 @@ section {
     flex-wrap: nowrap;
     /* 좌우 padding 은 알약의 둥근 곡선이 끝나는 평평한 지점부터 내용이 놓이도록 */
     padding: .3rem 1.5rem .3rem 1.75rem;
-    border-radius: 999px;
+    --r-parent: var(--r-capsule);
+    border-radius: var(--r-parent);
     border: 0;
     background: linear-gradient(135deg, rgb(255 255 255 / .20), rgb(255 255 255 / .07));
     -webkit-backdrop-filter: blur(4px) saturate(170%);

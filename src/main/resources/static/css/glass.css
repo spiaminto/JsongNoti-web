@@ -118,6 +118,13 @@
     --fw-strong: 600;   /* 작은 글자의 강조: 버튼, 배지, 링크, 루비(11px) */
     --fw-title: 700;    /* 제목: 노래 제목, h1~h6, 모달 제목 */
     --fw-display: 800;  /* 한 화면에 하나뿐인 표시: index 히어로, 상단바 브랜드 */
+
+    /* 반경 사다리. 반경을 가진 컨테이너는 --r-parent 를 함께 내려주고, 가장자리에
+       맞닿는 자식은 calc(var(--r-parent) - 간격) 으로 받는다. 홀로 놓이면 --r-control */
+    --r-panel: 24px;     /* 콘텐츠 판 */
+    --r-sheet: 28px;     /* 모달, 에러 카드 */
+    --r-control: 14px;   /* 입력, 보조 버튼, 경고, lift 판, 그룹 */
+    --r-capsule: 999px;  /* 상단바, 사이드 버튼, 주요 액션 버튼, 배지 */
 }
 
 @media (min-width: 768px) {
@@ -254,7 +261,8 @@ textarea:focus-visible {
     background-position: 0 0;
     background-clip: padding-box;
     border: 0;
-    border-radius: 24px;
+    --r-parent: var(--r-panel);
+    border-radius: var(--r-parent);
     box-shadow: var(--panel-shadow);
     /* 프로스트 교체 페이드(::before)를 판 배경과 내용 사이에 끼우려면 판이
        스태킹 컨텍스트여야 한다. 모달은 모두 판 밖(body 직속)에 있어 갇히지
@@ -383,7 +391,7 @@ textarea:focus-visible {
     cursor: pointer;
     user-select: none;
     border: 0;
-    border-radius: 999px;
+    border-radius: var(--r-capsule);
     background: var(--btn-bg);
     box-shadow: var(--btn-shadow);
     /* 위치·크기는 스프링, 색·그림자는 effects 곡선 (P11) */
@@ -646,7 +654,7 @@ html[data-theme="dark"] .delete-favorite-song-complete-button {
     color: var(--ink);
     background: rgb(30 42 56 / .05);
     border: 1px solid rgb(30 42 56 / .10);
-    border-radius: 14px;
+    border-radius: var(--r-control);
     box-shadow: none;
 }
 
@@ -699,7 +707,7 @@ html[data-theme="dark"] .form-check-input:checked {
 
 .input-group > .form-control,
 .input-group > .btn {
-    border-radius: 14px !important;
+    border-radius: var(--r-control) !important;
 }
 
 /* ---------- 모달: iOS 시트 문법 (D19) ----------
@@ -721,7 +729,8 @@ html[data-theme="dark"] .form-check-input:checked {
     background: var(--panel-bg);
     color: var(--ink);
     border: 0;
-    border-radius: 28px;
+    --r-parent: var(--r-sheet);
+    border-radius: var(--r-parent);
     box-shadow: var(--panel-shadow), 0 30px 80px -20px rgb(30 42 56 / .35);
 }
 
@@ -837,7 +846,7 @@ html[data-theme="dark"] .form-check-input:checked {
 
 .modal-image-wrapper > img {
     width: 100%;
-    border-radius: 18px;
+    border-radius: var(--r-control);
     box-shadow: 0 0 0 1px rgb(30 42 56 / .08), 0 8px 24px -8px rgb(30 42 56 / .25);
 }
 
@@ -884,12 +893,12 @@ html[data-theme="dark"] .form-check-input:checked {
 
 #unsubscribeModal .input-group > .form-control,
 #deleteUserModal .input-group > .form-control {
-    border-radius: 14px 0 0 14px !important;
+    border-radius: var(--r-control) 0 0 var(--r-control) !important;
 }
 
 #unsubscribeModal .input-group > .btn,
 #deleteUserModal .input-group > .btn {
-    border-radius: 0 14px 14px 0 !important;
+    border-radius: 0 var(--r-control) var(--r-control) 0 !important;
 }
 
 /* 인셋 그룹 목록 (애창곡 설정 모달): iOS 설정 앱의 그룹 표.
@@ -909,7 +918,7 @@ html[data-theme="dark"] .form-check-input:checked {
 
 .inset-group {
     overflow: hidden; /* 행 배경을 그룹 모서리로 자른다 */
-    border-radius: 16px;
+    border-radius: var(--r-control);
     background: rgb(30 42 56 / .05);
 }
 
@@ -1097,7 +1106,7 @@ html:has(body.modal-open) {
     color: var(--ky-ink);
     background: var(--ky-tint);
     border: 1px solid rgb(255 255 255 / .6);
-    border-radius: 14px;
+    border-radius: var(--r-control);
 }
 
 /* 추가일 badge·최신곡 highlight 공용 표식 */

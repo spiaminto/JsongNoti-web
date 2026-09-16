@@ -195,3 +195,6 @@ commit 9
 
 커밋 260916
     본문 글꼴이 SUITE 로 확정되어, 어느 CSS 도 참조하지 않는 NanumSquareRound woff2 4벌(L/R/B/EB, 910KB)을 static/fonts 에서 삭제. 파일 경로를 가리키는 @font-face 가 0건임을 확인했고, design-preview 시안 9개와 static_backup 은 글꼴 이름만 적고 있어 Noto Sans KR 로 넘어가며 이는 SUITE 교체 시점부터 이미 그랬다
+
+커밋 260916
+    UI 오버홀 5기 1번(반경) ①: glass.css :root 에 반경 토큰 넷(--r-panel 24 / --r-sheet 28 / --r-control 14 / --r-capsule 999)을 --fw-* 옆에 두고, 흩어진 반경 값을 토큰으로 바꿈. 반경을 가진 컨테이너(.content-panel .modal-content .error-card .navbar .u-video)는 --r-parent 를 함께 내려주고, 가장자리에 맞닿는 자식은 calc(var(--r-parent) - 간격) 으로 받는다(WWDC25 세션 356 의 concentric 규칙, 지금 실제로 맞닿는 자리는 .u-video 27 − 7 = 20 하나). 값이 바뀐 곳은 .inset-group 16 → 14, 모달 이미지 18 → 14 둘. 버튼은 아직 캡슐 그대로. 실측(1550px): 토큰 네 값과 computed 반경 전부 일치, 네 페이지 정지 화면 이상 없음

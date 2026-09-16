@@ -29,7 +29,8 @@ html[data-theme="dark"] body::before {
 .error-card {
     width: min(560px, 100vw - 32px);
     padding: 3.4rem clamp(2.4rem, 9vw, 4.5rem) 3.2rem;
-    border-radius: 28px;
+    --r-parent: var(--r-sheet);
+    border-radius: var(--r-parent);
     box-shadow: var(--panel-shadow), 0 30px 80px -20px rgb(30 42 56 / .25);
 }
 

@@ -224,14 +224,15 @@
     justify-self: center;
     width: min(270px, 100%);
     padding: 7px;
-    border-radius: 27px;
+    --r-parent: 27px;
+    border-radius: var(--r-parent);
 }
 
 .u-video video {
     display: block;
     width: 100%;
     aspect-ratio: 640 / 1036;
-    border-radius: 20px;
+    border-radius: calc(var(--r-parent) - 7px);
     object-fit: cover;
     background: #10151a;
 }
@@ -240,7 +241,7 @@
 .u-video img {
     display: block;
     width: 100%;
-    border-radius: 20px;
+    border-radius: calc(var(--r-parent) - 7px);
     object-fit: cover;
 }
 
@@ -250,7 +251,7 @@
 .u-video .video-shadow {
     position: absolute;
     inset: 7px;
-    border-radius: 20px;
+    border-radius: calc(var(--r-parent) - 7px);
     background-color: rgb(0 0 0 / .3);
     pointer-events: none;
 }
