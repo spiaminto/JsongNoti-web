@@ -312,57 +312,23 @@ textarea:focus-visible {
     animation-duration: .3s;
 }
 
-/* ---------- 버튼: rim 버튼 (D19·D20, 시안 9~13턴) ----------
-   Bootstrap .btn 전체를 하나의 재질로 통일한다. Liquid Glass 아이콘의 림
-   라이팅 근사: 위·아래 테두리는 밝고 양옆은 어두운 conic 링을 ::after 로
-   테두리 1px 에만 마스킹하고, 안쪽 그림자(위 1.5px 하이라이트·아래 1px·
-   양옆 1.5px 그늘)로 옆면을 만든다. 실시간 유리 없음 — 비용 0.
+/* ---------- 버튼: 알파 버튼 (5기 3번) ----------
+   Bootstrap .btn 전체를 하나의 재질로 통일한다. 몸체는 알파 한 겹 — 판 위에
+   얹힌 얇은 덮개. 링·안쪽 하이라이트·그림자는 없다 (rim 버튼은 커밋 eec7743
+   까지의 glass.css). 실시간 유리 없음 — 비용 0.
    variant(btn-outline-* 등)는 구분하지 않고 위험 동작(danger)과 주된
    동작(primary)만 색을 달리한다. 모양은 컨트롤 반경이 기본이고 주된 동작만
    캡슐, 크기는 사다리 4단.
    변형(danger·primary·dark)은 아래 --btn-* 변수만 덮어쓴다.
 
    오류 페이지는 Bootstrap 없이 glass.css 만 로드하므로, .btn 이 단독으로도
-   버튼이 되도록 font-family·cursor 까지 여기서 준다.
-
-   plain 버튼(되돌릴 때, 시안 P2 알파 버튼): background rgb(30 42 56 / .07),
-   radius 14px, box-shadow 없음, hover .11, active scale(.96); primary 는
-   radius 999px + var(--ink) 바탕에 흰 글자(hover #2b3642); danger 는
-   var(--danger-tint)/var(--danger-ink); dark 는 흰 .09(hover .14),
-   primary 는 #f0f3f7 바탕에 #121a24 글자 */
+   버튼이 되도록 font-family·cursor 까지 여기서 준다. */
 .btn {
     /* 재질 변수 — 변형은 이것만 바꾼다 */
     --btn-ink: var(--ink);
-    --btn-bg: linear-gradient(180deg, rgb(244 246 249 / .92), rgb(226 231 237 / .92));
-    --btn-bg-hover: linear-gradient(180deg, rgb(250 251 253 / .95), rgb(232 236 242 / .95));
-    --btn-bg-active: linear-gradient(180deg, rgb(226 231 237), rgb(216 222 230));
-    --btn-shadow:
-        inset 0 1.5px 0 rgb(255 255 255 / .85),
-        inset 0 -1px 0 rgb(255 255 255 / .125),
-        inset 1.5px 0 2px -1px rgb(30 42 56 / .08),
-        inset -1.5px 0 2px -1px rgb(30 42 56 / .08),
-        0 1px 2px rgb(30 42 56 / .10),
-        0 5px 12px -3px rgb(30 42 56 / .22);
-    --btn-shadow-hover:
-        inset 0 1.5px 0 #fff,
-        inset 0 -1px 0 rgb(255 255 255 / .15),
-        inset 1.5px 0 2px -1px rgb(30 42 56 / .07),
-        inset -1.5px 0 2px -1px rgb(30 42 56 / .07),
-        0 2px 4px rgb(30 42 56 / .10),
-        0 12px 22px -6px rgb(30 42 56 / .3);
-    --btn-shadow-active:
-        inset 0 1px 2px rgb(30 42 56 / .14),
-        inset 1.5px 0 2px -1px rgb(30 42 56 / .09),
-        inset -1.5px 0 2px -1px rgb(30 42 56 / .09),
-        0 1px 2px rgb(30 42 56 / .08);
-    /* 링: 0°(위)·180°(아래)는 흰색, 90°·270°(양옆)는 잉크.
-       아래(155°~205°)와 안쪽 아래 1px 선은 시안의 절반 (14턴 피드백) */
-    --btn-ring: conic-gradient(from 0deg,
-        rgb(255 255 255 / .9) 0deg, rgb(255 255 255 / .6) 25deg,
-        rgb(30 42 56 / .12) 75deg, rgb(30 42 56 / .16) 105deg,
-        rgb(255 255 255 / .15) 155deg, rgb(255 255 255 / .225) 180deg, rgb(255 255 255 / .15) 205deg,
-        rgb(30 42 56 / .12) 255deg, rgb(30 42 56 / .16) 285deg,
-        rgb(255 255 255 / .6) 335deg, rgb(255 255 255 / .9) 360deg);
+    --btn-bg: rgb(30 42 56 / .07);
+    --btn-bg-hover: rgb(30 42 56 / .11);
+    --btn-bg-active: rgb(30 42 56 / .14);
 
     /* Bootstrap 의 :active 규칙(.btn:first-child:active 등)은 우리보다
        특정도가 높아 background-color·color 를 덮는다 — 그 값을 투명·같은
@@ -372,7 +338,6 @@ textarea:focus-visible {
     --bs-btn-active-border-color: transparent;
 
     position: relative;
-    isolation: isolate; /* 링(::after)의 z-index 를 버튼 안에 가둔다 */
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -394,33 +359,15 @@ textarea:focus-visible {
     border: 0;
     border-radius: var(--r-control);
     background: var(--btn-bg);
-    box-shadow: var(--btn-shadow);
-    /* 위치·크기는 스프링, 색·그림자는 effects 곡선 (P11) */
-    transition: transform .5s var(--spring-spatial), box-shadow .25s var(--ease-effects), background .2s var(--ease-effects);
+    /* 위치·크기는 스프링, 색은 effects 곡선 (P11) */
+    transition: transform .5s var(--spring-spatial), background .2s var(--ease-effects);
     will-change: transform;
-}
-
-.btn::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    border-radius: inherit;
-    padding: 1px; /* 링 두께 */
-    background: var(--btn-ring);
-    /* 전체에서 content-box 를 빼 테두리 1px 만 남긴다 */
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: destination-out;
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    pointer-events: none;
 }
 
 /* hover 는 행 lift 와 같은 스프링으로 살짝 커지며 뜬다 */
 .btn:hover {
     color: var(--btn-ink);
     background: var(--btn-bg-hover);
-    box-shadow: var(--btn-shadow-hover);
     transform: translateY(-1px) scale(1.06);
 }
 
@@ -428,15 +375,14 @@ textarea:focus-visible {
 .btn:active {
     color: var(--btn-ink);
     background: var(--btn-bg-active);
-    box-shadow: var(--btn-shadow-active);
     transform: translateY(0) scale(.94);
     transition-duration: .1s;
 }
 
-/* Bootstrap 은 focus-visible 에 box-shadow 링을 쓰지만 우리는 rim 그림자를
-   유지하고 outline 으로 표시한다 (전역 포커스 규칙과 같은 색) */
+/* Bootstrap 은 focus-visible 에 box-shadow 링을 쓰지만 우리는 outline 으로
+   표시한다 (전역 포커스 규칙과 같은 색) */
 .btn:focus-visible {
-    box-shadow: var(--btn-shadow);
+    box-shadow: none;
     outline: 3px solid rgb(100 149 237 / .55);
     outline-offset: 2px;
 }
@@ -445,54 +391,23 @@ textarea:focus-visible {
 .btn.disabled {
     color: var(--ink-3);
     background: rgb(30 42 56 / .04);
-    box-shadow: none;
     transform: none;
 }
 
-.btn:disabled::after,
-.btn.disabled::after {
-    display: none;
-}
-
-/* 위험 동작(구독취소·탈퇴·삭제): 붉은 그라디언트 + 붉은 링.
-   hover 도 붉은 계열 안에서만 밝아진다 (시안 10턴 손질) */
+/* 위험 동작(구독취소·탈퇴·삭제): 붉은 틴트 몸체.
+   hover 도 붉은 계열 안에서만 진해진다 */
 .btn-danger,
 .btn-outline-danger {
     --btn-ink: var(--danger-ink);
-    --btn-bg: linear-gradient(180deg, rgb(255 236 232 / .95), rgb(255 220 213 / .95));
-    --btn-bg-hover: linear-gradient(180deg, rgb(255 242 239 / .97), rgb(255 228 222 / .97));
-    --btn-bg-active: linear-gradient(180deg, rgb(252 222 216), rgb(248 210 202));
-    --btn-shadow:
-        inset 0 1.5px 0 rgb(255 255 255 / .7),
-        inset 0 -1px 0 rgb(255 255 255 / .115),
-        inset 1.5px 0 2px -1px rgb(214 90 70 / .11),
-        inset -1.5px 0 2px -1px rgb(214 90 70 / .11),
-        0 1px 2px rgb(214 90 70 / .10),
-        0 5px 12px -3px rgb(214 90 70 / .28);
-    --btn-shadow-hover:
-        inset 0 1.5px 0 rgb(255 255 255 / .8),
-        inset 0 -1px 0 rgb(255 255 255 / .125),
-        inset 1.5px 0 2px -1px rgb(214 90 70 / .1),
-        inset -1.5px 0 2px -1px rgb(214 90 70 / .1),
-        0 2px 4px rgb(214 90 70 / .1),
-        0 12px 22px -6px rgb(214 90 70 / .35);
-    --btn-shadow-active:
-        inset 0 1px 2px rgb(214 90 70 / .18),
-        inset 1.5px 0 2px -1px rgb(214 90 70 / .14),
-        inset -1.5px 0 2px -1px rgb(214 90 70 / .14),
-        0 1px 2px rgb(214 90 70 / .08);
-    --btn-ring: conic-gradient(from 0deg,
-        rgb(255 255 255 / .9) 0deg, rgb(255 255 255 / .6) 25deg,
-        rgb(214 90 70 / .16) 75deg, rgb(214 90 70 / .22) 105deg,
-        rgb(255 255 255 / .15) 155deg, rgb(255 255 255 / .225) 180deg, rgb(255 255 255 / .15) 205deg,
-        rgb(214 90 70 / .16) 255deg, rgb(214 90 70 / .22) 285deg,
-        rgb(255 255 255 / .6) 335deg, rgb(255 255 255 / .9) 360deg);
+    --btn-bg: var(--danger-tint);
+    --btn-bg-hover: rgb(255 122 96 / .28);
+    --btn-bg-active: rgb(255 122 96 / .36);
 }
 
 /* 주된 동작(primary): 잉크 캡슐 — 색은 글자가 아니라 바탕에 (P18).
    Bootstrap .btn-primary 와 페이지별 버튼: 구독하기(index), 구글 로그인·
    수집 동의 확인(모달), 검색하기·애창곡 추가·설정 변경(애창곡·검색),
-   순서변경·삭제 완료(편집 모드 마무리). hover 그림자는 기본과 같다 */
+   순서변경·삭제 완료(편집 모드 마무리) */
 .btn-primary,
 #submitButton,
 .favorite-login-button,
@@ -504,59 +419,17 @@ textarea:focus-visible {
 .delete-favorite-song-complete-button {
     border-radius: var(--r-capsule);
     --btn-ink: #fff;
-    --btn-bg: linear-gradient(180deg, #34404e, #1e2a38);
-    --btn-bg-hover: linear-gradient(180deg, #3e4b5a, #26333f);
-    --btn-bg-active: linear-gradient(180deg, #1e2a38, #17212c);
-    --btn-shadow:
-        inset 0 1.5px 0 rgb(255 255 255 / .3),
-        inset 0 -1px 0 rgb(255 255 255 / .03),
-        inset 1.5px 0 2px -1px rgb(0 0 0 / .22),
-        inset -1.5px 0 2px -1px rgb(0 0 0 / .22),
-        0 1px 2px rgb(30 42 56 / .25),
-        0 8px 18px -6px rgb(30 42 56 / .55);
-    --btn-shadow-active:
-        inset 0 1px 2px rgb(0 0 0 / .4),
-        inset 1.5px 0 2px -1px rgb(0 0 0 / .07),
-        inset -1.5px 0 2px -1px rgb(0 0 0 / .07),
-        0 1px 2px rgb(30 42 56 / .25);
-    --btn-ring: conic-gradient(from 0deg,
-        rgb(255 255 255 / .55) 0deg, rgb(255 255 255 / .3) 25deg,
-        rgb(0 0 0 / .25) 75deg, rgb(0 0 0 / .32) 105deg,
-        rgb(255 255 255 / .07) 155deg, rgb(255 255 255 / .115) 180deg, rgb(255 255 255 / .07) 205deg,
-        rgb(0 0 0 / .25) 255deg, rgb(0 0 0 / .32) 285deg,
-        rgb(255 255 255 / .3) 335deg, rgb(255 255 255 / .55) 360deg);
+    --btn-bg: var(--ink);
+    --btn-bg-hover: #2b3642;
+    --btn-bg-active: #17212c;
 }
 
-/* dark: 흰 알파 그라디언트 + 검은 그림자. 특정도가 위 변형들보다 높으므로
+/* dark: 흰 알파 몸체. 특정도가 위 변형들보다 높으므로
    danger·primary 의 dark 값을 이 뒤에 다시 적는다 */
 html[data-theme="dark"] .btn {
-    --btn-bg: linear-gradient(180deg, rgb(255 255 255 / .16), rgb(255 255 255 / .07));
-    --btn-bg-hover: linear-gradient(180deg, rgb(255 255 255 / .22), rgb(255 255 255 / .1));
-    --btn-bg-active: linear-gradient(180deg, rgb(255 255 255 / .07), rgb(255 255 255 / .04));
-    --btn-shadow:
-        inset 0 1.5px 0 rgb(255 255 255 / .35),
-        inset 0 -1px 0 rgb(255 255 255 / .045),
-        inset 1.5px 0 2px -1px rgb(0 0 0 / .07),
-        inset -1.5px 0 2px -1px rgb(0 0 0 / .07),
-        0 1px 2px rgb(0 0 0 / .35),
-        0 5px 12px -3px rgb(0 0 0 / .55);
-    --btn-shadow-hover:
-        inset 0 1.5px 0 rgb(255 255 255 / .4),
-        inset 0 -1px 0 rgb(255 255 255 / .05),
-        inset 1.5px 0 2px -1px rgb(0 0 0 / .22),
-        inset -1.5px 0 2px -1px rgb(0 0 0 / .22),
-        0 2px 4px rgb(0 0 0 / .35),
-        0 12px 22px -6px rgb(0 0 0 / .7);
-    --btn-shadow-active:
-        inset 0 1px 2px rgb(0 0 0 / .5),
-        inset 1.5px 0 2px -1px rgb(0 0 0 / .27),
-        inset -1.5px 0 2px -1px rgb(0 0 0 / .27);
-    --btn-ring: conic-gradient(from 0deg,
-        rgb(255 255 255 / .6) 0deg, rgb(255 255 255 / .35) 25deg,
-        rgb(0 0 0 / .28) 75deg, rgb(0 0 0 / .36) 105deg,
-        rgb(255 255 255 / .075) 155deg, rgb(255 255 255 / .125) 180deg, rgb(255 255 255 / .075) 205deg,
-        rgb(0 0 0 / .28) 255deg, rgb(0 0 0 / .36) 285deg,
-        rgb(255 255 255 / .35) 335deg, rgb(255 255 255 / .6) 360deg);
+    --btn-bg: rgb(255 255 255 / .09);
+    --btn-bg-hover: rgb(255 255 255 / .14);
+    --btn-bg-active: rgb(255 255 255 / .06);
 }
 
 html[data-theme="dark"] .btn:disabled,
@@ -568,9 +441,9 @@ html[data-theme="dark"] .btn.disabled {
 html[data-theme="dark"] .btn-danger,
 html[data-theme="dark"] .btn-outline-danger {
     --btn-ink: #fff;
-    --btn-bg: linear-gradient(180deg, rgb(255 69 58 / .76), rgb(255 69 58 / .54));
-    --btn-bg-hover: linear-gradient(180deg, rgb(255 69 58 / .88), rgb(255 69 58 / .64));
-    --btn-bg-active: linear-gradient(180deg, rgb(255 69 58 / .62), rgb(255 69 58 / .44));
+    --btn-bg: rgb(255 69 58 / .65);
+    --btn-bg-hover: rgb(255 69 58 / .76);
+    --btn-bg-active: rgb(255 69 58 / .53);
 }
 
 /* dark primary: 흰 캡슐에 어두운 글자 */
@@ -584,25 +457,9 @@ html[data-theme="dark"] #submitChangeSettingButton,
 html[data-theme="dark"] .switch-order-complete-button,
 html[data-theme="dark"] .delete-favorite-song-complete-button {
     --btn-ink: #121a24;
-    --btn-bg: linear-gradient(180deg, #ffffff, #e2e7ee);
+    --btn-bg: #f0f3f7;
     --btn-bg-hover: #fff;
-    --btn-bg-active: linear-gradient(180deg, #dfe4ea, #d3d9e0);
-    --btn-shadow:
-        inset 0 1.5px 0 #fff,
-        inset 0 -1px 0 rgb(255 255 255 / .15),
-        inset 1.5px 0 2px -1px rgb(30 42 56 / .09),
-        inset -1.5px 0 2px -1px rgb(30 42 56 / .09),
-        0 1px 2px rgb(0 0 0 / .4),
-        0 8px 18px -6px rgb(0 0 0 / .7);
-    --btn-shadow-active:
-        inset 0 1px 2px rgb(0 0 0 / .25),
-        0 1px 2px rgb(0 0 0 / .4);
-    --btn-ring: conic-gradient(from 0deg,
-        #fff 0deg, rgb(255 255 255 / .7) 25deg,
-        rgb(30 42 56 / .16) 75deg, rgb(30 42 56 / .22) 105deg,
-        rgb(255 255 255 / .175) 155deg, rgb(255 255 255 / .25) 180deg, rgb(255 255 255 / .175) 205deg,
-        rgb(30 42 56 / .16) 255deg, rgb(30 42 56 / .22) 285deg,
-        rgb(255 255 255 / .7) 335deg, #fff 360deg);
+    --btn-bg-active: #dfe4ea;
 }
 
 /* ---------- 버튼 사다리 (D20) ----------
@@ -1539,11 +1396,10 @@ tbody tr.more-reveal.more-settled.more-hide,
         background: #fff;
         border-color: var(--edge-contrast);
     }
-    /* rim 버튼은 링·그림자 대신 또렷한 테두리 하나로 */
+    /* 알파 몸체만으로는 경계가 약하므로 또렷한 테두리 하나를 더한다 */
     .btn, .btn:hover, .btn:active {
         box-shadow: 0 0 0 1.5px var(--edge-contrast);
     }
-    .btn::after { display: none; }
     /* 프로스트(구운 사진)는 덮개 아래로 비쳐 글자 대비를 깎는다 — 바탕색 판만 */
     .content-panel { background-image: none; }
     .content-panel.frost-crossfade::before { display: none; }
