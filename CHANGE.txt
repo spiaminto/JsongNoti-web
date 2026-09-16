@@ -216,3 +216,6 @@ commit 9
 
 커밋 260917
     UI 오버홀 5기 2번 후속: 사이드 알약을 내비바와 같은 리퀴드 글라스로. 블러·틴트는 이미 같았지만 스펙큘러 링(::after conic 210deg)과 굴절이 없어 흰 판 위에서 평평한 흰 알약으로 읽혔다. common.css 에 링(light·dark) 추가, glass-refraction.js 를 .navbar 한 장 전용에서 크롬 유리 여러 장(.navbar, .side-button-wrapper — 장마다 filter id·ResizeObserver)으로 일반화. 사이드 알약은 스크롤 전 display:none 이라 처음 보일 때 변위 맵이 만들어진다. ADR 0003 을 "크롬 유리 2장" 으로 보완(4장 93fps 예산 안). 실측: 스크롤 뒤 사이드 backdrop-filter 에 url(#glass-refraction-0), 내비바 url(#glass-refraction-1), ::after 링 생성
+
+커밋 260917
+    사이드 알약 굴절 되돌림: backdrop-filter 에 url() 필터가 붙으면 Chrome 이 뒷면을 무효화 전까지 다시 그리지 않아, 스크롤로 나타난 사이드 알약의 블러가 스타일이 바뀔 때까지 그려지지 않았다(사용자 재현: 첫 로드엔 글자가 선명, right:0 을 붙이면 흐려짐. 캡처는 매번 다시 그리므로 캡처로는 안 보임). 내비바는 .scrolled 토글·축소 transform 이 매 스크롤 무효화해 가려진다. glass-refraction.js 셀렉터를 .navbar 로 되돌리고(여러 장 구조는 유지) 사이드 알약은 블러·링만. ADR 0003 원제로 복귀 + 사이드에 걸지 않는 이유 기록. 실측: 새로고침 뒤 사이드 backdrop-filter blur(4px) saturate(1.7), inline 없음

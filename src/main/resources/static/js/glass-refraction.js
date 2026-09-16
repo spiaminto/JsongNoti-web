@@ -2,28 +2,31 @@
  * glass-refraction.js — 크롬 유리의 굴절 (ADR 0003, D6·D9·P6)
  * 기준: docs/_temp/ui-overhaul-3.md, 용어는 docs/with-ai/CONTEXT.md
  *
- * 크롬 유리(.navbar, .side-button-wrapper) 장마다 SVG 변위 맵으로 가장자리 굴절을
- * 얹는다 — 알약의 가장자리 띠(EDGE_BAND px) 안에서 뒤 그림이 바깥쪽으로 휘어
- * 유리 렌즈처럼 보인다. 비용은 크롬 2장뿐이라 예산(P5) 안이다. 콘텐츠 판에는
- * 걸지 않는다.
+ * 내비바(.navbar) 한 장에만 SVG 변위 맵으로 가장자리 굴절을 얹는다 — 알약의
+ * 가장자리 띠(EDGE_BAND px) 안에서 뒤 그림이 바깥쪽으로 휘어 유리 렌즈처럼
+ * 보인다. 비용은 내비바 1장뿐이라 예산(P5) 안이다. 콘텐츠 판에는 걸지 않는다.
+ * 사이드 알약(.side-button-wrapper)에는 걸지 않는다: backdrop-filter 에 url()
+ * 필터가 붙으면 Chrome 이 뒷면을 무효화 전까지 다시 그리지 않아, 스크롤로
+ * 나타난 알약의 블러가 스타일이 바뀔 때까지 그려지지 않는다(5기 2번).
+ * 내비바는 .scrolled 토글과 축소 transform 이 계속 무효화해 주어 가려진다.
  *
  * 폴백 사다리(위에서 아래로, 감지로만 내려간다 — 노브 없음):
  *  1) 굴절 + 블러: Chromium 계열 — 여기서 backdrop-filter 에 url(#필터) 를 더한다
  *  2) 블러: backdrop-filter 를 지원하는 나머지 브라우저 — CSS 기본 재질 그대로
- *     (containers.css .navbar, common.css .side-button-wrapper). Firefox·Safari 는
+ *     (containers.css .navbar). Firefox·Safari 는
  *     backdrop-filter: url() 을 무시하거나 깨진 그림을 내므로 @supports 가 아니라
  *     런타임 브랜드로 감지한다(P15)
  *  3) 색만: backdrop-filter 없음 — glass.css @supports not 절이 틴트 알파를 올린다
  *  4) 불투명: prefers-reduced-transparency — glass.css 접근성 절
  *
  * 변위 맵은 요소 크기에 맞춰 만들므로 크기가 바뀌면(ResizeObserver) 다시 만든다.
- * 사이드 알약은 스크롤 전까지 display: none 이라 처음 보일 때 ResizeObserver 로 만든다.
+ * GLASS_SELECTOR 에 요소를 더하면 장마다 filter 하나씩 붙는다.
  */
 (function () {
     "use strict";
 
     var SVG_NS = "http://www.w3.org/2000/svg";
-    var GLASS_SELECTOR = ".navbar, .side-button-wrapper";
+    var GLASS_SELECTOR = ".navbar";
     var FILTER_ID_PREFIX = "glass-refraction-";
     var MAP_MAX_SIZE = 480;   // 변위 맵 캔버스 긴 변 상한 px — 굴절은 가장자리 띠라 해상도가 낮아도 된다
     var EDGE_BAND = 18;       // 굴절이 일어나는 가장자리 띠 폭 (css px)
