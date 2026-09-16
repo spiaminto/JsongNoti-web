@@ -2,18 +2,21 @@
  * glass-refraction.js — 크롬 유리의 굴절 (ADR 0003, D6·D9·P6)
  * 기준: docs/_temp/ui-overhaul-3.md, 용어는 docs/with-ai/CONTEXT.md
  *
- * 내비바(.navbar) 한 장에만 SVG 변위 맵으로 가장자리 굴절을 얹는다 — 알약의
- * 가장자리 띠(EDGE_BAND px) 안에서 뒤 그림이 바깥쪽으로 휘어 유리 렌즈처럼
- * 보인다. 비용은 내비바 1장뿐이라 예산(P5) 안이다. 콘텐츠 판에는 걸지 않는다.
- * 사이드 알약(.side-button-wrapper)에는 걸지 않는다: backdrop-filter 에 url()
- * 필터가 붙으면 Chrome 이 뒷면을 무효화 전까지 다시 그리지 않아, 스크롤로
- * 나타난 알약의 블러가 스타일이 바뀔 때까지 그려지지 않는다(5기 2번).
- * 내비바는 .scrolled 토글과 축소 transform 이 계속 무효화해 주어 가려진다.
+ * 크롬 유리(.navbar, .side-button-wrapper) 장마다 SVG 변위 맵으로 가장자리 굴절을
+ * 얹는다 — 알약의 가장자리 띠(EDGE_BAND px) 안에서 뒤 그림이 바깥쪽으로 휘어
+ * 유리 렌즈처럼 보인다. 비용은 크롬 2장뿐이라 예산(P5) 안이다. 콘텐츠 판에는
+ * 걸지 않는다.
+ *
+ * 변위 맵(feImage 의 data URL)이 로드되기 전에 backdrop-filter 에 url() 을 붙이면
+ * Chrome 은 필터 체인 전체를 버려 블러까지 사라지고, 그 요소의 계산된 스타일이
+ * 실제로 달라지기 전에는 복구하지 않는다(5기 2번, 사이드 알약에서 확인).
+ * 같은 값을 다시 넣는 것은 변경이 아니다. 그래서 필터를 붙인 뒤 두 프레임 뒤와
+ * 400ms 뒤에 값이 실제로 달라지도록 no-op 인 opacity(1) 을 붙였다 뗀다.
  *
  * 폴백 사다리(위에서 아래로, 감지로만 내려간다 — 노브 없음):
  *  1) 굴절 + 블러: Chromium 계열 — 여기서 backdrop-filter 에 url(#필터) 를 더한다
  *  2) 블러: backdrop-filter 를 지원하는 나머지 브라우저 — CSS 기본 재질 그대로
- *     (containers.css .navbar). Firefox·Safari 는
+ *     (containers.css .navbar, common.css .side-button-wrapper). Firefox·Safari 는
  *     backdrop-filter: url() 을 무시하거나 깨진 그림을 내므로 @supports 가 아니라
  *     런타임 브랜드로 감지한다(P15)
  *  3) 색만: backdrop-filter 없음 — glass.css @supports not 절이 틴트 알파를 올린다
@@ -26,7 +29,7 @@
     "use strict";
 
     var SVG_NS = "http://www.w3.org/2000/svg";
-    var GLASS_SELECTOR = ".navbar";
+    var GLASS_SELECTOR = ".navbar, .side-button-wrapper";
     var FILTER_ID_PREFIX = "glass-refraction-";
     var MAP_MAX_SIZE = 480;   // 변위 맵 캔버스 긴 변 상한 px — 굴절은 가장자리 띠라 해상도가 낮아도 된다
     var EDGE_BAND = 18;       // 굴절이 일어나는 가장자리 띠 폭 (css px)
@@ -88,14 +91,33 @@
             mapSize = { width: width, height: height };
 
             var radius = parseFloat(getComputedStyle(element).borderTopLeftRadius) || height / 2;
+            var mapUrl = buildRefractionDisplacementMap(width, height, radius);
+
             var previous = svg.querySelector("#" + filterId);
             if (previous) previous.remove();
-            svg.appendChild(buildRefractionFilter(filterId, width, height, radius));
+            svg.appendChild(buildRefractionFilter(filterId, mapUrl, width, height));
+            setBackdropFilter(filterId, false);
 
-            // CSS 재질(블러·채도)은 그대로 두고 굴절만 덧붙인다 — 값의 원본은 CSS 한 곳
-            var base = getComputedStyle(element).backdropFilter.replace(/url\([^)]*\)/g, "").trim();
+            // 맵이 로드된 뒤 값이 실제로 달라지게 두 번 흔든다 (머리말). 그 사이
+            // 크기가 또 바뀌었으면 건너뛴다 — 새 apply 가 다시 한다
+            var expected = mapSize;
+            function nudge(on) {
+                if (mapSize !== expected) return;
+                setBackdropFilter(filterId, on);
+            }
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () { nudge(true); });
+            });
+            setTimeout(function () { nudge(false); }, 400);
+        }
+
+        // CSS 재질(블러·채도)은 그대로 두고 굴절만 덧붙인다 — 값의 원본은 CSS 한 곳.
+        // withNoop 이면 no-op 인 opacity(1) 을 뒤에 붙여 값이 달라지게 한다
+        function setBackdropFilter(id, withNoop) {
+            var base = getComputedStyle(element).backdropFilter
+                .replace(/url\([^)]*\)/g, "").replace(/opacity\(1\)/g, "").trim();
             if (base === "none") base = "";
-            var value = (base + " url(#" + filterId + ")").trim();
+            var value = (base + " url(#" + id + ")" + (withNoop ? " opacity(1)" : "")).trim();
             element.style.webkitBackdropFilter = value;
             element.style.backdropFilter = value;
         }
@@ -110,7 +132,7 @@
     }
 
     // feImage(변위 맵) + feDisplacementMap 두 단계 필터
-    function buildRefractionFilter(filterId, width, height, radius) {
+    function buildRefractionFilter(filterId, mapUrl, width, height) {
         var filter = document.createElementNS(SVG_NS, "filter");
         filter.id = filterId;
         filter.setAttribute("color-interpolation-filters", "sRGB");
@@ -120,7 +142,7 @@
         filter.setAttribute("height", "100%");
 
         var mapImage = document.createElementNS(SVG_NS, "feImage");
-        mapImage.setAttribute("href", buildRefractionDisplacementMap(width, height, radius));
+        mapImage.setAttribute("href", mapUrl);
         mapImage.setAttribute("x", "0");
         mapImage.setAttribute("y", "0");
         mapImage.setAttribute("width", width);

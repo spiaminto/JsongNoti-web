@@ -1323,8 +1323,8 @@ tbody tr.more-reveal.more-settled.more-hide,
 
 /* ---------- 크롬 유리 폴백 사다리 (ADR 0003, P15) ----------
    위에서 아래로, 감지로만 내려간다:
-   1) 굴절 + 블러 — Chromium: glass-refraction.js 가 .navbar 의 backdrop-filter 에
-      SVG 변위 맵 url() 을 더한다 (사이드 알약은 블러만 — 스크립트 머리말)
+   1) 굴절 + 블러 — Chromium: glass-refraction.js 가 .navbar 와 .side-button-wrapper
+      의 backdrop-filter 에 SVG 변위 맵 url() 을 더한다
    2) 블러 — backdrop-filter 를 지원하는 나머지 브라우저: containers.css(.navbar)·
       common.css(.side-button-wrapper)의 기본 재질. 이 상태가 완성된 디자인이다
    3) 색만 — backdrop-filter 없음: 얇은 틴트로는 뒤 글자가 그대로 비치므로

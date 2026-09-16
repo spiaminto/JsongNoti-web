@@ -121,8 +121,7 @@ html[data-theme="dark"] .navbar .icon-link:hover {
 
 /* 유리 알약 하나에 버튼 둘이 세로로 — 내비바와 같은 맑은 유리 (D13: 모바일
    오른쪽 엄지 자리라 유지. 크롬이므로 실시간 유리 허용, 블러 층 1장).
-   스펙큘러 링(::after)은 내비바와 같고, 굴절은 걸지 않는다 — url() 필터가
-   붙은 backdrop-filter 는 무효화 전까지 다시 그려지지 않는다(glass-refraction.js) */
+   스펙큘러 링(::after)과 굴절(glass-refraction.js)도 내비바와 같다 */
 .side-button-wrapper {
     position: relative;
     display: flex;
