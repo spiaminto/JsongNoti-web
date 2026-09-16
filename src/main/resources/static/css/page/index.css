@@ -41,12 +41,18 @@
     margin-top: 1.8rem;
 }
 
-/* 입력창 + 버튼 한 줄 묶음. 버튼은 사다리 medium(글자·패딩) 그대로,
-   높이만 grid stretch 로 입력창에 맞춘다 (glass.css .input-group > .btn 과 같은 이유) */
+/* 입력창 + 버튼 한 줄 묶음. 버튼 높이는 grid stretch 로 입력창(large 키)에
+   맞추고, 글자·좌우 여백은 large 로 올린다 (glass.css 의
+   .input-group:has(> .form-control-lg) > .btn 과 같은 규칙) */
 .field-row {
     display: grid;
     grid-template-columns: 1fr auto;
     gap: .55rem;
+}
+
+.field-row .btn {
+    padding: 0 24px;
+    font-size: var(--btn-font-lg);
 }
 
 .field-row .form-control {

@@ -207,3 +207,6 @@ commit 9
 
 커밋 260917
     UI 오버홀 5기 3번(버튼 하이라이트): rim 버튼(1px conic 링 + 안쪽 하이라이트 + 회색 그라데이션 + 바깥 그림자 2겹)을 걷고 몸체를 알파 한 겹으로. 밝은 버튼 잉크 알파 .07(hover .11, active .14), 위험 버튼 --danger-tint 평면, 잉크 버튼 var(--ink) 평면(hover #2b3642), dark 는 흰 알파 .09/.14/.06 · 붉은 .65 · 밝은 #f0f3f7. ::after 링·isolation·--btn-shadow*·--btn-ring 변수 제거, transition 에서 box-shadow 제거, 고대비 미디어의 링 숨김 줄 삭제. 애플 세션 219 의 "fills, transparency … thin overlay" 문법이고 실시간 유리는 없음(비용 0). hover 스프링 scale(1.06)·누름 .94 는 유지, 접점 발광은 넣지 않음(4번 레이어형에서 재검토). 실측(1550px): 밝은·잉크·위험·dark 버튼 전부 background-image none, box-shadow none, ::after 없음
+
+커밋 260917
+    UI 오버홀 5기 3번 후속: large 입력창(form-control-lg·index .field-row) 옆 버튼은 stretch 로 키가 51~53px 인데 글자는 medium(15px)이라 글자/높이 비율이 .29 로 medium(.42)·large(.34)보다 작았음. glass.css .input-group:has(> .form-control-lg) > .btn 과 index.css .field-row .btn 에 font-size large(17px)·padding 0 24px 을 주고 min-width 는 입력줄이 정하므로 주지 않음. 실측(1550px): 구독하기 106×53 17px, 구독취소·검색하기 106×51 17px 로 비율 .32~.33

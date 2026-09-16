@@ -506,6 +506,13 @@ html[data-theme="dark"] .delete-favorite-song-complete-button {
     align-self: stretch;
 }
 
+/* large 입력창 옆에서는 키가 large(50px 안팎)가 되므로 글자·좌우 여백도
+   large 로 올린다. 너비는 입력줄이 정하므로 btn-lg 의 min-width 는 주지 않는다 */
+.input-group:has(> .form-control-lg) > .btn {
+    padding: 0 24px;
+    font-size: var(--btn-font-lg);
+}
+
 /* ---------- 입력: 판 위의 움푹한 입력창 (3기, 유리 없음) ----------
    콘텐츠 판이 불투명이므로 입력창도 실시간 유리 대신 잉크 알파의 얕은 홈.
    포커스는 흰 바탕 + 파란 링 */
