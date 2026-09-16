@@ -213,3 +213,6 @@ commit 9
 
 커밋 260917
     UI 오버홀 5기 2번(오른쪽 아이콘 minimal·그룹화): 상단바 오른쪽·사이드의 컬러 일러스트 PNG 아이콘(검색·애창곡·신곡·설정)을 Lucide 단색 SVG(24px, 획 2px, currentColor) inline 으로 바꿔 light 잉크·dark 흰색이 자동으로 뒤집히고, 라벨(13px 600)은 유지. 상단바 .button-wrapper 를 배경 하나를 공유하는 그룹 캡슐(흰 알파 .28, dark .09, 안쪽 4px, 버튼은 동심 캡슐)로, 사이드는 유리 알약 2개 → 세로 알약 1개 안에 버튼 2개(실시간 유리 층 1장 감소). 근거: 세션 356 "share a background / hierarchy through layout and grouping", 세션 219 "avoid tinting all your elements". 실측(1550px): 상단바 70px 안 그룹 112×60, 버튼 46×52, 사이드 알약 64×115. setting_512.png 는 더 쓰지 않음(파일은 남김)
+
+커밋 260917
+    UI 오버홀 5기 2번 후속: 사이드 알약을 내비바와 같은 리퀴드 글라스로. 블러·틴트는 이미 같았지만 스펙큘러 링(::after conic 210deg)과 굴절이 없어 흰 판 위에서 평평한 흰 알약으로 읽혔다. common.css 에 링(light·dark) 추가, glass-refraction.js 를 .navbar 한 장 전용에서 크롬 유리 여러 장(.navbar, .side-button-wrapper — 장마다 filter id·ResizeObserver)으로 일반화. 사이드 알약은 스크롤 전 display:none 이라 처음 보일 때 변위 맵이 만들어진다. ADR 0003 을 "크롬 유리 2장" 으로 보완(4장 93fps 예산 안). 실측: 스크롤 뒤 사이드 backdrop-filter 에 url(#glass-refraction-0), 내비바 url(#glass-refraction-1), ::after 링 생성

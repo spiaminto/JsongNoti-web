@@ -120,8 +120,10 @@ html[data-theme="dark"] .navbar .icon-link:hover {
 }
 
 /* 유리 알약 하나에 버튼 둘이 세로로 — 내비바와 같은 맑은 유리 (D13: 모바일
-   오른쪽 엄지 자리라 유지. 크롬이므로 실시간 유리 허용, 블러 층 1장) */
+   오른쪽 엄지 자리라 유지. 크롬이므로 실시간 유리 허용, 블러 층 1장).
+   스펙큘러 링(::after)과 굴절(glass-refraction.js)도 내비바와 같다 */
 .side-button-wrapper {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -143,8 +145,32 @@ html[data-theme="dark"] .navbar .icon-link:hover {
     border-radius: calc(var(--r-parent) - 4px);
 }
 
+/* 스펙큘러 링: containers.css .navbar::after 와 같은 conic 광원(210deg) */
+.side-button-wrapper::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: conic-gradient(from 210deg,
+        rgb(255 255 255 / .9), rgb(255 255 255 / .15) 22%,
+        rgb(255 255 255 / .5) 48%, rgb(255 255 255 / .12) 72%,
+        rgb(255 255 255 / .9));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
 html[data-theme="dark"] .side-button-wrapper {
     background: linear-gradient(135deg, rgb(255 255 255 / .14), rgb(255 255 255 / .04));
+}
+
+html[data-theme="dark"] .side-button-wrapper::after {
+    background: conic-gradient(from 210deg,
+        rgb(255 255 255 / .6), rgb(255 255 255 / .08) 22%,
+        rgb(255 255 255 / .3) 48%, rgb(255 255 255 / .06) 72%,
+        rgb(255 255 255 / .6));
 }
 
 html[data-theme="dark"] .side-button-wrapper .icon-link {

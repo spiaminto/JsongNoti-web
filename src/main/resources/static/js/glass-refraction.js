@@ -1,26 +1,30 @@
 /**
- * glass-refraction.js — 내비바 유리의 굴절 (ADR 0003, D6·D9·P6)
+ * glass-refraction.js — 크롬 유리의 굴절 (ADR 0003, D6·D9·P6)
  * 기준: docs/_temp/ui-overhaul-3.md, 용어는 docs/with-ai/CONTEXT.md
  *
- * 내비바(.navbar) 한 장에만 SVG 변위 맵으로 가장자리 굴절을 얹는다 — 알약의
- * 가장자리 띠(EDGE_BAND px) 안에서 뒤 그림이 바깥쪽으로 휘어 유리 렌즈처럼
- * 보인다. 비용은 내비바 1장뿐이라 예산(P5) 안이다.
+ * 크롬 유리(.navbar, .side-button-wrapper) 장마다 SVG 변위 맵으로 가장자리 굴절을
+ * 얹는다 — 알약의 가장자리 띠(EDGE_BAND px) 안에서 뒤 그림이 바깥쪽으로 휘어
+ * 유리 렌즈처럼 보인다. 비용은 크롬 2장뿐이라 예산(P5) 안이다. 콘텐츠 판에는
+ * 걸지 않는다.
  *
  * 폴백 사다리(위에서 아래로, 감지로만 내려간다 — 노브 없음):
  *  1) 굴절 + 블러: Chromium 계열 — 여기서 backdrop-filter 에 url(#필터) 를 더한다
  *  2) 블러: backdrop-filter 를 지원하는 나머지 브라우저 — CSS 기본 재질 그대로
- *     (containers.css .navbar). Firefox·Safari 는 backdrop-filter: url() 을 무시하거나
- *     깨진 그림을 내므로 @supports 가 아니라 런타임 브랜드로 감지한다(P15)
+ *     (containers.css .navbar, common.css .side-button-wrapper). Firefox·Safari 는
+ *     backdrop-filter: url() 을 무시하거나 깨진 그림을 내므로 @supports 가 아니라
+ *     런타임 브랜드로 감지한다(P15)
  *  3) 색만: backdrop-filter 없음 — glass.css @supports not 절이 틴트 알파를 올린다
  *  4) 불투명: prefers-reduced-transparency — glass.css 접근성 절
  *
- * 변위 맵은 내비바 크기에 맞춰 만들므로 크기가 바뀌면(ResizeObserver) 다시 만든다.
+ * 변위 맵은 요소 크기에 맞춰 만들므로 크기가 바뀌면(ResizeObserver) 다시 만든다.
+ * 사이드 알약은 스크롤 전까지 display: none 이라 처음 보일 때 ResizeObserver 로 만든다.
  */
 (function () {
     "use strict";
 
     var SVG_NS = "http://www.w3.org/2000/svg";
-    var FILTER_ID = "navbar-refraction";
+    var GLASS_SELECTOR = ".navbar, .side-button-wrapper";
+    var FILTER_ID_PREFIX = "glass-refraction-";
     var MAP_MAX_SIZE = 480;   // 변위 맵 캔버스 긴 변 상한 px — 굴절은 가장자리 띠라 해상도가 낮아도 된다
     var EDGE_BAND = 18;       // 굴절이 일어나는 가장자리 띠 폭 (css px)
     var DISPLACEMENT_SCALE = 46; // feDisplacementMap scale — 띠 안쪽 최대 변위 px
@@ -41,10 +45,10 @@
     }
 
     function init() {
-        var navbar = document.querySelector(".navbar");
-        if (!navbar) return;
+        var glasses = document.querySelectorAll(GLASS_SELECTOR);
+        if (!glasses.length) return;
 
-        // 필터를 담을 보이지 않는 SVG 한 장
+        // 필터를 담을 보이지 않는 SVG 한 장 (요소마다 filter 하나)
         var svg = document.createElementNS(SVG_NS, "svg");
         svg.setAttribute("width", "0");
         svg.setAttribute("height", "0");
@@ -52,46 +56,60 @@
         svg.style.position = "absolute";
         document.body.appendChild(svg);
 
+        var panes = Array.prototype.map.call(glasses, function (element, index) {
+            return createRefractionPane(svg, element, FILTER_ID_PREFIX + index);
+        });
+
+        panes.forEach(function (pane) {
+            if (!reducedTransparency.matches) pane.apply();
+            new ResizeObserver(function () {
+                if (!reducedTransparency.matches) pane.apply();
+            }).observe(pane.element);
+        });
+        reducedTransparency.addEventListener("change", function (event) {
+            panes.forEach(function (pane) {
+                if (event.matches) pane.remove(); else pane.apply();
+            });
+        });
+    }
+
+    // 유리 한 장의 굴절 상태: 크기가 바뀔 때만 변위 맵을 다시 만든다
+    function createRefractionPane(svg, element, filterId) {
         var mapSize = null;
-        function applyNavbarRefraction() {
-            var rect = navbar.getBoundingClientRect();
+
+        function apply() {
+            var rect = element.getBoundingClientRect();
             var width = Math.round(rect.width), height = Math.round(rect.height);
             if (!width || !height) return;
             if (mapSize && mapSize.width === width && mapSize.height === height) return;
             mapSize = { width: width, height: height };
 
-            var radius = parseFloat(getComputedStyle(navbar).borderTopLeftRadius) || height / 2;
-            var previous = svg.querySelector("#" + FILTER_ID);
+            var radius = parseFloat(getComputedStyle(element).borderTopLeftRadius) || height / 2;
+            var previous = svg.querySelector("#" + filterId);
             if (previous) previous.remove();
-            svg.appendChild(buildRefractionFilter(width, height, radius));
+            svg.appendChild(buildRefractionFilter(filterId, width, height, radius));
 
             // CSS 재질(블러·채도)은 그대로 두고 굴절만 덧붙인다 — 값의 원본은 CSS 한 곳
-            var base = getComputedStyle(navbar).backdropFilter.replace(/url\([^)]*\)/g, "").trim();
+            var base = getComputedStyle(element).backdropFilter.replace(/url\([^)]*\)/g, "").trim();
             if (base === "none") base = "";
-            var value = (base + " url(#" + FILTER_ID + ")").trim();
-            navbar.style.webkitBackdropFilter = value;
-            navbar.style.backdropFilter = value;
+            var value = (base + " url(#" + filterId + ")").trim();
+            element.style.webkitBackdropFilter = value;
+            element.style.backdropFilter = value;
         }
 
-        function removeNavbarRefraction() {
+        function remove() {
             mapSize = null;
-            navbar.style.webkitBackdropFilter = "";
-            navbar.style.backdropFilter = "";
+            element.style.webkitBackdropFilter = "";
+            element.style.backdropFilter = "";
         }
 
-        if (!reducedTransparency.matches) applyNavbarRefraction();
-        new ResizeObserver(function () {
-            if (!reducedTransparency.matches) applyNavbarRefraction();
-        }).observe(navbar);
-        reducedTransparency.addEventListener("change", function (event) {
-            if (event.matches) removeNavbarRefraction(); else applyNavbarRefraction();
-        });
+        return { element: element, apply: apply, remove: remove };
     }
 
     // feImage(변위 맵) + feDisplacementMap 두 단계 필터
-    function buildRefractionFilter(width, height, radius) {
+    function buildRefractionFilter(filterId, width, height, radius) {
         var filter = document.createElementNS(SVG_NS, "filter");
-        filter.id = FILTER_ID;
+        filter.id = filterId;
         filter.setAttribute("color-interpolation-filters", "sRGB");
         filter.setAttribute("x", "0");
         filter.setAttribute("y", "0");
