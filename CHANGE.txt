@@ -210,3 +210,6 @@ commit 9
 
 커밋 260917
     UI 오버홀 5기 3번 후속: large 입력창(form-control-lg·index .field-row) 옆 버튼은 stretch 로 키가 51~53px 인데 글자는 medium(15px)이라 글자/높이 비율이 .29 로 medium(.42)·large(.34)보다 작았음. glass.css .input-group:has(> .form-control-lg) > .btn 과 index.css .field-row .btn 에 font-size large(17px)·padding 0 24px 을 주고 min-width 는 입력줄이 정하므로 주지 않음. 실측(1550px): 구독하기 106×53 17px, 구독취소·검색하기 106×51 17px 로 비율 .32~.33
+
+커밋 260917
+    UI 오버홀 5기 2번(오른쪽 아이콘 minimal·그룹화): 상단바 오른쪽·사이드의 컬러 일러스트 PNG 아이콘(검색·애창곡·신곡·설정)을 Lucide 단색 SVG(24px, 획 2px, currentColor) inline 으로 바꿔 light 잉크·dark 흰색이 자동으로 뒤집히고, 라벨(13px 600)은 유지. 상단바 .button-wrapper 를 배경 하나를 공유하는 그룹 캡슐(흰 알파 .28, dark .09, 안쪽 4px, 버튼은 동심 캡슐)로, 사이드는 유리 알약 2개 → 세로 알약 1개 안에 버튼 2개(실시간 유리 층 1장 감소). 근거: 세션 356 "share a background / hierarchy through layout and grouping", 세션 219 "avoid tinting all your elements". 실측(1550px): 상단바 70px 안 그룹 112×60, 버튼 46×52, 사이드 알약 64×115. setting_512.png 는 더 쓰지 않음(파일은 남김)

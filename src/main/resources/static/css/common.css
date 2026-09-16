@@ -58,21 +58,23 @@ html[data-theme="dark"] .dark-mode-element {
     }
 }
 
-/* ---------- 상단바·사이드 아이콘 버튼 ----------
-   markup: button.icon-link > img + span.icon-link-label
-   아이콘 아래 라벨이 붙은 세로 묶음. hover 시 유리 하이라이트가 깔린다 */
+/* ---------- 상단바·사이드 아이콘 버튼 (5기 2번) ----------
+   markup: button.icon-link > svg.icon-link-glyph + span.icon-link-label
+   단색 글리프(Lucide, 획 2px, currentColor) 아래 라벨이 붙은 세로 묶음.
+   버튼 자체는 배경이 없고 그룹 캡슐(.navbar .button-wrapper, .side-button-wrapper)
+   안에 놓인다. hover 는 그룹 안의 동심 캡슐 */
 .icon-link {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: .35rem; /* Bootstrap .icon-link 기본 .375rem 을 살짝 좁힘 */
-    padding: .2rem .55rem;
+    gap: .2rem;
+    padding: .3rem .7rem;
     border: 0;
     border-radius: var(--r-capsule);
     background: transparent;
     font-size: var(--fs-sm);
     font-weight: var(--fw-strong); /* 13px 아이콘 라벨 — 작은 글자의 강조 */
-    color: var(--ink-2);
+    color: var(--ink);
     text-decoration: none;
     cursor: pointer;
     transition: background .3s, color .3s;
@@ -83,27 +85,29 @@ html[data-theme="dark"] .dark-mode-element {
     color: var(--ink);
 }
 
+html[data-theme="dark"] .navbar .icon-link:hover {
+    background: rgb(255 255 255 / .14);
+}
+
 /* press 는 즉시 반응 */
 .icon-link:active {
     transform: scale(.94);
     transition: transform .08s ease-out;
 }
 
-.icon-link img {
-    width: 30px;
-    height: 30px;
+.icon-link-glyph {
+    width: 24px;
+    height: 24px;
+    flex: none;
 }
 
-/* 라벨은 아이콘 바로 아래에 붙인다 (아이콘 이미지의 여백만큼 당김) */
 .icon-link .icon-link-label {
-    margin-top: -6px;
+    color: var(--ink-2);
+    line-height: 1.2;
 }
 
-@media (min-width: 992px) {
-    .icon-link img {
-        width: 34px;
-        height: 34px;
-    }
+.icon-link:hover .icon-link-label {
+    color: var(--ink);
 }
 
 /* ---------- 사이드 버튼 (스크롤 시 나타나는 검색·애창곡 바로가기) ---------- */
@@ -115,10 +119,13 @@ html[data-theme="dark"] .dark-mode-element {
     display: none;
 }
 
-/* 유리 알약 하나가 버튼 하나 — 내비바와 같은 맑은 유리 (D13: 모바일
-   오른쪽 엄지 자리라 유지. 크롬이므로 실시간 유리 허용, 블러 예산 안) */
+/* 유리 알약 하나에 버튼 둘이 세로로 — 내비바와 같은 맑은 유리 (D13: 모바일
+   오른쪽 엄지 자리라 유지. 크롬이므로 실시간 유리 허용, 블러 층 1장) */
 .side-button-wrapper {
-    margin-bottom: .6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px;
     --r-parent: var(--r-capsule);
     border-radius: var(--r-parent);
     border: 0;
@@ -131,9 +138,9 @@ html[data-theme="dark"] .dark-mode-element {
         inset 0 -1px 1px rgb(255 255 255 / .18);
 }
 
-/* 알약 안의 버튼은 간격 0 이라 알약 반경을 그대로 받는다 */
+/* 알약 안의 버튼은 동심 캡슐 (캡슐에서 4px 를 빼도 캡슐) */
 .side-button-wrapper .icon-link {
-    border-radius: inherit;
+    border-radius: calc(var(--r-parent) - 4px);
 }
 
 html[data-theme="dark"] .side-button-wrapper {
