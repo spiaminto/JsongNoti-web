@@ -191,3 +191,7 @@ commit 9
 
 커밋 260915
     글자 굵기 사다리 — 글자 크기 사다리(--fs-*)와 같은 방식으로 glass.css :root 에 --fw-* 다섯 단(body 400 / mid 500 / strong 600 / title 700 / display 800)을 두고 우리 CSS 의 굵기 24곳을 전부 토큰으로. SUITE 가 300~900 을 모두 그리므로 얼굴 없는 값이 한 단 굵게 그려지던 제약이 사라졌다. 고를 때 크기를 함께 본다: 13px 이하 강조는 strong, 18px 이상 제목은 title, 300 이하는 쓰지 않는다. h1~h6 800 → 700, 아이콘 라벨·푸터·동의 버튼·본문 링크·힌트 색견본 800 → 600, 표 머리글 700 → 500, 루비·추가일 배지 700 → 600, 아티스트·노래 번호 400 → 500(번호는 노래방에 입력하는 실행값), index 히어로·상단바 브랜드만 800 유지. Bootstrap 원본(styles.css)은 손대지 않음
+
+
+커밋 260916
+    본문 글꼴이 SUITE 로 확정되어, 어느 CSS 도 참조하지 않는 NanumSquareRound woff2 4벌(L/R/B/EB, 910KB)을 static/fonts 에서 삭제. 파일 경로를 가리키는 @font-face 가 0건임을 확인했고, design-preview 시안 9개와 static_backup 은 글꼴 이름만 적고 있어 Noto Sans KR 로 넘어가며 이는 SUITE 교체 시점부터 이미 그랬다
