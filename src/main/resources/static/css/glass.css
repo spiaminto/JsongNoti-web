@@ -318,7 +318,8 @@ textarea:focus-visible {
    테두리 1px 에만 마스킹하고, 안쪽 그림자(위 1.5px 하이라이트·아래 1px·
    양옆 1.5px 그늘)로 옆면을 만든다. 실시간 유리 없음 — 비용 0.
    variant(btn-outline-* 등)는 구분하지 않고 위험 동작(danger)과 주된
-   동작(primary)만 색을 달리한다. 모양은 캡슐 하나, 크기는 사다리 4단.
+   동작(primary)만 색을 달리한다. 모양은 컨트롤 반경이 기본이고 주된 동작만
+   캡슐, 크기는 사다리 4단.
    변형(danger·primary·dark)은 아래 --btn-* 변수만 덮어쓴다.
 
    오류 페이지는 Bootstrap 없이 glass.css 만 로드하므로, .btn 이 단독으로도
@@ -391,7 +392,7 @@ textarea:focus-visible {
     cursor: pointer;
     user-select: none;
     border: 0;
-    border-radius: var(--r-capsule);
+    border-radius: var(--r-control);
     background: var(--btn-bg);
     box-shadow: var(--btn-shadow);
     /* 위치·크기는 스프링, 색·그림자는 effects 곡선 (P11) */
@@ -501,6 +502,7 @@ textarea:focus-visible {
 #submitChangeSettingButton,
 .switch-order-complete-button,
 .delete-favorite-song-complete-button {
+    border-radius: var(--r-capsule);
     --btn-ink: #fff;
     --btn-bg: linear-gradient(180deg, #34404e, #1e2a38);
     --btn-bg-hover: linear-gradient(180deg, #3e4b5a, #26333f);

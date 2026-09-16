@@ -198,3 +198,6 @@ commit 9
 
 커밋 260916
     UI 오버홀 5기 1번(반경) ①: glass.css :root 에 반경 토큰 넷(--r-panel 24 / --r-sheet 28 / --r-control 14 / --r-capsule 999)을 --fw-* 옆에 두고, 흩어진 반경 값을 토큰으로 바꿈. 반경을 가진 컨테이너(.content-panel .modal-content .error-card .navbar .u-video)는 --r-parent 를 함께 내려주고, 가장자리에 맞닿는 자식은 calc(var(--r-parent) - 간격) 으로 받는다(WWDC25 세션 356 의 concentric 규칙, 지금 실제로 맞닿는 자리는 .u-video 27 − 7 = 20 하나). 값이 바뀐 곳은 .inset-group 16 → 14, 모달 이미지 18 → 14 둘. 버튼은 아직 캡슐 그대로. 실측(1550px): 토큰 네 값과 computed 반경 전부 일치, 네 페이지 정지 화면 이상 없음
+
+커밋 260916
+    UI 오버홀 5기 1번(반경) ②: .btn 기본 반경을 캡슐에서 컨트롤(14px)로 내리고, 주된 동작 블록(.btn-primary, #submitButton, .favorite-login-button, #searchSongButton 등 잉크 버튼 9종 선택자)에만 --r-capsule 을 준다. 세션 356 의 dense 조건(밀도 높은 데스크톱에서는 캡슐을 눈에 띄는 액션에만) 적용. 잉크 색과 캡슐이 같은 선택자 목록으로 묶여 있어 템플릿은 손대지 않음. 입력줄에 붙은 검색하기·애창곡 추가는 .input-group 규칙대로 14px 유지. 실측(1550px): 잉크 버튼 6종 999px / 밝은 버튼(사용 방법·인증하기·닫기·추가 검색·홈으로 돌아가기) 14px
