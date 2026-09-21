@@ -1405,6 +1405,86 @@ html[data-theme="dark"] .navbar.over-content, html[data-theme="dark"] .side-butt
     --glass-tint-b: 2.4%;
 }
 
+/* ---------- 크롬 유리의 접점 반응 (5기 4번) ----------
+   세 가지 모두 glass-motion.js 가 상태만 붙이고 모습은 여기서 정한다.
+   1) 접점 발광: 누르는 동안 포인터 자리에서 빛이 번진다 (::before, 내용 아래).
+      backdrop-filter 와 무관한 그라디언트 한 장
+   2) 선택 렌즈: 그룹 안의 버튼마다 hover 배경을 켜는 대신, 밝은 렌즈 한 장이
+      포인터가 올라간 버튼으로 미끄러진다. 넘침은 5.5%(사이트 스프링의 절반쯤)
+   3) 젤 프레스: 눌린 버튼이 납작하게 퍼졌다가 스프링으로 돌아온다 */
+@property --glass-glow-radius { syntax: "<length>"; inherits: false; initial-value: 30px; }
+
+.navbar::before, .side-button-wrapper::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(circle var(--glass-glow-radius) at var(--glass-glow-x, 50%) var(--glass-glow-y, 50%),
+        rgb(255 255 255 / .45), transparent 72%);
+    mix-blend-mode: plus-lighter;
+    opacity: 0;
+    transition: opacity .7s ease, --glass-glow-radius .7s ease;
+}
+
+.navbar.is-glowing::before, .side-button-wrapper.is-glowing::before {
+    --glass-glow-radius: 130px;
+    opacity: 1;
+    transition: opacity .12s ease, --glass-glow-radius .55s cubic-bezier(.2, .7, .2, 1);
+}
+
+.has-selection-lens {
+    position: relative;
+    --selection-lens-spring: linear(0, .06 2%, .25 6%, .6 12%, .88 18%, 1.03 25%, 1.055 31%, 1.04 38%, 1.01 48%, .997 60%, 1);
+}
+
+.has-selection-lens .icon-link {
+    position: relative;
+    z-index: 1;
+}
+
+.selection-lens {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 0;
+    border-radius: var(--r-capsule);
+    background: rgb(255 255 255 / .62);
+    box-shadow: inset 0 1px 1px rgb(255 255 255 / .8), 0 2px 6px rgb(30 42 56 / .09);
+    pointer-events: none;
+    opacity: 0;
+    /* 위치는 translate 속성으로 옮긴다 — transform 에 두면 scale 이 이동 거리까지 곱한다 */
+    transition:
+        translate .5s var(--selection-lens-spring), width .5s var(--selection-lens-spring),
+        height .5s var(--selection-lens-spring), scale .45s var(--selection-lens-spring), opacity .25s ease;
+}
+
+.selection-lens.is-on { opacity: 1; }
+.selection-lens.is-placing { transition: none; }
+
+html[data-theme="dark"] .selection-lens {
+    background: rgb(255 255 255 / .16);
+    box-shadow: inset 0 1px 1px rgb(255 255 255 / .3), 0 2px 8px rgb(0 0 0 / .3);
+}
+
+/* 렌즈가 hover 배경을 대신한다. 버튼의 hover 규칙은 뒤에 로드되는 common·containers.css
+   에 있어 같은 특정도로는 지므로 클래스를 겹쳐 한 단계 올린다 */
+.has-selection-lens.has-selection-lens .icon-link:hover,
+html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover {
+    background: transparent;
+}
+
+.has-selection-lens .icon-link {
+    transition: scale .6s var(--spring-spatial), background .3s, color .3s;
+}
+
+.has-selection-lens.has-selection-lens .icon-link:active {
+    transform: none;
+    scale: 1.1 .88;
+    transition: scale .09s ease-out;
+}
+
 /* ---------- 크롬 유리 폴백 사다리 (ADR 0003, P15) ----------
    위에서 아래로, 감지로만 내려간다:
    1) 굴절 + 블러 — Chromium: glass-material.js 가 .navbar 와 .side-button-wrapper
@@ -1445,6 +1525,9 @@ html[data-theme="dark"] .navbar.over-content, html[data-theme="dark"] .side-butt
     [data-lift] .collapsing .song-table, [data-lift] .collapse.show .song-table { animation: none; }
     tbody tr.more-reveal, [data-lift].is-lit .collapse tbody tr.more-reveal { animation: none; opacity: 1; transform: none; }
     [data-lift].is-lit .song-table-collapse.collapsing tbody tr, [data-lift].is-lit .song-table-collapse.collapse.show tbody tr { animation: none; opacity: 1; transform: none; }
+    /* 선택 렌즈는 미끄러지지 않고 자리만 바뀌고, 젤 프레스는 끈다 */
+    .selection-lens { transition: opacity .2s ease; }
+    .has-selection-lens.has-selection-lens .icon-link:active { scale: none; }
     /* 내비바 스크롤 방향 반응(containers.css)은 위치 이동이라 끈다 */
     html[data-scroll-direction="down"] .navbar { transform: none; }
     .btn:hover, .btn-close:hover { transform: none; }

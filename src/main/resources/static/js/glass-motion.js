@@ -15,6 +15,8 @@
  *     활강시켜 포착한 뒤, 중앙에 고정한 채 접힘을 따라 함께 이동한다. followScroll·
  *     followTrackButton 은 window.glassMotion 으로 공개되어 검색 더보기 접힘과
  *     애창곡 노래 클릭 스크롤(song-search.js)도 쓴다
+ *  7) 크롬 유리의 접점 반응: 누르는 자리의 발광(.is-glowing)과 아이콘 버튼 그룹의
+ *     선택 렌즈(.selection-lens). 젤 프레스는 CSS 만으로 한다 (glass.css)
  *
  * 콘텐츠 판은 불투명 프로스트라(ADR 0001) 여기서는 손대지 않는다 — 굽기는 frost-baking.js.
  *
@@ -115,6 +117,72 @@
             lastDirectionY = y;
         }, { passive: true });
     }
+
+    // 크롬 유리의 접점 반응 (glass.css "크롬 유리의 접점 반응" 절)
+    var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    // 접점 발광: 누르는 동안 포인터 자리를 --glass-glow-x/y 에 쓰고 .is-glowing 을 붙인다
+    document.querySelectorAll(".navbar, .side-button-wrapper").forEach(function (glass) {
+        var pressing = false;
+        function placeGlow(event) {
+            var rect = glass.getBoundingClientRect();
+            glass.style.setProperty("--glass-glow-x", (event.clientX - rect.left) + "px");
+            glass.style.setProperty("--glass-glow-y", (event.clientY - rect.top) + "px");
+        }
+        glass.addEventListener("pointerdown", function (event) {
+            pressing = true;
+            placeGlow(event);
+            glass.classList.add("is-glowing");
+        });
+        glass.addEventListener("pointermove", function (event) {
+            if (pressing) placeGlow(event);
+        });
+        ["pointerup", "pointercancel", "pointerleave"].forEach(function (type) {
+            glass.addEventListener(type, function () {
+                pressing = false;
+                glass.classList.remove("is-glowing");
+            });
+        });
+    });
+
+    // 선택 렌즈: 아이콘 버튼 그룹마다 렌즈 한 장을 심고, 포인터가 올라간 버튼의
+    // 자리·크기로 옮긴다. 그룹에 처음 들어올 때는 전환 없이 그 자리에 놓고,
+    // 버튼 사이를 옮길 때는 이동 방향으로 살짝 늘어났다 돌아온다
+    document.querySelectorAll(".navbar .button-wrapper, .side-button-wrapper").forEach(function (group) {
+        var lens = document.createElement("span");
+        lens.className = "selection-lens";
+        lens.setAttribute("aria-hidden", "true");
+        group.insertBefore(lens, group.firstChild);
+        group.classList.add("has-selection-lens");
+
+        var lastPosition = null;
+        group.querySelectorAll(".icon-link").forEach(function (button) {
+            button.addEventListener("pointerenter", function () {
+                var x = button.offsetLeft, y = button.offsetTop;
+                lens.style.width = button.offsetWidth + "px";
+                lens.style.height = button.offsetHeight + "px";
+                if (!lastPosition) {
+                    lens.classList.add("is-placing");
+                    lens.style.translate = x + "px " + y + "px";
+                    void lens.offsetWidth; // 전환 없이 놓인 자리를 확정한 뒤 전환을 되살린다
+                    lens.classList.remove("is-placing");
+                } else {
+                    if (!reducedMotion.matches) {
+                        var horizontal = Math.abs(x - lastPosition.x) >= Math.abs(y - lastPosition.y);
+                        lens.style.scale = horizontal ? "1.1 .95" : ".95 1.1";
+                        setTimeout(function () { lens.style.scale = "1 1"; }, 130);
+                    }
+                    lens.style.translate = x + "px " + y + "px";
+                }
+                lastPosition = { x: x, y: y };
+                lens.classList.add("is-on");
+            });
+        });
+        group.addEventListener("pointerleave", function () {
+            lens.classList.remove("is-on");
+            lastPosition = null;
+        });
+    });
 
     // scroll 중 hover 억제: 휠 노치마다(스크롤 제스처가 끝날 때마다) Chrome 이
     // 포인터 아래 행의 hover 를 갱신해 행 배경이 켜졌다 꺼지고, 그때마다 결과
