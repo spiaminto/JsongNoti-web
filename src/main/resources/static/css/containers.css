@@ -148,7 +148,10 @@ html[data-theme="dark"] .navbar .icon-link:hover {
 /* 오른쪽 아이콘 버튼 그룹: 배경 하나를 공유하는 캡슐 (세션 356 "share a
    background"). 상단바가 이미 유리이므로 그룹은 유리가 아니라 얕은 채움 */
 .navbar .button-wrapper {
-    display: flex;
+    /* 열 폭을 1fr 로 두어 버튼 영역이 라벨 길이와 무관하게 가장 넓은 버튼과 같아진다 */
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
     align-items: center;
     gap: 2px;
     padding: 4px;
