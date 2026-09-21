@@ -68,11 +68,9 @@
               if (timer == null) {
                   timer = setTimeout(function () {
                       let $navbar = $('.navbar');
-                      if ($(window).scrollTop() > $navbar.scrollTop() + $navbar.height()) {
-                          $('.side-button-container').fadeIn(100);
-                      } else {
-                          $('.side-button-container').fadeOut(100);
-                      }
+                      // display 로 숨기지 않는다 (common.css .side-button-container)
+                      let shown = $(window).scrollTop() > $navbar.scrollTop() + $navbar.height();
+                      $('.side-button-container').toggleClass('is-shown', shown).prop('inert', !shown);
                       timer = null;
                   }, 300);
               }
@@ -99,7 +97,7 @@
 <div id="container">
 
   <!-- 사이드 버튼: 스크롤 시 나타나는 검색·애창곡 바로가기 -->
-  <div class="side-button-container">
+  <div class="side-button-container" inert>
     <div class="side-button-wrapper">
       <button class="favorite-song-link-button icon-link" type="button"
               data-bs-toggle="modal" data-bs-target="#favoriteLoginModal">
