@@ -1333,7 +1333,9 @@ tbody tr.more-reveal.more-settled.more-hide,
    상단바는 콘텐츠 판이 밑에 들어왔을 때 glass-motion.js 가 .over-content 를
    붙이고, 사이드 알약은 늘 콘텐츠 위다. 숫자 토큰을 @property 로 등록해 상태
    사이를 CSS 전환으로 섞는다(등록을 모르는 브라우저는 전환 없이 바뀐다).
-   --glass-refraction 은 glass-refraction.js 가 url(#필터) 로 채운다 */
+   --glass-refraction 은 glass-material.js 가 url(#필터) 로 채운다.
+   하이라이트 층은 glass-material.js 가 곡면의 법선으로 구운 이미지(--glass-specular)
+   이고, .has-baked-specular 가 붙으면 conic 링과 상하 림 글린트를 대신한다 */
 @property --glass-blur { syntax: "<length>"; inherits: false; initial-value: 0px; }
 @property --glass-saturate { syntax: "<number>"; inherits: false; initial-value: 1; }
 @property --glass-tint-a { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
@@ -1375,6 +1377,23 @@ tbody tr.more-reveal.more-settled.more-hide,
     --glass-shadow-alpha: .24;
 }
 
+/* 구운 스페큘러: ::after 의 conic 링(padding·mask 로 두께만 남긴 것)을 걷고 이미지
+   한 장을 요소 크기에 맞춰 얹는다. 림은 이미지에 들어 있으므로 안쪽 그림자는 뺀다.
+   dark 의 conic 규칙(containers·common.css)을 이기도록 같은 선택자를 나란히 둔다.
+   그림자 규칙은 :where 로 특정도를 재질 절과 같게 두어 고대비 절의 테두리가 이긴다 */
+:where(.navbar, .side-button-wrapper).has-baked-specular {
+    box-shadow: 0 4px 12px rgb(var(--glass-shadow-rgb) / var(--glass-shadow-alpha));
+}
+
+.navbar.has-baked-specular::after, .side-button-wrapper.has-baked-specular::after,
+html[data-theme="dark"] .navbar.has-baked-specular::after,
+html[data-theme="dark"] .side-button-wrapper.has-baked-specular::after {
+    padding: 0;
+    -webkit-mask: none;
+    mask: none;
+    background: var(--glass-specular) center / 100% 100% no-repeat;
+}
+
 html[data-theme="dark"] .navbar, html[data-theme="dark"] .side-button-wrapper {
     --glass-tint-a: 3.5%;
     --glass-tint-b: 1.2%;
@@ -1388,7 +1407,7 @@ html[data-theme="dark"] .navbar.over-content, html[data-theme="dark"] .side-butt
 
 /* ---------- 크롬 유리 폴백 사다리 (ADR 0003, P15) ----------
    위에서 아래로, 감지로만 내려간다:
-   1) 굴절 + 블러 — Chromium: glass-refraction.js 가 .navbar 와 .side-button-wrapper
+   1) 굴절 + 블러 — Chromium: glass-material.js 가 .navbar 와 .side-button-wrapper
       의 --glass-refraction 에 SVG 변위 맵 url() 을 채운다
    2) 블러 — backdrop-filter 를 지원하는 나머지 브라우저: 위 재질 절 그대로.
       이 상태가 완성된 디자인이다
@@ -1410,7 +1429,7 @@ html[data-theme="dark"] .navbar.over-content, html[data-theme="dark"] .side-butt
    3기 구조에서 손댈 것: 스프링 토큰(탄성)·로드 시퀀스·리빌·행 lift 의 모션,
    크롬 유리(내비바·사이드 버튼·모달 베일·스크롤 베일)의 투명도, 판·버튼·
    입력창의 테두리 대비. 콘텐츠 판은 불투명 프로스트라 투명도 설정과 무관하고,
-   굴절(glass-refraction.js)은 투명도 최소화에서 스스로 물러선다 */
+   굴절(glass-material.js)은 투명도 최소화에서 스스로 물러선다 */
 /* 모션 최소화: 탄성만 끄고(spatial → effects) 큰 전환은 짧은 크로스페이드.
    편집 모드 컨트롤·집은 행·옮겨진 행(favorite-song.css)과 행 lift 는 같은
    토큰을 쓰므로 토큰 교체만으로 탄성이 빠진다 */

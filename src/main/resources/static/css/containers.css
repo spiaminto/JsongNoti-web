@@ -67,7 +67,8 @@ section {
         var(--glass-state-transition);
 }
 
-/* 스펙큘러 링: conic 광원(210deg)이 알약 둘레를 도는 1.5px 링.
+/* 스펙큘러 링: glass-material.js 가 구운 스페큘러를 얹기 전까지의 폴백
+   (glass.css 재질 절의 .has-baked-specular). conic 광원(210deg)이 알약 둘레를 도는 1.5px 링.
    mask-composite 로 padding 두께만 남긴다 — 균일 보더와 달리 빛 받는
    모서리는 밝고 반대편은 어두워 유리 가장자리로 읽힌다 */
 .navbar::after {

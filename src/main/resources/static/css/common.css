@@ -122,7 +122,7 @@ html[data-theme="dark"] .navbar .icon-link:hover {
 /* 유리 알약 하나에 버튼 둘이 세로로 — 내비바와 같은 크롬 유리 (D13: 모바일
    오른쪽 엄지 자리라 유지. 크롬이므로 실시간 유리 허용, 블러 층 1장).
    재질은 glass.css 의 "크롬 유리 재질" 절 — 알약은 늘 "콘텐츠 위" 상태다.
-   스펙큘러 링(::after)과 굴절(glass-refraction.js)도 내비바와 같다 */
+   스펙큘러(::after)와 굴절(glass-material.js)도 내비바와 같다 */
 .side-button-wrapper {
     position: relative;
     display: flex;
@@ -139,7 +139,8 @@ html[data-theme="dark"] .navbar .icon-link:hover {
     border-radius: calc(var(--r-parent) - 4px);
 }
 
-/* 스펙큘러 링: containers.css .navbar::after 와 같은 conic 광원(210deg) */
+/* 스펙큘러 링: containers.css .navbar::after 와 같은 conic 광원(210deg).
+   glass-material.js 가 구운 스페큘러를 얹기 전까지의 폴백 (glass.css 재질 절) */
 .side-button-wrapper::after {
     content: "";
     position: absolute;
