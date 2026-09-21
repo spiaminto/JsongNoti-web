@@ -74,18 +74,20 @@
     <i style="--s:260px; --x:55%;  --y:85%; --c:255 186 110; --o:.28"></i>
   </div>
 
-  <!-- Navigation: 떠 있는 맑은 유리 알약 (사이트 유일의 실시간 유리) -->
-  <nav class="navbar veil" style="--vd:.1s">
-    <h1>
-      <a class="navbar-brand" href="/">
-        제이노티
-      </a>
-      <a class="navbar-brand" href="/search">
-        노래검색
-      </a>
-      <img class="navbar-brand-icon" src="/static/assets/icon/search_512.png" th:src="@{'/assets/icon/search_512.png'}" alt="검색아이콘">
-    </h1>
-    <div class="button-wrapper">
+  <!-- Navigation: 브랜드 캡슐과 메뉴 캡슐 (크롬 유리) -->
+  <nav class="navbar">
+    <div class="brand-capsule glass-capsule veil" style="--vd:.1s">
+      <h1>
+        <a class="navbar-brand" href="/">
+          제이노티
+        </a>
+        <a class="navbar-brand" href="/search">
+          노래검색
+        </a>
+        <img class="navbar-brand-icon" src="/static/assets/icon/search_512.png" th:src="@{'/assets/icon/search_512.png'}" alt="검색아이콘">
+      </h1>
+    </div>
+    <div class="menu-capsule glass-capsule veil" style="--vd:.1s">
       <button class="search-link-button icon-link" type="button" onclick="location.href = '/'">
         <svg class="icon-link-glyph" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/></svg>
         <span class="icon-link-label">신곡</span>

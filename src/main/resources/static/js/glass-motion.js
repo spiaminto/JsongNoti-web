@@ -6,9 +6,9 @@
  *  1) 로드 시퀀스: .veil 요소에 .on 을 붙여 --vd 딜레이 순서대로 띄운다
  *  2) 스크롤 리빌: [data-lift] 요소가 30% 이상 보이면 .is-lit 을 붙인다 (기존 fade-in.js 대체)
  *  3) scroll edge: 화면 상단 점진 블러 베일(.scroll-veil)을 심고 scrollY > 8 에서
- *     .navbar 에 .scrolled 를 붙여 띄운다 (ui-rnd 5턴). 콘텐츠 판이 상단바 밑에
- *     들어오면 .over-content 를 붙여 크롬 유리의 상태를 바꾼다 (glass.css 재질 절)
- *  4) 스크롤 방향 반응(P12): 내비바가 스크롤 위치가 아니라 방향에 반응하도록
+ *     .navbar 에 .scrolled 를 붙여 띄운다 (ui-rnd 5턴). 크롬 유리(.glass-capsule)마다
+ *     콘텐츠 판이 밑에 들어오면 .over-content 를 붙여 상태를 바꾼다 (glass.css 재질 절)
+ *  4) 스크롤 방향 반응(P12): 브랜드 캡슐이 스크롤 위치가 아니라 방향에 반응하도록
  *     html[data-scroll-direction] 을 up/down 으로 쓴다 — 축소 모션은 containers.css
  *  5) 보케: .bokeh i 의 위치·크기를 로드마다 랜덤으로 흩뿌린다
  *  6) 접힘 스크롤 팔로우: index 더보기를 접으면 토글 버튼을 화면 중앙까지
@@ -84,18 +84,24 @@
         window.addEventListener("scroll", onScroll, { passive: true });
         onScroll();
 
-        // 크롬 유리의 상태(glass.css 재질 절): 콘텐츠 판이 상단바 밑에 들어와
+        // 크롬 유리의 상태(glass.css 재질 절): 캡슐마다, 콘텐츠 판이 그 캡슐 밑에 들어와
         // 있으면 .over-content. 스크롤 프레임마다 한 번만 판정한다
+        var glassCapsules = document.querySelectorAll(".brand-capsule, .menu-capsule");
         var overContentQueued = false;
         var updateOverContent = function () {
             overContentQueued = false;
-            var bar = navbar.getBoundingClientRect();
             // 판은 검색 결과처럼 나중에 생기기도 하므로 판정할 때마다 찾는다
-            var overContent = Array.prototype.some.call(document.querySelectorAll(".content-panel"), function (panel) {
-                var box = panel.getBoundingClientRect();
-                return box.width > 0 && box.top < bar.bottom - 6 && box.bottom > bar.top + 6;
+            var panelBoxes = Array.prototype.map.call(document.querySelectorAll(".content-panel"), function (panel) {
+                return panel.getBoundingClientRect();
             });
-            navbar.classList.toggle("over-content", overContent);
+            Array.prototype.forEach.call(glassCapsules, function (capsule) {
+                var glass = capsule.getBoundingClientRect();
+                var overContent = panelBoxes.some(function (box) {
+                    return box.width > 0 && box.top < glass.bottom - 6 && box.bottom > glass.top + 6 &&
+                        box.left < glass.right - 6 && box.right > glass.left + 6;
+                });
+                capsule.classList.toggle("over-content", overContent);
+            });
         };
         window.addEventListener("scroll", function () {
             if (overContentQueued) return;
@@ -122,7 +128,7 @@
     var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     // 접점 발광: 누르는 동안 포인터 자리를 --glass-glow-x/y 에 쓰고 .is-glowing 을 붙인다
-    document.querySelectorAll(".navbar, .side-button-wrapper").forEach(function (glass) {
+    document.querySelectorAll(".glass-capsule").forEach(function (glass) {
         var pressing = false;
         function placeGlow(event) {
             var rect = glass.getBoundingClientRect();
@@ -148,7 +154,7 @@
     // 선택 렌즈: 아이콘 버튼 그룹마다 렌즈 한 장을 심고, 포인터가 올라간 버튼의
     // 자리·크기로 옮긴다. 그룹에 처음 들어올 때는 전환 없이 그 자리에 놓고,
     // 버튼 사이를 옮길 때는 이동 방향으로 살짝 늘어났다 돌아온다
-    document.querySelectorAll(".navbar .button-wrapper, .side-button-wrapper").forEach(function (group) {
+    document.querySelectorAll(".menu-capsule, .side-button-wrapper").forEach(function (group) {
         var lens = document.createElement("span");
         lens.className = "selection-lens";
         lens.setAttribute("aria-hidden", "true");

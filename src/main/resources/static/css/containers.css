@@ -34,44 +34,79 @@ section {
     }
 }
 
-/* ---------- 내비바: 떠 있는 맑은 유리 알약 ----------
-   사이트에서 유일하게 실시간 유리를 쓰는 크롬 (ADR 0001, D8). 재질(틴트·
-   backdrop-filter·그림자)과 두 상태(사진 위 / 콘텐츠 위)는 glass.css 의
-   "크롬 유리 재질" 절에 있고, 여기는 배치와 conic 스펙큘러 링만 둔다.
-   로드 시퀀스(.veil)와 함께 쓰므로 transition 을 합쳐 선언한다 —
-   나중에 선언한 transition shorthand 가 .veil 의 것을 통째로 덮어쓰는
-   결함을 피하기 위함. 재질 상태 전환(--glass-state-transition)만 딜레이 0 */
+/* ---------- 상단바: 브랜드 캡슐과 메뉴 캡슐 (5기 5번) ----------
+   크롬 유리는 떨어진 작은 캡슐 두 장이다 (ADR 0001, D8). nav 는 랜드마크로만 남고
+   유리가 아니다. 재질(틴트·backdrop-filter·그림자)과 상태는 glass.css 의 "크롬 유리
+   재질" 절에 있고, 여기는 배치와 conic 스펙큘러 링(폴백)만 둔다.
+   두 캡슐은 같은 높이·같은 윗선이고 콘텐츠 열의 양 끝에 놓인다.
+   로드 시퀀스(.veil)와 함께 쓰므로 transition 을 합쳐 선언한다 — 나중에 선언한
+   transition shorthand 가 .veil 의 것을 통째로 덮어쓰는 결함을 피하기 위함.
+   .veil 이 transform 을 쓰므로 캡슐의 움직임은 개별 속성(scale·translate)으로 한다 */
+:root {
+    --chrome-column-edge: max(12px, calc(50% - 570px)); /* 콘텐츠 열(1140px)의 가장자리 */
+    --chrome-capsule-height: 62px;
+    --chrome-capsule-top: 16px;
+}
+
 .navbar {
+    display: block;
+    position: static;
+    padding: 0;
+}
+
+.brand-capsule, .menu-capsule {
     position: fixed;
-    top: 14px;
-    left: 0;
-    right: 0;
-    margin-inline: auto;
-    width: min(1140px, calc(100% - 24px));
+    top: var(--chrome-capsule-top);
     z-index: 40;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    flex-wrap: nowrap;
-    /* 좌우 padding 은 알약의 둥근 곡선이 끝나는 평평한 지점부터 내용이 놓이도록 */
-    padding: .3rem 1.5rem .3rem 1.75rem;
+    height: var(--chrome-capsule-height);
     --r-parent: var(--r-capsule);
     border-radius: var(--r-parent);
     border: 0;
-    /* 스크롤 방향 반응의 축소는 위쪽 가장자리를 축으로 */
-    transform-origin: 50% 0;
     transition:
         opacity 1s var(--ease-float) var(--vd, 0s),
         transform 1s var(--ease-float) var(--vd, 0s),
         filter 1s var(--ease-float) var(--vd, 0s),
-        var(--glass-state-transition);
+        var(--glass-state-transition),
+        scale .45s var(--spring-spatial), translate .45s var(--spring-spatial);
+}
+
+.brand-capsule {
+    left: var(--chrome-column-edge);
+    /* 좌우 padding 은 알약의 둥근 곡선이 끝나는 평평한 지점부터 내용이 놓이도록 */
+    padding: 0 1.6rem 0 1.75rem;
+    transform-origin: 0 50%;
+}
+
+/* 메뉴 캡슐: 버튼은 정사각형 — 가로(118×62)와 세로(62×118)가 90도 회전으로 정확히 겹친다 */
+.menu-capsule {
+    right: var(--chrome-column-edge);
+    gap: 2px;
+    padding: 4px;
+}
+
+.menu-capsule .icon-link {
+    width: 54px;
+    height: 54px;
+    padding: 0;
+    justify-content: center;
+    border-radius: calc(var(--r-parent) - 4px);
+}
+
+/* 768px 이상: 브랜드 캡슐을 화면 폭의 50% 로. 메뉴 캡슐에 닿지 않도록 콘텐츠 열에서
+   메뉴 캡슐(118px)과 간격(24px)을 뺀 폭을 상한으로 둔다 */
+@media (min-width: 768px) {
+    .brand-capsule {
+        width: min(50vw, calc(min(1140px, 100vw - 24px) - 118px - 24px));
+    }
 }
 
 /* 스펙큘러 링: glass-material.js 가 구운 스페큘러를 얹기 전까지의 폴백
-   (glass.css 재질 절의 .has-baked-specular). conic 광원(210deg)이 알약 둘레를 도는 1.5px 링.
+   (glass.css 재질 절의 .has-baked-specular). conic 광원(210deg)이 캡슐 둘레를 도는 1.5px 링.
    mask-composite 로 padding 두께만 남긴다 — 균일 보더와 달리 빛 받는
    모서리는 밝고 반대편은 어두워 유리 가장자리로 읽힌다 */
-.navbar::after {
+.glass-capsule::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -87,59 +122,33 @@ section {
     pointer-events: none;
 }
 
-/* 스크롤 방향 반응 (P12, D10): 내려가면 살짝 오므라들고 올라오면 펴진다.
-   방향은 glass-motion.js 가 html[data-scroll-direction] 에 쓴다. 첫 스크롤
-   뒤부터 transform 전환을 스프링으로 바꾼다 — 로드 시퀀스(.veil 의 1s
-   떠오름)와 같은 속성을 쓰므로, 속성이 붙기 전까지는 떠오름 곡선을 지킨다 */
-html[data-scroll-direction] .navbar {
-    transition: transform .4s var(--spring-spatial), var(--glass-state-transition);
+/* 스크롤 방향 반응 (P12, D10): 내려가면 브랜드 캡슐이 안쪽으로 들어오며 살짝 작아지고
+   올라오면 펴진다. 방향은 glass-motion.js 가 html[data-scroll-direction] 에 쓴다.
+   1200px 이상(PC)에서는 반응하지 않는다 — 메뉴 캡슐이 제자리에 머무는 폭이라 혼자 움직이면 어색하다 */
+@media (max-width: 1199.98px) {
+    html[data-scroll-direction="down"] .brand-capsule {
+        scale: .92;
+        translate: 10px -2px;
+    }
 }
 
-html[data-scroll-direction="down"] .navbar {
-    transform: scale(.94) translateY(-4px);
-}
-
-.navbar .icon-link:hover {
+.menu-capsule .icon-link:hover {
     background: rgb(255 255 255 / .55);
 }
 
 /* dark: 글자는 밝게, 링은 약하게 (틴트는 glass.css 의 재질 토큰) */
-html[data-theme="dark"] .navbar::after {
+html[data-theme="dark"] .glass-capsule::after {
     background: conic-gradient(from 210deg,
         rgb(255 255 255 / .6), rgb(255 255 255 / .08) 22%,
         rgb(255 255 255 / .3) 48%, rgb(255 255 255 / .06) 72%,
         rgb(255 255 255 / .6));
 }
 
-html[data-theme="dark"] .navbar .navbar-brand,
-html[data-theme="dark"] .navbar .icon-link {
+html[data-theme="dark"] .brand-capsule .navbar-brand,
+html[data-theme="dark"] .menu-capsule .icon-link {
     color: #f2f5f8;
 }
 
-html[data-theme="dark"] .navbar .icon-link:hover {
+html[data-theme="dark"] .menu-capsule .icon-link:hover {
     background: rgb(255 255 255 / .12);
-}
-
-/* 상단바 오른쪽 아이콘 메뉴 묶음 */
-/* 오른쪽 아이콘 버튼 그룹: 배경 하나를 공유하는 캡슐 (세션 356 "share a
-   background"). 상단바가 이미 유리이므로 그룹은 유리가 아니라 얕은 채움 */
-.navbar .button-wrapper {
-    /* 열 폭을 1fr 로 두어 버튼 영역이 라벨 길이와 무관하게 가장 넓은 버튼과 같아진다 */
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 1fr;
-    align-items: center;
-    gap: 2px;
-    padding: 4px;
-    --r-parent: var(--r-capsule);
-    border-radius: var(--r-parent);
-    background: rgb(255 255 255 / .28);
-}
-
-.navbar .button-wrapper .icon-link {
-    border-radius: calc(var(--r-parent) - 4px);
-}
-
-html[data-theme="dark"] .navbar .button-wrapper {
-    background: rgb(255 255 255 / .09);
 }

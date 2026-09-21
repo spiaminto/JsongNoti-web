@@ -21,7 +21,7 @@ h2, h3 {
 
 /* ---------- 상단바 브랜드 ---------- */
 /* 과거의 형광 하이라이트 박스를 걷어내고 유리 알약 위의 잉크 글자로 */
-.navbar h1 {
+.brand-capsule h1 {
     display: flex;
     align-items: center;
     gap: .4rem;

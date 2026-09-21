@@ -593,8 +593,8 @@ $(function () {
         // 실측해 잡고, 앵커는 폼이 아니라 유리 패널(섹션) 상단 — 제목까지 보인다
         let $anchor = $('#favoriteSongAddForm').closest('section');
         if ($anchor.length === 0) $anchor = $('#favoriteSongAddForm');
-        let navbar = document.querySelector('.navbar');
-        let topClearance = (navbar ? navbar.getBoundingClientRect().bottom : 0) + 16;
+        let brandCapsule = document.querySelector('.brand-capsule');
+        let topClearance = (brandCapsule ? brandCapsule.getBoundingClientRect().bottom : 0) + 16;
         let targetY = Math.max(0, $anchor.offset().top - topClearance);
         let openAddForm = function () {
             revealAddRow();

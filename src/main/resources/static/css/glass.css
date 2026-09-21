@@ -1323,15 +1323,15 @@ tbody tr.more-reveal.more-settled.more-hide,
 .song-table-collapse tbody tr:nth-child(n+15) { --rd: 1.03s; }
 
 /* ---------- 크롬 유리 재질: 층 토큰과 두 상태 (5기 4번) ----------
-   크롬 유리(.navbar, .side-button-wrapper)의 재질은 여기 한 곳에 있다.
+   크롬 유리(.glass-capsule — 브랜드 캡슐, 메뉴 캡슐, 사이드 알약)의 재질은 여기 한 곳에 있다.
    층마다 토큰: 렌징(--glass-blur, --glass-saturate, --glass-refraction),
    틴트(--glass-tint-a 좌상, --glass-tint-b 우하, --glass-tint-ink 흰색에 섞는 잉크),
    그림자(--glass-shadow-alpha). 상태는 둘이다.
      사진 위    — 맑은 유리: 블러·틴트를 최소로
      콘텐츠 위  — 뒤 글자의 잔무늬를 블러로 지우고, 흰 판 위에서 묻히지 않게
                   틴트에 잉크를 섞는다. 그림자는 진해진다
-   상단바는 콘텐츠 판이 밑에 들어왔을 때 glass-motion.js 가 .over-content 를
-   붙이고, 사이드 알약은 늘 콘텐츠 위다. 숫자 토큰을 @property 로 등록해 상태
+   상단의 두 캡슐은 콘텐츠 판이 밑에 들어왔을 때 glass-motion.js 가 캡슐마다
+   .over-content 를 붙이고, 사이드 알약은 늘 콘텐츠 위다. 숫자 토큰을 @property 로 등록해 상태
    사이를 CSS 전환으로 섞는다(등록을 모르는 브라우저는 전환 없이 바뀐다).
    --glass-refraction 은 glass-material.js 가 url(#필터) 로 채운다.
    하이라이트 층은 glass-material.js 가 곡면의 법선으로 구운 이미지(--glass-specular)
@@ -1343,7 +1343,7 @@ tbody tr.more-reveal.more-settled.more-hide,
 @property --glass-tint-ink { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
 @property --glass-shadow-alpha { syntax: "<number>"; inherits: false; initial-value: 0; }
 
-.navbar, .side-button-wrapper {
+.glass-capsule {
     --glass-blur: .8px;
     --glass-saturate: 1.4;
     --glass-tint-a: 5%;
@@ -1368,7 +1368,7 @@ tbody tr.more-reveal.more-settled.more-hide,
         inset 0 -1px 1px rgb(255 255 255 / .18);
 }
 
-.navbar.over-content, .side-button-wrapper {
+.glass-capsule.over-content, .side-button-wrapper {
     --glass-blur: 4px;
     --glass-saturate: 1.9;
     --glass-tint-a: 12%;
@@ -1381,26 +1381,25 @@ tbody tr.more-reveal.more-settled.more-hide,
    한 장을 요소 크기에 맞춰 얹는다. 림은 이미지에 들어 있으므로 안쪽 그림자는 뺀다.
    dark 의 conic 규칙(containers·common.css)을 이기도록 같은 선택자를 나란히 둔다.
    그림자 규칙은 :where 로 특정도를 재질 절과 같게 두어 고대비 절의 테두리가 이긴다 */
-:where(.navbar, .side-button-wrapper).has-baked-specular {
+:where(.glass-capsule).has-baked-specular {
     box-shadow: 0 4px 12px rgb(var(--glass-shadow-rgb) / var(--glass-shadow-alpha));
 }
 
-.navbar.has-baked-specular::after, .side-button-wrapper.has-baked-specular::after,
-html[data-theme="dark"] .navbar.has-baked-specular::after,
-html[data-theme="dark"] .side-button-wrapper.has-baked-specular::after {
+.glass-capsule.has-baked-specular::after,
+html[data-theme="dark"] .glass-capsule.has-baked-specular::after {
     padding: 0;
     -webkit-mask: none;
     mask: none;
     background: var(--glass-specular) center / 100% 100% no-repeat;
 }
 
-html[data-theme="dark"] .navbar, html[data-theme="dark"] .side-button-wrapper {
+html[data-theme="dark"] .glass-capsule {
     --glass-tint-a: 3.5%;
     --glass-tint-b: 1.2%;
     --glass-shadow-rgb: 0 0 0;
 }
 
-html[data-theme="dark"] .navbar.over-content, html[data-theme="dark"] .side-button-wrapper {
+html[data-theme="dark"] .glass-capsule.over-content, html[data-theme="dark"] .side-button-wrapper {
     --glass-tint-a: 8.4%;
     --glass-tint-b: 2.4%;
 }
@@ -1414,7 +1413,7 @@ html[data-theme="dark"] .navbar.over-content, html[data-theme="dark"] .side-butt
    3) 젤 프레스: 눌린 버튼이 납작하게 퍼졌다가 스프링으로 돌아온다 */
 @property --glass-glow-radius { syntax: "<length>"; inherits: false; initial-value: 30px; }
 
-.navbar::before, .side-button-wrapper::before {
+.glass-capsule::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -1428,7 +1427,7 @@ html[data-theme="dark"] .navbar.over-content, html[data-theme="dark"] .side-butt
     transition: opacity .7s ease, --glass-glow-radius .7s ease;
 }
 
-.navbar.is-glowing::before, .side-button-wrapper.is-glowing::before {
+.glass-capsule.is-glowing::before {
     --glass-glow-radius: 130px;
     opacity: 1;
     transition: opacity .12s ease, --glass-glow-radius .55s cubic-bezier(.2, .7, .2, 1);
@@ -1487,7 +1486,7 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
 
 /* ---------- 크롬 유리 폴백 사다리 (ADR 0003, P15) ----------
    위에서 아래로, 감지로만 내려간다:
-   1) 굴절 + 블러 — Chromium: glass-material.js 가 .navbar 와 .side-button-wrapper
+   1) 굴절 + 블러 — Chromium: glass-material.js 가 .glass-capsule
       의 --glass-refraction 에 SVG 변위 맵 url() 을 채운다
    2) 블러 — backdrop-filter 를 지원하는 나머지 브라우저: 위 재질 절 그대로.
       이 상태가 완성된 디자인이다
@@ -1496,11 +1495,10 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
    4) 불투명 — 투명도 최소화 설정: 접근성 절
    재질 절과 특정도가 같으므로 태그를 붙여 한 단계 올린다 */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    nav.navbar, nav.navbar.scrolled, div.side-button-wrapper {
+    div.glass-capsule {
         background: rgb(255 255 255 / .82);
     }
-    html[data-theme="dark"] nav.navbar, html[data-theme="dark"] nav.navbar.scrolled,
-    html[data-theme="dark"] div.side-button-wrapper {
+    html[data-theme="dark"] div.glass-capsule {
         background: rgb(27 36 48 / .86);
     }
 }
@@ -1529,7 +1527,7 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
     .selection-lens { transition: opacity .2s ease; }
     .has-selection-lens.has-selection-lens .icon-link:active { scale: none; }
     /* 내비바 스크롤 방향 반응(containers.css)은 위치 이동이라 끈다 */
-    html[data-scroll-direction="down"] .navbar { transform: none; }
+    html[data-scroll-direction="down"] .brand-capsule { scale: none; translate: none; }
     .btn:hover, .btn-close:hover { transform: none; }
 }
 
@@ -1538,18 +1536,17 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
    상단바·사이드 버튼은 재질 선언이 뒤에 로드되는 파일(containers·
    common.css)에 있어, 같은 특정도로는 지므로 태그를 붙여 한 단계 올린다 */
 @media (prefers-reduced-transparency: reduce) {
-    nav.navbar, nav.navbar.scrolled, div.side-button-wrapper {
+    div.glass-capsule {
         -webkit-backdrop-filter: none;
         backdrop-filter: none;
     }
-    nav.navbar, nav.navbar.scrolled, div.side-button-wrapper {
+    div.glass-capsule {
         background: rgb(255 255 255 / .95);
     }
-    html[data-theme="dark"] nav.navbar, html[data-theme="dark"] nav.navbar.scrolled,
-    html[data-theme="dark"] div.side-button-wrapper {
+    html[data-theme="dark"] div.glass-capsule {
         background: rgb(27 36 48 / .96);
     }
-    nav.navbar::after { display: none; }
+    div.glass-capsule::after { display: none; }
     .modal-backdrop { -webkit-backdrop-filter: none; backdrop-filter: none; }
     .scroll-veil { display: none; }
 }
@@ -1562,7 +1559,7 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
         --ink-2: #333f4a;
         --edge-contrast: rgb(70 85 100 / .55);
     }
-    .content-panel, .modal-content, nav.navbar, div.side-button-wrapper {
+    .content-panel, .modal-content, div.glass-capsule {
         box-shadow: 0 0 0 1px var(--edge-contrast);
     }
     .form-control {
@@ -1578,14 +1575,13 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
     .content-panel.frost-crossfade::before { display: none; }
     /* 맑은 유리는 몸체가 얇은 틴트라 대비가 부족하다 — 거의 불투명으로
        올리고 장식 테두리(conic ::after)는 제거해 림 보더만 남긴다 */
-    nav.navbar, nav.navbar.scrolled, div.side-button-wrapper {
+    div.glass-capsule {
         background: rgb(255 255 255 / .9);
     }
-    html[data-theme="dark"] nav.navbar, html[data-theme="dark"] nav.navbar.scrolled,
-    html[data-theme="dark"] div.side-button-wrapper {
+    html[data-theme="dark"] div.glass-capsule {
         background: rgb(27 36 48 / .94);
     }
-    nav.navbar::after { display: none; }
+    div.glass-capsule::after { display: none; }
     .bokeh { display: none; }
     .ray { display: none; }
 }
