@@ -119,8 +119,9 @@ html[data-theme="dark"] .navbar .icon-link:hover {
     display: none;
 }
 
-/* 유리 알약 하나에 버튼 둘이 세로로 — 내비바와 같은 맑은 유리 (D13: 모바일
+/* 유리 알약 하나에 버튼 둘이 세로로 — 내비바와 같은 크롬 유리 (D13: 모바일
    오른쪽 엄지 자리라 유지. 크롬이므로 실시간 유리 허용, 블러 층 1장).
+   재질은 glass.css 의 "크롬 유리 재질" 절 — 알약은 늘 "콘텐츠 위" 상태다.
    스펙큘러 링(::after)과 굴절(glass-refraction.js)도 내비바와 같다 */
 .side-button-wrapper {
     position: relative;
@@ -131,13 +132,6 @@ html[data-theme="dark"] .navbar .icon-link:hover {
     --r-parent: var(--r-capsule);
     border-radius: var(--r-parent);
     border: 0;
-    background: linear-gradient(135deg, rgb(255 255 255 / .20), rgb(255 255 255 / .07));
-    -webkit-backdrop-filter: blur(4px) saturate(170%);
-    backdrop-filter: blur(4px) saturate(170%);
-    box-shadow:
-        0 12px 32px rgb(30 42 56 / .22),
-        inset 0 1px 1px rgb(255 255 255 / .65),
-        inset 0 -1px 1px rgb(255 255 255 / .18);
 }
 
 /* 알약 안의 버튼은 동심 캡슐 (캡슐에서 4px 를 빼도 캡슐) */
@@ -160,10 +154,6 @@ html[data-theme="dark"] .navbar .icon-link:hover {
     -webkit-mask-composite: destination-out;
     mask-composite: exclude;
     pointer-events: none;
-}
-
-html[data-theme="dark"] .side-button-wrapper {
-    background: linear-gradient(135deg, rgb(255 255 255 / .14), rgb(255 255 255 / .04));
 }
 
 html[data-theme="dark"] .side-button-wrapper::after {

@@ -5,8 +5,9 @@
  * 담당:
  *  1) 로드 시퀀스: .veil 요소에 .on 을 붙여 --vd 딜레이 순서대로 띄운다
  *  2) 스크롤 리빌: [data-lift] 요소가 30% 이상 보이면 .is-lit 을 붙인다 (기존 fade-in.js 대체)
- *  3) scroll edge: 콘텐츠가 내비바 아래로 지나갈 때 .navbar 틴트를 진하게 하고(.scrolled),
- *     화면 상단 점진 블러 베일(.scroll-veil)을 심어 콘텐츠를 가장자리에서 디졸브 (ui-rnd 5턴)
+ *  3) scroll edge: 화면 상단 점진 블러 베일(.scroll-veil)을 심고 scrollY > 8 에서
+ *     .navbar 에 .scrolled 를 붙여 띄운다 (ui-rnd 5턴). 콘텐츠 판이 상단바 밑에
+ *     들어오면 .over-content 를 붙여 크롬 유리의 상태를 바꾼다 (glass.css 재질 절)
  *  4) 스크롤 방향 반응(P12): 내비바가 스크롤 위치가 아니라 방향에 반응하도록
  *     html[data-scroll-direction] 을 up/down 으로 쓴다 — 축소 모션은 containers.css
  *  5) 보케: .bokeh i 의 위치·크기를 로드마다 랜덤으로 흩뿌린다
@@ -65,8 +66,7 @@
         observer.observe(el);
     });
 
-    // scroll edge: 콘텐츠가 상단바 아래로 지나갈 때만 재질을 두껍게.
-    // 상단 점진 블러 베일(.scroll-veil)은 상단바 있는 페이지에만 심는다 —
+    // scroll edge: 상단 점진 블러 베일(.scroll-veil)은 상단바 있는 페이지에만 심는다 —
     // 표시는 CSS 형제 선택자(.navbar.scrolled ~ .scroll-veil)가 따라온다
     var navbar = document.querySelector(".navbar");
     if (navbar) {
@@ -81,6 +81,26 @@
         };
         window.addEventListener("scroll", onScroll, { passive: true });
         onScroll();
+
+        // 크롬 유리의 상태(glass.css 재질 절): 콘텐츠 판이 상단바 밑에 들어와
+        // 있으면 .over-content. 스크롤 프레임마다 한 번만 판정한다
+        var overContentQueued = false;
+        var updateOverContent = function () {
+            overContentQueued = false;
+            var bar = navbar.getBoundingClientRect();
+            // 판은 검색 결과처럼 나중에 생기기도 하므로 판정할 때마다 찾는다
+            var overContent = Array.prototype.some.call(document.querySelectorAll(".content-panel"), function (panel) {
+                var box = panel.getBoundingClientRect();
+                return box.width > 0 && box.top < bar.bottom - 6 && box.bottom > bar.top + 6;
+            });
+            navbar.classList.toggle("over-content", overContent);
+        };
+        window.addEventListener("scroll", function () {
+            if (overContentQueued) return;
+            overContentQueued = true;
+            requestAnimationFrame(updateOverContent);
+        }, { passive: true });
+        updateOverContent();
 
         // 스크롤 방향 반응 (P12, D10): 6px 넘게 움직였을 때만 방향을 판정해
         // 손 떨림에 흔들리지 않게 하고, 아래 방향은 상단 80px 아래에서만 —

@@ -225,3 +225,6 @@ commit 9
 
 커밋 260921
     상단바 아이콘 버튼의 영역 폭을 같게 맞춤. 버튼 그룹(.navbar .button-wrapper)이 flex 라 버튼 폭이 라벨 길이를 따라가, 두 글자인 "검색" 버튼이 세 글자인 "애창곡" 버튼보다 좁았고 hover 영역도 그만큼 작았다. 그룹을 같은 폭의 열을 갖는 grid(grid-auto-flow: column, grid-auto-columns: 1fr)로 바꿔 모든 버튼이 가장 넓은 버튼과 같은 폭을 갖는다. 실측: 두 버튼 모두 55.8×52.4px. 사이드 알약은 세로 flex 의 stretch 로 이미 같은 폭
+
+커밋 260921
+    크롬 유리(상단바·사이드 알약)의 재질을 층 토큰으로 정리하고 상태를 둘로 나눔. 재질 선언(틴트·backdrop-filter·그림자)이 containers.css 와 common.css 에 두 벌 있던 것을 glass.css 의 "크롬 유리 재질" 절 한 곳으로 모으고, 값은 토큰(--glass-blur, --glass-saturate, --glass-tint-a/b, --glass-tint-ink, --glass-shadow-alpha)으로 둔다. 상태는 사진 위(블러 .8px·채도 1.4·틴트 5%→2%·그림자 .17)와 콘텐츠 위(블러 4px·채도 1.9·틴트 12%→4%에 잉크 21% 섞음·그림자 .24). 숫자 토큰을 @property 로 등록해 두 상태 사이를 .35초 CSS 전환으로 섞는다. 상단바는 콘텐츠 판이 실제로 밑에 들어왔을 때 glass-motion.js 가 .over-content 를 붙이고(전의 scrollY > 8 틴트 규칙 대체, .scrolled 는 베일 표시용으로만 남음), 사이드 알약은 늘 콘텐츠 위. 그림자는 0 12px 32px 에서 0 4px 12px 로 — 작은 요소의 그림자는 얕게 두고 세기만 상태에 따라 바꾼다. 스크롤 베일은 120px 에서 56px 로 줄여 상단바의 backdrop 을 먼저 뭉개지 않게 했다. glass-refraction.js 는 backdrop-filter 를 inline 으로 쓰지 않고 --glass-refraction 에 url(#필터) 만 채우며 CSS 가 조립한다 — 상태 전환과 접근성 미디어 쿼리가 inline 스타일에 막히지 않는다. 실측: 전환 중 블러 .8 → 2.0 → 3.5 → 4px 로 연속 변화, 알약 두 버튼 폭 55.8px

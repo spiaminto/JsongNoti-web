@@ -7,16 +7,20 @@
  * 유리 렌즈처럼 보인다. 비용은 크롬 2장뿐이라 예산(P5) 안이다. 콘텐츠 판에는
  * 걸지 않는다.
  *
- * 변위 맵(feImage 의 data URL)이 로드되기 전에 backdrop-filter 에 url() 을 붙이면
+ * 재질 값의 원본은 CSS 다(glass.css "크롬 유리 재질" 절). 여기서는 backdrop-filter
+ * 를 직접 쓰지 않고 요소의 --glass-refraction 에 url(#필터) 만 채우며, CSS 가
+ * blur·saturate 뒤에 그 값을 끼워 조립한다. 그래서 상태 전환(CSS transition)과
+ * 접근성 미디어 쿼리가 inline 스타일에 막히지 않는다.
+ *
+ * 변위 맵(feImage 의 data URL)이 로드되기 전에 backdrop-filter 에 url() 이 붙으면
  * Chrome 은 필터 체인 전체를 버려 블러까지 사라지고, 그 요소의 계산된 스타일이
  * 실제로 달라지기 전에는 복구하지 않는다(5기 2번, 사이드 알약에서 확인).
  * 같은 값을 다시 넣는 것은 변경이 아니다. 그래서 필터를 붙인 뒤 두 프레임 뒤와
  * 400ms 뒤에 값이 실제로 달라지도록 no-op 인 opacity(1) 을 붙였다 뗀다.
  *
  * 폴백 사다리(위에서 아래로, 감지로만 내려간다 — 노브 없음):
- *  1) 굴절 + 블러: Chromium 계열 — 여기서 backdrop-filter 에 url(#필터) 를 더한다
- *  2) 블러: backdrop-filter 를 지원하는 나머지 브라우저 — CSS 기본 재질 그대로
- *     (containers.css .navbar, common.css .side-button-wrapper). Firefox·Safari 는
+ *  1) 굴절 + 블러: Chromium 계열 — 여기서 --glass-refraction 에 url(#필터) 를 채운다
+ *  2) 블러: backdrop-filter 를 지원하는 나머지 브라우저 — CSS 재질 그대로. Firefox·Safari 는
  *     backdrop-filter: url() 을 무시하거나 깨진 그림을 내므로 @supports 가 아니라
  *     런타임 브랜드로 감지한다(P15)
  *  3) 색만: backdrop-filter 없음 — glass.css @supports not 절이 틴트 알파를 올린다
@@ -40,8 +44,8 @@
     }));
     if (!isChromium) return; // 사다리 2단 이하: CSS 그대로
 
-    // 사다리 4단(투명도 최소화, glass.css 접근성 절)에서는 굴절도 걸지 않는다 —
-    // 여기서 주는 inline 스타일이 미디어 쿼리의 backdrop-filter: none 을 이기기 때문
+    // 사다리 4단(투명도 최소화, glass.css 접근성 절)에서는 backdrop-filter 가 none 이라
+    // 굴절이 그려지지 않는다 — 맵을 만들지 않는다
     var reducedTransparency = window.matchMedia("(prefers-reduced-transparency: reduce)");
 
     if (document.readyState === "loading") {
@@ -96,14 +100,14 @@
             var previous = svg.querySelector("#" + filterId);
             if (previous) previous.remove();
             svg.appendChild(buildRefractionFilter(filterId, mapUrl, width, height));
-            setBackdropFilter(filterId, false);
+            setRefraction(filterId, false);
 
             // 맵이 로드된 뒤 값이 실제로 달라지게 두 번 흔든다 (머리말). 그 사이
             // 크기가 또 바뀌었으면 건너뛴다 — 새 apply 가 다시 한다
             var expected = mapSize;
             function nudge(on) {
                 if (mapSize !== expected) return;
-                setBackdropFilter(filterId, on);
+                setRefraction(filterId, on);
             }
             requestAnimationFrame(function () {
                 requestAnimationFrame(function () { nudge(true); });
@@ -111,21 +115,15 @@
             setTimeout(function () { nudge(false); }, 400);
         }
 
-        // CSS 재질(블러·채도)은 그대로 두고 굴절만 덧붙인다 — 값의 원본은 CSS 한 곳.
+        // CSS 가 backdrop-filter 끝에 끼우는 값만 채운다.
         // withNoop 이면 no-op 인 opacity(1) 을 뒤에 붙여 값이 달라지게 한다
-        function setBackdropFilter(id, withNoop) {
-            var base = getComputedStyle(element).backdropFilter
-                .replace(/url\([^)]*\)/g, "").replace(/opacity\(1\)/g, "").trim();
-            if (base === "none") base = "";
-            var value = (base + " url(#" + id + ")" + (withNoop ? " opacity(1)" : "")).trim();
-            element.style.webkitBackdropFilter = value;
-            element.style.backdropFilter = value;
+        function setRefraction(id, withNoop) {
+            element.style.setProperty("--glass-refraction", "url(#" + id + ")" + (withNoop ? " opacity(1)" : ""));
         }
 
         function remove() {
             mapSize = null;
-            element.style.webkitBackdropFilter = "";
-            element.style.backdropFilter = "";
+            element.style.removeProperty("--glass-refraction");
         }
 
         return { element: element, apply: apply, remove: remove };

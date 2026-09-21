@@ -920,13 +920,14 @@ html[data-theme="dark"] .modal .song-table th {
    상단바 유리 밑으로 콘텐츠가 지나가면 화면 상단에 점진 블러 베일이
    떠올라, 콘텐츠가 가장자리에서 디졸브된다. 베일 요소는 glass-motion.js 가
    상단바 있는 페이지에만 심고, 표시는 .navbar.scrolled(scrollY > 8)를
-   형제 선택자로 따라간다 */
+   형제 선택자로 따라간다. 상단바의 backdrop 을 먼저 뭉개지 않도록 짧게 둔다:
+   뷰포트와 상단바 사이 틈(0~14px)은 완전 블러, 상단바 중간쯤에서 0 */
 .scroll-veil {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    height: 120px;
+    height: 56px;
     z-index: 39; /* 상단바(40) 바로 아래 */
     pointer-events: none;
     -webkit-backdrop-filter: blur(12px);
@@ -1321,17 +1322,80 @@ tbody tr.more-reveal.more-settled.more-hide,
 .song-table-collapse tbody tr:nth-child(14) { --rd: .96s; }
 .song-table-collapse tbody tr:nth-child(n+15) { --rd: 1.03s; }
 
+/* ---------- 크롬 유리 재질: 층 토큰과 두 상태 (5기 4번) ----------
+   크롬 유리(.navbar, .side-button-wrapper)의 재질은 여기 한 곳에 있다.
+   층마다 토큰: 렌징(--glass-blur, --glass-saturate, --glass-refraction),
+   틴트(--glass-tint-a 좌상, --glass-tint-b 우하, --glass-tint-ink 흰색에 섞는 잉크),
+   그림자(--glass-shadow-alpha). 상태는 둘이다.
+     사진 위    — 맑은 유리: 블러·틴트를 최소로
+     콘텐츠 위  — 뒤 글자의 잔무늬를 블러로 지우고, 흰 판 위에서 묻히지 않게
+                  틴트에 잉크를 섞는다. 그림자는 진해진다
+   상단바는 콘텐츠 판이 밑에 들어왔을 때 glass-motion.js 가 .over-content 를
+   붙이고, 사이드 알약은 늘 콘텐츠 위다. 숫자 토큰을 @property 로 등록해 상태
+   사이를 CSS 전환으로 섞는다(등록을 모르는 브라우저는 전환 없이 바뀐다).
+   --glass-refraction 은 glass-refraction.js 가 url(#필터) 로 채운다 */
+@property --glass-blur { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --glass-saturate { syntax: "<number>"; inherits: false; initial-value: 1; }
+@property --glass-tint-a { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
+@property --glass-tint-b { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
+@property --glass-tint-ink { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
+@property --glass-shadow-alpha { syntax: "<number>"; inherits: false; initial-value: 0; }
+
+.navbar, .side-button-wrapper {
+    --glass-blur: .8px;
+    --glass-saturate: 1.4;
+    --glass-tint-a: 5%;
+    --glass-tint-b: 2%;
+    --glass-tint-ink: 0%;
+    --glass-shadow-alpha: .17;
+    --glass-shadow-rgb: 30 42 56;
+    --glass-tint-color: color-mix(in srgb, rgb(30 42 56) var(--glass-tint-ink), #fff);
+    --glass-state-transition:
+        --glass-blur .35s ease-in-out, --glass-saturate .35s ease-in-out,
+        --glass-tint-a .35s ease-in-out, --glass-tint-b .35s ease-in-out,
+        --glass-tint-ink .35s ease-in-out, --glass-shadow-alpha .35s ease-in-out;
+    background: linear-gradient(135deg, rgb(255 255 255 / .12), rgb(255 255 255 / .04));
+    background: linear-gradient(135deg,
+        color-mix(in srgb, var(--glass-tint-color) var(--glass-tint-a), transparent),
+        color-mix(in srgb, var(--glass-tint-color) var(--glass-tint-b), transparent));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) var(--glass-refraction,);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) var(--glass-refraction,);
+    box-shadow:
+        0 4px 12px rgb(var(--glass-shadow-rgb) / var(--glass-shadow-alpha)),
+        inset 0 1px 1px rgb(255 255 255 / .65),
+        inset 0 -1px 1px rgb(255 255 255 / .18);
+}
+
+.navbar.over-content, .side-button-wrapper {
+    --glass-blur: 4px;
+    --glass-saturate: 1.9;
+    --glass-tint-a: 12%;
+    --glass-tint-b: 4%;
+    --glass-tint-ink: 21%;
+    --glass-shadow-alpha: .24;
+}
+
+html[data-theme="dark"] .navbar, html[data-theme="dark"] .side-button-wrapper {
+    --glass-tint-a: 3.5%;
+    --glass-tint-b: 1.2%;
+    --glass-shadow-rgb: 0 0 0;
+}
+
+html[data-theme="dark"] .navbar.over-content, html[data-theme="dark"] .side-button-wrapper {
+    --glass-tint-a: 8.4%;
+    --glass-tint-b: 2.4%;
+}
+
 /* ---------- 크롬 유리 폴백 사다리 (ADR 0003, P15) ----------
    위에서 아래로, 감지로만 내려간다:
    1) 굴절 + 블러 — Chromium: glass-refraction.js 가 .navbar 와 .side-button-wrapper
-      의 backdrop-filter 에 SVG 변위 맵 url() 을 더한다
-   2) 블러 — backdrop-filter 를 지원하는 나머지 브라우저: containers.css(.navbar)·
-      common.css(.side-button-wrapper)의 기본 재질. 이 상태가 완성된 디자인이다
+      의 --glass-refraction 에 SVG 변위 맵 url() 을 채운다
+   2) 블러 — backdrop-filter 를 지원하는 나머지 브라우저: 위 재질 절 그대로.
+      이 상태가 완성된 디자인이다
    3) 색만 — backdrop-filter 없음: 얇은 틴트로는 뒤 글자가 그대로 비치므로
       알파를 올린다 (아래). 링·그림자는 그대로
    4) 불투명 — 투명도 최소화 설정: 접근성 절
-   상단바·사이드 버튼은 재질 선언이 뒤에 로드되는 파일에 있어, 태그를 붙여
-   특정도를 한 단계 올린다 */
+   재질 절과 특정도가 같으므로 태그를 붙여 한 단계 올린다 */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     nav.navbar, nav.navbar.scrolled, div.side-button-wrapper {
         background: rgb(255 255 255 / .82);
