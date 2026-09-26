@@ -94,6 +94,74 @@ section {
     border-radius: calc(var(--r-parent) - 4px);
 }
 
+/* ---------- 메뉴 캡슐의 이동 (5기 5번) ----------
+   스크롤해 내려가면 메뉴 캡슐이 돌면서 오른쪽 아래의 엄지 자리로 내려가고, 맨 위로
+   돌아오면 올라온다 (1200px 미만에서만 — 판정은 glass-motion.js). 내려간 상태
+   (.is-docked)는 진짜 세로 레이아웃이고, 이동은 FLIP 이다: glass-motion.js 가 자리
+   (left·top)를 바꾼 뒤 바뀌기 전 자리·방향으로 되돌려 놓고 풀어 준다.
+   이동과 회전은 넘침 없는 곡선 하나를 같이 쓴다 */
+.menu-capsule {
+    --menu-capsule-duration: .95s;
+    --menu-capsule-ease: cubic-bezier(.2, 0, 0, 1);
+    --menu-capsule-material-delay: 0s;
+    --menu-capsule-material-transition:
+        --glass-blur .35s ease-in-out var(--menu-capsule-material-delay), --glass-saturate .35s ease-in-out var(--menu-capsule-material-delay),
+        --glass-tint-a .35s ease-in-out var(--menu-capsule-material-delay), --glass-tint-b .35s ease-in-out var(--menu-capsule-material-delay),
+        --glass-tint-ink .35s ease-in-out var(--menu-capsule-material-delay), --glass-shadow-alpha .35s ease-in-out var(--menu-capsule-material-delay);
+    transform-origin: 50% 50%;
+    transition:
+        opacity 1s var(--ease-float) var(--vd, 0s),
+        transform 1s var(--ease-float) var(--vd, 0s),
+        filter 1s var(--ease-float) var(--vd, 0s),
+        var(--menu-capsule-material-transition),
+        translate var(--menu-capsule-duration) var(--menu-capsule-ease),
+        rotate var(--menu-capsule-duration) var(--menu-capsule-ease);
+}
+
+/* 세로 레이아웃: 고정 높이(--chrome-capsule-height)를 풀어 62×118 이 된다 */
+.menu-capsule.is-docked {
+    flex-direction: column;
+    height: auto;
+}
+
+/* 이동하는 동안에만 재질 전환을 이동의 55% 지점으로 늦춘다 — 떠나자마자가 아니라 도착
+   조금 전에 바뀐다. 제자리에서 상태가 바뀔 때는 바로 바뀐다 */
+.menu-capsule.is-traveling {
+    --menu-capsule-material-delay: calc(var(--menu-capsule-duration) * .55);
+}
+
+/* 레이아웃이 바뀌는 순간 새 모양으로 구운 스페큘러가 90도 돌아간 채 보인다.
+   떠날 때 하이라이트를 껐다가 재질과 같은 시점에 다시 켠다 */
+.menu-capsule::after {
+    transition: opacity .35s ease-out var(--menu-capsule-material-delay);
+}
+
+.menu-capsule.is-specular-off::after {
+    opacity: 0;
+    transition: none;
+}
+
+/* 버튼은 캡슐과 반대로 돌아 늘 서 있다. 늘 자기 합성 층에 둔다 */
+.menu-capsule .icon-link {
+    transition: scale .6s var(--spring-spatial), background .3s, color .3s,
+        rotate var(--menu-capsule-duration) var(--menu-capsule-ease);
+    will-change: rotate;
+}
+
+/* FLIP 의 되돌려 놓기: 자리·방향의 전환만 끄고 재질 전환은 살린다 */
+.menu-capsule.is-flip-start {
+    transition: var(--menu-capsule-material-transition);
+}
+
+.menu-capsule.is-flip-start .icon-link {
+    transition: none;
+}
+
+/* 모션 최소화: 자리만 바뀌는 동안 잠깐 숨긴다 (전환은 glass.css 접근성 절) */
+.menu-capsule.is-swapping {
+    opacity: 0;
+}
+
 /* 768px 이상: 브랜드 캡슐을 화면 폭의 50% 로. 메뉴 캡슐에 닿지 않도록 콘텐츠 열에서
    메뉴 캡슐(118px)과 간격(24px)을 뺀 폭을 상한으로 둔다 */
 @media (min-width: 768px) {

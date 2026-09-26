@@ -2,7 +2,7 @@
  * glass-material.js — 크롬 유리의 재질 중 그려서 만드는 두 층: 굴절과 스페큘러 (ADR 0003)
  * 기준: docs/_temp/ui-overhaul-5.md 4번, 용어는 docs/with-ai/CONTEXT.md
  *
- * 크롬 유리(.glass-capsule — 브랜드 캡슐, 메뉴 캡슐, 사이드 알약)의 가장자리 띠(BEZEL_WIDTH px)를 볼록한
+ * 크롬 유리(.glass-capsule — 브랜드 캡슐, 메뉴 캡슐)의 가장자리 띠(BEZEL_WIDTH px)를 볼록한
  * 곡면으로 보고, 그 곡면 하나에서 두 층을 만든다. 콘텐츠 판에는 걸지 않는다.
  *
  *  굴절 (Chromium 만): 곡면의 기울기에 스넬 법칙을 적용해 빛이 꺾이는 만큼 뒤 그림을

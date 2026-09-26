@@ -124,7 +124,7 @@
     --r-panel: 24px;     /* 콘텐츠 판 */
     --r-sheet: 28px;     /* 모달, 에러 카드 */
     --r-control: 14px;   /* 입력, 보조 버튼, 경고, lift 판, 그룹 */
-    --r-capsule: 999px;  /* 상단바, 사이드 버튼, 주요 액션 버튼, 배지 */
+    --r-capsule: 999px;  /* 상단의 두 캡슐, 주요 액션 버튼, 배지 */
 }
 
 @media (min-width: 768px) {
@@ -1323,15 +1323,15 @@ tbody tr.more-reveal.more-settled.more-hide,
 .song-table-collapse tbody tr:nth-child(n+15) { --rd: 1.03s; }
 
 /* ---------- 크롬 유리 재질: 층 토큰과 두 상태 (5기 4번) ----------
-   크롬 유리(.glass-capsule — 브랜드 캡슐, 메뉴 캡슐, 사이드 알약)의 재질은 여기 한 곳에 있다.
+   크롬 유리(.glass-capsule — 브랜드 캡슐, 메뉴 캡슐)의 재질은 여기 한 곳에 있다.
    층마다 토큰: 렌징(--glass-blur, --glass-saturate, --glass-refraction),
    틴트(--glass-tint-a 좌상, --glass-tint-b 우하, --glass-tint-ink 흰색에 섞는 잉크),
    그림자(--glass-shadow-alpha). 상태는 둘이다.
      사진 위    — 맑은 유리: 블러·틴트를 최소로
      콘텐츠 위  — 뒤 글자의 잔무늬를 블러로 지우고, 흰 판 위에서 묻히지 않게
                   틴트에 잉크를 섞는다. 그림자는 진해진다
-   상단의 두 캡슐은 콘텐츠 판이 밑에 들어왔을 때 glass-motion.js 가 캡슐마다
-   .over-content 를 붙이고, 사이드 알약은 늘 콘텐츠 위다. 숫자 토큰을 @property 로 등록해 상태
+   콘텐츠 판이 밑에 들어왔을 때 glass-motion.js 가 캡슐마다 .over-content 를
+   붙이고, 내려가 있는 메뉴 캡슐은 늘 콘텐츠 위다. 숫자 토큰을 @property 로 등록해 상태
    사이를 CSS 전환으로 섞는다(등록을 모르는 브라우저는 전환 없이 바뀐다).
    --glass-refraction 은 glass-material.js 가 url(#필터) 로 채운다.
    하이라이트 층은 glass-material.js 가 곡면의 법선으로 구운 이미지(--glass-specular)
@@ -1368,7 +1368,7 @@ tbody tr.more-reveal.more-settled.more-hide,
         inset 0 -1px 1px rgb(255 255 255 / .18);
 }
 
-.glass-capsule.over-content, .side-button-wrapper {
+.glass-capsule.over-content {
     --glass-blur: 4px;
     --glass-saturate: 1.9;
     --glass-tint-a: 12%;
@@ -1399,7 +1399,7 @@ html[data-theme="dark"] .glass-capsule {
     --glass-shadow-rgb: 0 0 0;
 }
 
-html[data-theme="dark"] .glass-capsule.over-content, html[data-theme="dark"] .side-button-wrapper {
+html[data-theme="dark"] .glass-capsule.over-content {
     --glass-tint-a: 8.4%;
     --glass-tint-b: 2.4%;
 }
@@ -1505,7 +1505,7 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
 
 /* ---------- 접근성: 모션·투명도·대비 각각 대응 (P14) ----------
    3기 구조에서 손댈 것: 스프링 토큰(탄성)·로드 시퀀스·리빌·행 lift 의 모션,
-   크롬 유리(내비바·사이드 버튼·모달 베일·스크롤 베일)의 투명도, 판·버튼·
+   크롬 유리(브랜드 캡슐·메뉴 캡슐·모달 베일·스크롤 베일)의 투명도, 판·버튼·
    입력창의 테두리 대비. 콘텐츠 판은 불투명 프로스트라 투명도 설정과 무관하고,
    굴절(glass-material.js)은 투명도 최소화에서 스스로 물러선다 */
 /* 모션 최소화: 탄성만 끄고(spatial → effects) 큰 전환은 짧은 크로스페이드.
@@ -1528,12 +1528,14 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
     .has-selection-lens.has-selection-lens .icon-link:active { scale: none; }
     /* 내비바 스크롤 방향 반응(containers.css)은 위치 이동이라 끈다 */
     html[data-scroll-direction="down"] .brand-capsule { scale: none; translate: none; }
+    /* 메뉴 캡슐은 날아가지 않고 짧게 사라졌다가 새 자리에 나타난다 (glass-motion.js) */
+    div.menu-capsule { transition: opacity .15s ease; }
     .btn:hover, .btn-close:hover { transform: none; }
 }
 
 /* 투명도 최소화: 폴백 사다리의 맨 아래 단 — 크롬 유리를 불투명하게.
    콘텐츠 판은 원래 불투명이라 손댈 것이 없다.
-   상단바·사이드 버튼은 재질 선언이 뒤에 로드되는 파일(containers·
+   두 캡슐은 재질 선언이 뒤에 로드되는 파일(containers·
    common.css)에 있어, 같은 특정도로는 지므로 태그를 붙여 한 단계 올린다 */
 @media (prefers-reduced-transparency: reduce) {
     div.glass-capsule {

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   common.css — 페이지 공통 부품 (상단바 아이콘, 사이드 버튼, 모달 보정 등)
+   common.css — 페이지 공통 부품 (상단바 아이콘, 모달 보정 등)
    글래스모피즘 오버홀: 표면·모션 어휘는 glass.css 가 정본.
    ========================================================================== */
 
@@ -58,10 +58,10 @@ html[data-theme="dark"] .dark-mode-element {
     }
 }
 
-/* ---------- 상단바·사이드 아이콘 버튼 (5기 2번) ----------
+/* ---------- 메뉴 캡슐의 아이콘 버튼 (5기 2번) ----------
    markup: button.icon-link > svg.icon-link-glyph + span.icon-link-label
    단색 글리프(Lucide, 획 2px, currentColor) 아래 라벨이 붙은 세로 묶음.
-   버튼 자체는 배경이 없고 그룹 캡슐(.menu-capsule, .side-button-wrapper)
+   버튼 자체는 배경이 없고 메뉴 캡슐(.menu-capsule)
    안에 놓인다. hover 는 그룹 안의 동심 캡슐 */
 .icon-link {
     display: flex;
@@ -108,55 +108,6 @@ html[data-theme="dark"] .menu-capsule .icon-link:hover {
 
 .icon-link:hover .icon-link-label {
     color: var(--ink);
-}
-
-/* ---------- 사이드 버튼 (스크롤 시 나타나는 검색·애창곡 바로가기) ----------
-   index.html 의 스크롤 처리기가 .is-shown 과 inert 를 함께 바꾼다. 숨길 때 display: none
-   을 쓰지 않는다 — 요소가 다시 만들어지면 Chrome 이 굴절 필터의 변위 맵을 다시 읽고,
-   그동안 필터가 빈 맵으로 그려져 뒤 그림이 통째로 밀려 보인다. 투명도는 컨테이너가
-   아니라 알약에 준다 — 조상의 opacity 는 backdrop-filter 가 뒤를 못 보게 막는다 */
-.side-button-container {
-    position: fixed;
-    right: 12px;
-    bottom: 20%;
-    z-index: 30;
-}
-
-.side-button-container .side-button-wrapper {
-    opacity: 0;
-    transition: opacity .1s linear;
-}
-
-.side-button-container.is-shown .side-button-wrapper {
-    opacity: 1;
-}
-
-/* 유리 알약 하나에 버튼 둘이 세로로 — 내비바와 같은 크롬 유리 (D13: 모바일
-   오른쪽 엄지 자리라 유지. 크롬이므로 실시간 유리 허용, 블러 층 1장).
-   재질은 glass.css 의 "크롬 유리 재질" 절 — 알약은 늘 "콘텐츠 위" 상태다.
-   스펙큘러(::after)와 굴절(glass-material.js)도 내비바와 같다 */
-.side-button-wrapper {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: 4px;
-    --r-parent: var(--r-capsule);
-    border-radius: var(--r-parent);
-    border: 0;
-}
-
-/* 알약 안의 버튼은 동심 캡슐 (캡슐에서 4px 를 빼도 캡슐) */
-.side-button-wrapper .icon-link {
-    border-radius: calc(var(--r-parent) - 4px);
-}
-
-html[data-theme="dark"] .side-button-wrapper .icon-link {
-    color: #f2f5f8;
-}
-
-html[data-theme="dark"] .side-button-wrapper .icon-link:hover {
-    background: rgb(255 255 255 / .12);
 }
 
 /* ---------- 입력 크기 제한 (기존 유지) ---------- */

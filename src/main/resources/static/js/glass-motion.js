@@ -15,7 +15,9 @@
  *     활강시켜 포착한 뒤, 중앙에 고정한 채 접힘을 따라 함께 이동한다. followScroll·
  *     followTrackButton 은 window.glassMotion 으로 공개되어 검색 더보기 접힘과
  *     애창곡 노래 클릭 스크롤(song-search.js)도 쓴다
- *  7) 크롬 유리의 접점 반응: 누르는 자리의 발광(.is-glowing)과 아이콘 버튼 그룹의
+ *  7) 메뉴 캡슐의 이동: 스크롤해 내려가면 메뉴 캡슐이 돌면서 오른쪽 아래의 엄지 자리로
+ *     내려가고 맨 위로 돌아오면 올라온다 (1200px 미만에서만, containers.css)
+ *  8) 크롬 유리의 접점 반응: 누르는 자리의 발광(.is-glowing)과 아이콘 버튼 그룹의
  *     선택 렌즈(.selection-lens). 젤 프레스는 CSS 만으로 한다 (glass.css)
  *
  * 콘텐츠 판은 불투명 프로스트라(ADR 0001) 여기서는 손대지 않는다 — 굽기는 frost-baking.js.
@@ -84,8 +86,87 @@
         window.addEventListener("scroll", onScroll, { passive: true });
         onScroll();
 
+        // 메뉴 캡슐의 이동 (containers.css "메뉴 캡슐의 이동" 절): 120px 을 넘게 내려가면 돌면서
+        // 오른쪽 아래로 내려가고, 40px 아래로 돌아오면 올라온다 — 문턱을 둘로 나눠 맨 위
+        // 근처에서 오르내리지 않게 한다. 1200px 이상에서는 위에 머문다
+        var MENU_DOCK_AT = 120, MENU_UNDOCK_AT = 40;
+        // 자리: 위는 콘텐츠 열(1140px)의 오른쪽 끝·윗선 16px (containers.css 의 --chrome-* 와 같은 값),
+        // 아래는 오른쪽 12px·캡슐의 아랫선이 화면 높이의 70%
+        var MENU_COLUMN_HALF = 570, MENU_EDGE = 12, MENU_TOP = 16, MENU_DOCK_BOTTOM_LINE = .7;
+        var menuCapsule = document.querySelector(".menu-capsule");
+        var menuButtons = menuCapsule ? Array.prototype.slice.call(menuCapsule.querySelectorAll(".icon-link")) : [];
+        var menuStaysOnTop = window.matchMedia("(min-width: 1200px)");
+        var menuReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+        var menuDocked = false;
+
+        // 자리는 right·bottom 이 아니라 기기 픽셀에 맞춘 left·top 으로 놓는다 — 소수점 자리에 놓이면
+        // 이동이 끝난 뒤 내용이 픽셀 격자에 다시 물리며 살짝 움직인다
+        var placeMenuCapsule = function () {
+            var ratio = window.devicePixelRatio || 1;
+            var viewportWidth = document.documentElement.clientWidth;
+            var left = menuDocked
+                ? viewportWidth - MENU_EDGE - menuCapsule.offsetWidth
+                : viewportWidth - Math.max(MENU_EDGE, viewportWidth / 2 - MENU_COLUMN_HALF) - menuCapsule.offsetWidth;
+            var top = menuDocked ? window.innerHeight * MENU_DOCK_BOTTOM_LINE - menuCapsule.offsetHeight : MENU_TOP;
+            menuCapsule.style.left = Math.round(left * ratio) / ratio + "px";
+            menuCapsule.style.top = Math.round(top * ratio) / ratio + "px";
+            menuCapsule.style.right = "auto";
+        };
+
+        var applyMenuDocked = function () {
+            menuCapsule.classList.toggle("is-docked", menuDocked);
+            placeMenuCapsule();
+        };
+
+        // instant: 전환 없이 자리만 바꾼다 (로드 때 이미 내려와 있는 경우)
+        var setMenuDocked = function (nextDocked, instant) {
+            if (nextDocked === menuDocked) return;
+            menuDocked = nextDocked;
+            if (instant) {
+                applyMenuDocked();
+                updateOverContent();
+                return;
+            }
+            if (menuReducedMotion.matches) {
+                menuCapsule.classList.add("is-swapping");
+                setTimeout(function () {
+                    applyMenuDocked();
+                    updateOverContent();
+                    menuCapsule.classList.remove("is-swapping");
+                }, 160);
+                return;
+            }
+            // FLIP: 레이아웃을 바꾼 뒤, 바뀌기 전 자리·방향으로 되돌려 놓고(전환 없이) 제자리로 풀어 준다
+            menuCapsule.classList.add("is-traveling");
+            var first = menuCapsule.getBoundingClientRect();
+            menuCapsule.style.translate = "0px 0px";
+            menuCapsule.classList.add("is-flip-start", "is-specular-off");
+            applyMenuDocked();
+            var last = menuCapsule.getBoundingClientRect();
+            var dx = (first.left + first.width / 2) - (last.left + last.width / 2);
+            var dy = (first.top + first.height / 2) - (last.top + last.height / 2);
+            menuCapsule.style.translate = dx + "px " + dy + "px";
+            menuCapsule.style.rotate = menuDocked ? "-90deg" : "90deg";
+            menuButtons.forEach(function (button) { button.style.rotate = menuDocked ? "90deg" : "-90deg"; });
+            void menuCapsule.offsetWidth;
+            menuCapsule.classList.remove("is-flip-start", "is-specular-off");
+            menuCapsule.style.translate = "0px 0px";
+            menuCapsule.style.rotate = "0deg";
+            menuButtons.forEach(function (button) { button.style.rotate = "0deg"; });
+            updateOverContent();
+        };
+
+        var updateMenuDocked = function (instant) {
+            if (!menuCapsule) return;
+            var y = window.scrollY;
+            if (menuStaysOnTop.matches) setMenuDocked(false, instant);
+            else if (!menuDocked && y > MENU_DOCK_AT) setMenuDocked(true, instant);
+            else if (menuDocked && y < MENU_UNDOCK_AT) setMenuDocked(false, instant);
+        };
+
         // 크롬 유리의 상태(glass.css 재질 절): 캡슐마다, 콘텐츠 판이 그 캡슐 밑에 들어와
-        // 있으면 .over-content. 스크롤 프레임마다 한 번만 판정한다
+        // 있으면 .over-content. 내려가 있는 메뉴 캡슐은 늘 콘텐츠 위다.
+        // 스크롤 프레임마다 한 번만 판정한다
         var glassCapsules = document.querySelectorAll(".brand-capsule, .menu-capsule");
         var overContentQueued = false;
         var updateOverContent = function () {
@@ -95,7 +176,14 @@
                 return panel.getBoundingClientRect();
             });
             Array.prototype.forEach.call(glassCapsules, function (capsule) {
-                var glass = capsule.getBoundingClientRect();
+                if (capsule === menuCapsule && menuDocked) {
+                    capsule.classList.add("over-content");
+                    return;
+                }
+                // 올라가는 중인 메뉴 캡슐은 날아가는 자리가 아니라 도착할 자리로 판정한다
+                var glass = capsule === menuCapsule
+                    ? { left: capsule.offsetLeft, top: capsule.offsetTop, right: capsule.offsetLeft + capsule.offsetWidth, bottom: capsule.offsetTop + capsule.offsetHeight }
+                    : capsule.getBoundingClientRect();
                 var overContent = panelBoxes.some(function (box) {
                     return box.width > 0 && box.top < glass.bottom - 6 && box.bottom > glass.top + 6 &&
                         box.left < glass.right - 6 && box.right > glass.left + 6;
@@ -106,8 +194,20 @@
         window.addEventListener("scroll", function () {
             if (overContentQueued) return;
             overContentQueued = true;
-            requestAnimationFrame(updateOverContent);
+            requestAnimationFrame(function () {
+                updateMenuDocked(false);
+                updateOverContent();
+            });
         }, { passive: true });
+        if (menuCapsule) {
+            menuCapsule.addEventListener("transitionend", function (event) {
+                if (event.target === menuCapsule && event.propertyName === "translate") menuCapsule.classList.remove("is-traveling");
+            });
+            window.addEventListener("resize", placeMenuCapsule);
+            menuStaysOnTop.addEventListener("change", function () { updateMenuDocked(false); });
+            placeMenuCapsule();
+            updateMenuDocked(true);
+        }
         updateOverContent();
 
         // 스크롤 방향 반응 (P12, D10): 6px 넘게 움직였을 때만 방향을 판정해
@@ -154,7 +254,7 @@
     // 선택 렌즈: 아이콘 버튼 그룹마다 렌즈 한 장을 심고, 포인터가 올라간 버튼의
     // 자리·크기로 옮긴다. 그룹에 처음 들어올 때는 전환 없이 그 자리에 놓고,
     // 버튼 사이를 옮길 때는 이동 방향으로 살짝 늘어났다 돌아온다
-    document.querySelectorAll(".menu-capsule, .side-button-wrapper").forEach(function (group) {
+    document.querySelectorAll(".menu-capsule").forEach(function (group) {
         var lens = document.createElement("span");
         lens.className = "selection-lens";
         lens.setAttribute("aria-hidden", "true");

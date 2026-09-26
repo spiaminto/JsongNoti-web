@@ -62,18 +62,6 @@
               }, 500);
           });
 
-// 고정 버튼
-          let timer = null;
-          $(window).scroll(function () {
-              if (timer == null) {
-                  timer = setTimeout(function () {
-                      // display 로 숨기지 않는다 (common.css .side-button-container)
-                      let shown = $(window).scrollTop() > $('.brand-capsule').outerHeight();
-                      $('.side-button-container').toggleClass('is-shown', shown).prop('inert', !shown);
-                      timer = null;
-                  }, 300);
-              }
-          });
       })
   </script>
 </head>
@@ -94,21 +82,6 @@
 </div>
 
 <div id="container">
-
-  <!-- 사이드 버튼: 스크롤 시 나타나는 검색·애창곡 바로가기 -->
-  <div class="side-button-container" inert>
-    <div class="side-button-wrapper glass-capsule">
-      <button class="favorite-song-link-button icon-link" type="button"
-              data-bs-toggle="modal" data-bs-target="#favoriteLoginModal">
-        <svg class="icon-link-glyph" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg>
-        <span class="icon-link-label">애창곡</span>
-      </button>
-      <button class="search-link-button icon-link" type="button" onclick="location.href = '/search'">
-        <svg class="icon-link-glyph" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
-        <span class="icon-link-label">검색</span>
-      </button>
-    </div>
-  </div>
 
   <!-- Navigation: 브랜드 캡슐과 메뉴 캡슐 (크롬 유리). 햇살 뒤(0.4s)에 떠오른다 -->
   <nav class="navbar">
