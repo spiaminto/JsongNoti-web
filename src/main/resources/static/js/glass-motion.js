@@ -179,18 +179,20 @@
                 return panel.getBoundingClientRect();
             });
             Array.prototype.forEach.call(glassCapsules, function (capsule) {
+                var overContent;
                 if (capsule === menuCapsule && menuDocked) {
-                    capsule.classList.add("over-content");
-                    return;
+                    overContent = true;
+                } else {
+                    // 올라가는 중인 메뉴 캡슐은 날아가는 자리가 아니라 도착할 자리로 판정한다
+                    var glass = capsule === menuCapsule
+                        ? { left: capsule.offsetLeft, top: capsule.offsetTop, right: capsule.offsetLeft + capsule.offsetWidth, bottom: capsule.offsetTop + capsule.offsetHeight }
+                        : capsule.getBoundingClientRect();
+                    overContent = panelBoxes.some(function (box) {
+                        return box.width > 0 && box.top < glass.bottom - 6 && box.bottom > glass.top + 6 &&
+                            box.left < glass.right - 6 && box.right > glass.left + 6;
+                    });
                 }
-                // 올라가는 중인 메뉴 캡슐은 날아가는 자리가 아니라 도착할 자리로 판정한다
-                var glass = capsule === menuCapsule
-                    ? { left: capsule.offsetLeft, top: capsule.offsetTop, right: capsule.offsetLeft + capsule.offsetWidth, bottom: capsule.offsetTop + capsule.offsetHeight }
-                    : capsule.getBoundingClientRect();
-                var overContent = panelBoxes.some(function (box) {
-                    return box.width > 0 && box.top < glass.bottom - 6 && box.bottom > glass.top + 6 &&
-                        box.left < glass.right - 6 && box.right > glass.left + 6;
-                });
+                // toggle 은 상태가 같으면 속성을 다시 쓰지 않는다
                 capsule.classList.toggle("over-content", overContent);
             });
         };
@@ -342,13 +344,19 @@
         // 스크롤 방향 반응 (P12, D10): 6px 넘게 움직였을 때만 방향을 판정해
         // 손 떨림에 흔들리지 않게 하고, 아래 방향은 상단 80px 아래에서만 —
         // 페이지 맨 위에서는 내비바가 펴진 채로 있어야 한다.
-        // 속성은 html 에 두어 containers.css 의 축소 규칙이 내비바에 걸린다
+        // 속성은 html 에 두어 containers.css 의 축소 규칙이 내비바에 걸린다.
+        // 같은 값을 다시 쓰지 않고 방향이 바뀔 때만 쓴다
         var lastDirectionY = window.scrollY;
+        var scrollDirection = null;
         window.addEventListener("scroll", function () {
             var y = window.scrollY;
             var delta = y - lastDirectionY;
             if (Math.abs(delta) <= 6) return;
-            document.documentElement.setAttribute("data-scroll-direction", delta > 0 && y > 80 ? "down" : "up");
+            var nextDirection = delta > 0 && y > 80 ? "down" : "up";
+            if (nextDirection !== scrollDirection) {
+                scrollDirection = nextDirection;
+                document.documentElement.setAttribute("data-scroll-direction", nextDirection);
+            }
             lastDirectionY = y;
         }, { passive: true });
     }
