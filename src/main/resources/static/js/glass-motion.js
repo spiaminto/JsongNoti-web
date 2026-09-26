@@ -17,7 +17,10 @@
  *     애창곡 노래 클릭 스크롤(song-search.js)도 쓴다
  *  7) 메뉴 캡슐의 이동: 스크롤해 내려가면 메뉴 캡슐이 돌면서 오른쪽 아래의 엄지 자리로
  *     내려가고 맨 위로 돌아오면 올라온다 (1200px 미만에서만, containers.css)
- *  8) 크롬 유리의 접점 반응: 누르는 자리의 발광(.is-glowing)과 아이콘 버튼 그룹의
+ *  8) 캡슐별 동적 다크모드: 라이트 테마에서 캡슐이 [data-glass-tone="sample"] 영상·이미지
+ *     위에 있으면 밑의 픽셀 밝기를 읽어 어두우면 .is-over-dark 를 붙인다 (glass.css 재질 절).
+ *     기본값은 꺼짐(GLASS_TONE_ENABLED)
+ *  9) 크롬 유리의 접점 반응: 누르는 자리의 발광(.is-glowing)과 아이콘 버튼 그룹의
  *     선택 렌즈(.selection-lens). 젤 프레스는 CSS 만으로 한다 (glass.css)
  *
  * 콘텐츠 판은 불투명 프로스트라(ADR 0001) 여기서는 손대지 않는다 — 굽기는 frost-baking.js.
@@ -209,6 +212,132 @@
             updateMenuDocked(true);
         }
         updateOverContent();
+
+        // 캡슐별 동적 다크모드 (glass.css 재질 절의 .is-over-dark): 라이트 테마에서 캡슐이
+        // [data-glass-tone="sample"] 영상·이미지 위에 있으면 캡슐 밑의 픽셀 밝기(0 검정 ~ 1 흰색)를
+        // 읽어, 어두우면 캡슐을 어두운 유리로 뒤집는다. 브랜드 캡슐은 글자 밑만 본다.
+        // 픽셀은 스크롤이 멈췄을 때만 읽는다: 멈추면 바로 한 번, 겹쳐 있는 동안 초당 2번(영상 장면이
+        // 바뀐다). 스크롤 중에는 사각형 겹침만 보고, 매체 위를 벗어난 캡슐만 밝은 유리로 돌린다.
+        // 장면 전환마다 깜빡이지 않게 문턱을 둘로 나누고 한 번 바뀌면 잠시 유지한다.
+        // GLASS_TONE_ENABLED 가 false 면 리스너·타이머를 두지 않는다
+        var GLASS_TONE_ENABLED = false;
+        var TONE_DARK_BELOW = .40, TONE_LIGHT_ABOVE = .55, TONE_HOLD_MS = 600;
+        var TONE_SAMPLE_MS = 500, TONE_SCROLL_IDLE_MS = 150;
+        var TONE_PAGE_LUMA = .85; // 매체 밖(판·사진)의 밝기
+        var toneCanvas = document.createElement("canvas");
+        toneCanvas.width = 16;
+        toneCanvas.height = 8;
+        var toneContext = null;
+        var toneStates = new Map();
+        var toneTimer = null, toneScrollIdleTimer = null;
+
+        var toneReferenceBox = function (capsule) {
+            if (capsule === menuCapsule) {
+                // 날아가는 중인 메뉴 캡슐은 도착할 자리로 본다
+                return { left: capsule.offsetLeft, top: capsule.offsetTop, right: capsule.offsetLeft + capsule.offsetWidth, bottom: capsule.offsetTop + capsule.offsetHeight };
+            }
+            return (capsule.querySelector("h1") || capsule).getBoundingClientRect();
+        };
+
+        // 화면의 사각형(area)을 매체 원본 좌표로 옮겨 평균 밝기를 읽는다 (object-fit: cover 기준).
+        // 아직 그릴 수 없는 매체는 null
+        var readMediaLuma = function (media, box, area) {
+            var naturalWidth = media.videoWidth || media.naturalWidth;
+            var naturalHeight = media.videoHeight || media.naturalHeight;
+            if (!naturalWidth || (media.tagName === "VIDEO" && media.readyState < 2)) return null;
+            var scale = Math.max(box.width / naturalWidth, box.height / naturalHeight);
+            var offsetX = (box.width - naturalWidth * scale) / 2;
+            var offsetY = (box.height - naturalHeight * scale) / 2;
+            try {
+                toneContext = toneContext || toneCanvas.getContext("2d", { willReadFrequently: true });
+                toneContext.drawImage(media,
+                    (area.left - box.left - offsetX) / scale, (area.top - box.top - offsetY) / scale,
+                    (area.right - area.left) / scale, (area.bottom - area.top) / scale,
+                    0, 0, toneCanvas.width, toneCanvas.height);
+                var pixels = toneContext.getImageData(0, 0, toneCanvas.width, toneCanvas.height).data;
+                var sum = 0;
+                for (var i = 0; i < pixels.length; i += 4) {
+                    sum += (.2126 * pixels[i] + .7152 * pixels[i + 1] + .0722 * pixels[i + 2]) / 255;
+                }
+                return sum / (pixels.length / 4);
+            } catch (error) {
+                return null;
+            }
+        };
+
+        // readPixels 가 false 면 픽셀은 읽지 않고, 매체 위를 벗어난 캡슐만 밝은 유리로 돌린다
+        var updateGlassTone = function (readPixels) {
+            var darkTheme = document.documentElement.getAttribute("data-theme") === "dark";
+            var mediaBoxes = darkTheme ? [] : Array.prototype.map.call(document.querySelectorAll('[data-glass-tone="sample"]'), function (media) {
+                return { media: media, box: media.getBoundingClientRect() };
+            });
+            var overlapping = false;
+            Array.prototype.forEach.call(glassCapsules, function (capsule) {
+                var reference = toneReferenceBox(capsule);
+                var referenceSize = Math.max(1, (reference.right - reference.left) * (reference.bottom - reference.top));
+                var luma = 0, covered = 0, unreadable = false;
+                mediaBoxes.forEach(function (item) {
+                    var area = {
+                        left: Math.max(reference.left, item.box.left), top: Math.max(reference.top, item.box.top),
+                        right: Math.min(reference.right, item.box.right), bottom: Math.min(reference.bottom, item.box.bottom)
+                    };
+                    if (area.right - area.left < 1 || area.bottom - area.top < 1) return;
+                    if (!readPixels) {
+                        unreadable = true;
+                        return;
+                    }
+                    var value = readMediaLuma(item.media, item.box, area);
+                    if (value === null) {
+                        unreadable = true;
+                        return;
+                    }
+                    var share = (area.right - area.left) * (area.bottom - area.top) / referenceSize;
+                    luma += value * share;
+                    covered += share;
+                });
+                var state = toneStates.get(capsule) || { dark: false, changedAt: 0 };
+                var nextDark;
+                if (covered > 0) {
+                    overlapping = true;
+                    var total = luma + TONE_PAGE_LUMA * Math.max(0, 1 - covered);
+                    nextDark = state.dark ? total < TONE_LIGHT_ABOVE : total < TONE_DARK_BELOW;
+                    if (nextDark !== state.dark && performance.now() - state.changedAt < TONE_HOLD_MS) nextDark = state.dark;
+                } else if (unreadable) {
+                    overlapping = true;
+                    nextDark = state.dark; // 스크롤 중이거나 매체가 준비되지 않았으면 그대로 둔다
+                } else {
+                    nextDark = false; // 매체 위를 벗어나면 바로 밝은 유리로
+                }
+                if (nextDark !== state.dark) {
+                    state = { dark: nextDark, changedAt: performance.now() };
+                    capsule.classList.toggle("is-over-dark", nextDark);
+                }
+                toneStates.set(capsule, state);
+            });
+            if (readPixels && overlapping && !toneTimer) {
+                toneTimer = setInterval(function () { updateGlassTone(true); }, TONE_SAMPLE_MS);
+            } else if ((!readPixels || !overlapping) && toneTimer) {
+                clearInterval(toneTimer);
+                toneTimer = null;
+            }
+        };
+
+        var toneGeometryQueued = false;
+        if (GLASS_TONE_ENABLED) {
+            window.addEventListener("scroll", function () {
+                if (!toneGeometryQueued) {
+                    toneGeometryQueued = true;
+                    requestAnimationFrame(function () {
+                        toneGeometryQueued = false;
+                        updateGlassTone(false);
+                    });
+                }
+                clearTimeout(toneScrollIdleTimer);
+                toneScrollIdleTimer = setTimeout(function () { updateGlassTone(true); }, TONE_SCROLL_IDLE_MS);
+            }, { passive: true });
+            window.addEventListener("load", function () { updateGlassTone(true); });
+            updateGlassTone(true);
+        }
 
         // 스크롤 방향 반응 (P12, D10): 6px 넘게 움직였을 때만 방향을 판정해
         // 손 떨림에 흔들리지 않게 하고, 아래 방향은 상단 80px 아래에서만 —

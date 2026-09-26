@@ -1404,6 +1404,33 @@ html[data-theme="dark"] .glass-capsule.over-content {
     --glass-tint-b: 2.4%;
 }
 
+/* 캡슐별 동적 다크모드 (5기 5번): 라이트 테마에서 어두운 영상·이미지 위에 있는 캡슐은
+   어두운 유리가 된다. 틴트에 잉크를 가득 섞어 짙게 하고 글자를 밝게 한다. 판정은
+   glass-motion.js 가 캡슐 밑의 픽셀 밝기를 읽어 .is-over-dark 를 붙인다.
+   다크 테마의 유리는 원래 어두우므로 해당하지 않는다 */
+html:not([data-theme="dark"]) .glass-capsule.is-over-dark {
+    --glass-tint-ink: 100%;
+    --glass-tint-a: 42%;
+    --glass-tint-b: 26%;
+    --glass-shadow-alpha: .3;
+}
+
+.brand-capsule .navbar-brand,
+.menu-capsule .icon-link-label {
+    transition: color .35s ease-in-out;
+}
+
+html:not([data-theme="dark"]) .glass-capsule.is-over-dark .navbar-brand,
+html:not([data-theme="dark"]) .glass-capsule.is-over-dark .icon-link,
+html:not([data-theme="dark"]) .glass-capsule.is-over-dark .icon-link-label {
+    color: #f2f5f8;
+}
+
+html:not([data-theme="dark"]) .glass-capsule.is-over-dark .selection-lens {
+    background: rgb(255 255 255 / .16);
+    box-shadow: inset 0 1px 1px rgb(255 255 255 / .3), 0 2px 8px rgb(0 0 0 / .3);
+}
+
 /* ---------- 크롬 유리의 접점 반응 (5기 4번) ----------
    세 가지 모두 glass-motion.js 가 상태만 붙이고 모습은 여기서 정한다.
    1) 접점 발광: 누르는 동안 포인터 자리에서 빛이 번진다 (::before, 내용 아래).
@@ -1501,6 +1528,9 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
     html[data-theme="dark"] div.glass-capsule {
         background: rgb(27 36 48 / .86);
     }
+    html:not([data-theme="dark"]) div.glass-capsule.is-over-dark {
+        background: rgb(27 36 48 / .86);
+    }
 }
 
 /* ---------- 접근성: 모션·투명도·대비 각각 대응 (P14) ----------
@@ -1548,6 +1578,9 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
     html[data-theme="dark"] div.glass-capsule {
         background: rgb(27 36 48 / .96);
     }
+    html:not([data-theme="dark"]) div.glass-capsule.is-over-dark {
+        background: rgb(27 36 48 / .96);
+    }
     div.glass-capsule::after { display: none; }
     .modal-backdrop { -webkit-backdrop-filter: none; backdrop-filter: none; }
     .scroll-veil { display: none; }
@@ -1581,6 +1614,9 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
         background: rgb(255 255 255 / .9);
     }
     html[data-theme="dark"] div.glass-capsule {
+        background: rgb(27 36 48 / .94);
+    }
+    html:not([data-theme="dark"]) div.glass-capsule.is-over-dark {
         background: rgb(27 36 48 / .94);
     }
     div.glass-capsule::after { display: none; }
