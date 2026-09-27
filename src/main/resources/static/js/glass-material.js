@@ -33,8 +33,9 @@
  *  4) 불투명: prefers-reduced-transparency — glass.css 접근성 절
  *
  * 두 층 모두 요소 크기에 맞춰 만들므로 크기가 바뀌면(ResizeObserver) 다시 만들고,
- * 스페큘러는 테마가 바뀌어도(두께 그늘의 색) 다시 굽는다.
- * GLASS_SELECTOR 에 요소를 더하면 장마다 filter 하나·이미지 하나씩 붙는다.
+ * 스페큘러는 테마가 바뀌어도(두께 그늘의 색) 다시 굽는다. 장마다 최근 두 크기의 층을
+ * 기억해 두어, 메뉴 캡슐이 가로와 세로를 오갈 때는 두 번째부터 굽지 않고 다시 쓴다.
+ * GLASS_SELECTOR 에 요소를 더하면 장마다 크기별 filter·이미지가 붙는다.
  */
 (function () {
     "use strict";
@@ -59,6 +60,7 @@
     var SHADE_RGB_LIGHT = [30, 42, 56]; // 두께 그늘의 색: light 는 잉크, dark 는 검정
     var SHADE_RGB_DARK = [0, 0, 0];
     var SPECULAR_MAX_PIXEL_RATIO = 2; // 스페큘러 캔버스의 픽셀 배율 상한
+    var BAKED_SIZE_MEMORY = 2;       // 장마다 구운 층을 기억해 두는 크기 수
 
     var isChromium = !!(navigator.userAgentData && navigator.userAgentData.brands.some(function (brand) {
         return /Chromium/i.test(brand.brand);
@@ -103,9 +105,32 @@
         }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
     }
 
-    // 유리 한 장: 크기가 바뀔 때만 두 층을 다시 만든다
-    function createGlassPane(svg, element, filterId) {
+    // 유리 한 장: 크기가 바뀔 때만 두 층을 다시 만든다. 크기마다 만든 층(스페큘러 이미지,
+    // 굴절 필터)은 최근 BAKED_SIZE_MEMORY 개까지 기억해 두고, 같은 크기로 돌아오면 다시 쓴다
+    function createGlassPane(svg, element, filterIdBase) {
         var builtSize = null;
+        var speculars = []; // { key, url } — 최근에 쓴 것이 뒤
+        var filters = [];   // { key, id, node }
+        var filterCount = 0;
+
+        function recall(list, key) {
+            for (var i = 0; i < list.length; i++) {
+                if (list[i].key === key) {
+                    var entry = list.splice(i, 1)[0];
+                    list.push(entry);
+                    return entry;
+                }
+            }
+            return null;
+        }
+
+        function remember(list, entry) {
+            list.push(entry);
+            while (list.length > BAKED_SIZE_MEMORY) {
+                var oldest = list.shift();
+                if (oldest.node) oldest.node.remove();
+            }
+        }
 
         function apply() {
             // 스크롤 방향 반응의 축소(transform)에 흔들리지 않게 레이아웃 크기를 쓴다
@@ -114,23 +139,48 @@
             if (builtSize && builtSize.width === width && builtSize.height === height) return;
             builtSize = { width: width, height: height };
 
-            var radius = Math.min(parseFloat(getComputedStyle(element).borderTopLeftRadius) || height / 2, width / 2, height / 2);
-            var bezel = Math.min(BEZEL_WIDTH, width / 2, height / 2);
-            var profile = buildBezelProfile(bezel);
+            // 곡면은 기억해 둔 층이 없을 때만 계산한다
+            var geometry = null;
+            function bezelGeometry() {
+                if (!geometry) {
+                    var bezel = Math.min(BEZEL_WIDTH, width / 2, height / 2);
+                    geometry = {
+                        radius: Math.min(parseFloat(getComputedStyle(element).borderTopLeftRadius) || height / 2, width / 2, height / 2),
+                        bezel: bezel,
+                        profile: buildBezelProfile(bezel)
+                    };
+                }
+                return geometry;
+            }
 
+            var sizeKey = width + "x" + height;
             var dark = document.documentElement.getAttribute("data-theme") === "dark";
-            element.style.setProperty("--glass-specular", "url(" + buildSpecularImage(width, height, radius, bezel, profile, dark) + ")");
+            var specularKey = sizeKey + (dark ? " dark" : " light");
+            var specular = recall(speculars, specularKey);
+            if (!specular) {
+                var specularGeometry = bezelGeometry();
+                specular = { key: specularKey, url: buildSpecularImage(width, height, specularGeometry.radius, specularGeometry.bezel, specularGeometry.profile, dark) };
+                remember(speculars, specular);
+            }
+            element.style.setProperty("--glass-specular", "url(" + specular.url + ")");
             element.classList.add("has-baked-specular");
 
             if (!isChromium || reducedTransparency.matches) { // 사다리 2단 이하: 굴절 없음
                 element.style.removeProperty("--glass-refraction");
                 return;
             }
-            var mapUrl = buildRefractionDisplacementMap(width, height, radius, bezel, profile);
-            var previous = svg.querySelector("#" + filterId);
-            if (previous) previous.remove();
-            // 맵은 최대 변위를 1 로 정규화해 담으므로 scale 은 최대 변위의 2배(±127 → ±최대 변위 px)
-            svg.appendChild(buildRefractionFilter(filterId, mapUrl, width, height, profile.maxDisplacement * 2));
+            var filter = recall(filters, sizeKey);
+            if (!filter) {
+                var filterGeometry = bezelGeometry();
+                var mapUrl = buildRefractionDisplacementMap(width, height, filterGeometry.radius, filterGeometry.bezel, filterGeometry.profile);
+                var id = filterIdBase + "-" + filterCount++;
+                // 맵은 최대 변위를 1 로 정규화해 담으므로 scale 은 최대 변위의 2배(±127 → ±최대 변위 px)
+                var node = buildRefractionFilter(id, mapUrl, width, height, filterGeometry.profile.maxDisplacement * 2);
+                svg.appendChild(node);
+                filter = { key: sizeKey, id: id, node: node };
+                remember(filters, filter);
+            }
+            var filterId = filter.id;
             setRefraction(filterId, false);
 
             // 맵이 로드된 뒤 값이 실제로 달라지게 두 번 흔든다 (머리말). 그 사이
