@@ -228,7 +228,7 @@
                 capsule.classList.toggle("over-content", overContent && !overBusy);
             });
         };
-        window.addEventListener("scroll", function () {
+        var queueGlassStates = function () {
             if (glassStatesQueued) return;
             glassStatesQueued = true;
             requestAnimationFrame(function () {
@@ -236,7 +236,15 @@
                 updateMenuDocked(false);
                 updateGlassStates();
             });
-        }, { passive: true });
+        };
+        window.addEventListener("scroll", queueGlassStates, { passive: true });
+        // 스크롤 없이 판이 움직이는 경우에도 다시 판정한다
+        //  스크롤 리빌의 떠오름이 끝났을 때 ("사용 방법" 줄은 줄이 아니라 안의 판이 떠오른다)
+        document.addEventListener("transitionend", function (event) {
+            if (event.propertyName === "transform" && event.target.matches("[data-lift], .content-panel")) queueGlassStates();
+        });
+        //  페이지 높이가 바뀌었을 때 (이미지가 늦게 불러와짐, 검색 결과가 그려짐)
+        if (window.ResizeObserver) new ResizeObserver(queueGlassStates).observe(document.body);
         if (menuCapsule) {
             menuCapsule.addEventListener("transitionend", function (event) {
                 if (event.target === menuCapsule && event.propertyName === "translate") menuCapsule.classList.remove("is-traveling");
