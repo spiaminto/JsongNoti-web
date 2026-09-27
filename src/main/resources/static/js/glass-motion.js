@@ -7,7 +7,8 @@
  *  2) 스크롤 리빌: [data-lift] 요소가 30% 이상 보이면 .is-lit 을 붙인다 (기존 fade-in.js 대체)
  *  3) scroll edge: 화면 상단 점진 블러 베일(.scroll-veil)을 심고 scrollY > 8 에서
  *     .navbar 에 .scrolled 를 붙여 띄운다 (ui-rnd 5턴). 크롬 유리(.glass-capsule)마다
- *     콘텐츠 판이 밑에 들어오면 .over-content 를 붙여 상태를 바꾼다 (glass.css 재질 절)
+ *     콘텐츠 판이 밑에 들어오면 .over-content, 글자 밑에 busy 판(.content-panel-busy)이 있으면
+ *     .over-content-busy 를 붙여 상태를 바꾼다 (glass.css 재질 절)
  *  4) 스크롤 방향 반응(P12): 브랜드 캡슐이 스크롤 위치가 아니라 방향에 반응하도록
  *     html[data-scroll-direction] 을 up/down 으로 쓴다 — 축소 모션은 containers.css
  *  5) 보케: .bokeh i 의 위치·크기를 로드마다 랜덤으로 흩뿌린다
@@ -17,7 +18,7 @@
  *     애창곡 노래 클릭 스크롤(song-search.js)도 쓴다
  *  7) 메뉴 캡슐의 이동: 스크롤해 내려가면 메뉴 캡슐이 돌면서 오른쪽 아래의 엄지 자리로
  *     내려가고 맨 위로 돌아오면 올라온다 (1200px 미만에서만, containers.css)
- *  8) 캡슐별 동적 다크모드: 라이트 테마에서 캡슐이 [data-glass-tone="sample"] 영상·이미지
+ *  8) 캡슐별 동적 다크모드: 라이트 테마에서 캡슐이 busy 판(.content-panel-busy)의 영상·이미지
  *     위에 있으면 밑의 픽셀 밝기를 읽어 어두우면 .is-over-dark 를 붙인다 (glass.css 재질 절).
  *     기본값은 꺼짐(GLASS_TONE_ENABLED)
  *  9) 크롬 유리의 접점 반응: 누르는 자리의 발광(.is-glowing)과 아이콘 버튼 그룹의
@@ -127,14 +128,14 @@
             menuDocked = nextDocked;
             if (instant) {
                 applyMenuDocked();
-                updateOverContent();
+                updateGlassStates();
                 return;
             }
             if (menuReducedMotion.matches) {
                 menuCapsule.classList.add("is-swapping");
                 setTimeout(function () {
                     applyMenuDocked();
-                    updateOverContent();
+                    updateGlassStates();
                     menuCapsule.classList.remove("is-swapping");
                 }, 160);
                 return;
@@ -156,7 +157,7 @@
             menuCapsule.style.translate = "0px 0px";
             menuCapsule.style.rotate = "0deg";
             menuButtons.forEach(function (button) { button.style.rotate = "0deg"; });
-            updateOverContent();
+            updateGlassStates();
         };
 
         var updateMenuDocked = function (instant) {
@@ -167,15 +168,44 @@
             else if (menuDocked && y < MENU_UNDOCK_AT) setMenuDocked(false, instant);
         };
 
-        // 크롬 유리의 상태(glass.css 재질 절): 캡슐마다, 콘텐츠 판이 그 캡슐 밑에 들어와
-        // 있으면 .over-content. 내려가 있는 메뉴 캡슐은 늘 콘텐츠 위다.
+        // 크롬 유리의 상태(glass.css 재질 절): 캡슐마다 셋 중 하나다. 앞의 것이 이긴다.
+        //  .over-content-busy — 캡슐 글자 밑에 busy 판(.content-panel-busy)이 있다
+        //  .over-content      — 콘텐츠 판(.content-panel)이 캡슐 밑에 들어와 있다. 내려가 있는 메뉴 캡슐은 늘 콘텐츠 위다
+        //  (클래스 없음)      — 사진 위
         // 스크롤 프레임마다 한 번만 판정한다
         var glassCapsules = document.querySelectorAll(".brand-capsule, .menu-capsule");
-        var overContentQueued = false;
-        var updateOverContent = function () {
-            overContentQueued = false;
+        var glassStatesQueued = false;
+
+        // 올라가는 중인 메뉴 캡슐은 날아가는 자리가 아니라 도착할 자리로 본다
+        var menuCapsulePlacedBox = function () {
+            return { left: menuCapsule.offsetLeft, top: menuCapsule.offsetTop, right: menuCapsule.offsetLeft + menuCapsule.offsetWidth, bottom: menuCapsule.offsetTop + menuCapsule.offsetHeight };
+        };
+
+        // 캡슐 글자가 놓인 자리: 메뉴 캡슐은 첫 버튼부터 끝 버튼까지(도착할 자리 기준), 브랜드 캡슐은 글자(h1)만
+        var capsuleTextBox = function (capsule) {
+            if (capsule !== menuCapsule) return (capsule.querySelector("h1") || capsule).getBoundingClientRect();
+            var placed = menuCapsulePlacedBox();
+            if (!menuButtons.length) return placed;
+            var first = menuButtons[0], last = menuButtons[menuButtons.length - 1];
+            return {
+                left: placed.left + first.offsetLeft, top: placed.top + first.offsetTop,
+                right: placed.left + last.offsetLeft + last.offsetWidth, bottom: placed.top + last.offsetTop + last.offsetHeight
+            };
+        };
+
+        // box 가 glass 와 가장자리 6px 안쪽까지 겹치는가
+        var overlapsGlass = function (box, glass) {
+            return box.width > 0 && box.top < glass.bottom - 6 && box.bottom > glass.top + 6 &&
+                box.left < glass.right - 6 && box.right > glass.left + 6;
+        };
+
+        var updateGlassStates = function () {
+            glassStatesQueued = false;
             // 판은 검색 결과처럼 나중에 생기기도 하므로 판정할 때마다 찾는다
             var panelBoxes = Array.prototype.map.call(document.querySelectorAll(".content-panel"), function (panel) {
+                return panel.getBoundingClientRect();
+            });
+            var busyBoxes = Array.prototype.map.call(document.querySelectorAll(".content-panel-busy"), function (panel) {
                 return panel.getBoundingClientRect();
             });
             Array.prototype.forEach.call(glassCapsules, function (capsule) {
@@ -183,25 +213,22 @@
                 if (capsule === menuCapsule && menuDocked) {
                     overContent = true;
                 } else {
-                    // 올라가는 중인 메뉴 캡슐은 날아가는 자리가 아니라 도착할 자리로 판정한다
-                    var glass = capsule === menuCapsule
-                        ? { left: capsule.offsetLeft, top: capsule.offsetTop, right: capsule.offsetLeft + capsule.offsetWidth, bottom: capsule.offsetTop + capsule.offsetHeight }
-                        : capsule.getBoundingClientRect();
-                    overContent = panelBoxes.some(function (box) {
-                        return box.width > 0 && box.top < glass.bottom - 6 && box.bottom > glass.top + 6 &&
-                            box.left < glass.right - 6 && box.right > glass.left + 6;
-                    });
+                    var glass = capsule === menuCapsule ? menuCapsulePlacedBox() : capsule.getBoundingClientRect();
+                    overContent = panelBoxes.some(function (box) { return overlapsGlass(box, glass); });
                 }
+                var textBox = capsuleTextBox(capsule);
+                var overBusy = busyBoxes.some(function (box) { return overlapsGlass(box, textBox); });
                 // toggle 은 상태가 같으면 속성을 다시 쓰지 않는다
-                capsule.classList.toggle("over-content", overContent);
+                capsule.classList.toggle("over-content-busy", overBusy);
+                capsule.classList.toggle("over-content", overContent && !overBusy);
             });
         };
         window.addEventListener("scroll", function () {
-            if (overContentQueued) return;
-            overContentQueued = true;
+            if (glassStatesQueued) return;
+            glassStatesQueued = true;
             requestAnimationFrame(function () {
                 updateMenuDocked(false);
-                updateOverContent();
+                updateGlassStates();
             });
         }, { passive: true });
         if (menuCapsule) {
@@ -213,10 +240,10 @@
             placeMenuCapsule();
             updateMenuDocked(true);
         }
-        updateOverContent();
+        updateGlassStates();
 
         // 캡슐별 동적 다크모드 (glass.css 재질 절의 .is-over-dark): 라이트 테마에서 캡슐이
-        // [data-glass-tone="sample"] 영상·이미지 위에 있으면 캡슐 밑의 픽셀 밝기(0 검정 ~ 1 흰색)를
+        // busy 판(.content-panel-busy)의 영상·이미지 위에 있으면 캡슐 밑의 픽셀 밝기(0 검정 ~ 1 흰색)를
         // 읽어, 어두우면 캡슐을 어두운 유리로 뒤집는다. 브랜드 캡슐은 글자 밑만 본다.
         // 픽셀은 스크롤이 멈췄을 때만 읽는다: 멈추면 바로 한 번, 겹쳐 있는 동안 초당 2번(영상 장면이
         // 바뀐다). 스크롤 중에는 사각형 겹침만 보고, 매체 위를 벗어난 캡슐만 밝은 유리로 돌린다.
@@ -232,14 +259,6 @@
         var toneContext = null;
         var toneStates = new Map();
         var toneTimer = null, toneScrollIdleTimer = null;
-
-        var toneReferenceBox = function (capsule) {
-            if (capsule === menuCapsule) {
-                // 날아가는 중인 메뉴 캡슐은 도착할 자리로 본다
-                return { left: capsule.offsetLeft, top: capsule.offsetTop, right: capsule.offsetLeft + capsule.offsetWidth, bottom: capsule.offsetTop + capsule.offsetHeight };
-            }
-            return (capsule.querySelector("h1") || capsule).getBoundingClientRect();
-        };
 
         // 화면의 사각형(area)을 매체 원본 좌표로 옮겨 평균 밝기를 읽는다 (object-fit: cover 기준).
         // 아직 그릴 수 없는 매체는 null
@@ -270,12 +289,12 @@
         // readPixels 가 false 면 픽셀은 읽지 않고, 매체 위를 벗어난 캡슐만 밝은 유리로 돌린다
         var updateGlassTone = function (readPixels) {
             var darkTheme = document.documentElement.getAttribute("data-theme") === "dark";
-            var mediaBoxes = darkTheme ? [] : Array.prototype.map.call(document.querySelectorAll('[data-glass-tone="sample"]'), function (media) {
+            var mediaBoxes = darkTheme ? [] : Array.prototype.map.call(document.querySelectorAll(".content-panel-busy video, .content-panel-busy img"), function (media) {
                 return { media: media, box: media.getBoundingClientRect() };
             });
             var overlapping = false;
             Array.prototype.forEach.call(glassCapsules, function (capsule) {
-                var reference = toneReferenceBox(capsule);
+                var reference = capsuleTextBox(capsule);
                 var referenceSize = Math.max(1, (reference.right - reference.left) * (reference.bottom - reference.top));
                 var luma = 0, covered = 0, unreadable = false;
                 mediaBoxes.forEach(function (item) {

@@ -1326,12 +1326,15 @@ tbody tr.more-reveal.more-settled.more-hide,
    크롬 유리(.glass-capsule — 브랜드 캡슐, 메뉴 캡슐)의 재질은 여기 한 곳에 있다.
    층마다 토큰: 렌징(--glass-blur, --glass-saturate, --glass-refraction),
    틴트(--glass-tint-a 좌상, --glass-tint-b 우하, --glass-tint-ink 흰색에 섞는 잉크),
-   그림자(--glass-shadow-alpha). 상태는 둘이다.
-     사진 위    — 맑은 유리: 블러·틴트를 최소로
-     콘텐츠 위  — 뒤 글자의 잔무늬를 블러로 지우고, 흰 판 위에서 묻히지 않게
-                  틴트에 잉크를 섞는다. 그림자는 진해진다
-   콘텐츠 판이 밑에 들어왔을 때 glass-motion.js 가 캡슐마다 .over-content 를
-   붙이고, 내려가 있는 메뉴 캡슐은 늘 콘텐츠 위다. 숫자 토큰을 @property 로 등록해 상태
+   그림자(--glass-shadow-alpha). 상태는 셋이다.
+     사진 위           — 맑은 유리: 블러·틴트를 최소로
+     콘텐츠 위         — 뒤 글자의 잔무늬를 블러로 지우고, 흰 판 위에서 묻히지 않게
+                         틴트에 잉크를 섞는다. 그림자는 진해진다
+     busy 콘텐츠 위    — 콘텐츠 위 재질에서 틴트만 테마 쪽으로 짙게 해 글자 대비를 받친다
+   glass-motion.js 가 캡슐마다 판정해, 콘텐츠 판(.content-panel)이 밑에 들어오면
+   .over-content 를, 글자 밑에 busy 판(.content-panel-busy)이 있으면 대신
+   .over-content-busy 를 붙인다. 내려가 있는 메뉴 캡슐은 늘 콘텐츠 위다.
+   busy 판은 실측에서 캡슐 글자 대비가 깨지는 판에 손으로 단다. 숫자 토큰을 @property 로 등록해 상태
    사이를 CSS 전환으로 섞는다(등록을 모르는 브라우저는 전환 없이 바뀐다).
    --glass-refraction 은 glass-material.js 가 url(#필터) 로 채운다.
    하이라이트 층은 glass-material.js 가 곡면의 법선으로 구운 이미지(--glass-specular)
@@ -1368,7 +1371,7 @@ tbody tr.more-reveal.more-settled.more-hide,
         inset 0 -1px 1px rgb(255 255 255 / .18);
 }
 
-.glass-capsule.over-content {
+.glass-capsule:is(.over-content, .over-content-busy) {
     --glass-blur: 4px;
     --glass-saturate: 1.9;
     --glass-tint-a: 12%;
@@ -1399,9 +1402,23 @@ html[data-theme="dark"] .glass-capsule {
     --glass-shadow-rgb: 0 0 0;
 }
 
-html[data-theme="dark"] .glass-capsule.over-content {
+html[data-theme="dark"] .glass-capsule:is(.over-content, .over-content-busy) {
     --glass-tint-a: 8.4%;
     --glass-tint-b: 2.4%;
+}
+
+/* busy 콘텐츠 위 (5기 마무리, P16): 틴트를 테마 쪽으로 짙게 해 글자 대비를 4.5:1 위로
+   올린다. 라이트는 흰 틴트, 다크는 잉크를 가득 섞은 어두운 틴트다 */
+.glass-capsule.over-content-busy {
+    --glass-tint-a: 58%;
+    --glass-tint-b: 50%;
+    --glass-tint-ink: 0%;
+}
+
+html[data-theme="dark"] .glass-capsule.over-content-busy {
+    --glass-tint-a: 70%;
+    --glass-tint-b: 62%;
+    --glass-tint-ink: 100%;
 }
 
 /* 캡슐별 동적 다크모드 (5기 5번): 라이트 테마에서 어두운 영상·이미지 위에 있는 캡슐은
