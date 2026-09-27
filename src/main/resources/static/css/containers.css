@@ -190,11 +190,9 @@ section {
     pointer-events: none;
 }
 
-/* 스크롤 방향 반응 (P12, D10): 내려가면 브랜드 캡슐이 안쪽으로 들어오며 살짝 작아지고
-   올라오면 펴진다. 방향은 glass-motion.js 가 html[data-scroll-direction] 에 쓴다.
-   1200px 이상(PC)에서는 반응하지 않는다 — 메뉴 캡슐이 제자리에 머무는 폭이라 혼자 움직이면 어색하다 */
+/* 최상단 영역을 벗어남: 브랜드 캡슐 축소 (1200px 미만) */
 @media (max-width: 1199.98px) {
-    html[data-scroll-direction="down"] .brand-capsule {
+    .navbar.is-past-top-zone .brand-capsule {
         scale: .92;
         translate: 10px -2px;
     }

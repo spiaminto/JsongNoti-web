@@ -919,7 +919,7 @@ html[data-theme="dark"] .modal .song-table th {
 /* ---------- 모션: scroll edge (ui-rnd 5턴) ----------
    상단바 유리 밑으로 콘텐츠가 지나가면 화면 상단에 점진 블러 베일이
    떠올라, 콘텐츠가 가장자리에서 디졸브된다. 베일 요소는 glass-motion.js 가
-   상단바 있는 페이지에만 심고, 표시는 .navbar.scrolled(scrollY > 8)를
+   상단바 있는 페이지에만 심고, 표시는 .navbar.scroll-veil-on(scrollY > 8)을
    형제 선택자로 따라간다. 상단바의 backdrop 을 먼저 뭉개지 않도록 짧게 둔다:
    뷰포트와 상단바 사이 틈(0~14px)은 완전 블러, 상단바 중간쯤에서 0 */
 .scroll-veil {
@@ -938,7 +938,8 @@ html[data-theme="dark"] .modal .song-table th {
     transition: opacity .45s ease;
 }
 
-.navbar.scrolled ~ .scroll-veil {
+/* 페이지 상단 흐려짐(scroll edge effect) 켜짐 */
+.navbar.scroll-veil-on ~ .scroll-veil {
     opacity: 1;
 }
 
@@ -1573,8 +1574,9 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
     /* 선택 렌즈는 미끄러지지 않고 자리만 바뀌고, 젤 프레스는 끈다 */
     .selection-lens { transition: opacity .2s ease; }
     .has-selection-lens.has-selection-lens .icon-link:active { scale: none; }
-    /* 내비바 스크롤 방향 반응(containers.css)은 위치 이동이라 끈다 */
-    html[data-scroll-direction="down"] .brand-capsule { scale: none; translate: none; }
+    /* 브랜드 캡슐 축소(containers.css)는 위치 이동이라 끈다. containers.css 가 이 파일보다 뒤에
+       불러와지므로 html 을 앞에 붙여 이긴다 */
+    html .navbar.is-past-top-zone .brand-capsule { scale: none; translate: none; }
     /* 메뉴 캡슐은 날아가지 않고 짧게 사라졌다가 새 자리에 나타난다 (glass-motion.js) */
     div.menu-capsule { transition: opacity .15s ease; }
     .btn:hover, .btn-close:hover { transform: none; }

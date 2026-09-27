@@ -6,18 +6,18 @@
  *  1) 로드 시퀀스: .veil 요소에 .on 을 붙여 --vd 딜레이 순서대로 띄운다
  *  2) 스크롤 리빌: [data-lift] 요소가 30% 이상 보이면 .is-lit 을 붙인다 (기존 fade-in.js 대체)
  *  3) scroll edge: 화면 상단 점진 블러 베일(.scroll-veil)을 심고 scrollY > 8 에서
- *     .navbar 에 .scrolled 를 붙여 띄운다 (ui-rnd 5턴). 크롬 유리(.glass-capsule)마다
+ *     .navbar 에 .scroll-veil-on 을 붙여 켠다 (ui-rnd 5턴). 크롬 유리(.glass-capsule)마다
  *     콘텐츠 판이 밑에 들어오면 .over-content, 글자 밑에 busy 판(.content-panel-busy)이 있으면
  *     .over-content-busy 를 붙여 상태를 바꾼다 (glass.css 재질 절)
- *  4) 스크롤 방향 반응(P12): 브랜드 캡슐이 스크롤 위치가 아니라 방향에 반응하도록
- *     html[data-scroll-direction] 을 up/down 으로 쓴다 — 축소 모션은 containers.css
+ *  4) 최상단 영역: 최상단 영역을 벗어나면 .navbar 에 .is-past-top-zone 을 붙인다.
+ *     브랜드 캡슐 축소(containers.css)와 7) 메뉴 캡슐의 이동이 이 상태를 각자 읽는다
  *  5) 보케: .bokeh i 의 위치·크기를 로드마다 랜덤으로 흩뿌린다
  *  6) 접힘 스크롤 팔로우: index 더보기를 접으면 토글 버튼을 화면 중앙까지
  *     활강시켜 포착한 뒤, 중앙에 고정한 채 접힘을 따라 함께 이동한다. followScroll·
  *     followTrackButton 은 window.glassMotion 으로 공개되어 검색 더보기 접힘과
  *     애창곡 노래 클릭 스크롤(song-search.js)도 쓴다
- *  7) 메뉴 캡슐의 이동: 스크롤해 내려가면 메뉴 캡슐이 돌면서 오른쪽 아래의 엄지 자리로
- *     내려가고 맨 위로 돌아오면 올라온다 (1200px 미만에서만, containers.css)
+ *  7) 메뉴 캡슐의 이동: 최상단 영역을 벗어나면 메뉴 캡슐이 돌면서 오른쪽 아래의 엄지 자리로
+ *     내려가고 돌아오면 올라온다 (1200px 미만에서만, containers.css)
  *  8) 캡슐별 동적 다크모드: 라이트 테마에서 캡슐이 busy 판(.content-panel-busy)의 영상·이미지
  *     위에 있으면 밑의 픽셀 밝기를 읽어 어두우면 .is-over-dark 를 붙인다 (glass.css 재질 절).
  *     기본값은 꺼짐(GLASS_TONE_ENABLED)
@@ -75,7 +75,7 @@
     });
 
     // scroll edge: 상단 점진 블러 베일(.scroll-veil)은 상단바 있는 페이지에만 심는다 —
-    // 표시는 CSS 형제 선택자(.navbar.scrolled ~ .scroll-veil)가 따라온다
+    // 표시는 CSS 형제 선택자(.navbar.scroll-veil-on ~ .scroll-veil)가 따라온다
     var navbar = document.querySelector(".navbar");
     if (navbar) {
         var scrollVeil = document.createElement("div");
@@ -84,16 +84,24 @@
         // 형제 선택자가 물리도록 상단바와 같은 부모(#container)의 끝에 심는다
         // (fixed 라 부모가 어디든 뷰포트 기준으로 뜬다)
         navbar.parentElement.appendChild(scrollVeil);
-        var onScroll = function () {
-            navbar.classList.toggle("scrolled", window.scrollY > 8);
-        };
-        window.addEventListener("scroll", onScroll, { passive: true });
-        onScroll();
 
-        // 메뉴 캡슐의 이동 (containers.css "메뉴 캡슐의 이동" 절): 120px 을 넘게 내려가면 돌면서
-        // 오른쪽 아래로 내려가고, 40px 아래로 돌아오면 올라온다 — 문턱을 둘로 나눠 맨 위
-        // 근처에서 오르내리지 않게 한다. 1200px 이상에서는 위에 머문다
-        var MENU_DOCK_AT = 120, MENU_UNDOCK_AT = 40;
+        // 페이지 위치: 스크롤 위치로 .navbar 에 두 상태를 붙인다
+        //  .scroll-veil-on    — 8px 넘게 내려왔다. 상단 흐림 베일이 켜진다
+        //  .is-past-top-zone  — 최상단 영역을 벗어났다. 120px 을 넘으면 켜고 40px 아래로 돌아오면 끈다 —
+        //                       문턱을 둘로 나눠 맨 위 근처에서 오르내리지 않게 한다
+        var SCROLL_VEIL_AT = 8, TOP_ZONE_LEAVE_AT = 120, TOP_ZONE_RETURN_AT = 40;
+        var pastTopZone = false;
+        var updatePagePosition = function () {
+            var y = window.scrollY;
+            if (!pastTopZone && y > TOP_ZONE_LEAVE_AT) pastTopZone = true;
+            else if (pastTopZone && y < TOP_ZONE_RETURN_AT) pastTopZone = false;
+            navbar.classList.toggle("scroll-veil-on", y > SCROLL_VEIL_AT);
+            navbar.classList.toggle("is-past-top-zone", pastTopZone);
+        };
+        updatePagePosition();
+
+        // 메뉴 캡슐의 이동 (containers.css "메뉴 캡슐의 이동" 절): 최상단 영역을 벗어나면 돌면서
+        // 오른쪽 아래로 내려가고, 돌아오면 올라온다. 1200px 이상에서는 위에 머문다
         // 자리: 위는 콘텐츠 열(1140px)의 오른쪽 끝·윗선 16px (containers.css 의 --chrome-* 와 같은 값),
         // 아래는 오른쪽 12px·캡슐의 아랫선이 화면 높이의 70%
         var MENU_COLUMN_HALF = 570, MENU_EDGE = 12, MENU_TOP = 16, MENU_DOCK_BOTTOM_LINE = .7;
@@ -162,10 +170,7 @@
 
         var updateMenuDocked = function (instant) {
             if (!menuCapsule) return;
-            var y = window.scrollY;
-            if (menuStaysOnTop.matches) setMenuDocked(false, instant);
-            else if (!menuDocked && y > MENU_DOCK_AT) setMenuDocked(true, instant);
-            else if (menuDocked && y < MENU_UNDOCK_AT) setMenuDocked(false, instant);
+            setMenuDocked(pastTopZone && !menuStaysOnTop.matches, instant);
         };
 
         // 크롬 유리의 상태(glass.css 재질 절): 캡슐마다 셋 중 하나다. 앞의 것이 이긴다.
@@ -227,6 +232,7 @@
             if (glassStatesQueued) return;
             glassStatesQueued = true;
             requestAnimationFrame(function () {
+                updatePagePosition();
                 updateMenuDocked(false);
                 updateGlassStates();
             });
@@ -360,24 +366,6 @@
             updateGlassTone(true);
         }
 
-        // 스크롤 방향 반응 (P12, D10): 6px 넘게 움직였을 때만 방향을 판정해
-        // 손 떨림에 흔들리지 않게 하고, 아래 방향은 상단 80px 아래에서만 —
-        // 페이지 맨 위에서는 내비바가 펴진 채로 있어야 한다.
-        // 속성은 html 에 두어 containers.css 의 축소 규칙이 내비바에 걸린다.
-        // 같은 값을 다시 쓰지 않고 방향이 바뀔 때만 쓴다
-        var lastDirectionY = window.scrollY;
-        var scrollDirection = null;
-        window.addEventListener("scroll", function () {
-            var y = window.scrollY;
-            var delta = y - lastDirectionY;
-            if (Math.abs(delta) <= 6) return;
-            var nextDirection = delta > 0 && y > 80 ? "down" : "up";
-            if (nextDirection !== scrollDirection) {
-                scrollDirection = nextDirection;
-                document.documentElement.setAttribute("data-scroll-direction", nextDirection);
-            }
-            lastDirectionY = y;
-        }, { passive: true });
     }
 
     // 크롬 유리의 접점 반응 (glass.css "크롬 유리의 접점 반응" 절)
