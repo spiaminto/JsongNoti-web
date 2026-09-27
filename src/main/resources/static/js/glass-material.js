@@ -24,13 +24,18 @@
  * 같은 값을 다시 넣는 것은 변경이 아니다. 그래서 필터를 붙인 뒤 두 프레임 뒤와
  * 400ms 뒤에 값이 실제로 달라지도록 no-op 인 opacity(1) 을 붙였다 뗀다.
  *
- * 폴백 사다리(위에서 아래로, 감지로만 내려간다 — 노브 없음):
+ * 폴백 사다리(위에서 아래로, 감지로 내려간다):
  *  1) 굴절 + 블러: Chromium 계열 — 여기서 --glass-refraction 에 url(#필터) 를 채운다
  *  2) 블러: backdrop-filter 를 지원하는 나머지 브라우저 — CSS 재질 그대로. Firefox·Safari 는
  *     backdrop-filter: url() 을 무시하거나 깨진 그림을 내므로 @supports 가 아니라
  *     런타임 브랜드로 감지한다(P15)
  *  3) 색만: backdrop-filter 없음 — glass.css @supports not 절이 틴트 알파를 올린다
  *  4) 불투명: prefers-reduced-transparency — glass.css 접근성 절
+ *
+ * 크로미움 외 보기 스위치: window.glassFallback.set(true) 로 이 브라우저에서 2단(블러)을
+ * 흉내 낸다 — 굴절을 걸지 않는다. 선택은 localStorage 에 남는다. 주소에 ?glass-fallback 을
+ * 붙이거나 켜 둔 동안에는 임시 패널(glass-fallback-panel.js)을 불러온다.
+ * ?glass-fallback=on / off 로 주소에서 바로 켜고 끈다.
  *
  * 두 층 모두 요소 크기에 맞춰 만들므로 크기가 바뀌면(ResizeObserver) 다시 만들고,
  * 스페큘러는 테마가 바뀌어도(두께 그늘의 색) 다시 굽는다. 장마다 최근 두 크기의 층을
@@ -70,6 +75,18 @@
     // 굴절이 그려지지 않는다 — 맵을 만들지 않는다
     var reducedTransparency = window.matchMedia("(prefers-reduced-transparency: reduce)");
 
+    // 크로미움 외 보기 스위치 (머리말)
+    var FALLBACK_STORAGE_KEY = "glass-fallback";
+    var FALLBACK_URL_PARAM = "glass-fallback";
+    var FALLBACK_PANEL_SCRIPT = "glass-fallback-panel.js";
+    var ownScriptSrc = document.currentScript ? document.currentScript.src : "";
+    var nonChromiumPreview = readNonChromiumPreview();
+    var fallbackUrlValue = new URLSearchParams(location.search).get(FALLBACK_URL_PARAM);
+    if (fallbackUrlValue === "on" || fallbackUrlValue === "off") {
+        nonChromiumPreview = fallbackUrlValue === "on";
+        storeNonChromiumPreview();
+    }
+
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", init);
     } else {
@@ -103,6 +120,45 @@
         new MutationObserver(function () {
             panes.forEach(function (pane) { pane.rebuild(); });
         }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+        window.glassFallback = {
+            get: function () {
+                return nonChromiumPreview;
+            },
+            set: function (on) {
+                nonChromiumPreview = !!on;
+                storeNonChromiumPreview();
+                panes.forEach(function (pane) { pane.rebuild(); });
+                document.dispatchEvent(new CustomEvent("glassfallbackchange", { detail: nonChromiumPreview }));
+            }
+        };
+        if (fallbackUrlValue !== null || nonChromiumPreview) loadFallbackPanel();
+    }
+
+    function readNonChromiumPreview() {
+        try {
+            return localStorage.getItem(FALLBACK_STORAGE_KEY) === "on";
+        } catch (error) {
+            return false;
+        }
+    }
+
+    function storeNonChromiumPreview() {
+        try {
+            if (nonChromiumPreview) localStorage.setItem(FALLBACK_STORAGE_KEY, "on");
+            else localStorage.removeItem(FALLBACK_STORAGE_KEY);
+        } catch (error) {
+            // 저장할 수 없으면 이 페이지에서만 흉내 낸다
+        }
+    }
+
+    // 임시 패널은 이 스크립트와 같은 폴더에서 불러온다
+    function loadFallbackPanel() {
+        if (!ownScriptSrc || document.querySelector('script[data-glass-fallback-panel]')) return;
+        var script = document.createElement("script");
+        script.src = ownScriptSrc.replace(/glass-material\.js(\?.*)?$/, FALLBACK_PANEL_SCRIPT);
+        script.setAttribute("data-glass-fallback-panel", "");
+        document.head.appendChild(script);
     }
 
     // 유리 한 장: 크기가 바뀔 때만 두 층을 다시 만든다. 크기마다 만든 층(스페큘러 이미지,
@@ -165,7 +221,7 @@
             element.style.setProperty("--glass-specular", "url(" + specular.url + ")");
             element.classList.add("has-baked-specular");
 
-            if (!isChromium || reducedTransparency.matches) { // 사다리 2단 이하: 굴절 없음
+            if (!isChromium || reducedTransparency.matches || nonChromiumPreview) { // 사다리 2단 이하: 굴절 없음
                 element.style.removeProperty("--glass-refraction");
                 return;
             }
