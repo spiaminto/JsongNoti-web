@@ -32,6 +32,14 @@
     margin-bottom: 0.2rem;
 }
 
+/* 검색 도움말 링크: 잉크색 + 밑줄 */
+#searchHintContainer .search-help-link {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-thickness: from-font;
+    text-underline-offset: .2em;
+}
+
 .song-search-result-collapse {
     width: 100%;
     margin: 0 auto;
@@ -84,7 +92,7 @@
 }
 
 .unified-search-result-count {
-    color: var(--ink-3);
+    color: var(--ink-2);
     font-size: var(--fs-sm);
     font-weight: var(--fw-body);
 }

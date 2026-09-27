@@ -211,7 +211,8 @@ html[data-theme="dark"] .glass-capsule::after {
 }
 
 html[data-theme="dark"] .brand-capsule .navbar-brand,
-html[data-theme="dark"] .menu-capsule .icon-link {
+html[data-theme="dark"] .menu-capsule .icon-link,
+html[data-theme="dark"] .menu-capsule .icon-link-label {
     color: #f2f5f8;
 }
 
