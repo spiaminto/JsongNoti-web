@@ -50,7 +50,7 @@
        background-image 로 흐린 사진을 깔고, 그 위를 --panel-frost-cover 색으로
        한 번 덮어 글자 대비를 지킨다 (시안 FROST_L/FROST_D 값) */
     --panel-bg: #fff;
-    --panel-frost-cover: rgb(255 255 255 / .86);
+    --panel-frost-cover: rgb(255 255 255 / .8);
     --panel-shadow:
         0 1px 0 rgb(255 255 255 / .9) inset,
         0 0 0 1px rgb(30 42 56 / .06),

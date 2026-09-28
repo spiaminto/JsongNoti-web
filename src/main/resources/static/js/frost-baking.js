@@ -51,9 +51,10 @@
     var HEIGHT_TOLERANCE = 24;    // 미리 굽는 목표 높이의 여유 px — 컬랩스 scrollHeight 는 끝 높이와 어긋난다(1280px 6px, 1400px 11px 실측). 여유가 모자라면 끝에서 다시 굽는다
     var CROSSFADE_MS = 400;       // glass.css @keyframes frost-crossfade-out 과 같은 값
 
-    // 사진 처리: glass.css .photo-bg::before 의 filter, 판 바탕색은 --panel-bg 와 같은 값
+    // 사진 처리: 라이트는 애플 재질 값(blur 20px, 채도 180%), 다크는 glass.css .photo-bg::before 의 filter 에 블러를 더한 값.
+    // 판 바탕색은 --panel-bg 와 같은 값
     var THEME = {
-        light: { base: "rgb(255 255 255)", filter: "blur(14px) saturate(.88) brightness(1.05)" },
+        light: { base: "rgb(255 255 255)", filter: "blur(20px) saturate(1.8)" },
         dark: { base: "rgb(27 36 48)", filter: "blur(14px) saturate(.75) brightness(.62) contrast(1.05)" }
     };
 
