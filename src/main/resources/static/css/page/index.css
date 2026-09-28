@@ -42,7 +42,7 @@
     margin-bottom: 0;
 }
 
-/* 헤드라인 줄 첫머리 단어: 옅은 잉크 */
+/* 헤드라인 줄 첫머리 단어: 옅은 잉크(--ink-3) */
 .hero .hero-keyword {
     color: var(--ink-3);
 }

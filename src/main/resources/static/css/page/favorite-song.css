@@ -120,7 +120,7 @@ tr:is(.song-row-will-switch, .song-row-be-switched, .song-row-deleting) {
     width: 16px;
     height: 10px;
     transform: translateY(-50%);
-    background: repeating-linear-gradient(180deg, var(--ink-3) 0 2px, transparent 2px 4px);
+    background: repeating-linear-gradient(180deg, var(--ink-4) 0 2px, transparent 2px 4px);
     opacity: .7;
     border-radius: 1px;
     pointer-events: none;
@@ -319,7 +319,7 @@ tr:is(.song-row-will-switch, .song-row-be-switched, .song-row-deleting) {
 
 .song-panel tr:has(.song-number span:empty) .song-title-text,
 .song-panel tr:has(.song-number span:empty) .song-info span {
-    color: var(--ink-3);
+    color: var(--ink-4);
 }
 
 .song-panel tr:has(.song-number span:empty) td.song-title::after {

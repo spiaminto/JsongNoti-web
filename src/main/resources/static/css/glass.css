@@ -37,10 +37,11 @@
 
 /* ---------- 디자인 토큰 ---------- */
 :root {
-    /* 잉크(글자) 3단계 */
+    /* 잉크(글자) 4단계: 진한 · 보조 · 옅은 · 흐린 */
     --ink: #1b232b;
     --ink-2: #45515c;
-    --ink-3: #8792a0;
+    --ink-3: #66717e;
+    --ink-4: #8792a0;
 
     /* 바탕 */
     --bg: #eaf0f4;
@@ -152,7 +153,8 @@
 html[data-theme="dark"] {
     --ink: #eef2f6;
     --ink-2: #c3ccd6;
-    --ink-3: #8b96a3;
+    --ink-3: #a7b1bc;
+    --ink-4: #8b96a3;
     --bg: #121a24;
     --tj-ink: #ffb088;
     --ky-ink: #9fc0ff;
@@ -391,7 +393,7 @@ textarea:focus-visible {
 
 .btn:disabled,
 .btn.disabled {
-    color: var(--ink-3);
+    color: var(--ink-4);
     background: rgb(30 42 56 / .04);
     transform: none;
 }
@@ -614,7 +616,7 @@ html[data-theme="dark"] .search-field-submit:hover {
 }
 
 .form-control::placeholder {
-    color: var(--ink-3);
+    color: var(--ink-4);
 }
 
 html[data-theme="dark"] .form-control {
