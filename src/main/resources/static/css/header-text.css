@@ -27,7 +27,7 @@ h1, h2, h3 {
 
 .brand-name .navbar-brand {
     font-size: var(--fs-lg); /* 전 구간 동일 (992px 분기 제거) */
-    font-weight: var(--fw-display); /* 사이트에 하나뿐인 최상단 표시 */
+    font-weight: var(--fw-title); /* 크롬 글자라 페이지 제목 h1 보다 무겁지 않게 */
     letter-spacing: -.04em;
     color: var(--ink);
     padding: 0;
