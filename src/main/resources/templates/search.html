@@ -194,11 +194,13 @@
             <label class="form-check-label" for="searchTypeInfo">작품명/정보</label>
           </div>
         </div>
-        <div class="input-group justify-content-center">
-          <input type="text" name="keyword" id="searchSongInput" class="form-control form-control-lg text-input"
+        <div class="search-field">
+          <input type="search" enterkeyhint="search" name="keyword" id="searchSongInput" class="form-control text-input"
                  placeholder="검색어 입력 (최소 2자)"
                  aria-label="통합검색어 입력" aria-describedby="" minlength="2" maxlength="20">
-          <button class="btn" type="submit" id="searchSongButton">검색하기</button>
+          <button class="search-field-submit" type="submit" id="searchSongButton" aria-label="검색하기">
+            <i class="bi bi-search" aria-hidden="true"></i>
+          </button>
         </div>
       </form>
 

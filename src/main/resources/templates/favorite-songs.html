@@ -442,12 +442,12 @@
                 </label>
               </div>
             </div>
-            <div class="input-group justify-content-center mt-2 mb-3">
+            <div class="field-row mt-2 mb-3">
             <textarea type="text" id="addInfoTextInput" class="form-control text-input"
                       placeholder="추가 내용을 비워둘경우 노래 제목만 저장합니다 (최대 50자)"
                       aria-label="추가텍스트" aria-describedby="" maxlength="50"></textarea>
               <div id="defaultInfoPreview" class="form-control text-input text-start d-none" role="status"></div>
-              <button class="btn" type="submit" id="addSongButton"><b>애창곡 추가</b></button>
+              <button class="btn" type="submit" id="addSongButton">애창곡 추가</button>
             </div>
           </div>
         </form>
@@ -509,11 +509,13 @@
           <label class="form-check-label" for="searchTypeInfo">작품명/정보</label>
         </div>
       </div>
-      <div class="input-group justify-content-center">
-        <input type="text" name="keyword" id="searchSongInput" class="form-control form-control-lg text-input "
+      <div class="search-field">
+        <input type="search" enterkeyhint="search" name="keyword" id="searchSongInput" class="form-control text-input"
                placeholder="검색어 입력 (최소 2자)"
                aria-label="통합검색어 입력" aria-describedby="" minlength="2" maxlength="20">
-        <button id="searchSongButton" class="btn" type="submit">검색하기</button>
+        <button class="search-field-submit" type="submit" id="searchSongButton" aria-label="검색하기">
+          <i class="bi bi-search" aria-hidden="true"></i>
+        </button>
       </div>
     </form>
 
@@ -675,8 +677,8 @@
           </p>
           <form class="forms-unsubscribe forms" id="deleteUserForm">
             <!-- Email address input-->
-            <div class="input-group justify-content-center">
-              <input class="form-control form-control-lg text-input" id="deleteUserEmailInput" type="email"
+            <div class="field-row">
+              <input class="form-control text-input" id="deleteUserEmailInput" type="email"
                      placeholder="이메일 입력" required>
               <button class="btn btn-outline-danger" id="deleteUserSubmitButton"
                       type="submit">
@@ -690,8 +692,8 @@
           </button>
           <form class="forms forms-verify" id="verifyDeleteUserForm">
             <div class="collapse" id="verifyDeleteUserCollapse">
-              <div class="input-group justify-content-center">
-                <input class="form-control form-control-lg text-input" id="verifyDeleteUserCodeInput" type="number"
+              <div class="field-row">
+                <input class="form-control text-input" id="verifyDeleteUserCodeInput" type="number"
                        placeholder="4자리 인증 코드 입력" required>
                 <button class="btn btn-outline-danger" id="verifyDeleteUserSubmitButton"
                         type="submit">회원탈퇴

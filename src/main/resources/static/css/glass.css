@@ -406,13 +406,12 @@ textarea:focus-visible {
 
 /* 주된 동작(primary): 잉크 캡슐 — 색은 글자가 아니라 바탕에 (P18).
    Bootstrap .btn-primary 와 페이지별 버튼: 구독하기(index), 구글 로그인·
-   수집 동의 확인(모달), 검색하기·애창곡 추가·설정 변경(애창곡·검색),
+   수집 동의 확인(모달), 애창곡 추가·설정 변경(애창곡),
    순서변경·삭제 완료(편집 모드 마무리) */
 .btn-primary,
 #submitButton,
 .favorite-login-button,
 #agreementModal .modal-footer .btn,
-#searchSongButton,
 #addSongButton,
 #submitChangeSettingButton,
 .switch-order-complete-button,
@@ -451,7 +450,6 @@ html[data-theme="dark"] .btn-primary,
 html[data-theme="dark"] #submitButton,
 html[data-theme="dark"] .favorite-login-button,
 html[data-theme="dark"] #agreementModal .modal-footer .btn,
-html[data-theme="dark"] #searchSongButton,
 html[data-theme="dark"] #addSongButton,
 html[data-theme="dark"] #submitChangeSettingButton,
 html[data-theme="dark"] .switch-order-complete-button,
@@ -499,18 +497,100 @@ html[data-theme="dark"] .delete-favorite-song-complete-button {
     }
 }
 
-/* 입력 그룹 옆 버튼은 단(글자·패딩)은 그대로 두고 높이만 입력창에 맞춰
-   늘어나게 한다 — 줄 높이보다 큰 입력창(form-control-lg) 옆에서 키가
-   어긋나지 않도록 */
-.input-group > .btn {
-    align-self: stretch;
+/* ---------- 입력 + 제출 (5기 8번) ----------
+   글자 버튼으로 제출하는 쌍(.field-row): 입력창과 캡슐 버튼을 떼어 한 줄에 둔다.
+   둘의 키는 large(50px). 버튼 색은 역할 변형(primary·danger 등)이 정한다.
+   검색(.search-field): 글자 버튼 없이 입력창 안 앞쪽의 돋보기가 제출한다.
+   입력 글자는 휴대폰에서도 16px 이상 — iOS Safari 가 입력창을 확대하지 않게 */
+.field-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: .55rem;
 }
 
-/* large 입력창 옆에서는 키가 large(50px 안팎)가 되므로 글자·좌우 여백도
-   large 로 올린다. 너비는 입력줄이 정하므로 btn-lg 의 min-width 는 주지 않는다 */
-.input-group:has(> .form-control-lg) > .btn {
+.field-row > .form-control,
+.search-field > .form-control {
+    min-width: 0;
+    max-width: none;
+    height: var(--btn-h-lg);
+    padding: 0 1.1rem;
+    font-size: max(16px, var(--fs-body));
+    border-radius: var(--r-control);
+}
+
+.field-row > .btn {
+    min-height: var(--btn-h-lg);
     padding: 0 24px;
     font-size: var(--btn-font-lg);
+    border-radius: var(--r-capsule);
+    white-space: nowrap;
+}
+
+/* 여러 줄 입력(애창곡 추가 내용): 세 줄 높이. 버튼은 폼 전체를 제출하므로 입력칸 아래 가운데에 둔다 */
+.field-row > textarea.form-control {
+    height: calc(3lh + 1.6rem);
+    padding-block: .8rem;
+    resize: none;
+}
+
+.field-row:has(> textarea) {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 12px;
+}
+
+.field-row:has(> textarea) > .btn {
+    justify-self: center;
+    min-width: 160px;
+}
+
+/* 768px 미만: 사다리 한 칸 아래(medium) */
+@media (max-width: 767.98px) {
+    .field-row:has(> textarea) > .btn {
+        min-height: var(--btn-h-md);
+        padding: 0 18px;
+        min-width: 128px;
+        font-size: var(--btn-font-md);
+    }
+}
+
+.search-field {
+    position: relative;
+    max-width: 500px;
+    margin-inline: auto;
+}
+
+.search-field > .form-control {
+    padding-inline-start: 3rem;
+}
+
+/* 돋보기 제출 버튼: 입력창 안 앞쪽, 입력창 모서리와 동심 (14px - 간격 4px) */
+.search-field-submit {
+    position: absolute;
+    inset-block: 4px;
+    inset-inline-start: 4px;
+    width: 42px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: calc(var(--r-control) - 4px);
+    background: transparent;
+    color: var(--ink-2);
+    font-size: 18px;
+    transition: background-color .15s ease, color .15s ease;
+}
+
+.search-field-submit:hover {
+    background: rgb(30 42 56 / .07);
+    color: var(--ink);
+}
+
+html[data-theme="dark"] .search-field-submit:hover {
+    background: rgb(255 255 255 / .09);
+}
+
+.search-field-submit:disabled {
+    opacity: .4;
 }
 
 /* ---------- 입력: 판 위의 움푹한 입력창 (3기, 유리 없음) ----------
@@ -562,18 +642,6 @@ html[data-theme="dark"] .form-check-input {
 html[data-theme="dark"] .form-check-input:checked {
     background-color: #f0f3f7;
     border-color: #f0f3f7;
-}
-
-/* 입력창과 버튼을 띄워 배치 (Bootstrap 이 모서리를 붙이는 것을 되돌림).
-   !important 는 Bootstrap 의 :not() 체인(특정도 0,5,0)을 이기기 위함이며,
-   구독취소·탈퇴 모달의 입력 그룹만 예외로 붙인다 (아래 모달 절) */
-.input-group {
-    gap: .55rem;
-}
-
-.input-group > .form-control,
-.input-group > .btn {
-    border-radius: var(--r-control) !important;
 }
 
 /* ---------- 모달: iOS 시트 문법 (D19) ----------
@@ -743,7 +811,7 @@ html[data-theme="dark"] .form-check-input:checked {
     margin: 0 0 8px;
 }
 
-/* 구독 취소·회원 탈퇴: 안내문 회색, 입력 그룹은 붙여서 바깥 모서리만 14px */
+/* 구독 취소·회원 탈퇴: 안내문 회색 */
 #unsubscribeModal .modal-body p,
 #deleteUserModal .modal-body p {
     color: var(--ink-2);
@@ -751,20 +819,9 @@ html[data-theme="dark"] .form-check-input:checked {
     margin-bottom: 14px;
 }
 
-#unsubscribeModal .input-group,
-#deleteUserModal .input-group {
-    gap: 0;
+#unsubscribeModal .field-row,
+#deleteUserModal .field-row {
     margin-bottom: 10px;
-}
-
-#unsubscribeModal .input-group > .form-control,
-#deleteUserModal .input-group > .form-control {
-    border-radius: var(--r-control) 0 0 var(--r-control) !important;
-}
-
-#unsubscribeModal .input-group > .btn,
-#deleteUserModal .input-group > .btn {
-    border-radius: 0 var(--r-control) var(--r-control) 0 !important;
 }
 
 /* 인셋 그룹 목록 (애창곡 설정 모달): iOS 설정 앱의 그룹 표.

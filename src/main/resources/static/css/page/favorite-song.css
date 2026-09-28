@@ -434,10 +434,6 @@ html[data-theme="dark"] #choosePresentOrderTable tr.selected td.song-title::befo
     display: none;
 }
 
-.forms-verify {
-    padding-top: 1rem;
-}
-
 /* ---------- dark: 선·칩만 흰 알파로 ---------- */
 html[data-theme="dark"] .favorite-song-add-form-container {
     border-color: rgb(255 255 255 / .18);
