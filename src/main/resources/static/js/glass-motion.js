@@ -186,9 +186,9 @@
             return { left: menuCapsule.offsetLeft, top: menuCapsule.offsetTop, right: menuCapsule.offsetLeft + menuCapsule.offsetWidth, bottom: menuCapsule.offsetTop + menuCapsule.offsetHeight };
         };
 
-        // 캡슐 글자가 놓인 자리: 메뉴 캡슐은 첫 버튼부터 끝 버튼까지(도착할 자리 기준), 브랜드 캡슐은 글자(h1)만
+        // 캡슐 글자가 놓인 자리: 메뉴 캡슐은 첫 버튼부터 끝 버튼까지(도착할 자리 기준), 브랜드 캡슐은 글자(.brand-name)만
         var capsuleTextBox = function (capsule) {
-            if (capsule !== menuCapsule) return (capsule.querySelector("h1") || capsule).getBoundingClientRect();
+            if (capsule !== menuCapsule) return (capsule.querySelector(".brand-name") || capsule).getBoundingClientRect();
             var placed = menuCapsulePlacedBox();
             if (!menuButtons.length) return placed;
             var first = menuButtons[0], last = menuButtons[menuButtons.length - 1];

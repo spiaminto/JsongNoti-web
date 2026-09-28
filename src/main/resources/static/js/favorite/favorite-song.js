@@ -120,7 +120,7 @@ $(function () {
             return; // 순서 변경중에 누르면 이 이벤트 무시
         }
         isOrderSwitching = true;
-        let brand = $(this).closest('.song-table-container').find('h2 span').text().indexOf('TJ') >= 0 ? 'TJ' : 'KY';
+        let brand = $(this).closest('.song-table-container').find('.song-header-text span').text().indexOf('TJ') >= 0 ? 'TJ' : 'KY';
         startSwitchOrder(brand, this);
     })
 
@@ -182,9 +182,9 @@ $(function () {
         }, 2100);
     }
 
-// 메모 순서변경 완료 버튼 클릭 이벤트 타겟 테이블을 h2 의 span 으로 찾음.
+// 메모 순서변경 완료 버튼 클릭 이벤트 타겟 테이블을 패널 제목(.song-header-text)의 span 으로 찾음.
     $('.switch-order-complete-button').on('click', function (event) {
-        let brand = $(this).closest('.song-table-container').find('h2 span').text().indexOf('TJ') >= 0 ? 'TJ' : 'KY';
+        let brand = $(this).closest('.song-table-container').find('.song-header-text span').text().indexOf('TJ') >= 0 ? 'TJ' : 'KY';
         endSwitchOrder(brand, event.target);
     })
 
@@ -244,7 +244,7 @@ $(function () {
             return;
         } // 순서 변경중에 누르면 이 이벤트 무시
         isFavoriteSongDeleting = true;
-        let brand = $(this).closest('.song-table-container').find('h2 span').text().indexOf('TJ') >= 0 ? 'TJ' : 'KY';
+        let brand = $(this).closest('.song-table-container').find('.song-header-text span').text().indexOf('TJ') >= 0 ? 'TJ' : 'KY';
         startDeleteFavoriteSong(brand, event.target);
     })
 
@@ -302,7 +302,7 @@ $(function () {
 
 // 삭제완료 버튼 클릭 이벤트
     $('.delete-favorite-song-complete-button').on('click', function (event) {
-        let brand = $(this).closest('.song-table-container').find('h2 span').text().indexOf('TJ') >= 0 ? 'TJ' : 'KY';
+        let brand = $(this).closest('.song-table-container').find('.song-header-text span').text().indexOf('TJ') >= 0 ? 'TJ' : 'KY';
         endDeleteFavoriteSong(brand, event.target);
     })
 

@@ -38,7 +38,7 @@ html[data-theme="dark"] .error-card {
     box-shadow: var(--panel-shadow), 0 30px 80px -20px rgb(0 0 0 / .7);
 }
 
-.error-card h2 {
+.error-card h1 {
     color: var(--ink);
     font-size: var(--fs-2xl);
     font-weight: var(--fw-title);

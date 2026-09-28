@@ -86,7 +86,7 @@
   <!-- Navigation: 브랜드 캡슐과 메뉴 캡슐 (크롬 유리). 햇살 뒤(0.4s)에 떠오른다 -->
   <nav class="navbar">
     <div class="brand-capsule glass-capsule veil" style="--vd:.1s">
-      <h1>
+      <div class="brand-name">
         <a class="navbar-brand" href="/">
           제이노티
         </a>
@@ -94,7 +94,7 @@
           신곡알림
         </a>
         <img class="navbar-brand-icon" src="/static/assets/icon/logo_512.png" th:src="@{'/assets/icon/logo_512.png'}" alt="로고아이콘">
-      </h1>
+      </div>
     </div>
     <div class="menu-capsule glass-capsule veil" style="--vd:.1s">
       <button class="search-link-button icon-link" type="button" onclick="location.href = '/search'">
@@ -235,6 +235,7 @@
     </div>
     <div id="newSongContainer" class="song-container">
       <div class="new-song-section-header">
+        <h2 class="new-song-header-text" data-lift>최근 신곡</h2>
         <p class="songs-intro" data-lift>
           최근 신곡 목록이에요. 노래 제목을 클릭하면 구글 검색으로 이동해요.<br>
           한글 표시는 참고용이라 정확하지 않아요.
@@ -243,11 +244,11 @@
       <div class="songs-grid">
         <!-- 태진 -->
         <div class="song-panel content-panel" data-lift>
-          <h2 class="song-header-text">
+          <h3 class="song-header-text">
             <span th:text="${tjLatestMonth + ' TJ 신곡'}">11월 TJ 신곡</span>
             <mark class="song-header-subtext" th:text="${tjLatestDateStr + ' 추가'}">00/00(요) 추가
             </mark>
-          </h2>
+          </h3>
           <div class="song-table-border">
             <table class="table-tj song-table">
               <thead>
@@ -291,9 +292,9 @@
           <div class="song-table-collapse collapse" id="tjLastMonthSongContentBorder">
           <!-- 월 헤더는 컬랩스 안쪽 — 펼침·접힘에 표와 함께 여닫힌다.
                토글 버튼이 컬랩스 아래로 이동하면서 버튼이 겸하던 헤더 역할을 대신한다 (2기 1턴) -->
-          <h2 class="song-header-text">
+          <h3 class="song-header-text">
             <span th:text="${tjLastMonth + ' TJ 신곡'}">10월 TJ 신곡</span>
-          </h2>
+          </h3>
           <div class="song-table-border">
             <table class="table-tj song-table">
               <thead>
@@ -344,11 +345,11 @@
         </div>
         <!-- 금영 -->
         <div class="song-panel content-panel" data-lift>
-          <h2 class="song-header-text">
+          <h3 class="song-header-text">
             <span th:text="${kyLatestMonth + ' 금영 신곡'}">11월 금영 신곡</span>
             <mark class="song-header-subtext" th:text="${kyLatestDateStr + ' 추가'}">00/00(0) 추가
             </mark>
-          </h2>
+          </h3>
           <div class="song-table-border">
             <table class="table-ky song-table">
               <thead>
@@ -389,9 +390,9 @@
           <!-- 금영 저번달 목록: TJ 와 같은 컬랩스 래퍼/유리판 분리 구조 (6턴-2) -->
           <div class="song-table-collapse collapse" id="kyLastMonthSongContentBorder">
           <!-- 월 헤더는 컬랩스 안쪽 — TJ 저번달과 같은 취지 (2기 1턴) -->
-          <h2 class="song-header-text">
+          <h3 class="song-header-text">
             <span th:text="${kyLastMonth + ' 금영 신곡'}">10월 금영 신곡</span>
-          </h2>
+          </h3>
           <div class="song-table-border">
             <table class="song-table table-ky">
               <thead>

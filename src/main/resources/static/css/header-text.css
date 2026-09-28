@@ -11,17 +11,13 @@ h1, h2, h3, h4, h5, h6 {
     letter-spacing: -.02em;
 }
 
-h1 {
-    margin-bottom: 0; /* 상단바 안의 h1 이 흐름을 밀지 않도록 초기화 */
-}
-
-h2, h3 {
+h1, h2, h3 {
     margin-bottom: 1rem;
 }
 
 /* ---------- 상단바 브랜드 ---------- */
 /* 과거의 형광 하이라이트 박스를 걷어내고 유리 알약 위의 잉크 글자로 */
-.brand-capsule h1 {
+.brand-capsule .brand-name {
     display: flex;
     align-items: center;
     gap: .4rem;
@@ -29,7 +25,7 @@ h2, h3 {
     background: none;
 }
 
-h1 .navbar-brand {
+.brand-name .navbar-brand {
     font-size: var(--fs-lg); /* 전 구간 동일 (992px 분기 제거) */
     font-weight: var(--fw-display); /* 사이트에 하나뿐인 최상단 표시 */
     letter-spacing: -.04em;
@@ -38,12 +34,17 @@ h1 .navbar-brand {
     margin-right: 0;
 }
 
-/* ---------- 본문 헤더 크기: 글자 사다리 (glass.css --fs-*, 4기 7턴) ---------- */
-h2 { /* 섹션 헤더 (신곡목록, 사용방법, 노래 검색 ...) */
+/* ---------- 본문 헤더 크기: 글자 사다리 (glass.css --fs-*, 4기 7턴, 5기 9번) ---------- */
+h1 { /* 페이지 제목, 페이지당 하나 (노래 검색, 애창곡). 홈은 히어로 문장 */
+    font-size: var(--fs-title-large);
+    letter-spacing: -.025em;
+}
+
+h2 { /* 섹션 제목 (최근 신곡, 사용 방법, 검색 결과, 애창곡 추가) */
     font-size: var(--fs-2xl);
 }
 
-h3 { /* 페이지 안 소제목 (구독하기, 문의사항 ...). 모달 제목은 glass.css .modal-title */
+h3 { /* 패널 제목 (월별 신곡, 브랜드별 애창곡)과 소제목 (구독하기, 문의사항 ...). 모달 제목은 glass.css .modal-title */
     font-size: var(--fs-lg);
 }
 
