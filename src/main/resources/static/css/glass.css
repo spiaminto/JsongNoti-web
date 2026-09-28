@@ -85,11 +85,6 @@
     --danger-tint: rgb(255 122 96 / .18);
     --danger-ink: #a03015;
 
-    /* 히어로 헤드라인의 기능 단어 */
-    --hero-search-ink: #2b5fa3;
-    --hero-favorite-ink: #b3365f;
-    --hero-new-song-ink: #9a4f08;
-
     /* 스프링 (P11): 위치·크기·코너의 움직임은 살짝 튀는 spatial 곡선 하나,
        색·투명도는 튀지 않는 effects 곡선. spatial 은 언더댐핑 스텝 응답을
        linear() 로 샘플링한 값 — 정본 계산기는
@@ -165,9 +160,6 @@ html[data-theme="dark"] {
     --badge-ink: #ffd18a;
     --danger-tint: rgb(255 69 58 / .26);
     --danger-ink: #ff5a50;
-    --hero-search-ink: #9fc0ff;
-    --hero-favorite-ink: #ff9ab8;
-    --hero-new-song-ink: #ffb46e;
     --panel-bg: #1b2430;
     --panel-frost-cover: rgb(27 36 48 / .72);
     --panel-shadow:

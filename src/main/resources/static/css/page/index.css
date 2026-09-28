@@ -26,12 +26,17 @@
     overflow: hidden;
     width: min(620px, 100%);
     padding: clamp(2rem, 5vw, 3.2rem);
-    text-align: left;
+    text-align: center;
 }
 
+/* 헤드라인 세 줄: 덩어리는 패널 가운데, 줄은 왼쪽 시작선에 맞춘다 */
 .hero .headerText {
+    width: fit-content;
+    margin-inline: auto;
+    text-align: left;
     font-size: var(--fs-hero); /* 글자 사다리(glass.css) — 26 / ≥768 32 / ≥1200 34 */
     font-weight: var(--fw-mid); /* 기능 단어(.hero-keyword)만 굵게 */
+    color: var(--ink-2);
     line-height: 1.32;
     letter-spacing: -.02em;
     margin-bottom: 0;
@@ -40,18 +45,7 @@
 /* 헤드라인의 기능 단어: 메뉴 캡슐의 검색·애창곡·신곡과 짝 */
 .hero .hero-keyword {
     font-weight: var(--fw-display);
-}
-
-.hero .hero-keyword-search {
-    color: var(--hero-search-ink);
-}
-
-.hero .hero-keyword-favorite {
-    color: var(--hero-favorite-ink);
-}
-
-.hero .hero-keyword-new-song {
-    color: var(--hero-new-song-ink);
+    color: var(--ink);
 }
 
 .hero .hero-description {
