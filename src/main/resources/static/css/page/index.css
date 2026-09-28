@@ -26,19 +26,36 @@
     overflow: hidden;
     width: min(620px, 100%);
     padding: clamp(2rem, 5vw, 3.2rem);
-    text-align: center;
+    text-align: left;
 }
 
 .hero .headerText {
-    font-size: var(--fs-hero); /* 글자 사다리(glass.css) — 32 / ≥768 40 / ≥1200 44 */
-    font-weight: var(--fw-display); /* 히어로 헤드라인 */
-    line-height: 1.25;
-    letter-spacing: -.03em;
+    font-size: var(--fs-hero); /* 글자 사다리(glass.css) — 26 / ≥768 32 / ≥1200 34 */
+    font-weight: var(--fw-mid); /* 기능 단어(.hero-keyword)만 굵게 */
+    line-height: 1.32;
+    letter-spacing: -.02em;
     margin-bottom: 0;
 }
 
+/* 헤드라인의 기능 단어: 메뉴 캡슐의 검색·애창곡·신곡과 짝 */
+.hero .hero-keyword {
+    font-weight: var(--fw-display);
+}
+
+.hero .hero-keyword-search {
+    color: var(--hero-search-ink);
+}
+
+.hero .hero-keyword-favorite {
+    color: var(--hero-favorite-ink);
+}
+
+.hero .hero-keyword-new-song {
+    color: var(--hero-new-song-ink);
+}
+
 .hero .hero-description {
-    margin: 1rem 0 0;
+    margin: .9rem 0 0;
     font-size: var(--fs-body);
     line-height: 1.6;
     color: var(--ink-2);
@@ -48,6 +65,30 @@
 
 .hero form {
     margin-top: 1.8rem;
+}
+
+/* 히어로 안쪽 등장: 패널이 떠오르기 시작하고 .3s 뒤 제목 → 설명 → 폼 → 바로가기 순서로 100ms 간격 */
+.hero.veil .hero-stagger {
+    opacity: 0;
+    transform: translateY(12px);
+    filter: blur(4px);
+    transition: opacity .4s ease-out, transform .4s ease-out, filter .4s ease-out;
+    transition-delay: calc(var(--vd, 0s) + .3s + var(--stagger-index, 0) * .1s);
+}
+
+.hero.veil.on .hero-stagger {
+    opacity: 1;
+    transform: none;
+    filter: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero.veil .hero-stagger {
+        opacity: 1;
+        transform: none;
+        filter: none;
+        transition: none;
+    }
 }
 
 /* 인증코드 행: 구독 요청 성공 시 Bootstrap collapse 로 열린다 */
