@@ -51,10 +51,10 @@ html[data-theme="dark"] .dark-mode-element {
 
 /* ---------- 상단바 브랜드 아이콘 ---------- */
 .navbar-brand-icon {
-    width: 32px;
+    width: 28px;
 
     @media (min-width: 1200px) {
-        width: 40px;
+        width: 34px;
     }
 }
 

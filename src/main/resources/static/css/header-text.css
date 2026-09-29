@@ -34,6 +34,53 @@ h1, h2, h3 {
     margin-right: 0;
 }
 
+/* 브랜드 이름 자리: 사이트 이름과 페이지 이름을 한 칸에 겹쳐 둔다. 칸 폭은 둘 중 긴 쪽이라
+   이름이 바뀌어도 캡슐 폭이 그대로다. 페이지 제목(h1)이 스크롤로 캡슐 밑을 지나가면
+   (.navbar.is-page-title-scrolled-away, glass-motion.js) 페이지 이름으로 바뀐다 */
+.brand-title-stack {
+    display: grid;
+    justify-items: start;
+}
+
+.brand-title-stack > .navbar-brand {
+    grid-area: 1 / 1;
+    transition:
+        opacity .25s cubic-bezier(.2, 0, 0, 1),
+        translate .25s cubic-bezier(.2, 0, 0, 1),
+        filter .25s cubic-bezier(.2, 0, 0, 1),
+        visibility 0s linear .25s;
+}
+
+.brand-title-page,
+.navbar.is-page-title-scrolled-away .brand-title-site {
+    opacity: 0;
+    filter: blur(2px);
+    visibility: hidden;
+}
+
+.brand-title-page {
+    translate: 0 6px;
+}
+
+.navbar.is-page-title-scrolled-away .brand-title-site {
+    translate: 0 -6px;
+}
+
+.navbar.is-page-title-scrolled-away .brand-title-page {
+    opacity: 1;
+    translate: 0 0;
+    filter: none;
+    visibility: visible;
+    transition-delay: 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .brand-title-stack > .navbar-brand {
+        translate: none !important;
+        filter: none !important;
+    }
+}
+
 /* ---------- 본문 헤더 크기: 글자 사다리 (glass.css --fs-*, 4기 7턴, 5기 9번) ---------- */
 h1 { /* 페이지 제목, 페이지당 하나 (노래 검색, 애창곡). 홈은 히어로 문장 */
     font-size: var(--fs-title-large);

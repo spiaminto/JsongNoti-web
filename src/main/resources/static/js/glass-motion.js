@@ -23,6 +23,9 @@
  *     기본값은 꺼짐(GLASS_TONE_ENABLED)
  *  9) 크롬 유리의 접점 반응: 누르는 자리의 발광(.is-glowing)과 아이콘 버튼 그룹의
  *     선택 렌즈(.selection-lens). 젤 프레스는 CSS 만으로 한다 (glass.css)
+ * 10) 페이지 제목 접힘: 페이지 제목(h1)이 스크롤로 브랜드 캡슐 밑을 지나가면 .navbar 에
+ *     .is-page-title-scrolled-away 를 붙인다. 캡슐의 이름이 사이트 이름에서 페이지 이름으로
+ *     바뀐다 (header-text.css 브랜드 이름 자리)
  *
  * 콘텐츠 패널은 불투명 프로스트라(ADR 0001) 여기서는 손대지 않는다 — 굽기는 frost-baking.js.
  *
@@ -89,14 +92,25 @@
         //  .scroll-veil-on    — 8px 넘게 내려왔다. 상단 흐림 베일이 켜진다
         //  .is-past-top-zone  — 최상단 영역을 벗어났다. 120px 을 넘으면 켜고 40px 아래로 돌아오면 끈다 —
         //                       문턱을 둘로 나눠 맨 위 근처에서 오르내리지 않게 한다
-        var SCROLL_VEIL_AT = 8, TOP_ZONE_LEAVE_AT = 120, TOP_ZONE_RETURN_AT = 40;
-        var pastTopZone = false;
+        //  .is-page-title-scrolled-away — 페이지 제목(h1)의 아랫선이 브랜드 캡슐의 아랫선 위로 올라갔다.
+        //                       돌아올 때는 8px 더 내려와야 끈다
+        var SCROLL_VEIL_AT = 8, TOP_ZONE_LEAVE_AT = 120, TOP_ZONE_RETURN_AT = 40, PAGE_TITLE_RETURN_MARGIN = 8;
+        var pastTopZone = false, pageTitleScrolledAway = false;
+        var pageTitle = document.querySelector("h1");
+        var brandCapsule = document.querySelector(".brand-capsule");
         var updatePagePosition = function () {
             var y = window.scrollY;
             if (!pastTopZone && y > TOP_ZONE_LEAVE_AT) pastTopZone = true;
             else if (pastTopZone && y < TOP_ZONE_RETURN_AT) pastTopZone = false;
             navbar.classList.toggle("scroll-veil-on", y > SCROLL_VEIL_AT);
             navbar.classList.toggle("is-past-top-zone", pastTopZone);
+            if (pageTitle && brandCapsule) {
+                var titleBottom = pageTitle.getBoundingClientRect().bottom;
+                var capsuleBottom = brandCapsule.getBoundingClientRect().bottom;
+                if (!pageTitleScrolledAway && titleBottom < capsuleBottom) pageTitleScrolledAway = true;
+                else if (pageTitleScrolledAway && titleBottom > capsuleBottom + PAGE_TITLE_RETURN_MARGIN) pageTitleScrolledAway = false;
+                navbar.classList.toggle("is-page-title-scrolled-away", pageTitleScrolledAway);
+            }
         };
         updatePagePosition();
 
