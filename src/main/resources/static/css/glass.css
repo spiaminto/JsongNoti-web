@@ -4,12 +4,12 @@
 
    3기 구조 (ADR 0001): 실시간 유리(backdrop-filter)는 크롬 — 내비바·사이드
    버튼·모달 뒤 베일·스크롤 베일 — 에만 쓴다. 표·카드·폼 본문을 담는
-   콘텐츠 판(.content-panel)은 불투명하고, 재질감은 프로스트(사진을 미리
+   콘텐츠 패널(.content-panel)은 불투명하고, 재질감은 프로스트(사진을 미리
    흐려 구운 그림, frost-baking.js)가 준다.
 
    이 파일이 담당하는 것:
      1) 디자인 토큰(:root, dark 는 html[data-theme="dark"])과 웹폰트(SUITE 가변) 선언
-     2) 콘텐츠 판(.content-panel)과 Bootstrap 컴포넌트(.btn, .form-control, .modal 등)의
+     2) 콘텐츠 패널(.content-panel)과 Bootstrap 컴포넌트(.btn, .form-control, .modal 등)의
         시각 오버라이드 — 동작(JS)은 Bootstrap 그대로 두고 겉만 바꾼다
      3) 배경 연출: 빛 웅덩이(body::before), 사진 배경(.photo-bg), 햇살(.sky/.ray), 보케(.bokeh)
      4) 모션 어휘: 로드 시퀀스(.veil), 스크롤 리빌([data-lift]), 스크롤 베일(.scroll-veil)
@@ -46,7 +46,7 @@
     /* 바탕 */
     --bg: #eaf0f4;
 
-    /* 콘텐츠 판: 불투명 바탕 + 판 그림자. 프로스트 굽기(frost-baking.js)가
+    /* 콘텐츠 패널: 불투명 바탕 + 패널 그림자. 프로스트 굽기(frost-baking.js)가
        background-image 로 흐린 사진을 깔고, 그 위를 --panel-frost-cover 색으로
        한 번 덮어 글자 대비를 지킨다 (시안 FROST_L/FROST_D 값) */
     --panel-bg: #fff;
@@ -123,7 +123,7 @@
 
     /* 반경 사다리. 반경을 가진 컨테이너는 --r-parent 를 함께 내려주고, 가장자리에
        맞닿는 자식은 calc(var(--r-parent) - 간격) 으로 받는다. 홀로 놓이면 --r-control */
-    --r-panel: 24px;     /* 콘텐츠 판 */
+    --r-panel: 24px;     /* 콘텐츠 패널 */
     --r-sheet: 28px;     /* 모달, 에러 카드 */
     --r-control: 14px;   /* 입력, 보조 버튼, 경고, lift 판, 그룹 */
     --r-capsule: 999px;  /* 상단의 두 캡슐, 주요 액션 버튼, 배지 */
@@ -244,16 +244,16 @@ textarea:focus-visible {
     outline-offset: 2px;
 }
 
-/* ---------- 콘텐츠 판 ----------
-   불투명한 판 (ADR 0001). 실시간 유리가 없으므로 스크롤·펼침에 재래스터
+/* ---------- 콘텐츠 패널 ----------
+   불투명한 패널 (ADR 0001). 실시간 유리가 없으므로 스크롤·펼침에 재래스터
    비용이 들지 않는다. 재질감은 frost-baking.js 가 background-image 로 깔아
    주는 프로스트가 맡고, 그 전(사진 로드 전·실패 시)에는 바탕색만 보인다.
    border 0 + padding-box 클립: 테두리가 있으면 굽힌 그림이 테두리 밑으로
    비쳐 1px 띠가 생긴다 (시안 5턴 교훈). 그림자 안쪽 1px 흰 선이 테두리 역할.
-   프로스트 그림은 frost-baking.js 가 판마다 inline 변수(--panel-frost-image,
+   프로스트 그림은 frost-baking.js 가 패널마다 inline 변수(--panel-frost-image,
    --panel-frost-size)로 준다. 크기는 구운 자연 크기 — 높이 전환 중 그림이
    늘어나지 않고 잘리기만 한다. 변수가 없으면(사진 로드 전·실패·오류 페이지)
-   덮개색만 바탕색 위에 얹혀 바탕색 판이 된다 */
+   덮개색만 바탕색 위에 얹혀 바탕색 패널이 된다 */
 .content-panel {
     position: relative;
     background-color: var(--panel-bg);
@@ -268,9 +268,9 @@ textarea:focus-visible {
     --r-parent: var(--r-panel);
     border-radius: var(--r-parent);
     box-shadow: var(--panel-shadow);
-    /* 프로스트 교체 페이드(::before)를 판 배경과 내용 사이에 끼우려면 판이
-       스태킹 컨텍스트여야 한다. 모달은 모두 판 밖(body 직속)에 있어 갇히지
-       않는다 — 판 안에 모달을 넣지 않는다 (page/search.css #container 주석) */
+    /* 프로스트 교체 페이드(::before)를 패널 배경과 내용 사이에 끼우려면 패널이
+       스태킹 컨텍스트여야 한다. 모달은 모두 패널 밖(body 직속)에 있어 갇히지
+       않는다 — 패널 안에 모달을 넣지 않는다 (page/search.css #container 주석) */
     isolation: isolate;
 }
 
@@ -278,13 +278,13 @@ textarea:focus-visible {
    frost-baking.js 가 옛 그림을 ::before 에 옛 크기만큼 얹어 0.4s 동안 걷는다.
    background-image 는 전환이 안 되므로 두 장을 겹쳐 opacity 로 바꾼다
    (컴포지터 처리). 덮개도 옛 그림 크기로만 깔아 그 밖은 투명 — 높이 전환
-   중 판이 옛 그림보다 커진 자리엔 본 배경의 새 그림이 바로 비친다(바탕색
-   띠 없음). top 1px 은 판의 inset 흰 선(--panel-shadow) 자리라 비워 두고
-   그림을 1px 올려 맞춘다. 층 높이는 옛 그림 높이(판보다 길면 판까지).
-   옛 그림이 새 그림보다 짧을 때(판이 자랄 때, .frost-crossfade-feather)만
+   중 패널이 옛 그림보다 커진 자리엔 본 배경의 새 그림이 바로 비친다(바탕색
+   띠 없음). top 1px 은 패널의 inset 흰 선(--panel-shadow) 자리라 비워 두고
+   그림을 1px 올려 맞춘다. 층 높이는 옛 그림 높이(패널보다 길면 패널까지).
+   옛 그림이 새 그림보다 짧을 때(패널이 자랄 때, .frost-crossfade-feather)만
    아래 96px 을 마스크로 흐린다 — 층이 그대로 끝나면 그 아랫변이 전환 중
    가는 가로선으로 비친다(4기 3턴). 같은 크기 교체(테마·창 크기)에 마스크를
-   두면 판이 위아래로 갈라져 보인다(4기 4턴) */
+   두면 패널이 위아래로 갈라져 보인다(4기 4턴) */
 .content-panel.frost-crossfade::before {
     content: '';
     position: absolute;
@@ -317,7 +317,7 @@ textarea:focus-visible {
 }
 
 /* ---------- 버튼: 알파 버튼 (5기 3번) ----------
-   Bootstrap .btn 전체를 하나의 재질로 통일한다. 몸체는 알파 한 겹 — 판 위에
+   Bootstrap .btn 전체를 하나의 재질로 통일한다. 몸체는 알파 한 겹 — 패널 위에
    얹힌 얇은 덮개. 링·안쪽 하이라이트·그림자는 없다 (rim 버튼은 커밋 eec7743
    까지의 glass.css). 실시간 유리 없음 — 비용 0.
    variant(btn-outline-* 등)는 구분하지 않고 위험 동작(danger)과 주된
@@ -597,8 +597,8 @@ html[data-theme="dark"] .search-field-submit:hover {
     opacity: .4;
 }
 
-/* ---------- 입력: 판 위의 움푹한 입력창 (3기, 유리 없음) ----------
-   콘텐츠 판이 불투명이므로 입력창도 실시간 유리 대신 잉크 알파의 얕은 홈.
+/* ---------- 입력: 패널 위의 움푹한 입력창 (3기, 유리 없음) ----------
+   콘텐츠 패널이 불투명이므로 입력창도 실시간 유리 대신 잉크 알파의 얕은 홈.
    포커스는 흰 바탕 + 파란 링 */
 .form-control {
     color: var(--ink);
@@ -649,7 +649,7 @@ html[data-theme="dark"] .form-check-input:checked {
 }
 
 /* ---------- 모달: iOS 시트 문법 (D19) ----------
-   불투명 판(28px, 구분선 없음) + 원형 닫기 + 캡슐 발 버튼. 뒤에는 실시간
+   불투명 패널(28px, 구분선 없음) + 원형 닫기 + 캡슐 발 버튼. 뒤에는 실시간
    블러 베일 한 장(.modal-backdrop — 크롬이므로 허용). 발 버튼은 768px 미만
    전폭 나란히, 768px 부터 오른쪽 정렬·128px 이상으로 크게, primary 는
    Apple 관례대로 오른쪽 끝. 버튼 크기는 사다리 large(btn-lg)로 통일한다 —
@@ -775,7 +775,7 @@ html[data-theme="dark"] .form-check-input:checked {
     backdrop-filter: blur(8px);
 }
 
-/* 로그인 안내: 힌트 이미지는 판 안의 둥근 사진, 안내문은 회색,
+/* 로그인 안내: 힌트 이미지는 패널 안의 둥근 사진, 안내문은 회색,
    도움말 링크는 잉크색 (index·search 공용) */
 .modal-image-wrapper {
     position: relative;
@@ -918,7 +918,7 @@ html[data-theme="dark"] .form-check-input:checked {
     padding-bottom: 2px;
 }
 
-/* 추가 순서 설정: 표 판은 시트 위라 투명, 안내문 회색.
+/* 추가 순서 설정: 표 패널은 시트 위라 투명, 안내문 회색.
    선택 행(흰 판 + ✓)은 ③ 표·행 단계의 행 lift 와 함께 옮긴다 */
 .modal .song-table-border {
     background: transparent;
@@ -1024,7 +1024,7 @@ html:has(body.modal-open) {
 }
 
 /* ---------- 그 밖의 Bootstrap 표면 ---------- */
-/* 검색 결과를 감싸는 .card: 콘텐츠 판 안에 또 판을 두지 않는다 (판 속 판 금지) */
+/* 검색 결과를 감싸는 .card: 콘텐츠 패널 안에 또 패널을 두지 않는다 (패널 속 패널 금지) */
 .card {
     background: transparent;
     border: 0;
@@ -1049,8 +1049,8 @@ mark,
 /* ---------- 사진 배경: 씻어낸 노래방 사진 ----------
    사이트 공통으로 가장 뒤에 까는 사진 (D15 — index·검색·애창곡).
    위로 갈수록 선명하고 아래로 갈수록 바탕색에 녹는다. 스크롤하면 함께
-   밀려 올라간다. 내비바(유리)가 이 사진을 실제로 블러하고, 콘텐츠 판은
-   frost-baking.js 가 같은 사진을 판 자리에 맞춰 흐려 구운 그림을 받는다 —
+   밀려 올라간다. 내비바(유리)가 이 사진을 실제로 블러하고, 콘텐츠 패널은
+   frost-baking.js 가 같은 사진을 패널 자리에 맞춰 흐려 구운 그림을 받는다 —
    아래 마스크·페이드·필터 값을 바꾸면 굽기 코드의 값도 함께 맞춘다 (ADR 0002) */
 .photo-bg {
     position: absolute;
@@ -1163,8 +1163,8 @@ html[data-theme="dark"] .sky {
 }
 
 /* ---------- 보케 ----------
-   히어로 사진의 조명 방울을 CSS 로 추상화한 잔상. 콘텐츠 판 바깥의
-   배경에서 떠다니고, 판 안에는 굽기 시점의 모습이 프로스트에 정지 상태로
+   히어로 사진의 조명 방울을 CSS 로 추상화한 잔상. 콘텐츠 패널 바깥의
+   배경에서 떠다니고, 패널 안에는 굽기 시점의 모습이 프로스트에 정지 상태로
    들어간다 (D11). 위치·크기는 glass-motion.js 가 로드마다 랜덤으로 흩뿌린다 */
 .bokeh {
     position: absolute;
@@ -1261,7 +1261,7 @@ html[data-theme="dark"] .bokeh {
    행마다 딜레이를 주면 높이 애니메이션(0.5s)이 끝난 뒤에도 1초 넘게
    행 단위 재페인트가 이어져 버벅임의 원인이 된다 (3턴 피드백).
    시작 시점은 펼침 시작과 동시 — 컬랩스는 위에서부터 드러나므로
-   먼저 보이는 윗부분이 이미 차올라 있어야 빈 유리판이 보이지 않는다.
+   먼저 보이는 윗부분이 이미 차올라 있어야 빈 유리 패널이 보이지 않는다.
    (뒤 선언이 위의 nth-child 딜레이를 덮도록 이 블록은 스태거 뒤에 둘 것) */
 [data-lift].is-lit .collapse tbody tr,
 [data-lift].is-lit .collapsing tbody tr {
@@ -1272,7 +1272,7 @@ html[data-theme="dark"] .bokeh {
 
 [data-lift] .collapsing .song-table,
 [data-lift] .collapse.show .song-table {
-    /* 딜레이 .45s: 판이 거의 다 펼쳐진 다음 내용이 떠오르는 2박자 연출.
+    /* 딜레이 .45s: 패널이 거의 다 펼쳐진 다음 내용이 떠오르는 2박자 연출.
        동시 시작(3턴)은 펼침 클리핑에 모션이 묻혀 보이지 않아 4턴에서 조정 */
     animation: table-in .5s var(--ease-float) .45s both;
 }
@@ -1310,7 +1310,7 @@ tbody tr.more-reveal.more-settled,
 }
 
 /* 접힘과 동시에 내용을 지운다 — 스태거 없이 행 다발이 한 번에 사라지고
-   (.3s, 접힘 1s 보다 빠르게), 비워진 판이 뒤따라 접힌다 (2기 4턴) */
+   (.3s, 접힘 1s 보다 빠르게), 비워진 패널이 뒤따라 접힌다 (2기 4턴) */
 tbody tr.more-reveal.more-settled.more-hide,
 [data-lift].is-lit .collapse tbody tr.more-reveal.more-settled.more-hide {
     opacity: 0;
@@ -1384,19 +1384,19 @@ tbody tr.more-reveal.more-settled.more-hide,
 .song-table-collapse tbody tr:nth-child(14) { --rd: .96s; }
 .song-table-collapse tbody tr:nth-child(n+15) { --rd: 1.03s; }
 
-/* ---------- 크롬 유리 재질: 층 토큰과 두 상태 (5기 4번) ----------
+/* ---------- 크롬 유리 재질: 층 토큰과 세 상태 (5기 4번) ----------
    크롬 유리(.glass-capsule — 브랜드 캡슐, 메뉴 캡슐)의 재질은 여기 한 곳에 있다.
    층마다 토큰: 렌징(--glass-blur, --glass-saturate, --glass-refraction),
    틴트(--glass-tint-a 좌상, --glass-tint-b 우하, --glass-tint-ink 흰색에 섞는 잉크),
    그림자(--glass-shadow-alpha). 상태는 셋이다.
      사진 위           — 맑은 유리: 블러·틴트를 최소로
-     콘텐츠 위         — 뒤 글자의 잔무늬를 블러로 지우고, 흰 판 위에서 묻히지 않게
+     콘텐츠 위         — 보통 유리: 뒤 글자의 잔무늬를 블러로 지우고, 흰 패널 위에서 묻히지 않게
                          틴트에 잉크를 섞는다. 그림자는 진해진다
-     busy 콘텐츠 위    — 콘텐츠 위 재질에서 틴트만 테마 쪽으로 짙게 해 글자 대비를 받친다
-   glass-motion.js 가 캡슐마다 판정해, 콘텐츠 판(.content-panel)이 밑에 들어오면
-   .over-content 를, 글자 밑에 busy 판(.content-panel-busy)이 있으면 대신
+     busy 콘텐츠 위    — 두꺼운 유리: 보통 유리에서 틴트를 훨씬 불투명하게 해 글자 대비를 받친다
+   glass-motion.js 가 캡슐마다 판정해, 콘텐츠 패널(.content-panel)이 밑에 들어오면
+   .over-content 를, 글자 밑에 busy 패널(.content-panel-busy)이 있으면 대신
    .over-content-busy 를 붙인다. 내려가 있는 메뉴 캡슐은 늘 콘텐츠 위다.
-   busy 판은 실측에서 캡슐 글자 대비가 깨지는 판에 손으로 단다. 숫자 토큰을 @property 로 등록해 상태
+   busy 패널은 실측에서 캡슐 글자 대비가 깨지는 패널에 손으로 단다. 숫자 토큰을 @property 로 등록해 상태
    사이를 CSS 전환으로 섞는다(등록을 모르는 브라우저는 전환 없이 바뀐다).
    --glass-refraction 은 glass-material.js 가 url(#필터) 로 채운다.
    하이라이트 층은 glass-material.js 가 곡면의 법선으로 구운 이미지(--glass-specular)
@@ -1614,8 +1614,8 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
 
 /* ---------- 접근성: 모션·투명도·대비 각각 대응 (P14) ----------
    3기 구조에서 손댈 것: 스프링 토큰(탄성)·로드 시퀀스·리빌·행 lift 의 모션,
-   크롬 유리(브랜드 캡슐·메뉴 캡슐·모달 베일·스크롤 베일)의 투명도, 판·버튼·
-   입력창의 테두리 대비. 콘텐츠 판은 불투명 프로스트라 투명도 설정과 무관하고,
+   크롬 유리(브랜드 캡슐·메뉴 캡슐·모달 베일·스크롤 베일)의 투명도, 패널·버튼·
+   입력창의 테두리 대비. 콘텐츠 패널은 불투명 프로스트라 투명도 설정과 무관하고,
    굴절(glass-material.js)은 투명도 최소화에서 스스로 물러선다 */
 /* 모션 최소화: 탄성만 끄고(spatial → effects) 큰 전환은 짧은 크로스페이드.
    편집 모드 컨트롤·집은 행·옮겨진 행(favorite-song.css)과 행 lift 는 같은
@@ -1644,7 +1644,7 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
 }
 
 /* 투명도 최소화: 폴백 사다리의 맨 아래 단 — 크롬 유리를 불투명하게.
-   콘텐츠 판은 원래 불투명이라 손댈 것이 없다.
+   콘텐츠 패널은 원래 불투명이라 손댈 것이 없다.
    두 캡슐은 재질 선언이 뒤에 로드되는 파일(containers·
    common.css)에 있어, 같은 특정도로는 지므로 태그를 붙여 한 단계 올린다 */
 @media (prefers-reduced-transparency: reduce) {
@@ -1685,7 +1685,7 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
     .btn, .btn:hover, .btn:active {
         box-shadow: 0 0 0 1.5px var(--edge-contrast);
     }
-    /* 프로스트(구운 사진)는 덮개 아래로 비쳐 글자 대비를 깎는다 — 바탕색 판만 */
+    /* 프로스트(구운 사진)는 덮개 아래로 비쳐 글자 대비를 깎는다 — 바탕색 패널만 */
     .content-panel { background-image: none; }
     .content-panel.frost-crossfade::before { display: none; }
     /* 맑은 유리는 몸체가 얇은 틴트라 대비가 부족하다 — 거의 불투명으로

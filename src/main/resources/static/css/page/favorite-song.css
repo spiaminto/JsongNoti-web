@@ -46,7 +46,7 @@
 }
 
 /* 좁은 화면: 가운데 정렬한 제목과 오른쪽 버튼이 겹치므로 제목을 왼쪽으로.
-   들여쓰기 10px 는 아래 표 유리판의 곡선 안쪽과 시작선을 맞추기 위함 */
+   들여쓰기 10px 는 아래 표 유리 패널의 곡선 안쪽과 시작선을 맞추기 위함 */
 @media (max-width: 576px) {
     .favorite-song-section .song-header-text {
         justify-content: flex-start;

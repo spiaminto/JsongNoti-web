@@ -7,7 +7,7 @@
  *  2) 스크롤 리빌: [data-lift] 요소가 30% 이상 보이면 .is-lit 을 붙인다 (기존 fade-in.js 대체)
  *  3) scroll edge: 화면 상단 점진 블러 베일(.scroll-veil)을 심고 scrollY > 8 에서
  *     .navbar 에 .scroll-veil-on 을 붙여 켠다 (ui-rnd 5턴). 크롬 유리(.glass-capsule)마다
- *     콘텐츠 판이 밑에 들어오면 .over-content, 글자 밑에 busy 판(.content-panel-busy)이 있으면
+ *     콘텐츠 패널이 밑에 들어오면 .over-content, 글자 밑에 busy 패널(.content-panel-busy)이 있으면
  *     .over-content-busy 를 붙여 상태를 바꾼다 (glass.css 재질 절)
  *  4) 최상단 영역: 최상단 영역을 벗어나면 .navbar 에 .is-past-top-zone 을 붙인다.
  *     브랜드 캡슐 축소(containers.css)와 7) 메뉴 캡슐의 이동이 이 상태를 각자 읽는다
@@ -18,13 +18,13 @@
  *     애창곡 노래 클릭 스크롤(song-search.js)도 쓴다
  *  7) 메뉴 캡슐의 이동: 최상단 영역을 벗어나면 메뉴 캡슐이 돌면서 오른쪽 아래의 엄지 자리로
  *     내려가고 돌아오면 올라온다 (1200px 미만에서만, containers.css)
- *  8) 캡슐별 동적 다크모드: 라이트 테마에서 캡슐이 busy 판(.content-panel-busy)의 영상·이미지
+ *  8) 캡슐별 동적 다크모드: 라이트 테마에서 캡슐이 busy 패널(.content-panel-busy)의 영상·이미지
  *     위에 있으면 밑의 픽셀 밝기를 읽어 어두우면 .is-over-dark 를 붙인다 (glass.css 재질 절).
  *     기본값은 꺼짐(GLASS_TONE_ENABLED)
  *  9) 크롬 유리의 접점 반응: 누르는 자리의 발광(.is-glowing)과 아이콘 버튼 그룹의
  *     선택 렌즈(.selection-lens). 젤 프레스는 CSS 만으로 한다 (glass.css)
  *
- * 콘텐츠 판은 불투명 프로스트라(ADR 0001) 여기서는 손대지 않는다 — 굽기는 frost-baking.js.
+ * 콘텐츠 패널은 불투명 프로스트라(ADR 0001) 여기서는 손대지 않는다 — 굽기는 frost-baking.js.
  *
  * 컬랩스의 높이 전환 자체에는 관여하지 않는다 — 전 페이지 순정 부트스트랩
  * collapse 를 쓴다. (과거 6·7번 높이 예약 구역은 body 그라디언트가 문서
@@ -174,8 +174,8 @@
         };
 
         // 크롬 유리의 상태(glass.css 재질 절): 캡슐마다 셋 중 하나다. 앞의 것이 이긴다.
-        //  .over-content-busy — 캡슐 글자 밑에 busy 판(.content-panel-busy)이 있다
-        //  .over-content      — 콘텐츠 판(.content-panel)이 캡슐 밑에 들어와 있다. 내려가 있는 메뉴 캡슐은 늘 콘텐츠 위다
+        //  .over-content-busy — 캡슐 글자 밑에 busy 패널(.content-panel-busy)이 있다
+        //  .over-content      — 콘텐츠 패널(.content-panel)이 캡슐 밑에 들어와 있다. 내려가 있는 메뉴 캡슐은 늘 콘텐츠 위다
         //  (클래스 없음)      — 사진 위
         // 스크롤 프레임마다 한 번만 판정한다
         var glassCapsules = document.querySelectorAll(".brand-capsule, .menu-capsule");
@@ -206,7 +206,7 @@
 
         var updateGlassStates = function () {
             glassStatesQueued = false;
-            // 판은 검색 결과처럼 나중에 생기기도 하므로 판정할 때마다 찾는다
+            // 패널은 검색 결과처럼 나중에 생기기도 하므로 판정할 때마다 찾는다
             var panelBoxes = Array.prototype.map.call(document.querySelectorAll(".content-panel"), function (panel) {
                 return panel.getBoundingClientRect();
             });
@@ -238,8 +238,8 @@
             });
         };
         window.addEventListener("scroll", queueGlassStates, { passive: true });
-        // 스크롤 없이 판이 움직이는 경우에도 다시 판정한다
-        //  스크롤 리빌의 떠오름이 끝났을 때 ("사용 방법" 줄은 줄이 아니라 안의 판이 떠오른다)
+        // 스크롤 없이 패널이 움직이는 경우에도 다시 판정한다
+        //  스크롤 리빌의 떠오름이 끝났을 때 ("사용 방법" 줄은 줄이 아니라 안의 패널이 떠오른다)
         document.addEventListener("transitionend", function (event) {
             if (event.propertyName === "transform" && event.target.matches("[data-lift], .content-panel")) queueGlassStates();
         });
@@ -257,7 +257,7 @@
         updateGlassStates();
 
         // 캡슐별 동적 다크모드 (glass.css 재질 절의 .is-over-dark): 라이트 테마에서 캡슐이
-        // busy 판(.content-panel-busy)의 영상·이미지 위에 있으면 캡슐 밑의 픽셀 밝기(0 검정 ~ 1 흰색)를
+        // busy 패널(.content-panel-busy)의 영상·이미지 위에 있으면 캡슐 밑의 픽셀 밝기(0 검정 ~ 1 흰색)를
         // 읽어, 어두우면 캡슐을 어두운 유리로 뒤집는다. 브랜드 캡슐은 글자 밑만 본다.
         // 픽셀은 스크롤이 멈췄을 때만 읽는다: 멈추면 바로 한 번, 겹쳐 있는 동안 초당 2번(영상 장면이
         // 바뀐다). 스크롤 중에는 사각형 겹침만 보고, 매체 위를 벗어난 캡슐만 밝은 유리로 돌린다.
@@ -266,7 +266,7 @@
         var GLASS_TONE_ENABLED = false;
         var TONE_DARK_BELOW = .40, TONE_LIGHT_ABOVE = .55, TONE_HOLD_MS = 600;
         var TONE_SAMPLE_MS = 500, TONE_SCROLL_IDLE_MS = 150;
-        var TONE_PAGE_LUMA = .85; // 매체 밖(판·사진)의 밝기
+        var TONE_PAGE_LUMA = .85; // 매체 밖(패널·사진)의 밝기
         var toneCanvas = document.createElement("canvas");
         toneCanvas.width = 16;
         toneCanvas.height = 8;

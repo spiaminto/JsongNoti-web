@@ -25,7 +25,7 @@ html[data-theme="dark"] body::before {
         linear-gradient(180deg, #131b26 0%, #0f151d 45%, #0c1118 100%);
 }
 
-/* 카드: 시트와 같은 28px 반경, 판 그림자 + 먼 그림자. 작게 잡지 않는다 (PC 560px) */
+/* 카드: 시트와 같은 28px 반경, 패널 그림자 + 먼 그림자. 작게 잡지 않는다 (PC 560px) */
 .error-card {
     width: min(560px, 100vw - 32px);
     padding: 3.4rem clamp(2.4rem, 9vw, 4.5rem) 3.2rem;

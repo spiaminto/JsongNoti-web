@@ -381,8 +381,8 @@ $(function () {
     // 두고 WAAPI 로 높이를 전환한다. 표의 일부 행만 여닫는 구조라 bootstrap
     // Collapse 를 쓸 수 없어 index 지난달 컬랩스와 같은 박자를 직접 건다 —
     // 펼침 .35s ease, 접힘은 150ms 뒤 1s cubic-bezier(.16,1,.3,1) 감속
-    // (glass.css .closing 과 동일). 판이 불투명 프로스트라 높이 전환에
-    // 재래스터 비용이 없다 (2기 FLIP 안무는 유리 판 시절의 우회였다).
+    // (glass.css .closing 과 동일). 패널이 불투명 프로스트라 높이 전환에
+    // 재래스터 비용이 없다 (2기 FLIP 안무는 유리 패널 시절의 우회였다).
     // 접힘 팔로우는 index 와 같은 track(glassMotion.followTrackButton) —
     // 매 프레임 버튼 실위치에서 스크롤을 유도해 화면 중앙으로 포착·고정한다.
     // 전환 중 재클릭하면 현재 높이에서 이어서 반전한다
@@ -417,11 +417,11 @@ $(function () {
         let heights = measureMoreHeights($wrapper, $hiddenRows);
         let endHeight = show ? heights.expanded : heights.collapsed;
         let docEl = document.documentElement;
-        // 펼침은 판이 커지므로 프로스트를 목표 높이로 미리 굽는다 (frost-baking.js, 4기 1턴).
+        // 펼침은 패널이 커지므로 프로스트를 목표 높이로 미리 굽는다 (frost-baking.js, 4기 1턴).
         // 접힘은 그림이 잘리기만 한다
         if (show && window.frostBaking) {
             let panel = wrapper.closest('.content-panel');
-            // 지금 판 높이에서 래퍼의 현재 높이를 끝 높이로 바꿔 넣는다
+            // 지금 패널 높이에서 래퍼의 현재 높이를 끝 높이로 바꿔 넣는다
             if (panel) window.frostBaking.prebakePanelAtHeight(panel, panel.offsetHeight - wrapper.getBoundingClientRect().height + endHeight);
         }
         // 접힘 중 문서가 위쪽에서 줄어들 때 스크롤 앵커링이 y 를 덮어써

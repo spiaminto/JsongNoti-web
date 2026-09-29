@@ -3,7 +3,7 @@
    번호/노래 2열 구성. 아티스트는 열이 아니라 곡 항목 내부의 보조줄
    (.song-singer·.song-info)로 들어간다 — 열 폭 부족으로 긴 제목이 깨지던 문제를
    해결한 Tone Up 시안의 정보 구조 결정을 계승한 것.
-   3기(ui-overhaul-3): 행은 콘텐츠 판(.content-panel) 위에 직접 앉고,
+   3기(ui-overhaul-3): 행은 콘텐츠 패널(.content-panel) 위에 직접 앉고,
    hover·선택 상태는 제목 셀의 lift 판(td.song-title::before)이 맡는다.
 
    markup 계약 (JS 가 클래스로 접근하므로 클래스 이름은 바꾸지 않는다):
@@ -23,8 +23,8 @@
    ========================================================================== */
 
 /* ---------- 표 래퍼 ----------
-   C 플랫(19턴): 표를 감싸던 안쪽 유리판(배경·외곽선·그림자)을 걷어냈다 —
-   유리 타일 안에 또 유리판이 앉는 "유리 속 유리"가 어색하고, Apple HIG 도
+   C 플랫(19턴): 표를 감싸던 안쪽 유리 패널(배경·외곽선·그림자)을 걷어냈다 —
+   유리 타일 안에 또 유리 패널이 앉는 "유리 속 유리"가 어색하고, Apple HIG 도
    유리는 기능 레이어 전용이지 콘텐츠 레이어에 쓰지 말라고 한다. 행은
    바깥 유리 타일 위에 직접 앉고, "표의 시작"은 표 제목(h2)의 밑선이 맡는다.
    래퍼 자체는 더보기 높이 전환의 대상이자 클리핑 박스로 남는다 */
@@ -213,7 +213,7 @@ body.is-scrolling .song-table tbody tr:hover:not(.song-row-will-switch-selected)
 .song-table tbody td.song-number {
     /* thead 가 숨어 fixed 레이아웃의 열 폭 기준이 없으므로 첫 행 td 가
        번호 열 폭을 선언한다 (thead th:first-child 와 같은 값). 5.2rem → 20% (4기 9턴 후속,
-       사용자 결정) — 표 폭에 비례하므로 좁은 폭에서 좁아지고 넓은 판에서는 넓어진다 */
+       사용자 결정) — 표 폭에 비례하므로 좁은 폭에서 좁아지고 넓은 패널에서는 넓어진다 */
     width: 20%;
     text-align: center;
     padding: .8rem .2rem 0;
@@ -333,7 +333,7 @@ a.song-title-text:hover {
 }
 
 /* ---------- 표 제목 (h2) + 추가일 chip ----------
-   C 플랫(19턴): 판과 헤더 띠가 사라진 자리에서 제목 밑선이 "표의 시작"을
+   C 플랫(19턴): 패널과 헤더 띠가 사라진 자리에서 제목 밑선이 "표의 시작"을
    맡는다. 밑선 색은 기본 중립 잉크, 브랜드 표는 :has() 로 브랜드 잉크
    (thead tint 가 지니던 TJ/금영 식별을 밑선이 이어받는다) */
 .song-header-text {
@@ -373,7 +373,7 @@ a.song-title-text:hover {
     transition: height 0.5s ease; /* Bootstrap 기본값 0.35s 보다 여유있게 */
 }
 
-/* 컬랩스 래퍼: 유리판(.song-table-border)의 margin·border 를 래퍼 안쪽에 가둬
+/* 컬랩스 래퍼: 유리 패널(.song-table-border)의 margin·border 를 래퍼 안쪽에 가둬
    height 애니메이션에 함께 접히게 한다 (6턴-2 덜컥임 해결).
    BFC 를 상시로 유지해야 margin 이 펼친 상태에서 래퍼 밖으로 새어나가
    (margin collapsing) 닫기 시작 프레임에 튀지 않는다 — overflow: hidden

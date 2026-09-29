@@ -6,7 +6,7 @@
  * 현상(FOUC)이 없다. jQuery 보다 먼저 실행되므로 순수 JS 로 쓴다.
  *
  * 스위치 두 개를 함께 세팅한다:
- *   html[data-theme="dark"]    — glass.css 의 3기 색 토큰(잉크·판·배경) 스위치
+ *   html[data-theme="dark"]    — glass.css 의 3기 색 토큰(잉크·패널·배경) 스위치
  *   html[data-bs-theme="dark"] — Bootstrap 기본 컴포넌트(모달·폼) 색
  *
  * 초기값 규칙: localStorage 'darkMode' 가 'true' 면 dark, '' 면 cream(사용자가 끈 것),
