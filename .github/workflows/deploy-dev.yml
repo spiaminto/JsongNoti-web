@@ -1,0 +1,55 @@
+# deploy-dev 태그가 가리키는 커밋을 빌드해 dev 서버에 배포합니다.
+# 태그는 scripts/deploy-dev.sh 가 옮겨 답니다.
+name: Deploy dev
+
+on:
+  push:
+    tags: [deploy-dev]
+
+concurrency:
+  group: deploy-dev
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - run: ./gradlew bootJar
+
+      - name: 서버로 복사하고 재시작
+        env:
+          SSH_KEY: ${{ secrets.DEV_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEV_KNOWN_HOSTS }}
+          TARGET: ${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          JAR=$(ls build/libs/*.jar)
+          scp "$JAR" "$TARGET:/home/ubuntu/jsongnoti-dev/app.jar.new"
+          ssh "$TARGET" "cd /home/ubuntu/jsongnoti-dev \
+            && { [ ! -f app.jar ] || cp app.jar app.jar.prev; } \
+            && mv app.jar.new app.jar \
+            && echo '$GITHUB_SHA $(date -u +%FT%TZ) $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID' > deployed.txt \
+            && sudo systemctl restart jsongnoti-dev"
+
+      - name: 앱이 응답하는지 확인
+        env:
+          TARGET: ${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }}
+        run: |
+          ssh "$TARGET" 'for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" localhost:8080/ || true)
+            [ "$code" = 200 ] && echo "앱 응답 200 (${i}회째 확인)" && exit 0
+            sleep 5
+          done
+          echo "150초 안에 앱이 200 을 돌려주지 않았습니다"; journalctl -u jsongnoti-dev -n 40 --no-pager; exit 1'
