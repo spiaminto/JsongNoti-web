@@ -53,4 +53,4 @@ jobs:
             [ "$code" = 200 ] && echo "앱 응답 200 (${i}회째 확인)" && exit 0
             sleep 5
           done
-          echo "150초 안에 앱이 200 을 돌려주지 않았습니다"; journalctl -u jsongnoti-dev -n 40 --no-pager; exit 1'
+          echo "150초 안에 앱이 200 을 돌려주지 않았습니다. 앱 로그는 공개 로그에 남기지 않으므로 서버의 journalctl -u jsongnoti-dev 에서 확인하세요."; exit 1'
