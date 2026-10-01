@@ -44,6 +44,9 @@
     width: 100%;
     margin: 0 auto;
     max-width: 768px;
+    /* .row 자식의 좌우 거터 12px 를 8px 로 줄인다. card 의 px-1 4px 와 합쳐 .row 의 -12px 를 상쇄해
+       결과 표가 신곡 표처럼 패널 여백에서 바로 시작한다 */
+    padding: 0 0.5rem;
 }
 
 /* 검색 결과 표는 1열이라 index 의 2열 표보다 정보 밀도가 낮다 — 768px 이상에서
@@ -62,7 +65,7 @@
 }
 
 .unified-search-group {
-    padding: 1rem 0.5rem 0;
+    padding: 1rem 0 0;
 }
 
 /* C 플랫(19턴): 그룹 사이 구분선은 지운다("표 맨아래 border" — 사용자 피드백).
