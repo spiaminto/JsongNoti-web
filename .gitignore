@@ -4,6 +4,7 @@ buildNumber.txt
 debug.log
 .playwright-mcp/
 .mcp.json
+.env
 
 # LOCAL DOCS
 docs/
