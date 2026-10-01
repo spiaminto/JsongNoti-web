@@ -35,6 +35,10 @@ START=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 echo "배포 대상: $BRANCH $(git log -1 --format='%h %s')"
 git push -u origin "$BRANCH"
 git tag -f "$TAG" "$SHA" >/dev/null
+# 태그가 이미 이 커밋에 있으면 push 해도 바뀐 것이 없어 Actions 가 시작되지 않으므로, 원격 태그를 먼저 지웁니다.
+if [ "$(git ls-remote origin "refs/tags/$TAG" | cut -f1)" = "$SHA" ]; then
+  git push -q origin ":refs/tags/$TAG"
+fi
 git push -f origin "refs/tags/$TAG"
 
 echo "Actions 실행을 기다립니다 (최대 $((TIMEOUT_SECONDS / 60))분)."
