@@ -30,11 +30,14 @@ jobs:
         env:
           SSH_KEY: ${{ secrets.DEV_SSH_KEY }}
           KNOWN_HOSTS: ${{ secrets.DEV_KNOWN_HOSTS }}
-          TARGET: ${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }}
+          DEV_USER: ${{ secrets.DEV_USER }}
+          DEV_HOST: ${{ secrets.DEV_HOST }}
         run: |
+          TARGET="$(printf '%s' "$DEV_USER" | tr -d '[:space:]')@$(printf '%s' "$DEV_HOST" | tr -d '[:space:]')"
+          echo "TARGET=$TARGET" >> "$GITHUB_ENV"
           install -m 700 -d ~/.ssh
-          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
-          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          printf '%s\n' "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" | tr -d '\r' > ~/.ssh/known_hosts
           JAR=$(ls build/libs/*.jar)
           scp "$JAR" "$TARGET:/home/ubuntu/jsongnoti-dev/app.jar.new"
           ssh "$TARGET" "cd /home/ubuntu/jsongnoti-dev \
@@ -44,8 +47,6 @@ jobs:
             && sudo systemctl restart jsongnoti-dev"
 
       - name: 앱이 응답하는지 확인
-        env:
-          TARGET: ${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }}
         run: |
           ssh "$TARGET" 'for i in $(seq 1 30); do
             code=$(curl -s -o /dev/null -w "%{http_code}" localhost:8080/ || true)
