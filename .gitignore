@@ -19,9 +19,6 @@ CLAUDE.md
 
 # OPERATION
 application-*.properties
-src/main/resources/static/assets/**
-src/main/resources/templates/privacy/**
-src/main/resources/templates/terms/**
 
 src/test/
 
