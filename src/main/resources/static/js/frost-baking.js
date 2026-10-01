@@ -76,6 +76,25 @@
         panels = Array.prototype.slice.call(document.querySelectorAll(PANEL_SELECTOR));
         if (!photoElement || !panels.length) return;
 
+        // [임시 비교 스위치] ?frost=off 는 굽지 않은 바탕색 패널, ?frost=clear 는 바탕색 없이 덮개색만 얹은 패널,
+        // ?frost=mix 는 히어로만 backdrop-filter 이고 나머지는 clear, 라이트 덮개 .75
+        var frostMode = new URLSearchParams(location.search).get("frost");
+        if (frostMode === "off") return;
+        if (frostMode === "clear") {
+            panels.forEach(function (panel) { panel.style.backgroundColor = "transparent"; });
+            return;
+        }
+        if (frostMode === "mix") {
+            var mixStyle = document.createElement("style");
+            mixStyle.textContent =
+                ".content-panel { background-color: transparent; }" +
+                "html:not([data-theme='dark']) .content-panel { --panel-frost-cover: rgb(255 255 255 / .75); }" +
+                ".hero.content-panel { -webkit-backdrop-filter: blur(20px) saturate(1.8); backdrop-filter: blur(20px) saturate(1.8); }" +
+                "html[data-theme='dark'] .hero.content-panel { -webkit-backdrop-filter: blur(20px) saturate(.75); backdrop-filter: blur(20px) saturate(.75); }";
+            document.head.appendChild(mixStyle);
+            return;
+        }
+
         loadPhoto(function () {
             bakePanels(panels);
         });
