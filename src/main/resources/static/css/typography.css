@@ -1,0 +1,197 @@
+/* ==========================================================================
+   typography.css — 글자 역할 규칙 (역할 하나 = 규칙 하나)
+
+   역할과 값은 tokens.css 의 --type-<역할>-* 가 정한다. 여기 나열된 선택자는 다른 파일에서
+   글자 크기·줄간격·자간·굵기를 다시 적지 않는다. 역할을 고치려면 tokens.css 의 그 역할 값을,
+   어떤 글자의 역할을 바꾸려면 아래 목록에서 선택자를 다른 역할로 옮긴다.
+   의미 있는 선택자가 없는 자리에는 역할 클래스(.text-<역할>)를 붙인다.
+   커스텀 CSS 가운데 맨 마지막에 로드한다.
+   ========================================================================== */
+
+/* ---------- 제목 ---------- */
+
+/* large-title: 페이지 제목 */
+h1 {
+    font-size: var(--type-large-title-size);
+    line-height: var(--type-large-title-lh);
+    letter-spacing: var(--type-large-title-ls);
+    font-weight: var(--type-large-title-weight);
+}
+
+/* title1: 섹션 제목, 오류 카드 제목 */
+h2,
+.error-card h1 {
+    font-size: var(--type-title1-size);
+    line-height: var(--type-title1-lh);
+    letter-spacing: var(--type-title1-ls);
+    font-weight: var(--type-title1-weight);
+}
+
+/* title2: 모달 제목 */
+.modal-title {
+    font-size: var(--type-title2-size);
+    line-height: var(--type-title2-lh);
+    letter-spacing: var(--type-title2-ls);
+    font-weight: var(--type-title2-weight);
+}
+
+/* title3: 패널 제목과 소제목 */
+h3,
+h4,
+h5,
+h6 {
+    font-size: var(--type-title3-size);
+    line-height: var(--type-title3-lh);
+    letter-spacing: var(--type-title3-ls);
+    font-weight: var(--type-title3-weight);
+}
+
+/* headline: 본문 크기의 소제목 */
+.unified-search-group-header h4,
+#agreementModal .modal-body-content h4 {
+    font-size: var(--type-headline-size);
+    line-height: var(--type-headline-lh);
+    letter-spacing: var(--type-headline-ls);
+    font-weight: var(--type-headline-weight);
+}
+
+/* hero: 홈 히어로 헤드라인 */
+.hero .headerText {
+    font-size: var(--type-hero-size);
+    line-height: var(--type-hero-lh);
+    letter-spacing: var(--type-hero-ls);
+    font-weight: var(--type-hero-weight);
+}
+
+/* brand: 상단바 브랜드 캡슐 이름 */
+.brand-name .navbar-brand {
+    font-size: var(--type-brand-size);
+    line-height: var(--type-brand-lh);
+    letter-spacing: var(--type-brand-ls);
+    font-weight: var(--type-brand-weight);
+}
+
+/* ---------- 노래 표 ---------- */
+
+/* table: 노래 표 본문 */
+.song-table {
+    font-size: var(--type-table-size);
+    line-height: var(--type-table-lh);
+    letter-spacing: var(--type-table-ls);
+    font-weight: var(--type-table-weight);
+}
+
+/* table-label: 표 머리글과 번호 */
+.song-table thead th,
+.song-number span {
+    font-size: var(--type-table-label-size);
+    line-height: var(--type-table-label-lh);
+    letter-spacing: var(--type-table-label-ls);
+    font-weight: var(--type-table-label-weight);
+}
+
+/* ---------- 본문 ---------- */
+
+/* body: 본문·설명글·폼 라벨·모달 본문 */
+body,
+.modal-dialog,
+.hero .hero-description,
+.u-text p,
+.error-card p,
+.inset-group-title,
+.inset-group .form-check-label,
+#defaultInfoPreview {
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-lh);
+    letter-spacing: var(--type-body-ls);
+    font-weight: var(--type-body-weight);
+}
+
+/* subheadline: 짧은 안내·보조줄 */
+.song-singer,
+.song-info,
+#favoriteSongAddForm .song-info,
+#searchHintContainer p,
+.songs-intro,
+.login-modal-info,
+#agreementModal .modal-body-content,
+#unsubscribeModal .modal-body p,
+#deleteUserModal .modal-body p,
+#presentOrderModal .modal-body .text-center,
+.text-input::placeholder,
+.text-subheadline {
+    font-size: var(--type-subheadline-size);
+    line-height: var(--type-subheadline-lh);
+    letter-spacing: var(--type-subheadline-ls);
+    font-weight: var(--type-subheadline-weight);
+}
+
+/* footnote: 각주 */
+.footer p,
+.agree,
+.unified-search-result-count,
+.search-help-link,
+.text-footnote {
+    font-size: var(--type-footnote-size);
+    line-height: var(--type-footnote-lh);
+    letter-spacing: var(--type-footnote-ls);
+    font-weight: var(--type-footnote-weight);
+}
+
+/* label: 메뉴 캡슐 아이콘 라벨 */
+.icon-link {
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-lh);
+    letter-spacing: var(--type-label-ls);
+    font-weight: var(--type-label-weight);
+}
+
+/* caption: 배지 */
+.song-header-subtext {
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-lh);
+    letter-spacing: var(--type-caption-ls);
+    font-weight: var(--type-caption-weight);
+}
+
+/* ---------- 굵기 변형: 역할 안의 강조 ---------- */
+
+b,
+strong,
+.song-title-text {
+    font-weight: var(--fw-title);
+}
+
+.song-singer {
+    font-weight: var(--fw-mid);
+}
+
+.inset-group-title,
+.login-modal-info a,
+.u-text a,
+.agreement-btn,
+.hint-pick,
+.hint-target,
+.footer-icon-container a {
+    font-weight: var(--fw-strong);
+}
+
+/* ---------- 예외: 역할 글자에 딸린 상대 크기와 입력칸 하한 ---------- */
+
+/* 루비: 얹힌 글자의 비율로 줄이고 11px 아래로는 내리지 않는다 */
+.song-table rt {
+    font-size: max(.62em, 11px);
+    font-weight: var(--fw-strong);
+}
+
+/* 가수 대표값: 원본값보다 한 단 작게 */
+.song-singer-korean {
+    font-size: smaller;
+    font-weight: var(--fw-body);
+}
+
+/* 입력칸 글자: iOS Safari 가 16px 아래 입력칸에서 화면을 확대하므로 16px 아래로 내리지 않는다 */
+.field-row > .form-control,
+.search-field > .form-control {
+    font-size: max(16px, var(--fs-body));
+}

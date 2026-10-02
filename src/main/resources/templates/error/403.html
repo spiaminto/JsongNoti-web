@@ -6,10 +6,12 @@
     <title>403 - 제이노티</title>
     <!-- dark 초기값: 스타일시트보다 먼저 동기 실행 (theme-init.js, FOUC 방지) -->
     <script src="/static/js/theme-init.js" th:src="@{/js/theme-init.js}"></script>
+    <link href="/static/css/tokens.css" th:href="@{/css/tokens.css}" rel="stylesheet"/>
     <!-- 한글 안전망 글꼴: SUITE 에 없는 음절만 (font-fallback.css) -->
     <link href="/static/css/font-fallback.css" th:href="@{/css/font-fallback.css}" rel="stylesheet"/>
 <link href="/static/css/glass.css" th:href="@{/css/glass.css}" rel="stylesheet"/>
     <link href="/static/css/page/error.css" th:href="@{/css/page/error.css}" rel="stylesheet"/>
+    <link href="/static/css/typography.css" th:href="@{/css/typography.css}" rel="stylesheet"/>
 </head>
 <body>
 <main class="error-card content-panel">

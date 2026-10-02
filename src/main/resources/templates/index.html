@@ -17,6 +17,7 @@
   <!-- dark 초기값: 스타일시트보다 먼저 동기 실행 (theme-init.js, FOUC 방지) -->
   <script src="/static/js/theme-init.js" th:src="@{/js/theme-init.js}"></script>
   <!-- 웹폰트는 glass.css 가 weight 매핑과 함께 로드한다 -->
+  <link href="/static/css/tokens.css" th:href="@{/css/tokens.css}" rel="stylesheet"/>
   <!-- 한글 안전망 글꼴: SUITE 에 없는 음절만 (font-fallback.css) -->
   <link href="/static/css/font-fallback.css" th:href="@{/css/font-fallback.css}" rel="stylesheet"/>
   <link href="/static/css/glass.css" th:href="@{/css/glass.css}" rel="stylesheet"/>
@@ -26,6 +27,7 @@
   <link href="/static/css/song-table.css" th:href="@{/css/song-table.css}" rel="stylesheet"/>
   <link href="/static/css/footer.css" th:href="@{/css/footer.css}" rel="stylesheet"/>
   <link href="/static/css/page/index.css" th:href="@{/css/page/index.css}" rel="stylesheet"/>
+  <link href="/static/css/typography.css" th:href="@{/css/typography.css}" rel="stylesheet"/>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-JFWLSXBEYR"></script>
   <script>
@@ -624,15 +626,15 @@
                 data-bs-target="#unsubscribeModal">
           구독 취소
         </button>
-        <p id="footerText" class="text-muted small">&copy; 제이노티 by JsongNoti. All Rights
+        <p id="footerText" class="text-muted">&copy; 제이노티 by JsongNoti. All Rights
           Reserved.</p>
-        <p id="footerTextCopyright" class="small mb-0">icons Designed by
+        <p id="footerTextCopyright" class="mb-0">icons Designed by
           <a class="text-muted text-decoration-none" href="https://www.freepik.com/">Freepik</a>
         </p>
         <div id="footerTextLinkWrapper" class="">
-          <p id="footerTextTermsOfUse" class="d-inline-block small mb-0"><a
+          <p id="footerTextTermsOfUse" class="d-inline-block mb-0"><a
               class="text-muted text-decoration-none" href="/terms-of-use">이용약관</a></p>
-          <p id="footerTextPrivacyPolicy" class="d-inline-block small mb-0 ms-2"><a
+          <p id="footerTextPrivacyPolicy" class="d-inline-block mb-0 ms-2"><a
               class="text-muted text-decoration-none" href="/privacy-policy"><b>개인정보처리방침</b></a></p>
         </div>
       </div>
@@ -641,7 +643,7 @@
           <li class="list-inline-item me-4">&nbsp;
             <a class="text-decoration-none" href="https://github.com/spiaminto/JsongNoti-web">
               Github
-              <i class="bi-github fs-3"></i>
+              <i class="bi-github footer-icon"></i>
             </a>
           </li>
           <li class="list-inline-item contact-mail-pc me-4">
@@ -649,14 +651,14 @@
                href="https://mail.google.com/mail/?view=cm&fs=1&to=jsongnoti%2Bcs@gmail.com&su=일본 신곡 알림이 문의"
                target="_blank">
               메일문의
-              <i class="bi-envelope fs-3"></i>
+              <i class="bi-envelope footer-icon"></i>
             </a>
           </li>
           <li class="list-inline-item contact-mail-mobile me-4">
             <a class="text-decoration-none"
                href="mailto:jsongnoti+cs@gmail.com?subject=일본 신곡 알림이 문의">
               메일문의
-              <i class="bi-envelope fs-3"></i>
+              <i class="bi-envelope footer-icon"></i>
             </a>
           </li>
           <!-- dark 토글 (common-handlers.js) -->
@@ -664,7 +666,7 @@
             <a class="text-decoration-none"
                href="">
               다크모드
-              <i class="bi bi-moon-fill fs-3"></i>
+              <i class="bi bi-moon-fill footer-icon"></i>
             </a>
           </li>
         </ul>

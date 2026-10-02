@@ -8,7 +8,7 @@
    사진 위의 히어로만 뒤를 흐린다(.content-panel-blur).
 
    이 파일이 담당하는 것:
-     1) 디자인 토큰(:root, dark 는 html[data-theme="dark"])과 웹폰트(SUITE 가변) 선언
+     1) 웹폰트(SUITE 가변) 선언 — 디자인 토큰은 tokens.css, 글자 역할은 typography.css
      2) 콘텐츠 패널(.content-panel)과 Bootstrap 컴포넌트(.btn, .form-control, .modal 등)의
         시각 오버라이드 — 동작(JS)은 Bootstrap 그대로 두고 겉만 바꾼다
      3) 배경 연출: 빛 웅덩이(body::before), 사진 배경(.photo-bg), 햇살(.sky/.ray), 보케(.bokeh)
@@ -16,7 +16,7 @@
      5) 접근성: reduced-motion / reduced-transparency / contrast 대응
 
    레이아웃과 페이지 구성은 다루지 않는다 (containers.css, page/*.css 담당).
-   Bootstrap CSS 뒤, 다른 커스텀 CSS 앞에 로드해야 한다.
+   Bootstrap CSS·tokens.css 뒤, 다른 커스텀 CSS 앞에 로드해야 한다.
    ========================================================================== */
 
 /* ---------- 웹폰트 ----------
@@ -33,133 +33,6 @@
     font-weight: 300 900;
     font-display: swap;
     src: url(../fonts/SUITE-Variable.woff2) format("woff2-variations");
-}
-
-/* ---------- 디자인 토큰 ---------- */
-:root {
-    /* 잉크(글자) 4단계: 진한 · 보조 · 옅은 · 흐린 */
-    --ink: #1b232b;
-    --ink-2: #45515c;
-    --ink-3: #66717e;
-    --ink-4: #8792a0;
-
-    /* 바탕 */
-    --bg: #eaf0f4;
-
-    /* 콘텐츠 패널: 반투명 덮개 + 패널 그림자. --panel-bg 는 불투명 패널이
-       필요한 곳(투명도 최소화·고대비·backdrop-filter 미지원의 히어로)의 바탕 */
-    --panel-bg: #fff;
-    --panel-cover: rgb(255 255 255 / .75);
-    --panel-shadow:
-        0 1px 0 rgb(255 255 255 / .9) inset,
-        0 0 0 1px rgb(30 42 56 / .06),
-        0 18px 48px -12px rgb(30 42 56 / .18);
-
-    /* 버튼 사다리 (D20, iOS HIG 3단 + xsmall): 높이(줄 높이)·글자 크기 쌍.
-       large 는 단독 카드 버튼·모달 발 버튼(터치 44px 충족), medium 은 입력
-       그룹 옆·헤더 컨트롤, small 은 표 안 보조 컨트롤, xsmall 은 패널 헤더
-       옆 순서변경·삭제. 패딩·글자를 감으로 정하지 않고 이 중 하나를 고른다 */
-    --btn-h-lg: 50px;
-    --btn-h-md: 36px;
-    --btn-h-sm: 28px;
-    --btn-h-xs: 24px;
-    --btn-font-lg: 17px;
-    --btn-font-md: 15px;
-    --btn-font-sm: 13px;
-    --btn-font-xs: 12px;
-
-    /* 햇살 색 (rgb 채널값 — rgb(var(--sun) / a) 형태로 사용) */
-    --sun: 255 240 205;
-
-    /* 서비스 브랜드: TJ·금영 식별색을 유리에 맞춘 tint + 어두운 잉크 */
-    --tj-tint: rgb(249 80 1 / .14);
-    --tj-ink: #933a05;
-    --ky-tint: rgb(100 149 237 / .18);
-    --ky-ink: #2f5495;
-
-    /* 추가일 badge·최신곡 highlight 공용 */
-    --badge-tint: rgb(255 200 120 / .30);
-    --badge-ink: #7a5210;
-
-    /* 위험 동작(구독취소·탈퇴) */
-    --danger-tint: rgb(255 122 96 / .18);
-    --danger-ink: #a03015;
-
-    /* 스프링 (P11): 위치·크기·코너의 움직임은 살짝 튀는 spatial 곡선 하나,
-       색·투명도는 튀지 않는 effects 곡선. spatial 은 언더댐핑 스텝 응답을
-       linear() 로 샘플링한 값 — 정본 계산기는
-       docs/decisions/references/_ux/_material-expressive/_raw/13-spring-linear.js.
-       reduced-motion 에서는 spatial 을 effects 로 바꾼다 (파일 끝 접근성 절) */
-    --spring-spatial: linear(0, 0.013 0.6%, 0.05 1.2%, 0.2 2.5%, 0.55 6%, 0.86 10%, 1.05 14%, 1.12 18%, 1.1 22%, 1.03 30%, 0.99 38%, 1);
-    --ease-effects: ease;
-    /* 떠오름(로드 시퀀스·스크롤 리빌)용 감속 곡선 */
-    --ease-float: cubic-bezier(.22, .8, .3, 1);
-
-    /* 글자 사다리 (P21, 4기 7턴): iOS Dynamic Type 기본값을 px 로 옮긴 8단. 모든 폭에서
-       같은 값이고 히어로만 768·1200 에서 커진다 — 쓰는 쪽은 var(--fs-*) 만 적고 vw·미디어
-       쿼리를 두지 않는다. 버튼 글자는 위의 --btn-font-* (D20) 가 따로 정한다 */
-    --fs-xs: 12px;    /* caption: 배지 */
-    --fs-sm: 13px;    /* footnote: 푸터·아이콘 라벨·동의 문구·결과 수 */
-    --fs-md: 15px;    /* subheadline: 표 머리글·번호·보조줄, 안내문, placeholder */
-    --fs-body: 17px;  /* body: 본문·표 제목 셀·입력창·모달 항목 */
-    --fs-lg: 20px;    /* title3: 패널 제목 h3·상단바 브랜드·h4 */
-    --fs-xl: 22px;    /* title2: 모달 제목 */
-    --fs-2xl: 28px;   /* title1: 섹션 제목 h2, 에러 카드 제목 */
-    --fs-title-large: 34px; /* large title: 페이지 제목 h1 (홈은 히어로가 대신) */
-    --fs-hero: 26px;  /* index 히어로 헤드라인 */
-
-    /* 굵기 사다리 (4기 9턴 후속): SUITE 가변이 300~900 을 모두 그리므로 얼굴 없는 값이
-       한 단 굵게 그려지던 문제가 없다. 다섯 단만 쓰고, 고를 때는 크기를 함께 본다 —
-       작은 글자일수록 같은 강조에 더 굵어야 하므로 13px 이하의 강조는 strong(600),
-       18px 이상의 제목은 title(700) 이다. body 아래(300 이하)는 쓰지 않는다:
-       18px 아래에서 흐려진다. 글자 크기는 위의 --fs-* 가 정한다 */
-    --fw-body: 400;     /* 본문, 보조줄, 대표값, 입력창 */
-    --fw-mid: 500;      /* 본문보다 한 단: 아티스트, 노래 번호, 표 머리글 */
-    --fw-strong: 600;   /* 작은 글자의 강조: 버튼, 배지, 링크, 루비(11px) */
-    --fw-title: 700;    /* 제목: 노래 제목, h1~h6, 모달 제목 */
-    --fw-display: 800;  /* 한 화면에 하나뿐인 표시 (지금은 쓰는 곳 없음) */
-
-    /* 반경 사다리. 반경을 가진 컨테이너는 --r-parent 를 함께 내려주고, 가장자리에
-       맞닿는 자식은 calc(var(--r-parent) - 간격) 으로 받는다. 홀로 놓이면 --r-control */
-    --r-panel: 24px;     /* 콘텐츠 패널 */
-    --r-sheet: 28px;     /* 모달, 에러 카드 */
-    --r-control: 14px;   /* 입력, 보조 버튼, 경고, lift 판, 그룹 */
-    --r-capsule: 999px;  /* 상단의 두 캡슐, 주요 액션 버튼, 배지 */
-}
-
-@media (min-width: 768px) {
-    :root {
-        --fs-hero: 32px;
-    }
-}
-
-@media (min-width: 1200px) {
-    :root {
-        --fs-hero: 34px;
-    }
-}
-
-/* dark (D7, D22): 색 토큰이 통째로 바뀌고 사진은 어둡게 눌린다.
-   스위치는 html[data-theme="dark"] — 초기값은 theme-init.js, 토글은
-   common-handlers.js. Bootstrap 기본색을 위해 data-bs-theme 도 함께 세팅된다 */
-html[data-theme="dark"] {
-    --ink: #eef2f6;
-    --ink-2: #c3ccd6;
-    --ink-3: #a7b1bc;
-    --ink-4: #8b96a3;
-    --bg: #121a24;
-    --tj-ink: #ffb088;
-    --ky-ink: #9fc0ff;
-    --badge-tint: rgb(255 200 120 / .18);
-    --badge-ink: #ffd18a;
-    --danger-tint: rgb(255 69 58 / .26);
-    --danger-ink: #ff5a50;
-    --panel-bg: #1b2430;
-    --panel-cover: rgb(27 36 48 / .72);
-    --panel-shadow:
-        0 1px 0 rgb(255 255 255 / .06) inset,
-        0 0 0 1px rgb(255 255 255 / .06),
-        0 24px 60px -16px rgb(0 0 0 / .6);
 }
 
 /* ---------- 전역 베이스 ---------- */
@@ -473,7 +346,6 @@ html[data-theme="dark"] .delete-favorite-song-complete-button {
     max-width: none;
     height: var(--btn-h-lg);
     padding: 0 1.1rem;
-    font-size: max(16px, var(--fs-body));
     border-radius: var(--r-control);
 }
 
@@ -614,10 +486,6 @@ html[data-theme="dark"] .form-check-input:checked {
     --bs-modal-width: 440px;
 }
 
-.modal-dialog {
-    font-size: var(--fs-body);
-}
-
 .modal-content {
     background: var(--panel-bg);
     color: var(--ink);
@@ -637,9 +505,6 @@ html[data-theme="dark"] .form-check-input:checked {
 
 .modal-title {
     color: var(--ink);
-    font-size: var(--fs-xl);
-    font-weight: var(--fw-title);
-    letter-spacing: -.01em;
 }
 
 .modal-body {
@@ -746,27 +611,20 @@ html[data-theme="dark"] .form-check-input:checked {
 .login-modal-info {
     padding: 0 4px;
     color: var(--ink-2);
-    font-size: var(--fs-md);
-    line-height: 1.6;
 }
 
 .login-modal-info a {
     color: var(--ink);
-    font-weight: var(--fw-strong);
     white-space: nowrap;
 }
 
 /* 이메일 수집 동의: 본문 회색, 소제목만 잉크 */
 #agreementModal .modal-body-content {
     color: var(--ink-2);
-    font-size: var(--fs-md);
-    line-height: 1.7;
 }
 
 #agreementModal .modal-body-content h4 {
     color: var(--ink);
-    font-size: var(--fs-body);
-    font-weight: var(--fw-title);
     margin: 0 0 8px;
 }
 
@@ -774,7 +632,6 @@ html[data-theme="dark"] .form-check-input:checked {
 #unsubscribeModal .modal-body p,
 #deleteUserModal .modal-body p {
     color: var(--ink-2);
-    font-size: var(--fs-md);
     margin-bottom: 14px;
 }
 
@@ -790,8 +647,6 @@ html[data-theme="dark"] .form-check-input:checked {
     margin: 16px 0 8px;
     padding-left: 14px;
     color: var(--ink-2);
-    font-size: var(--fs-body);
-    font-weight: var(--fw-strong);
 }
 
 .inset-group-title:first-child {
@@ -830,7 +685,6 @@ html[data-theme="dark"] .form-check-input:checked {
     padding: 12px 16px;
     cursor: pointer;
     color: var(--ink);
-    font-size: var(--fs-body);
 }
 
 /* ✓: 잉크색 꺾쇠 — 선택 시 스프링으로 튀어나온다 */
@@ -883,7 +737,6 @@ html[data-theme="dark"] .form-check-input:checked {
 
 #presentOrderModal .modal-body .text-center {
     color: var(--ink-2);
-    font-size: var(--fs-md);
 }
 
 /* dark 시트 */

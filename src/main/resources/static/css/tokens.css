@@ -1,0 +1,264 @@
+/* ==========================================================================
+   tokens.css — 디자인 토큰의 원본 (이 파일 하나뿐이다)
+
+   다른 CSS 는 값을 직접 쓰지 않고 여기의 토큰을 쓴다. 로드 순서: Bootstrap CSS 바로 뒤,
+   다른 커스텀 CSS 앞. 용어는 docs/with-ai/CONTEXT.md.
+
+   토큰은 두 층이다.
+     1) 재료 토큰: 잉크·바탕·패널 색, 버튼 사다리(--btn-*), 식별색(--tj-*, --ky-*), 배지·위험색,
+        모션 곡선, 글자 크기 사다리(--fs-*), 굵기 사다리(--fw-*), 반경 사다리(--r-*).
+     2) 글자 역할 토큰(--type-<역할>-*): 크기·줄간격·자간·기본 굵기를 한 역할로 묶는다.
+        글자는 반드시 역할 하나로 그린다. 재료 토큰(--fs-*, --fw-*)은 역할이 가리키는 재료다.
+
+   글자 역할과 쓰는 곳 (규칙은 typography.css 에 역할마다 하나)
+     large-title  페이지 제목 h1 (노래 검색, 애창곡)
+     title1       섹션 제목 h2 (최근 신곡, 사용 방법), 오류 카드 제목
+     title2       모달 제목
+     title3       패널 제목과 소제목 h3·h4 (월별 신곡, TJ 애창곡, 검색결과, 구독하기)
+     headline     본문 크기의 소제목 (통합 검색 그룹 머리, 동의 모달 소제목)
+     hero         홈 히어로 헤드라인 (폭에 따라 커진다)
+     brand        상단바 브랜드 캡슐 이름
+     table        노래 표 본문 (노래 제목 셀)
+     table-label  노래 표 머리글과 번호
+     body         본문·설명글·폼 라벨·모달 본문 (body 기본값)
+     subheadline  짧은 안내·보조줄 (아티스트, 작품정보, 검색 안내, 신곡 안내, 모달 안내)
+     footnote     각주 (푸터, 동의 문구, 검색 결과 수, 검색 도움말)
+     label        메뉴 캡슐 아이콘 라벨
+     caption      배지 (추가일 표시)
+
+   글자 규칙
+     - 글자 크기·줄간격·자간·굵기는 typography.css 에서만 선언한다. 다른 파일은 배치·색·여백만.
+     - 강조 굵기는 typography.css 의 "굵기 변형"에서 --fw-* 로만 바꾼다.
+     - 문맥에 따라 크기를 바꿀 때는 이 파일의 "문맥 재정의" 절에서 그 문맥의 재료 토큰 값만
+       바꾸고, 그 선택자를 역할 토큰 절의 선택자 목록에도 넣는다. 역할 토큰은 선언된 요소에서
+       값을 계산해 물려주므로, 문맥 요소에서 다시 선언해야 바뀐 재료를 따라온다.
+     - 예외: 버튼 글자는 버튼 사다리(--btn-font-*, 높이는 --btn-h-* 줄간격), 아이콘 크기는
+       각 컴포넌트 파일. 루비·가수 대표값의 상대 크기와 입력칸 16px 하한은 typography.css 예외 절.
+
+   Bootstrap 연결: 아래 끝 절에서 Bootstrap 변수(--bs-*)를 토큰으로 잇는다. Bootstrap 컴포넌트·
+   유틸리티(.text-muted 등)가 토큰 값을 쓰게 하려는 것이고, 선택자마다 덮어쓰지 않는다.
+   ========================================================================== */
+
+/* ---------- 재료 토큰 ---------- */
+:root {
+    /* 잉크(글자) 4단계: 진한 · 보조 · 옅은 · 흐린 */
+    --ink: #1b232b;
+    --ink-2: #45515c;
+    --ink-3: #66717e;
+    --ink-4: #8792a0;
+
+    /* 바탕 */
+    --bg: #eaf0f4;
+
+    /* 콘텐츠 패널: 반투명 덮개 + 패널 그림자. --panel-bg 는 불투명 패널이
+       필요한 곳(투명도 최소화·고대비·backdrop-filter 미지원의 히어로)의 바탕 */
+    --panel-bg: #fff;
+    --panel-cover: rgb(255 255 255 / .75);
+    --panel-shadow:
+        0 1px 0 rgb(255 255 255 / .9) inset,
+        0 0 0 1px rgb(30 42 56 / .06),
+        0 18px 48px -12px rgb(30 42 56 / .18);
+
+    /* 버튼 사다리 (D20, iOS HIG 3단 + xsmall): 높이(줄 높이)·글자 크기 쌍.
+       large 는 단독 카드 버튼·모달 발 버튼(터치 44px 충족), medium 은 입력
+       그룹 옆·헤더 컨트롤, small 은 표 안 보조 컨트롤, xsmall 은 패널 헤더
+       옆 순서변경·삭제. 패딩·글자를 감으로 정하지 않고 이 중 하나를 고른다 */
+    --btn-h-lg: 50px;
+    --btn-h-md: 36px;
+    --btn-h-sm: 28px;
+    --btn-h-xs: 24px;
+    --btn-font-lg: 17px;
+    --btn-font-md: 15px;
+    --btn-font-sm: 13px;
+    --btn-font-xs: 12px;
+
+    /* 햇살 색 (rgb 채널값 — rgb(var(--sun) / a) 형태로 사용) */
+    --sun: 255 240 205;
+
+    /* 서비스 브랜드: TJ·금영 식별색을 유리에 맞춘 tint + 어두운 잉크 */
+    --tj-tint: rgb(249 80 1 / .14);
+    --tj-ink: #933a05;
+    --ky-tint: rgb(100 149 237 / .18);
+    --ky-ink: #2f5495;
+
+    /* 추가일 badge·최신곡 highlight 공용 */
+    --badge-tint: rgb(255 200 120 / .30);
+    --badge-ink: #7a5210;
+
+    /* 위험 동작(구독취소·탈퇴) */
+    --danger-tint: rgb(255 122 96 / .18);
+    --danger-ink: #a03015;
+
+    /* 스프링 (P11): 위치·크기·코너의 움직임은 살짝 튀는 spatial 곡선 하나,
+       색·투명도는 튀지 않는 effects 곡선. spatial 은 언더댐핑 스텝 응답을
+       linear() 로 샘플링한 값 — 정본 계산기는
+       docs/decisions/references/_ux/_material-expressive/_raw/13-spring-linear.js.
+       reduced-motion 에서는 spatial 을 effects 로 바꾼다 (파일 끝 접근성 절) */
+    --spring-spatial: linear(0, 0.013 0.6%, 0.05 1.2%, 0.2 2.5%, 0.55 6%, 0.86 10%, 1.05 14%, 1.12 18%, 1.1 22%, 1.03 30%, 0.99 38%, 1);
+    --ease-effects: ease;
+    /* 떠오름(로드 시퀀스·스크롤 리빌)용 감속 곡선 */
+    --ease-float: cubic-bezier(.22, .8, .3, 1);
+
+    /* 글자 사다리 (P21, 4기 7턴): iOS Dynamic Type 기본값을 px 로 옮긴 8단. 모든 폭에서
+       같은 값이고 히어로만 768·1200 에서 커진다 — 쓰는 쪽은 var(--fs-*) 만 적고 vw·미디어
+       쿼리를 두지 않는다. 버튼 글자는 위의 --btn-font-* (D20) 가 따로 정한다 */
+    --fs-xs: 12px;    /* caption: 배지 */
+    --fs-sm: 13px;    /* footnote: 푸터·아이콘 라벨·동의 문구·결과 수 */
+    --fs-md: 15px;    /* subheadline: 표 머리글·번호·보조줄, 안내문, placeholder */
+    --fs-body: 17px;  /* body: 본문·표 제목 셀·입력창·모달 항목 */
+    --fs-lg: 20px;    /* title3: 패널 제목 h3·상단바 브랜드·h4 */
+    --fs-xl: 22px;    /* title2: 모달 제목 */
+    --fs-2xl: 28px;   /* title1: 섹션 제목 h2, 에러 카드 제목 */
+    --fs-title-large: 34px; /* large title: 페이지 제목 h1 (홈은 히어로가 대신) */
+    --fs-hero: 26px;  /* index 히어로 헤드라인 */
+
+    /* 굵기 사다리 (4기 9턴 후속): SUITE 가변이 300~900 을 모두 그리므로 얼굴 없는 값이
+       한 단 굵게 그려지던 문제가 없다. 다섯 단만 쓰고, 고를 때는 크기를 함께 본다 —
+       작은 글자일수록 같은 강조에 더 굵어야 하므로 13px 이하의 강조는 strong(600),
+       18px 이상의 제목은 title(700) 이다. body 아래(300 이하)는 쓰지 않는다:
+       18px 아래에서 흐려진다. 글자 크기는 위의 --fs-* 가 정한다 */
+    --fw-body: 400;     /* 본문, 보조줄, 대표값, 입력창 */
+    --fw-mid: 500;      /* 본문보다 한 단: 아티스트, 노래 번호, 표 머리글 */
+    --fw-strong: 600;   /* 작은 글자의 강조: 버튼, 배지, 링크, 루비(11px) */
+    --fw-title: 700;    /* 제목: 노래 제목, h1~h6, 모달 제목 */
+    --fw-display: 800;  /* 한 화면에 하나뿐인 표시 (지금은 쓰는 곳 없음) */
+
+    /* 반경 사다리. 반경을 가진 컨테이너는 --r-parent 를 함께 내려주고, 가장자리에
+       맞닿는 자식은 calc(var(--r-parent) - 간격) 으로 받는다. 홀로 놓이면 --r-control */
+    --r-panel: 24px;     /* 콘텐츠 패널 */
+    --r-sheet: 28px;     /* 모달, 에러 카드 */
+    --r-control: 14px;   /* 입력, 보조 버튼, 경고, lift 판, 그룹 */
+    --r-capsule: 999px;  /* 상단의 두 캡슐, 주요 액션 버튼, 배지 */
+}
+
+@media (min-width: 768px) {
+    :root {
+        --fs-hero: 32px;
+    }
+}
+
+@media (min-width: 1200px) {
+    :root {
+        --fs-hero: 34px;
+    }
+}
+
+/* dark (D7, D22): 색 토큰이 통째로 바뀌고 사진은 어둡게 눌린다.
+   스위치는 html[data-theme="dark"] — 초기값은 theme-init.js, 토글은
+   common-handlers.js. Bootstrap 기본색을 위해 data-bs-theme 도 함께 세팅된다 */
+html[data-theme="dark"] {
+    --ink: #eef2f6;
+    --ink-2: #c3ccd6;
+    --ink-3: #a7b1bc;
+    --ink-4: #8b96a3;
+    --bg: #121a24;
+    --tj-ink: #ffb088;
+    --ky-ink: #9fc0ff;
+    --badge-tint: rgb(255 200 120 / .18);
+    --badge-ink: #ffd18a;
+    --danger-tint: rgb(255 69 58 / .26);
+    --danger-ink: #ff5a50;
+    --panel-bg: #1b2430;
+    --panel-cover: rgb(27 36 48 / .72);
+    --panel-shadow:
+        0 1px 0 rgb(255 255 255 / .06) inset,
+        0 0 0 1px rgb(255 255 255 / .06),
+        0 24px 60px -16px rgb(0 0 0 / .6);
+}
+
+/* ---------- 글자 역할 토큰 ----------
+   역할마다 크기(size)·줄간격(lh)·자간(ls)·기본 굵기(weight) 네 개. 쓰는 곳은 위 머리 주석.
+   선택자 목록의 :root 밖 항목은 "문맥 재정의" 절의 문맥이다 */
+:root,
+.song-search-result-collapse {
+    --type-large-title-size: var(--fs-title-large);
+    --type-large-title-lh: 1.2;
+    --type-large-title-ls: -.025em;
+    --type-large-title-weight: var(--fw-title);
+
+    --type-title1-size: var(--fs-2xl);
+    --type-title1-lh: 1.2;
+    --type-title1-ls: -.02em;
+    --type-title1-weight: var(--fw-title);
+
+    --type-title2-size: var(--fs-xl);
+    --type-title2-lh: 1.5;
+    --type-title2-ls: -.01em;
+    --type-title2-weight: var(--fw-title);
+
+    --type-title3-size: var(--fs-lg);
+    --type-title3-lh: 1.2;
+    --type-title3-ls: -.02em;
+    --type-title3-weight: var(--fw-title);
+
+    --type-headline-size: var(--fs-body);
+    --type-headline-lh: 1.2;
+    --type-headline-ls: -.02em;
+    --type-headline-weight: var(--fw-title);
+
+    --type-hero-size: var(--fs-hero);
+    --type-hero-lh: 1.32;
+    --type-hero-ls: -.02em;
+    --type-hero-weight: var(--fw-mid);
+
+    --type-brand-size: var(--fs-lg);
+    --type-brand-lh: 1.5;
+    --type-brand-ls: -.04em;
+    --type-brand-weight: var(--fw-title);
+
+    --type-table-size: var(--fs-body);
+    --type-table-lh: 1.35;
+    --type-table-ls: 0;
+    --type-table-weight: var(--fw-body);
+
+    --type-table-label-size: var(--fs-md);
+    --type-table-label-lh: 1.35;
+    --type-table-label-ls: 0;
+    --type-table-label-weight: var(--fw-mid);
+
+    --type-body-size: var(--fs-body);
+    --type-body-lh: 1.55;
+    --type-body-ls: 0;
+    --type-body-weight: var(--fw-body);
+
+    --type-subheadline-size: var(--fs-md);
+    --type-subheadline-lh: 1.55;
+    --type-subheadline-ls: 0;
+    --type-subheadline-weight: var(--fw-body);
+
+    --type-footnote-size: var(--fs-sm);
+    --type-footnote-lh: 1.5;
+    --type-footnote-ls: 0;
+    --type-footnote-weight: var(--fw-body);
+
+    --type-label-size: var(--fs-sm);
+    --type-label-lh: 1.2;
+    --type-label-ls: 0;
+    --type-label-weight: var(--fw-strong);
+
+    --type-caption-size: var(--fs-xs);
+    --type-caption-lh: 1.2;
+    --type-caption-ls: 0;
+    --type-caption-weight: var(--fw-strong);
+}
+
+/* ---------- 문맥 재정의 ----------
+   검색 결과 표는 1열이라 index 의 2열 표보다 정보 밀도가 낮다. 768px 이상에서 이 판 안의
+   본문·보조줄 재료만 한 칸 넓힌다(17→18, 15→16) */
+@media (min-width: 768px) {
+    .song-search-result-collapse {
+        --fs-body: 18px;
+        --fs-md: 16px;
+    }
+}
+
+/* ---------- Bootstrap 연결 ----------
+   Bootstrap 의 바탕 변수를 토큰으로 잇는다. dark 의 [data-bs-theme="dark"] 값보다 이 파일이
+   뒤에 오므로 두 테마 모두 여기 값이 이기고, 잉크 토큰은 테마에 따라 스스로 바뀐다 */
+:root {
+    --bs-body-font-weight: var(--type-body-weight);
+    --bs-body-line-height: var(--type-body-lh);
+    --bs-body-color: var(--ink);
+    --bs-secondary-color: var(--ink-2); /* .text-muted, .form-text */
+    --bs-heading-color: var(--ink);
+}

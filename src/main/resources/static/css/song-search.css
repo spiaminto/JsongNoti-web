@@ -28,7 +28,6 @@
 }
 
 #searchHintContainer p {
-    font-size: var(--fs-md);
     margin-bottom: 0.2rem;
 }
 
@@ -47,17 +46,6 @@
     /* .row 자식의 좌우 거터 12px 를 8px 로 줄인다. card 의 px-1 4px 와 합쳐 .row 의 -12px 를 상쇄해
        결과 표가 신곡 표처럼 패널 여백에서 바로 시작한다 */
     padding: 0 0.5rem;
-}
-
-/* 검색 결과 표는 1열이라 index 의 2열 표보다 정보 밀도가 낮다 — 768px 이상에서
-   표 토큰만 한 칸 넓힌다(제목 17→18, 보조줄 15→16, 4기 8턴). 사다리(glass.css)는
-   그대로이고 이 패널 안에서 값만 다시 정한다. 보조줄 위 여백 .7rem 예외는 9턴 후속에서
-   세로 간격을 다시 정하며(제목→아티스트 .125rem, 아티스트→작품명 .5rem) 걷었다 */
-@media (min-width: 768px) {
-    .song-search-result-collapse {
-        --fs-body: 18px;
-        --fs-md: 16px;
-    }
 }
 
 .song-search-result-collapse .song-title:hover {
@@ -90,13 +78,10 @@
 
 .unified-search-group-header h4 {
     margin: 0;
-    font-size: var(--fs-body);
 }
 
 .unified-search-result-count {
     color: var(--ink-2);
-    font-size: var(--fs-sm);
-    font-weight: var(--fw-body);
 }
 
 .unified-search-group-message,

@@ -40,16 +40,11 @@ html[data-theme="dark"] .error-card {
 
 .error-card h1 {
     color: var(--ink);
-    font-size: var(--fs-2xl);
-    font-weight: var(--fw-title);
-    letter-spacing: -.015em;
     margin: 0 0 .7rem;
 }
 
 .error-card p {
     color: var(--ink-2);
-    font-size: var(--fs-body);
-    line-height: 1.6;
     margin: 0 0 2.2rem;
 }
 

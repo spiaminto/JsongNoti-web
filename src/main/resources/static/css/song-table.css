@@ -55,10 +55,6 @@
     padding: clamp(1.3rem, 3vw, 2rem);
 }
 
-.song-panel .song-header-text {
-    font-size: var(--fs-lg);
-}
-
 .song-panel .song-table-border {
     /* C 플랫: 행이 제목 밑선 바로 아래에서 시작한다 (td 패딩이 호흡을 맡음) */
     margin-top: 0;
@@ -69,8 +65,6 @@
     table-layout: fixed; /* 긴 일본어 제목이 열 폭을 밀지 않도록 고정 */
     width: 100%;
     border-collapse: collapse;
-    font-size: var(--fs-body); /* P21 Body — 글자 사다리(glass.css --fs-*), 모바일 15 / ≥768 17 */
-    line-height: 1.35;
     text-align: start;
     margin-bottom: 0;
     border-style: hidden;
@@ -90,8 +84,6 @@
    중첩 재질이라 시각 차이는 거의 없는데, 더보기처럼 높이가 변하는
    애니메이션에서 매 프레임 재샘플링되어 버벅임의 원인이 된다) */
 .song-table thead th {
-    font-size: var(--fs-md);
-    font-weight: var(--fw-mid); /* 숨은 머리글 — 작은 라벨 */
     padding: .7rem .8rem;
     background: rgb(120 145 170 / .2);
     color: var(--ink-2);
@@ -232,8 +224,6 @@ body.is-scrolling .song-table tbody tr:hover:not(.song-row-will-switch-selected)
 }
 
 .song-number span {
-    font-size: var(--fs-md);
-    font-weight: var(--fw-mid); /* 번호는 노래방에 입력하는 실행값이라 본문보다 한 단 위 */
     font-variant-numeric: tabular-nums;
     color: var(--ink-2);
 }
@@ -261,7 +251,6 @@ body.is-scrolling .song-table tbody tr:hover:not(.song-row-will-switch-selected)
 .song-title-text {
     display: block;
     color: var(--ink);
-    font-weight: var(--fw-title); /* 행에서 유일한 제목 굵기 */
     text-decoration: none;
 }
 
@@ -281,9 +270,7 @@ a.song-title-text:hover {
 }
 
 .song-table rt {
-    font-size: max(.62em, 11px);
     color: var(--ink-2);
-    font-weight: var(--fw-strong); /* 11px 주석 글자 — 작을수록 같은 강조에 더 굵어야 한다 */
 }
 
 /* 보조줄 두 개: 아티스트 → 작품정보 (4기 8턴). 세 층 계단(4기 9턴 후속): 제목과
@@ -294,19 +281,12 @@ a.song-title-text:hover {
    굵기(glass.css --fw-* 사다리): 제목 title(700) · 아티스트와 번호 mid(500) · 대표값과
    작품정보 body(400) · 루비와 배지 strong(600). 아티스트와 작품정보는 굵기 한 단에
    색(ink / ink-2)·들여쓰기·왼쪽 선이 더해져 갈린다 */
-.song-singer,
-.song-info {
-    font-size: var(--fs-md);
-    line-height: 1.5;
-}
-
 .song-singer {
     margin-block-start: .125rem;
 }
 
 .song-info {
     color: var(--ink-2);
-    font-weight: var(--fw-body); /* 라이트(300)는 18px 아래에서 흐려져 쓰지 않는다 */
     margin-block-start: .5rem;
     padding-inline-start: .7rem;
     border-inline-start: 3px solid rgb(140 160 180 / .4);
@@ -321,9 +301,6 @@ a.song-title-text:hover {
 }
 
 .song-singer {
-    /* 제목(800)보다 한 단계 낮은 bold. 이 폰트는 300/400/700/800 뿐이라
-       600 은 700(B) 으로 렌더된다. 작품정보(300·회색)와는 굵기+잉크로 구분 */
-    font-weight: var(--fw-mid); /* 아티스트는 제목 다음가는 값 — 중간 단 */
     color: var(--ink);
 }
 
@@ -331,8 +308,6 @@ a.song-title-text:hover {
    이름은 읽는 문장이 아니라 식별하는 값이라 세로 층을 늘리지 않는다 (4기 9턴 A1) */
 .song-singer-korean {
     color: var(--ink-2);
-    font-size: smaller; /* 원본값보다 한 단 작게 (16→13.3, 15→12.5, 14→11.7) */
-    font-weight: var(--fw-body); /* 대표값은 원본값에 딸린 값 */
     /* 줄바꿈 허용 — nowrap 이면 좁은 폭에서 긴 대표값이 칸 밖으로 잘린다 */
 }
 
@@ -352,7 +327,6 @@ a.song-title-text:hover {
     justify-content: center;
     gap: .6rem;
     text-align: center;
-    font-size: var(--fs-lg);
     margin-bottom: 0;
     padding-bottom: .55rem;
     border-bottom: 2px solid rgb(100 125 155 / .45);
@@ -367,8 +341,6 @@ a.song-title-text:hover {
 }
 
 .song-header-subtext {
-    font-size: var(--fs-xs);
-    font-weight: var(--fw-strong); /* 12px 배지 */
     color: var(--badge-ink);
     background: var(--badge-tint);
     border: 1px solid rgb(255 255 255 / .6);
