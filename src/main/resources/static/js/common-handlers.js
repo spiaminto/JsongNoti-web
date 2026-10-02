@@ -3,23 +3,20 @@ $(function () {
 
     // dark 토글 (ui-overhaul-3 D22): 초기값은 theme-init.js(head)가 이미 적용했다.
     // 저장값은 'true'(dark) / ''(cream 으로 끔) — 저장값이 없을 때만 시스템 설정을 따른다.
-    // 프로스트(frost-baking.js)처럼 테마 색을 미리 구워 두는 쪽은 colorthemechange 를 듣고 다시 굽는다
-    // 전환은 View Transition(ui-overhaul-4 4턴): 옛·새 화면 스냅샷을 크로스페이드해 토큰 전환과
-    // 프로스트 교체가 한 동작이 된다. 콜백 안의 colorthemechange(synchronous: true)에
-    // frost-baking.js 가 디바운스·페이드 없이 즉시 굽는다. 미지원 브라우저·모션 최소화는 즉시 전환
+    // 전환은 View Transition(ui-overhaul-4 4턴): 옛·새 화면 스냅샷을 크로스페이드한다.
+    // 미지원 브라우저·모션 최소화는 즉시 전환
     $('.dark-mode-button').on('click', function (event) {
         event.preventDefault();
         let turnDark = $('html').attr('data-theme') !== 'dark';
-        let switchTheme = function (synchronous) {
+        let switchTheme = function () {
             window.applyColorTheme(turnDark);
             localStorage.setItem('darkMode', turnDark ? 'true' : '');
-            document.dispatchEvent(new CustomEvent('colorthemechange', {detail: {dark: turnDark, synchronous: synchronous}}));
         };
         let reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (document.startViewTransition && !reduceMotion) {
-            document.startViewTransition(function () { switchTheme(true); });
+            document.startViewTransition(switchTheme);
         } else {
-            switchTheme(false);
+            switchTheme();
         }
     });
 

@@ -4,8 +4,8 @@
 
    3기 구조 (ADR 0001): 실시간 유리(backdrop-filter)는 크롬 — 내비바·사이드
    버튼·모달 뒤 베일·스크롤 베일 — 에만 쓴다. 표·카드·폼 본문을 담는
-   콘텐츠 패널(.content-panel)은 불투명하고, 재질감은 프로스트(사진을 미리
-   흐려 구운 그림, frost-baking.js)가 준다.
+   콘텐츠 패널(.content-panel)은 덮개색 한 겹의 반투명 패널이고, 첫 화면
+   사진 위의 히어로만 뒤를 흐린다(.content-panel-blur).
 
    이 파일이 담당하는 것:
      1) 디자인 토큰(:root, dark 는 html[data-theme="dark"])과 웹폰트(SUITE 가변) 선언
@@ -46,11 +46,10 @@
     /* 바탕 */
     --bg: #eaf0f4;
 
-    /* 콘텐츠 패널: 불투명 바탕 + 패널 그림자. 프로스트 굽기(frost-baking.js)가
-       background-image 로 흐린 사진을 깔고, 그 위를 --panel-frost-cover 색으로
-       한 번 덮어 글자 대비를 지킨다 (시안 FROST_L/FROST_D 값) */
+    /* 콘텐츠 패널: 반투명 덮개 + 패널 그림자. --panel-bg 는 불투명 패널이
+       필요한 곳(투명도 최소화·고대비·backdrop-filter 미지원의 히어로)의 바탕 */
     --panel-bg: #fff;
-    --panel-frost-cover: rgb(255 255 255 / .8);
+    --panel-cover: rgb(255 255 255 / .75);
     --panel-shadow:
         0 1px 0 rgb(255 255 255 / .9) inset,
         0 0 0 1px rgb(30 42 56 / .06),
@@ -163,7 +162,7 @@ html[data-theme="dark"] {
     --danger-tint: rgb(255 69 58 / .26);
     --danger-ink: #ff5a50;
     --panel-bg: #1b2430;
-    --panel-frost-cover: rgb(27 36 48 / .72);
+    --panel-cover: rgb(27 36 48 / .72);
     --panel-shadow:
         0 1px 0 rgb(255 255 255 / .06) inset,
         0 0 0 1px rgb(255 255 255 / .06),
@@ -245,72 +244,35 @@ textarea:focus-visible {
 }
 
 /* ---------- 콘텐츠 패널 ----------
-   불투명한 패널 (ADR 0001). 실시간 유리가 없으므로 스크롤·펼침에 재래스터
-   비용이 들지 않는다. 재질감은 frost-baking.js 가 background-image 로 깔아
-   주는 프로스트가 맡고, 그 전(사진 로드 전·실패 시)에는 바탕색만 보인다.
-   border 0 + padding-box 클립: 테두리가 있으면 굽힌 그림이 테두리 밑으로
-   비쳐 1px 띠가 생긴다 (시안 5턴 교훈). 그림자 안쪽 1px 흰 선이 테두리 역할.
-   프로스트 그림은 frost-baking.js 가 패널마다 inline 변수(--panel-frost-image,
-   --panel-frost-size)로 준다. 크기는 구운 자연 크기 — 높이 전환 중 그림이
-   늘어나지 않고 잘리기만 한다. 변수가 없으면(사진 로드 전·실패·오류 페이지)
-   덮개색만 바탕색 위에 얹혀 바탕색 패널이 된다 */
+   덮개색 한 겹의 반투명 패널. 뒤의 사진·보케가 흐림 없이 옅게 비친다.
+   실시간 유리가 아니므로 스크롤·펼침에 재래스터 비용이 들지 않는다.
+   border 0 + padding-box 클립: 그림자 안쪽 1px 흰 선이 테두리 역할.
+   모달은 모두 패널 밖(body 직속)에 있어 패널의 스태킹 컨텍스트에 갇히지
+   않는다 — 패널 안에 모달을 넣지 않는다 (page/search.css #container 주석) */
 .content-panel {
     position: relative;
-    background-color: var(--panel-bg);
-    background-image:
-        linear-gradient(var(--panel-frost-cover), var(--panel-frost-cover)),
-        var(--panel-frost-image, none);
-    background-repeat: no-repeat;
-    background-size: auto, var(--panel-frost-size, 100% 100%);
-    background-position: 0 0;
+    background-color: var(--panel-cover);
     background-clip: padding-box;
     border: 0;
     --r-parent: var(--r-panel);
     border-radius: var(--r-parent);
     box-shadow: var(--panel-shadow);
-    /* 프로스트 교체 페이드(::before)를 패널 배경과 내용 사이에 끼우려면 패널이
-       스태킹 컨텍스트여야 한다. 모달은 모두 패널 밖(body 직속)에 있어 갇히지
-       않는다 — 패널 안에 모달을 넣지 않는다 (page/search.css #container 주석) */
     isolation: isolate;
 }
 
-/* 프로스트 교체 페이드 (4기 2턴): 본 배경은 새 그림으로 바로 바뀌고,
-   frost-baking.js 가 옛 그림을 ::before 에 옛 크기만큼 얹어 0.4s 동안 걷는다.
-   background-image 는 전환이 안 되므로 두 장을 겹쳐 opacity 로 바꾼다
-   (컴포지터 처리). 덮개도 옛 그림 크기로만 깔아 그 밖은 투명 — 높이 전환
-   중 패널이 옛 그림보다 커진 자리엔 본 배경의 새 그림이 바로 비친다(바탕색
-   띠 없음). top 1px 은 패널의 inset 흰 선(--panel-shadow) 자리라 비워 두고
-   그림을 1px 올려 맞춘다. 층 높이는 옛 그림 높이(패널보다 길면 패널까지).
-   옛 그림이 새 그림보다 짧을 때(패널이 자랄 때, .frost-crossfade-feather)만
-   아래 96px 을 마스크로 흐린다 — 층이 그대로 끝나면 그 아랫변이 전환 중
-   가는 가로선으로 비친다(4기 3턴). 같은 크기 교체(테마·창 크기)에 마스크를
-   두면 패널이 위아래로 갈라져 보인다(4기 4턴) */
-.content-panel.frost-crossfade::before {
-    content: '';
-    position: absolute;
-    inset: 1px 0 auto 0;
-    height: calc(var(--panel-frost-height-prev, 100%) - 1px);
-    max-height: calc(100% - 1px);
-    z-index: -1;
-    border-radius: inherit;
-    pointer-events: none;
-    background-image:
-        linear-gradient(var(--panel-frost-cover), var(--panel-frost-cover)),
-        var(--panel-frost-image-prev, none);
-    background-repeat: no-repeat;
-    background-size: var(--panel-frost-size-prev, 100% 100%), var(--panel-frost-size-prev, 100% 100%);
-    background-position: 0 -1px;
-    animation: frost-crossfade-out .4s ease forwards;
+/* 뒤를 흐리는 콘텐츠 패널: 첫 화면 사진 위에 놓여 사진이 선명하게 비치는
+   패널(홈 히어로)에만 쓴다. 값은 apple.com 반투명 표면과 같은 blur 20px·채도 180% */
+.content-panel-blur {
+    -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    backdrop-filter: blur(20px) saturate(1.8);
 }
-@keyframes frost-crossfade-out { to { opacity: 0; } }
-.content-panel.frost-crossfade.frost-crossfade-feather::before {
-    -webkit-mask-image: linear-gradient(#000 calc(100% - 96px), transparent);
-    mask-image: linear-gradient(#000 calc(100% - 96px), transparent);
+html[data-theme="dark"] .content-panel-blur {
+    -webkit-backdrop-filter: blur(20px) saturate(.75);
+    backdrop-filter: blur(20px) saturate(.75);
 }
 
 /* 테마 전환 (4기 4턴): 토글(common-handlers.js)이 View Transition 으로 감싼다 —
-   옛 화면과 새 화면 스냅샷이 .3s 크로스페이드. 새 스냅샷에는 콜백 안에서 즉시
-   구운 프로스트가 들어간다(frost-baking.js). 미지원·모션 최소화는 즉시 전환 */
+   옛 화면과 새 화면 스냅샷이 .3s 크로스페이드. 미지원·모션 최소화는 즉시 전환 */
 ::view-transition-old(root),
 ::view-transition-new(root) {
     animation-duration: .3s;
@@ -1049,9 +1011,8 @@ mark,
 /* ---------- 사진 배경: 씻어낸 노래방 사진 ----------
    사이트 공통으로 가장 뒤에 까는 사진 (D15 — index·검색·애창곡).
    위로 갈수록 선명하고 아래로 갈수록 바탕색에 녹는다. 스크롤하면 함께
-   밀려 올라간다. 내비바(유리)가 이 사진을 실제로 블러하고, 콘텐츠 패널은
-   frost-baking.js 가 같은 사진을 패널 자리에 맞춰 흐려 구운 그림을 받는다 —
-   아래 마스크·페이드·필터 값을 바꾸면 굽기 코드의 값도 함께 맞춘다 (ADR 0002) */
+   밀려 올라간다. 내비바(유리)와 히어로(.content-panel-blur)가 이 사진을
+   실제로 블러하고, 나머지 콘텐츠 패널 아래로는 흐림 없이 옅게 비친다 */
 .photo-bg {
     position: absolute;
     top: 0;
@@ -1163,9 +1124,9 @@ html[data-theme="dark"] .sky {
 }
 
 /* ---------- 보케 ----------
-   히어로 사진의 조명 방울을 CSS 로 추상화한 잔상. 콘텐츠 패널 바깥의
-   배경에서 떠다니고, 패널 안에는 굽기 시점의 모습이 프로스트에 정지 상태로
-   들어간다 (D11). 위치·크기는 glass-motion.js 가 로드마다 랜덤으로 흩뿌린다 */
+   히어로 사진의 조명 방울을 CSS 로 추상화한 잔상. 배경에 떠 있고 콘텐츠
+   패널 아래로도 옅게 비친다. 위치·크기는 glass-motion.js 가 로드마다 랜덤으로
+   흩뿌린다 */
 .bokeh {
     position: absolute;
     /* 점이 영역 밖으로 튀어나와도 문서 스크롤 높이에 관여하지 못하게
@@ -1610,13 +1571,17 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
     html:not([data-theme="dark"]) div.glass-capsule.is-over-dark {
         background: rgb(27 36 48 / .86);
     }
+    /* 흐리지 못하면 사진이 선명하게 비치므로 불투명 바탕색 패널로 */
+    .content-panel-blur {
+        background-color: var(--panel-bg);
+    }
 }
 
 /* ---------- 접근성: 모션·투명도·대비 각각 대응 (P14) ----------
    3기 구조에서 손댈 것: 스프링 토큰(탄성)·로드 시퀀스·리빌·행 lift 의 모션,
    크롬 유리(브랜드 캡슐·메뉴 캡슐·모달 베일·스크롤 베일)의 투명도, 패널·버튼·
-   입력창의 테두리 대비. 콘텐츠 패널은 불투명 프로스트라 투명도 설정과 무관하고,
-   굴절(glass-material.js)은 투명도 최소화에서 스스로 물러선다 */
+   입력창의 테두리 대비, 콘텐츠 패널의 투명도. 굴절(glass-material.js)은
+   투명도 최소화에서 스스로 물러선다 */
 /* 모션 최소화: 탄성만 끄고(spatial → effects) 큰 전환은 짧은 크로스페이드.
    편집 모드 컨트롤·집은 행·옮겨진 행(favorite-song.css)과 행 lift 는 같은
    토큰을 쓰므로 토큰 교체만으로 탄성이 빠진다 */
@@ -1643,8 +1608,7 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
     .btn:hover, .btn-close:hover { transform: none; }
 }
 
-/* 투명도 최소화: 폴백 사다리의 맨 아래 단 — 크롬 유리를 불투명하게.
-   콘텐츠 패널은 원래 불투명이라 손댈 것이 없다.
+/* 투명도 최소화: 폴백 사다리의 맨 아래 단 — 크롬 유리와 콘텐츠 패널을 불투명하게.
    두 캡슐은 재질 선언이 뒤에 로드되는 파일(containers·
    common.css)에 있어, 같은 특정도로는 지므로 태그를 붙여 한 단계 올린다 */
 @media (prefers-reduced-transparency: reduce) {
@@ -1664,6 +1628,11 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
     div.glass-capsule::after { display: none; }
     .modal-backdrop { -webkit-backdrop-filter: none; backdrop-filter: none; }
     .scroll-veil { display: none; }
+    .content-panel {
+        background-color: var(--panel-bg);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
 }
 
 /* 고대비: 잉크를 진하게, 크롬 유리를 거의 불투명하게, 장식 빛은 제거.
@@ -1685,9 +1654,12 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
     .btn, .btn:hover, .btn:active {
         box-shadow: 0 0 0 1.5px var(--edge-contrast);
     }
-    /* 프로스트(구운 사진)는 덮개 아래로 비쳐 글자 대비를 깎는다 — 바탕색 패널만 */
-    .content-panel { background-image: none; }
-    .content-panel.frost-crossfade::before { display: none; }
+    /* 패널 아래로 비치는 배경은 글자 대비를 깎는다 — 불투명 바탕색 패널만 */
+    .content-panel {
+        background-color: var(--panel-bg);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
     /* 맑은 유리는 몸체가 얇은 틴트라 대비가 부족하다 — 거의 불투명으로
        올리고 장식 테두리(conic ::after)는 제거해 림 보더만 남긴다 */
     div.glass-capsule {

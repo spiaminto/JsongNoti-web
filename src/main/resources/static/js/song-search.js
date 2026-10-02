@@ -417,13 +417,6 @@ $(function () {
         let heights = measureMoreHeights($wrapper, $hiddenRows);
         let endHeight = show ? heights.expanded : heights.collapsed;
         let docEl = document.documentElement;
-        // 펼침은 패널이 커지므로 프로스트를 목표 높이로 미리 굽는다 (frost-baking.js, 4기 1턴).
-        // 접힘은 그림이 잘리기만 한다
-        if (show && window.frostBaking) {
-            let panel = wrapper.closest('.content-panel');
-            // 지금 패널 높이에서 래퍼의 현재 높이를 끝 높이로 바꿔 넣는다
-            if (panel) window.frostBaking.prebakePanelAtHeight(panel, panel.offsetHeight - wrapper.getBoundingClientRect().height + endHeight);
-        }
         // 접힘 중 문서가 위쪽에서 줄어들 때 스크롤 앵커링이 y 를 덮어써
         // 카메라 팔로우를 삼키지 않도록 전환 동안만 끈다
         docEl.style.overflowAnchor = 'none';
