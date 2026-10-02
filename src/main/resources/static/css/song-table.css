@@ -222,6 +222,15 @@ body.is-scrolling .song-table tbody tr:hover:not(.song-row-will-switch-selected)
     z-index: 2;
 }
 
+/* 좁은 폭: 20% 가 다섯 자리 번호와 최신 배지가 들어가는 폭보다 좁아지므로 그 폭으로 고정한다.
+   고정 표 레이아웃은 퍼센트가 섞인 max()·min-width 를 열 폭으로 받지 않는다 */
+@media (max-width: 480px) {
+    .song-table thead th:first-child,
+    .song-table tbody td.song-number {
+        width: 4.25rem;
+    }
+}
+
 .song-number span {
     font-size: var(--fs-md);
     font-weight: var(--fw-mid); /* 번호는 노래방에 입력하는 실행값이라 본문보다 한 단 위 */

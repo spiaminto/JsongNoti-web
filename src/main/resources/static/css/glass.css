@@ -95,18 +95,17 @@
     /* 떠오름(로드 시퀀스·스크롤 리빌)용 감속 곡선 */
     --ease-float: cubic-bezier(.22, .8, .3, 1);
 
-    /* 글자 사다리 (P21, 4기 7턴): iOS Dynamic Type 을 px 로 옮긴 8단. 글자
-       브레이크포인트는 768·1200 둘뿐이고 아래 미디어 블록에서 토큰 값만 바뀐다 —
-       쓰는 쪽은 var(--fs-*) 만 적고 vw·미디어 쿼리를 두지 않는다. 버튼 글자는
-       위의 --btn-font-* (D20) 가 따로 정한다. 표: docs/_temp/ui-overhaul-4.md 7턴 */
+    /* 글자 사다리 (P21, 4기 7턴): iOS Dynamic Type 기본값을 px 로 옮긴 8단. 모든 폭에서
+       같은 값이고 히어로만 768·1200 에서 커진다 — 쓰는 쪽은 var(--fs-*) 만 적고 vw·미디어
+       쿼리를 두지 않는다. 버튼 글자는 위의 --btn-font-* (D20) 가 따로 정한다 */
     --fs-xs: 12px;    /* caption: 배지 */
     --fs-sm: 13px;    /* footnote: 푸터·아이콘 라벨·동의 문구·결과 수 */
-    --fs-md: 14px;    /* subheadline: 표 머리글·번호·보조줄, 안내문, placeholder */
-    --fs-body: 15px;  /* body: 본문·표 제목 셀·입력창·모달 항목 */
-    --fs-lg: 18px;    /* title3: 패널 제목 h3·상단바 브랜드·h4 */
-    --fs-xl: 20px;    /* title2: 모달 제목 */
-    --fs-2xl: 24px;   /* title1: 섹션 제목 h2, 에러 카드 제목 */
-    --fs-title-large: 28px; /* large title: 페이지 제목 h1 (홈은 히어로가 대신) */
+    --fs-md: 15px;    /* subheadline: 표 머리글·번호·보조줄, 안내문, placeholder */
+    --fs-body: 17px;  /* body: 본문·표 제목 셀·입력창·모달 항목 */
+    --fs-lg: 20px;    /* title3: 패널 제목 h3·상단바 브랜드·h4 */
+    --fs-xl: 22px;    /* title2: 모달 제목 */
+    --fs-2xl: 28px;   /* title1: 섹션 제목 h2, 에러 카드 제목 */
+    --fs-title-large: 34px; /* large title: 페이지 제목 h1 (홈은 히어로가 대신) */
     --fs-hero: 26px;  /* index 히어로 헤드라인 */
 
     /* 굵기 사다리 (4기 9턴 후속): SUITE 가변이 300~900 을 모두 그리므로 얼굴 없는 값이
@@ -130,12 +129,6 @@
 
 @media (min-width: 768px) {
     :root {
-        --fs-md: 15px;
-        --fs-body: 17px;
-        --fs-lg: 20px;
-        --fs-xl: 22px;
-        --fs-2xl: 28px;
-        --fs-title-large: 34px;
         --fs-hero: 32px;
     }
 }
