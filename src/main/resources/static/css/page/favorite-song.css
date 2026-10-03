@@ -64,14 +64,14 @@
 .hint-pick {
     background: var(--badge-tint);
     color: var(--badge-ink);
-    border-radius: 6px;
+    border-radius: var(--r-swatch);
     padding: .15rem .35rem;
 }
 
 .hint-target {
     background: rgb(140 160 180 / .35);
     color: var(--ink);
-    border-radius: 6px;
+    border-radius: var(--r-swatch);
     padding: .15rem .35rem;
 }
 
@@ -293,7 +293,7 @@ tr:is(.song-row-will-switch, .song-row-be-switched, .song-row-deleting) {
     height: auto;
     left: calc(-25% + 6px);
     right: 6px;
-    border-radius: 14px;
+    border-radius: var(--r-control);
     background: transparent;
     box-shadow: none;
     border: 1.5px dashed rgb(30 42 56 / .28);

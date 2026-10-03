@@ -109,7 +109,7 @@
    지나가고 전 행이 동기로 반짝인다 */
 .song-table .placeholder {
     background-color: rgb(154 178 200 / .35);
-    border-radius: 6px;
+    border-radius: var(--r-swatch);
 }
 
 .song-table .placeholder-wave {

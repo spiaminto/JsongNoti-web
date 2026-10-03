@@ -233,13 +233,13 @@
 }
 
 /* 영상: 기기 프레임 없이 패널 위에 녹아 떠 있는 느낌.
-   패널 반경은 동심(P20): 안쪽 영상 20px + 패딩 7px = 27px */
+   패널 반경은 동심(P20): 안쪽 영상 반경 + 패딩 7px */
 .u-video {
     z-index: 1;
     justify-self: center;
     width: min(270px, 100%);
     padding: 7px;
-    --r-parent: 27px;
+    --r-parent: calc(var(--r-media) + 7px);
     border-radius: var(--r-parent);
 }
 
@@ -261,7 +261,7 @@
 }
 
 /* dark 에서 영상·정지 이미지 위를 어둡게 덮는 막 (4기 5턴 복구 — 옛 index.css
-   .video-shadow 의 rgba(0,0,0,.3) 그대로). 패널 패딩 안쪽(7px)에 영상 반경(20px)으로
+   .video-shadow 의 rgba(0,0,0,.3) 그대로). 패널 패딩 안쪽(7px)에 영상 반경(--r-media)으로
    얹는다. 보이고 숨김은 common.css .dark-mode-element */
 .u-video .video-shadow {
     position: absolute;

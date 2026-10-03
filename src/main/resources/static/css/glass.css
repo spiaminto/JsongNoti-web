@@ -851,7 +851,7 @@ mark,
 .mark {
     color: var(--badge-ink);
     background: var(--badge-tint);
-    border-radius: 8px;
+    border-radius: var(--r-mark);
 }
 
 /* ---------- 사진 배경: 씻어낸 노래방 사진 ----------
@@ -1309,7 +1309,7 @@ html:not([data-theme="dark"]) .glass-capsule.is-over-dark {
 html:not([data-theme="dark"]) .glass-capsule.is-over-dark .navbar-brand,
 html:not([data-theme="dark"]) .glass-capsule.is-over-dark .icon-link,
 html:not([data-theme="dark"]) .glass-capsule.is-over-dark .icon-link-label {
-    color: #f2f5f8;
+    color: var(--ink-over-dark);
 }
 
 html:not([data-theme="dark"]) .glass-capsule.is-over-dark .selection-lens {
