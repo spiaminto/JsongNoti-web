@@ -195,20 +195,6 @@
         var glassCapsules = document.querySelectorAll(".brand-capsule, .menu-capsule");
         var glassStatesQueued = false;
 
-        // [임시 비교 스위치] html.glass-fade 면 캡슐마다 상태별 틴트·그림자 층 셋을 맨 앞에 넣는다.
-        // 켜진 상태의 층만 보이고, 상태가 바뀌면 opacity 로 교차 페이드한다 (glass.css 재질 절)
-        if (document.documentElement.classList.contains("glass-fade")) {
-            Array.prototype.forEach.call(glassCapsules, function (capsule) {
-                ["busy", "content", "photo"].forEach(function (state) {
-                    var layer = document.createElement("span");
-                    layer.className = "glass-layer";
-                    layer.setAttribute("data-glass-state", state);
-                    layer.setAttribute("aria-hidden", "true");
-                    capsule.insertBefore(layer, capsule.firstChild);
-                });
-            });
-        }
-
         // 올라가는 중인 메뉴 캡슐은 날아가는 자리가 아니라 도착할 자리로 본다
         var menuCapsulePlacedBox = function () {
             return { left: menuCapsule.offsetLeft, top: menuCapsule.offsetTop, right: menuCapsule.offsetLeft + menuCapsule.offsetWidth, bottom: menuCapsule.offsetTop + menuCapsule.offsetHeight };
@@ -469,6 +455,19 @@
             lastPosition = null;
         });
     });
+
+    // [임시 비교 스위치] html.overscroll-smart (theme-init.js 의 ?overscroll=smart): 페이지가 내려가 있으면
+    // html.overscroll-locked 를 붙여 오버스크롤을 끄고, 맨 위에서 스크롤이 멈추면 뗀다(glass.css 접근성 절 앞)
+    if (document.documentElement.classList.contains("overscroll-smart")) {
+        var updateOverscrollLock = function () {
+            document.documentElement.classList.toggle("overscroll-locked", window.scrollY > 0);
+        };
+        window.addEventListener("scroll", function () {
+            if (window.scrollY > 0) document.documentElement.classList.add("overscroll-locked");
+        }, { passive: true });
+        window.addEventListener("scrollend", updateOverscrollLock);
+        updateOverscrollLock();
+    }
 
     // scroll 중 hover 억제: 휠 노치마다(스크롤 제스처가 끝날 때마다) Chrome 이
     // 포인터 아래 행의 hover 를 갱신해 행 배경이 켜졌다 꺼지고, 그때마다 결과

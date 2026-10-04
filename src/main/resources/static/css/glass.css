@@ -1317,89 +1317,6 @@ html:not([data-theme="dark"]) .glass-capsule.is-over-dark .selection-lens {
     box-shadow: inset 0 1px 1px rgb(255 255 255 / .3), 0 2px 8px rgb(0 0 0 / .3);
 }
 
-/* [임시 비교 스위치] 층 교차 페이드 (html.glass-fade, theme-init.js 의 ?glass=fade).
-   틴트와 그림자를 상태마다 미리 그린 층(.glass-layer, glass-motion.js 가 넣는다)으로 옮기고,
-   상태가 바뀌면 켜진 층의 opacity 만 바꾼다. 렌징(블러·채도)은 캡슐에 남아 전환 없이 바뀐다.
-   층 값은 위 재질 절의 세 상태와 같다. 동적 다크모드(.is-over-dark)는 꺼져 있어 층을 두지 않는다 */
-html.glass-fade .glass-capsule {
-    --glass-state-transition: --glass-blur 0s;
-    --menu-capsule-material-transition: --glass-blur 0s;
-}
-
-@media not ((prefers-reduced-transparency: reduce) or (prefers-contrast: more)) {
-    html.glass-fade .glass-capsule {
-        background: none;
-        box-shadow: inset 0 1px 1px rgb(255 255 255 / .65), inset 0 -1px 1px rgb(255 255 255 / .18);
-    }
-
-    html.glass-fade :where(.glass-capsule).has-baked-specular {
-        box-shadow: none;
-    }
-}
-
-.glass-layer {
-    --layer-tint-a: 5%;
-    --layer-tint-b: 2%;
-    --layer-tint-ink: 0%;
-    --layer-shadow-alpha: .17;
-    --layer-tint-color: color-mix(in srgb, rgb(30 42 56) var(--layer-tint-ink), #fff);
-    position: absolute;
-    inset: 0;
-    z-index: -2;
-    border-radius: inherit;
-    pointer-events: none;
-    background: linear-gradient(135deg,
-        color-mix(in srgb, var(--layer-tint-color) var(--layer-tint-a), transparent),
-        color-mix(in srgb, var(--layer-tint-color) var(--layer-tint-b), transparent));
-    box-shadow: 0 4px 12px rgb(var(--glass-shadow-rgb) / var(--layer-shadow-alpha));
-    opacity: 0;
-    transition: opacity .35s ease-in-out;
-}
-
-.menu-capsule > .glass-layer {
-    transition-delay: var(--menu-capsule-material-delay);
-}
-
-.glass-layer[data-glass-state="content"] {
-    --layer-tint-a: 12%;
-    --layer-tint-b: 4%;
-    --layer-tint-ink: 21%;
-    --layer-shadow-alpha: .24;
-}
-
-.glass-layer[data-glass-state="busy"] {
-    --layer-tint-a: 58%;
-    --layer-tint-b: 50%;
-    --layer-tint-ink: 0%;
-    --layer-shadow-alpha: .24;
-}
-
-html[data-theme="dark"] .glass-layer[data-glass-state="photo"] {
-    --layer-tint-a: 3.5%;
-    --layer-tint-b: 1.2%;
-}
-
-html[data-theme="dark"] .glass-layer[data-glass-state="content"] {
-    --layer-tint-a: 8.4%;
-    --layer-tint-b: 2.4%;
-}
-
-html[data-theme="dark"] .glass-layer[data-glass-state="busy"] {
-    --layer-tint-a: 70%;
-    --layer-tint-b: 62%;
-    --layer-tint-ink: 100%;
-}
-
-.glass-capsule:not(.over-content, .over-content-busy) > .glass-layer[data-glass-state="photo"],
-.glass-capsule.over-content > .glass-layer[data-glass-state="content"],
-.glass-capsule.over-content-busy > .glass-layer[data-glass-state="busy"] {
-    opacity: 1;
-}
-
-@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
-    .glass-layer { display: none; }
-}
-
 /* ---------- 크롬 유리의 접점 반응 (5기 4번) ----------
    세 가지 모두 glass-motion.js 가 상태만 붙이고 모습은 여기서 정한다.
    1) 접점 발광: 누르는 동안 포인터 자리에서 빛이 번진다 (::before, 내용 아래).
@@ -1504,6 +1421,15 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
     .content-panel-blur {
         background-color: var(--panel-bg);
     }
+}
+
+/* [임시 비교 스위치] 오버스크롤 끄기 (theme-init.js 의 ?overscroll=off·smart). 맨 위에서 걸리는
+   Android 늘어남이 휴대폰에서 0.2~0.4초 멈춤을 만든다(6기 실측). smart 는 내려가 있는 동안만 끈다 */
+html.overscroll-off,
+html.overscroll-off body,
+html.overscroll-locked,
+html.overscroll-locked body {
+    overscroll-behavior-y: none;
 }
 
 /* ---------- 접근성: 모션·투명도·대비 각각 대응 (P14) ----------
