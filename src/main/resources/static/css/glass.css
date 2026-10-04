@@ -1423,13 +1423,27 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
     }
 }
 
-/* [임시 비교 스위치] 오버스크롤 끄기 (theme-init.js 의 ?overscroll=off·smart). 맨 위에서 걸리는
-   Android 늘어남이 휴대폰에서 0.2~0.4초 멈춤을 만든다(6기 실측). smart 는 내려가 있는 동안만 끈다 */
+/* ---------- [임시 실험 스위치] 왼쪽 아래 스위치 상자(lab-switches.js)가 html 에 붙이는 클래스 ---------- */
+/* 오버스크롤 끄기. 맨 위에서 걸리는 Android 늘어남이 Pixel 에서 0.2~0.4초 멈춤을 만든다(6기 실측).
+   smart 는 내려가 있는 동안만 끈다(glass-motion.js 가 .overscroll-locked 를 붙였다 뗀다) */
 html.overscroll-off,
 html.overscroll-off body,
 html.overscroll-locked,
 html.overscroll-locked body {
     overscroll-behavior-y: none;
+}
+
+/* 패널 등장 전환. S10 에서 놓친 프레임의 절반이 큰 패널의 등장 전환에서 나온다(6기 실측).
+   .is-lit-instant 는 빠르게 스크롤하는 중에 들어온 패널이다(glass-motion.js) */
+[data-lift].is-lit-instant,
+html.reveal-no-transition [data-lift] {
+    transition: none;
+}
+html.reveal-no-scale [data-lift]:not(.is-lit) {
+    transform: translateY(34px);
+}
+html.reveal-short [data-lift] {
+    transition-duration: .6s;
 }
 
 /* ---------- 접근성: 모션·투명도·대비 각각 대응 (P14) ----------

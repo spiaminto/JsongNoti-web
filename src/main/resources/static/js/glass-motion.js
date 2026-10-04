@@ -63,10 +63,29 @@
         }, { once: true });
     });
 
+    // [임시 실험 스위치] html.reveal-fast-instant (lab-switches.js): 빠르게 스크롤하는 중에 들어온 패널은
+    // .is-lit-instant 도 붙여 전환 없이 바로 보이게 한다(glass.css 실험 스위치 절). 빠름의 기준은
+    // 최근 스크롤 이벤트 사이 속도가 REVEAL_INSTANT_SPEED(px/ms) 를 넘는 것이다
+    var REVEAL_INSTANT_SPEED = 2, REVEAL_SPEED_STALE_MS = 100;
+    var revealFastInstant = document.documentElement.classList.contains("reveal-fast-instant");
+    var lastScrollY = window.scrollY, lastScrollTime = performance.now(), scrollSpeed = 0;
+    if (revealFastInstant) {
+        window.addEventListener("scroll", function () {
+            var now = performance.now();
+            scrollSpeed = Math.abs(window.scrollY - lastScrollY) / Math.max(now - lastScrollTime, 1);
+            lastScrollY = window.scrollY;
+            lastScrollTime = now;
+        }, { passive: true });
+    }
+    var isScrollingFast = function () {
+        return performance.now() - lastScrollTime < REVEAL_SPEED_STALE_MS && scrollSpeed > REVEAL_INSTANT_SPEED;
+    };
+
     // 스크롤 리빌: 30% 이상 보이면 떠오르고, 한 번 떠오르면 다시 숨지 않는다
     var observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
             if (entry.isIntersecting) {
+                if (revealFastInstant && isScrollingFast()) entry.target.classList.add("is-lit-instant");
                 entry.target.classList.add("is-lit");
                 observer.unobserve(entry.target);
             }
@@ -456,7 +475,7 @@
         });
     });
 
-    // [임시 비교 스위치] html.overscroll-smart (theme-init.js 의 ?overscroll=smart): 페이지가 내려가 있으면
+    // [임시 실험 스위치] html.overscroll-smart (lab-switches.js): 페이지가 내려가 있으면
     // html.overscroll-locked 를 붙여 오버스크롤을 끄고, 맨 위에서 스크롤이 멈추면 뗀다(glass.css 접근성 절 앞)
     if (document.documentElement.classList.contains("overscroll-smart")) {
         var updateOverscrollLock = function () {
