@@ -36,4 +36,16 @@
     var systemPrefersDark = !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
     var startDark = savedDarkMode === 'true' || (savedDarkMode === null && systemPrefersDark);
     if (startDark) window.applyColorTheme(true);
+
+    // [임시 비교 스위치] 크롬 유리의 상태 전환 방식. ?glass=fade 면 상태마다 틴트·그림자 층을 두고
+    // opacity 로 교차 페이드한다(html.glass-fade, glass.css 재질 절). ?glass=props 면 원래대로
+    // 등록 변수(--glass-*)를 전환한다. 고른 값은 탭을 닫을 때까지 sessionStorage 가 기억한다
+    try {
+        var glassMode = new URLSearchParams(location.search).get('glass');
+        if (glassMode === 'fade') sessionStorage.setItem('glassMode', 'fade');
+        if (glassMode === 'props') sessionStorage.removeItem('glassMode');
+        if (sessionStorage.getItem('glassMode') === 'fade') root.classList.add('glass-fade');
+    } catch (ignored) {
+        // 저장소 접근이 막힌 환경은 원래 방식으로
+    }
 })();
