@@ -951,7 +951,7 @@ html[data-theme="dark"] .sky {
         rgb(var(--sun) / 0) 88%);
     filter: blur(var(--b));
     opacity: 0;
-    animation: ray-in 1.4s var(--ease-float) forwards;
+    animation: ray-in .7s var(--ease-float) forwards;
     animation-delay: var(--d);
     /* 떠오르는 동안만 합성 레이어 — 끝나면 JS 가 .settled 를 붙여 해제한다.
        will-change 가 남아 있으면 blur 가 걸린 대형 레이어 8장이 매 프레임

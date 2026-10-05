@@ -87,10 +87,18 @@
         storeNonChromiumPreview();
     }
 
+    // [임시 실험 스위치] html.glass-material-late (lab-switches.js): 로드 시퀀스(햇살·캡슐·히어로가 떠오르는 동안)가
+    // 끝난 뒤에 만든다. 만드는 데 S10 에서 150~190ms 가 한 번에 걸린다(6기 실측)
+    var GLASS_MATERIAL_LATE_MS = 1600;
+    function start() {
+        if (document.documentElement.classList.contains("glass-material-late")) setTimeout(init, GLASS_MATERIAL_LATE_MS);
+        else init();
+    }
+
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init);
+        document.addEventListener("DOMContentLoaded", start);
     } else {
-        init();
+        start();
     }
 
     function init() {
