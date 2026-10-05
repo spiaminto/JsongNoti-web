@@ -1447,10 +1447,10 @@ html.overscroll-locked body {
 
 /* 떠오를 때 흐림 빼기. 요소 자신에 거는 filter: blur 전환은 컴포지터로 못 가 메인 스레드에서 돌고,
    스크롤 중에는 띄엄띄엄 갱신되어 덜컥거린다(6기 실측, Pixel). 유리 재질의 backdrop-filter 는 그대로다.
-   대상: 로드 시퀀스의 패널(홈 히어로와 그 안쪽, 검색·애창곡 섹션), 스크롤 리빌(패널, 사용 방법 타일).
-   떠 있는 유리 캡슐(브랜드·메뉴 캡슐)의 등장과 이름 바꾸기는 흐림을 남긴다(사용자 결정) */
+   대상: 로드 시퀀스의 패널(홈 히어로, 검색·애창곡 섹션), 스크롤 리빌(패널, 사용 방법 타일).
+   흐림 비용은 면적에 비례하므로 작은 요소는 흐림을 남긴다(사용자 결정): 떠 있는 유리 캡슐의 등장과
+   이름 바꾸기, 히어로 안쪽 글자(.hero-stagger)의 4px 흐림 */
 html.entrance-no-blur .veil:not(.glass-capsule),
-html.entrance-no-blur .hero.veil .hero-stagger,
 html.entrance-no-blur [data-lift],
 html.entrance-no-blur .usage-row .u-video,
 html.entrance-no-blur .usage-row .u-text {
