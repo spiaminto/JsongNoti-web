@@ -292,11 +292,11 @@
 }
 
 /* ---------- 히어로에서 첫 신곡 멈추기 (7기 1번) ----------
-   1200px 미만에서 맨 위 구간에 손가락을 댔을 때만 glass-motion.js 가 html.hero-scroll-stop 을 붙인다. 스냅 자리는
-   맨 위(높이 0 인 .navbar), 손가락이 있는 자리(.hero-scroll-anchor), 신곡 표 묶음(지나칠 수 없음) 셋이다. 맨 위
-   자리에 화면보다 큰 요소를 쓰면 그 안이 통째로 자유 구간이 되어 세게 튕길 때 신곡 표 묶음을 지나친다(S10 실측).
-   신곡 표 묶음은 윗선이 떠 있는 캡슐의 아랫선 8px 아래에 오게 멈춘다 — 캡슐과 겹치지 않고 표는 화면에
-   다 들어온다(사용자 결정, 스크린샷으로 확인) */
+   1200px 미만에서 신곡 표 묶음보다 위에서 아래로 빠르게 튕길 때만 glass-motion.js 가 html.hero-scroll-stop 을
+   붙인다. 스냅 자리는 손가락이 있는 자리(.hero-scroll-anchor)와 신곡 표 묶음(지나칠 수 없음) 둘이고, 맨 위는
+   스냅 자리가 아니다. 신곡 표 묶음은 윗선이 떠 있는 캡슐의 아랫선 8px 아래에 오게 멈춘다 — 캡슐과 겹치지 않고
+   표는 화면에 다 들어온다(사용자 결정, 스크린샷으로 확인). scroll-margin-top 은 켜기 전에 멈출 자리를 재야 해서
+   늘 둔다 */
 .hero-scroll-anchor {
     position: absolute;
     left: 0;
@@ -305,11 +305,14 @@
     pointer-events: none;
 }
 
+.songs-grid {
+    scroll-margin-top: calc(var(--chrome-capsule-top) + var(--chrome-capsule-height) + 8px);
+}
+
 html.hero-scroll-stop {
     scroll-snap-type: y mandatory;
 }
 
-html.hero-scroll-stop .navbar,
 html.hero-scroll-stop .hero-scroll-anchor {
     scroll-snap-align: start;
 }
@@ -317,7 +320,6 @@ html.hero-scroll-stop .hero-scroll-anchor {
 html.hero-scroll-stop .songs-grid {
     scroll-snap-align: start;
     scroll-snap-stop: always;
-    scroll-margin-top: calc(var(--chrome-capsule-top) + var(--chrome-capsule-height) + 8px);
 }
 
 /* ---------- 접근성·모바일 ---------- */
