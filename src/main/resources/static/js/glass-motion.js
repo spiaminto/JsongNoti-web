@@ -120,26 +120,39 @@
         // 메뉴 캡슐의 이동 (containers.css "메뉴 캡슐의 이동" 절): 최상단 영역을 벗어나면 돌면서
         // 오른쪽 아래로 내려가고, 돌아오면 올라온다. 1200px 이상에서는 위에 머문다
         // 자리: 위는 콘텐츠 열(1140px)의 오른쪽 끝·윗선 16px (containers.css 의 --chrome-* 와 같은 값),
-        // 아래는 오른쪽 12px·캡슐의 아랫선이 화면 높이의 70%
+        // 아래는 오른쪽 12px·캡슐의 아랫선이 주소창이 숨은 화면 높이(100lvh)의 70%. 아래 자리는 화면 아랫선에서
+        // 재므로 휴대폰 주소창이 나타나고 사라져도 화면에서 움직이지 않는다
         var MENU_COLUMN_HALF = 570, MENU_EDGE = 12, MENU_TOP = 16, MENU_DOCK_BOTTOM_LINE = .7;
         var menuCapsule = document.querySelector(".menu-capsule");
         var menuButtons = menuCapsule ? Array.prototype.slice.call(menuCapsule.querySelectorAll(".icon-link")) : [];
         var menuStaysOnTop = window.matchMedia("(min-width: 1200px)");
         var menuReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
         var menuDocked = false;
+        // 주소창이 숨은 화면 높이(100lvh)를 재는 보이지 않는 막대. lvh 를 모르는 브라우저에서는 높이 0
+        var largeViewportProbe = document.createElement("div");
+        largeViewportProbe.style.cssText = "position:fixed;top:0;left:0;width:0;height:100lvh;visibility:hidden;pointer-events:none";
+        largeViewportProbe.setAttribute("aria-hidden", "true");
+        document.body.appendChild(largeViewportProbe);
 
-        // 자리는 right·bottom 이 아니라 기기 픽셀에 맞춘 left·top 으로 놓는다 — 소수점 자리에 놓이면
-        // 이동이 끝난 뒤 내용이 픽셀 격자에 다시 물리며 살짝 움직인다
+        // 자리는 right 가 아니라 기기 픽셀에 맞춘 left 로, 위 자리는 top·아래 자리는 bottom 으로 놓는다 —
+        // 소수점 자리에 놓이면 이동이 끝난 뒤 내용이 픽셀 격자에 다시 물리며 살짝 움직인다
         var placeMenuCapsule = function () {
             var ratio = window.devicePixelRatio || 1;
+            var snapToDevicePixel = function (value) { return Math.round(value * ratio) / ratio + "px"; };
             var viewportWidth = document.documentElement.clientWidth;
             var left = menuDocked
                 ? viewportWidth - MENU_EDGE - menuCapsule.offsetWidth
                 : viewportWidth - Math.max(MENU_EDGE, viewportWidth / 2 - MENU_COLUMN_HALF) - menuCapsule.offsetWidth;
-            var top = menuDocked ? window.innerHeight * MENU_DOCK_BOTTOM_LINE - menuCapsule.offsetHeight : MENU_TOP;
-            menuCapsule.style.left = Math.round(left * ratio) / ratio + "px";
-            menuCapsule.style.top = Math.round(top * ratio) / ratio + "px";
+            menuCapsule.style.left = snapToDevicePixel(left);
             menuCapsule.style.right = "auto";
+            if (menuDocked) {
+                var largeViewportHeight = largeViewportProbe.offsetHeight || window.innerHeight;
+                menuCapsule.style.top = "auto";
+                menuCapsule.style.bottom = snapToDevicePixel(largeViewportHeight * (1 - MENU_DOCK_BOTTOM_LINE));
+            } else {
+                menuCapsule.style.top = snapToDevicePixel(MENU_TOP);
+                menuCapsule.style.bottom = "auto";
+            }
         };
 
         var applyMenuDocked = function () {
