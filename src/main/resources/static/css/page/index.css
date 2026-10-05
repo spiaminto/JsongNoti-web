@@ -167,7 +167,7 @@
     }
 }
 
-/* 물방울 동심원: 영상·글이 떠오른 뒤 0.5s 에 잔물결로 퍼진다 */
+/* 물방울 동심원: 영상·글이 떠오른 뒤 1s 에 잔물결로 퍼진다 */
 .drops {
     position: absolute;
     left: var(--dx, 18%);
@@ -193,7 +193,7 @@
 
 .usage-row.is-lit .drops i {
     animation: drop 1.5s ease-out both;
-    animation-delay: calc(.5s + var(--dd));
+    animation-delay: calc(1s + var(--dd));
 }
 
 @keyframes drop {
