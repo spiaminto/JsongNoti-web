@@ -790,19 +790,18 @@ html[data-theme="dark"] .modal .song-table th {
    떠올라, 콘텐츠가 가장자리에서 디졸브된다. 베일 요소는 glass-motion.js 가
    상단바 있는 페이지에만 심고, 표시는 .navbar.scroll-veil-on(scrollY > 8)을
    형제 선택자로 따라간다. 높이는 떠 있는 캡슐의 아랫선보다 32px 더 내려온다.
-   흐림과 배경색 페이드(--bg 45%)를 같은 마스크로 깎는다 — 마스크는 위에서
-   완전, 아래로 갈수록 천천히 줄어드는 곡선이라 띠의 아랫선이 보이지 않는다 */
+   흐림은 두 겹이다: 4px(전체 높이, 배경색 페이드 --bg 45% 포함), 12px(위 45%).
+   위로 갈수록 겹이 쌓여 흐림 세기 자체가 커진다. 겹마다 위에서 완전, 아래로
+   갈수록 천천히 줄어드는 같은 곡선의 마스크를 쓴다 */
 .scroll-veil {
+    --scroll-veil-height: calc(var(--chrome-capsule-top) + var(--chrome-capsule-height) + 32px);
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    height: calc(var(--chrome-capsule-top) + var(--chrome-capsule-height) + 32px);
+    height: var(--scroll-veil-height);
     z-index: 39; /* 상단바(40) 바로 아래 */
     pointer-events: none;
-    background: color-mix(in srgb, var(--bg) 45%, transparent);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
     --scroll-veil-mask: linear-gradient(to bottom,
         #000 0%, rgb(0 0 0 / .96) 14%, rgb(0 0 0 / .86) 28%, rgb(0 0 0 / .7) 42%,
         rgb(0 0 0 / .5) 56%, rgb(0 0 0 / .3) 70%, rgb(0 0 0 / .14) 84%, transparent 100%);
@@ -812,15 +811,27 @@ html[data-theme="dark"] .modal .song-table th {
     transition: opacity .45s ease;
 }
 
+.scroll-veil-layer-1 {
+    background: color-mix(in srgb, var(--bg) 45%, transparent);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+}
+
+.scroll-veil-layer-2 {
+    height: calc(var(--scroll-veil-height) * .45);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+}
+
 /* 페이지 상단 흐려짐(scroll edge effect) 켜짐 */
 .navbar.scroll-veil-on ~ .scroll-veil {
     opacity: 1;
 }
 
-/* dark 에서는 베일이 살짝 어둡게도 눌러 글자가 내비바 뒤로 잠기게 한다 */
-html[data-theme="dark"] .scroll-veil {
-    -webkit-backdrop-filter: blur(12px) brightness(.8);
-    backdrop-filter: blur(12px) brightness(.8);
+/* dark 에서는 베일이 살짝 어둡게도 눌러 글자가 내비바 뒤로 잠기게 한다 (전체 높이 층에서 한 번) */
+html[data-theme="dark"] .scroll-veil-layer-1 {
+    -webkit-backdrop-filter: blur(4px) brightness(.8);
+    backdrop-filter: blur(4px) brightness(.8);
 }
 
 /* 모달이 열릴 때 화면이 옆으로 밀리는 것 방지.

@@ -5,7 +5,7 @@
  * 담당:
  *  1) 로드 시퀀스: .veil 요소에 .on 을 붙여 --vd 딜레이 순서대로 띄운다
  *  2) 스크롤 리빌: [data-lift] 요소가 30% 이상 보이면 .is-lit 을 붙인다 (기존 fade-in.js 대체)
- *  3) scroll edge: 화면 상단 점진 블러 베일(.scroll-veil)을 심고 scrollY > 8 에서
+ *  3) scroll edge: 화면 상단 점진 블러 베일(.scroll-veil 두 겹)을 심고 scrollY > 8 에서
  *     .navbar 에 .scroll-veil-on 을 붙여 켠다 (ui-rnd 5턴). 크롬 유리(.glass-capsule)마다
  *     콘텐츠 패널이 밑에 들어오면 .over-content, 글자 밑에 busy 패널(.content-panel-busy)이 있으면
  *     .over-content-busy 를 붙여 상태를 바꾼다 (glass.css 재질 절)
@@ -81,15 +81,19 @@
     });
 
     // scroll edge: 상단 점진 블러 베일(.scroll-veil)은 상단바 있는 페이지에만 심는다 —
-    // 표시는 CSS 형제 선택자(.navbar.scroll-veil-on ~ .scroll-veil)가 따라온다
+    // 표시는 CSS 형제 선택자(.navbar.scroll-veil-on ~ .scroll-veil)가 따라온다.
+    // 흐림 세기가 다른 층 둘(.scroll-veil-layer-1~2)을 형제로 심는다 — 한 요소 안에 겹치면
+    // 바깥 요소의 마스크·투명도 때문에 안쪽 층이 뒤 화면을 읽지 못한다
     var navbar = document.querySelector(".navbar");
     if (navbar) {
-        var scrollVeil = document.createElement("div");
-        scrollVeil.className = "scroll-veil";
-        scrollVeil.setAttribute("aria-hidden", "true");
-        // 형제 선택자가 물리도록 상단바와 같은 부모(#container)의 끝에 심는다
-        // (fixed 라 부모가 어디든 뷰포트 기준으로 뜬다)
-        navbar.parentElement.appendChild(scrollVeil);
+        for (var veilLayer = 1; veilLayer <= 2; veilLayer++) {
+            var scrollVeil = document.createElement("div");
+            scrollVeil.className = "scroll-veil scroll-veil-layer-" + veilLayer;
+            scrollVeil.setAttribute("aria-hidden", "true");
+            // 형제 선택자가 물리도록 상단바와 같은 부모(#container)의 끝에 심는다
+            // (fixed 라 부모가 어디든 뷰포트 기준으로 뜬다)
+            navbar.parentElement.appendChild(scrollVeil);
+        }
 
         // 페이지 위치: 스크롤 위치로 .navbar 에 세 상태를 붙인다
         //  .scroll-veil-on    — 8px 넘게 내려왔다. 상단 흐림 베일이 켜진다
