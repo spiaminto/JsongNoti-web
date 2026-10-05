@@ -78,11 +78,13 @@ section {
     transform-origin: 0 50%;
 }
 
-/* 메뉴 캡슐: 버튼은 정사각형 — 가로(118×62)와 세로(62×118)가 90도 회전으로 정확히 겹친다 */
+/* 메뉴 캡슐: 버튼은 정사각형 — 가로(126×62)와 세로(62×126)가 90도 회전으로 정확히 겹친다.
+   끝 여백(--menu-capsule-end-padding)은 가로일 때 좌우, 세로일 때 위아래다 */
 .menu-capsule {
+    --menu-capsule-end-padding: 8px;
     right: var(--chrome-column-edge);
     gap: 2px;
-    padding: 4px;
+    padding: 4px var(--menu-capsule-end-padding);
 }
 
 .menu-capsule .icon-link {
@@ -117,10 +119,11 @@ section {
         rotate var(--menu-capsule-duration) var(--menu-capsule-ease);
 }
 
-/* 세로 레이아웃: 고정 높이(--chrome-capsule-height)를 풀어 62×118 이 된다 */
+/* 세로 레이아웃: 고정 높이(--chrome-capsule-height)를 풀어 62×126 이 된다 */
 .menu-capsule.is-docked {
     flex-direction: column;
     height: auto;
+    padding: var(--menu-capsule-end-padding) 4px;
 }
 
 /* 이동하는 동안에만 재질 전환을 이동의 55% 지점으로 늦춘다 — 떠나자마자가 아니라 도착
@@ -162,10 +165,10 @@ section {
 }
 
 /* 768px 이상: 브랜드 캡슐을 화면 폭의 50% 로. 메뉴 캡슐에 닿지 않도록 콘텐츠 열에서
-   메뉴 캡슐(118px)과 간격(24px)을 뺀 폭을 상한으로 둔다 */
+   메뉴 캡슐(126px)과 간격(24px)을 뺀 폭을 상한으로 둔다 */
 @media (min-width: 768px) {
     .brand-capsule {
-        width: min(50vw, calc(min(1140px, 100vw - 24px) - 118px - 24px));
+        width: min(50vw, calc(min(1140px, 100vw - 24px) - 126px - 24px));
     }
 }
 
