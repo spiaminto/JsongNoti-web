@@ -26,6 +26,9 @@
  * 10) 페이지 제목 접힘: 페이지 제목(h1)이 스크롤로 브랜드 캡슐 밑을 지나가면 .navbar 에
  *     .is-page-title-scrolled-away 를 붙인다. 캡슐의 이름이 사이트 이름에서 페이지 이름으로
  *     바뀐다 (header-text.css 브랜드 이름 자리)
+ * 11) 히어로에서 첫 신곡 멈추기: index 에서 맨 위 구간(HERO_SCROLL_STOP_ZONE)에 손가락을 대면
+ *     html.hero-scroll-stop 을 붙여 브라우저 스크롤 스냅을 켠다. 아래로 튕기면 신곡 표 묶음이 화면 위에 오는
+ *     자리에서 멈춘다 (page/index.css 같은 이름의 절)
  *
  * 콘텐츠 패널은 덮개색 한 겹의 반투명 패널이라(glass.css) 여기서는 손대지 않는다.
  *
@@ -467,6 +470,44 @@
     }, { passive: true });
     window.addEventListener("scrollend", updateOverscrollLock);
     updateOverscrollLock();
+
+    // 히어로에서 첫 신곡 멈추기 (7기 1번): 맨 위 구간에 손가락을 대는 순간 스냅을 켠다. 스냅 자리는 맨 위,
+    // 손가락을 댄 자리(스냅을 켜는 순간 가까운 자리로 끌려가지 않게 앵커를 놓는다), 신곡 표 묶음(지나칠 수
+    // 없음) 셋이다. 손가락으로 끌어서 신곡 표 묶음을 지나치면 사용자 뜻으로 보고 끄고, 스크롤이 멈추면 끈다.
+    // 터치 이벤트로만 켜지므로 휠·키보드 스크롤에는 걸리지 않는다
+    var HERO_SCROLL_STOP_ZONE = 120; // 이 위치(px)보다 위에서 시작한 터치만 건다
+    var heroScrollStopGrid = document.querySelector(".hero") && document.querySelector(".songs-grid");
+    if (heroScrollStopGrid) {
+        var root = document.documentElement;
+        var heroScrollAnchor = document.createElement("div");
+        heroScrollAnchor.className = "hero-scroll-anchor";
+        heroScrollAnchor.setAttribute("aria-hidden", "true");
+        document.body.appendChild(heroScrollAnchor);
+        var heroScrollTouching = false;
+        // 신곡 표 묶음이 멈추는 스크롤 위치 (transform 은 빼고 레이아웃 기준, index.css 의 scroll-margin-top 반영)
+        var heroScrollStopY = function () {
+            var top = 0;
+            for (var element = heroScrollStopGrid; element; element = element.offsetParent) top += element.offsetTop;
+            return top - parseFloat(getComputedStyle(heroScrollStopGrid).scrollMarginTop || 0);
+        };
+        window.addEventListener("touchstart", function () {
+            heroScrollTouching = true;
+            if (window.scrollY > HERO_SCROLL_STOP_ZONE) return;
+            heroScrollAnchor.style.top = window.scrollY + "px";
+            root.classList.add("hero-scroll-stop");
+        }, { passive: true });
+        var releaseHeroScrollTouch = function () { heroScrollTouching = false; };
+        window.addEventListener("touchend", releaseHeroScrollTouch, { passive: true });
+        window.addEventListener("touchcancel", releaseHeroScrollTouch, { passive: true });
+        window.addEventListener("scroll", function () {
+            if (heroScrollTouching && root.classList.contains("hero-scroll-stop") && window.scrollY > heroScrollStopY() + 1) {
+                root.classList.remove("hero-scroll-stop");
+            }
+        }, { passive: true });
+        window.addEventListener("scrollend", function () {
+            if (!heroScrollTouching) root.classList.remove("hero-scroll-stop");
+        });
+    }
 
     // scroll 중 hover 억제: 휠 노치마다(스크롤 제스처가 끝날 때마다) Chrome 이
     // 포인터 아래 행의 hover 를 갱신해 행 배경이 켜졌다 꺼지고, 그때마다 결과
