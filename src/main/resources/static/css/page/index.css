@@ -291,13 +291,14 @@
     color: var(--ky-ink);
 }
 
-/* ---------- 히어로에서 첫 신곡 멈추기 (7기 1번) ----------
-   1200px 미만에서 신곡 표 묶음보다 위에서 아래로 빠르게 튕길 때만 glass-motion.js 가 html.hero-scroll-stop 을
-   붙인다. 스냅 자리는 손가락이 있는 자리(.hero-scroll-anchor)와 신곡 표 묶음(지나칠 수 없음) 둘이고, 맨 위는
-   스냅 자리가 아니다. 신곡 표 묶음은 윗선이 떠 있는 캡슐의 아랫선 8px 아래에 오게 멈춘다 — 캡슐과 겹치지 않고
-   표는 화면에 다 들어온다(사용자 결정, 스크린샷으로 확인). scroll-margin-top 은 켜기 전에 멈출 자리를 재야 해서
-   늘 둔다 */
-.hero-scroll-anchor {
+/* ---------- 신곡 표 머리에서 멈추기 (7기 1번) ----------
+   1200px 미만에서 아래로 빠르게 튕길 때만 glass-motion.js 가 html.song-panel-scroll-stop 을 붙인다. 멈춤 자리는
+   TJ 표와 금영 표의 윗머리(.song-panel-stop-point, JS 가 각 패널의 레이아웃 위치에 놓음)이고, 그중 다음 하나
+   (.is-next-stop, 지나칠 수 없음)와 손가락이 있는 자리(.scroll-stop-finger-anchor)만 스냅 자리가 된다.
+   패널은 윗선이 떠 있는 캡슐의 아랫선 8px 아래에 오게 멈춘다 — 캡슐과 겹치지 않고 표는 화면에 들어온다
+   (사용자 결정, 스크린샷으로 확인) */
+.scroll-stop-finger-anchor,
+.song-panel-stop-point {
     position: absolute;
     left: 0;
     width: 1px;
@@ -305,19 +306,19 @@
     pointer-events: none;
 }
 
-.songs-grid {
+.song-panel-stop-point {
     scroll-margin-top: calc(var(--chrome-capsule-top) + var(--chrome-capsule-height) + 8px);
 }
 
-html.hero-scroll-stop {
+html.song-panel-scroll-stop {
     scroll-snap-type: y mandatory;
 }
 
-html.hero-scroll-stop .hero-scroll-anchor {
+html.song-panel-scroll-stop .scroll-stop-finger-anchor {
     scroll-snap-align: start;
 }
 
-html.hero-scroll-stop .songs-grid {
+html.song-panel-scroll-stop .song-panel-stop-point.is-next-stop {
     scroll-snap-align: start;
     scroll-snap-stop: always;
 }
