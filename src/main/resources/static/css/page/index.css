@@ -232,6 +232,15 @@
     transition-delay: .42s;
 }
 
+/* 빠르게 스크롤하는 중에 들어온 줄은 동심원 없이 내용이 바로 도착 상태로 (glass.css .is-lit-instantly) */
+.usage-row.is-lit-instantly .u-video,
+.usage-row.is-lit-instantly .u-text {
+    transition: none;
+}
+.usage-row.is-lit-instantly .drops i {
+    animation: none;
+}
+
 /* 영상: 기기 프레임 없이 패널 위에 녹아 떠 있는 느낌.
    패널 반경은 동심(P20): 안쪽 영상 반경 + 패딩 7px */
 .u-video {

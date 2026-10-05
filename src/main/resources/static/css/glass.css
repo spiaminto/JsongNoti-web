@@ -1064,6 +1064,18 @@ html[data-theme="dark"] .bokeh {
     to { opacity: 1; transform: none; }
 }
 
+/* 빠르게 스크롤하는 중에 들어온 요소는 떠오르지 않고 바로 도착 상태로 (glass-motion.js 가
+   .is-lit-instantly 를 .is-lit 과 함께 붙인다). 행 스태거 뒤에 둬야 같은 특정도에서 이긴다.
+   더보기로 여는 행(.collapse·.more-reveal)은 특정도가 더 높아 펼칠 때의 모션이 그대로 남는다 */
+[data-lift].is-lit-instantly {
+    transition: none;
+}
+[data-lift].is-lit-instantly tbody tr {
+    animation: none;
+    opacity: 1;
+    transform: none;
+}
+
 /* 더보기(컬랩스)로 여는 표는 행 스태거를 끄고 표 전체가 한 번에 떠오른다.
    행마다 딜레이를 주면 높이 애니메이션(0.5s)이 끝난 뒤에도 1초 넘게
    행 단위 재페인트가 이어져 버벅임의 원인이 된다 (3턴 피드백).
@@ -1431,19 +1443,6 @@ html.overscroll-off body,
 html.overscroll-locked,
 html.overscroll-locked body {
     overscroll-behavior-y: none;
-}
-
-/* 패널 등장 전환. S10 에서 놓친 프레임의 절반이 큰 패널의 등장 전환에서 나온다(6기 실측).
-   .is-lit-instant 는 빠르게 스크롤하는 중에 들어온 패널이다(glass-motion.js) */
-[data-lift].is-lit-instant,
-html.reveal-no-transition [data-lift] {
-    transition: none;
-}
-html.reveal-no-scale [data-lift]:not(.is-lit) {
-    transform: translateY(34px);
-}
-html.reveal-short [data-lift] {
-    transition-duration: .6s;
 }
 
 /* ---------- 접근성: 모션·투명도·대비 각각 대응 (P14) ----------

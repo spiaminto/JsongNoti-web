@@ -4,13 +4,15 @@
  *
  * 담당:
  *  1) 로드 시퀀스: .veil 요소에 .on 을 붙여 --vd 딜레이 순서대로 띄운다
- *  2) 스크롤 리빌: [data-lift] 요소가 30% 이상 보이면 .is-lit 을 붙인다 (기존 fade-in.js 대체)
+ *  2) 스크롤 리빌: [data-lift] 요소가 30% 이상 보이면 .is-lit 을 붙인다 (기존 fade-in.js 대체).
+ *     빠르게 스크롤하는 중에 들어온 요소는 .is-lit-instantly 도 붙여 떠오르지 않고 바로 도착 상태가 된다
  *  3) scroll edge: 화면 상단 점진 블러 베일(.scroll-veil)을 심고 scrollY > 8 에서
  *     .navbar 에 .scroll-veil-on 을 붙여 켠다 (ui-rnd 5턴). 크롬 유리(.glass-capsule)마다
  *     콘텐츠 패널이 밑에 들어오면 .over-content, 글자 밑에 busy 패널(.content-panel-busy)이 있으면
  *     .over-content-busy 를 붙여 상태를 바꾼다 (glass.css 재질 절)
  *  4) 최상단 영역: 최상단 영역을 벗어나면 .navbar 에 .is-past-top-zone 을 붙인다.
- *     브랜드 캡슐 축소(containers.css)와 7) 메뉴 캡슐의 이동이 이 상태를 각자 읽는다
+ *     브랜드 캡슐 축소(containers.css)와 7) 메뉴 캡슐의 이동이 이 상태를 각자 읽는다.
+ *     같은 판정(updatePagePosition)이 스크롤 속도도 재서 2) 스크롤 리빌에 넘긴다
  *  5) 보케: .bokeh i 의 위치·크기를 로드마다 랜덤으로 흩뿌린다
  *  6) 접힘 스크롤 팔로우: index 더보기를 접으면 토글 버튼을 화면 중앙까지
  *     활강시켜 포착한 뒤, 중앙에 고정한 채 접힘을 따라 함께 이동한다. followScroll·
@@ -63,29 +65,22 @@
         }, { once: true });
     });
 
-    // [임시 실험 스위치] html.reveal-fast-instant (lab-switches.js): 빠르게 스크롤하는 중에 들어온 패널은
-    // .is-lit-instant 도 붙여 전환 없이 바로 보이게 한다(glass.css 실험 스위치 절). 빠름의 기준은
-    // 최근 스크롤 이벤트 사이 속도가 REVEAL_INSTANT_SPEED(px/ms) 를 넘는 것이다
-    var REVEAL_INSTANT_SPEED = 2, REVEAL_SPEED_STALE_MS = 100;
-    var revealFastInstant = document.documentElement.classList.contains("reveal-fast-instant");
-    var lastScrollY = window.scrollY, lastScrollTime = performance.now(), scrollSpeed = 0;
-    if (revealFastInstant) {
-        window.addEventListener("scroll", function () {
-            var now = performance.now();
-            scrollSpeed = Math.abs(window.scrollY - lastScrollY) / Math.max(now - lastScrollTime, 1);
-            lastScrollY = window.scrollY;
-            lastScrollTime = now;
-        }, { passive: true });
-    }
+    // 스크롤 속도: 페이지 위치 판정(updatePagePosition)이 프레임마다 잰다. 마지막 판정이
+    // PAGE_SCROLL_SPEED_STALE_MS 보다 오래됐으면 멈춘 것으로 본다
+    var REVEAL_INSTANTLY_SPEED = 2, PAGE_SCROLL_SPEED_STALE_MS = 100; // px/ms, ms
+    var pageScrollSpeed = 0, pageScrollMeasuredAt = 0;
     var isScrollingFast = function () {
-        return performance.now() - lastScrollTime < REVEAL_SPEED_STALE_MS && scrollSpeed > REVEAL_INSTANT_SPEED;
+        return performance.now() - pageScrollMeasuredAt < PAGE_SCROLL_SPEED_STALE_MS && pageScrollSpeed > REVEAL_INSTANTLY_SPEED;
     };
+    // [임시 실험 스위치] html.reveal-motion-always (lab-switches.js): 속도와 상관없이 늘 떠오른다(비교용)
+    var revealMotionAlways = document.documentElement.classList.contains("reveal-motion-always");
 
-    // 스크롤 리빌: 30% 이상 보이면 떠오르고, 한 번 떠오르면 다시 숨지 않는다
+    // 스크롤 리빌: 30% 이상 보이면 떠오르고, 한 번 떠오르면 다시 숨지 않는다.
+    // 그 순간 빠르게 스크롤하는 중이면 떠오르는 모션 없이 바로 도착 상태가 된다 (glass.css·index.css)
     var observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
             if (entry.isIntersecting) {
-                if (revealFastInstant && isScrollingFast()) entry.target.classList.add("is-lit-instant");
+                if (!revealMotionAlways && isScrollingFast()) entry.target.classList.add("is-lit-instantly");
                 entry.target.classList.add("is-lit");
                 observer.unobserve(entry.target);
             }
@@ -107,18 +102,24 @@
         // (fixed 라 부모가 어디든 뷰포트 기준으로 뜬다)
         navbar.parentElement.appendChild(scrollVeil);
 
-        // 페이지 위치: 스크롤 위치로 .navbar 에 두 상태를 붙인다
+        // 페이지 위치: 스크롤 위치로 .navbar 에 세 상태를 붙이고, 스크롤 속도를 잰다
         //  .scroll-veil-on    — 8px 넘게 내려왔다. 상단 흐림 베일이 켜진다
         //  .is-past-top-zone  — 최상단 영역을 벗어났다. 120px 을 넘으면 켜고 40px 아래로 돌아오면 끈다 —
         //                       문턱을 둘로 나눠 맨 위 근처에서 오르내리지 않게 한다
         //  .is-page-title-scrolled-away — 페이지 제목(h1)의 아랫선이 브랜드 캡슐의 아랫선 위로 올라갔다.
         //                       돌아올 때는 8px 더 내려와야 끈다
+        //  스크롤 속도         — 직전 판정과의 위치 차이 / 시간 차이 (px/ms). 스크롤 리빌이 읽는다
         var SCROLL_VEIL_AT = 8, TOP_ZONE_LEAVE_AT = 120, TOP_ZONE_RETURN_AT = 40, PAGE_TITLE_RETURN_MARGIN = 8;
         var pastTopZone = false, pageTitleScrolledAway = false;
         var pageTitle = document.querySelector("h1");
         var brandCapsule = document.querySelector(".brand-capsule");
+        var lastPagePositionY = window.scrollY;
         var updatePagePosition = function () {
             var y = window.scrollY;
+            var now = performance.now();
+            pageScrollSpeed = Math.abs(y - lastPagePositionY) / Math.max(now - pageScrollMeasuredAt, 1);
+            pageScrollMeasuredAt = now;
+            lastPagePositionY = y;
             if (!pastTopZone && y > TOP_ZONE_LEAVE_AT) pastTopZone = true;
             else if (pastTopZone && y < TOP_ZONE_RETURN_AT) pastTopZone = false;
             navbar.classList.toggle("scroll-veil-on", y > SCROLL_VEIL_AT);

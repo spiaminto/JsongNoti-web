@@ -26,10 +26,7 @@
             title: "패널 등장",
             kind: "check",
             options: [
-                { label: "빠를 땐 바로", className: "reveal-fast-instant" },
-                { label: "배율 빼기", className: "reveal-no-scale" },
-                { label: "짧게 (0.6초)", className: "reveal-short" },
-                { label: "전환 끔 (비교용)", className: "reveal-no-transition" }
+                { label: "빠를 때도 늘 떠오르기 (비교용)", className: "reveal-motion-always" }
             ]
         }
     ];

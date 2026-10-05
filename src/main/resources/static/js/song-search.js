@@ -569,10 +569,12 @@ $(function () {
                 $addRow.css('height', '');
                 // 공개하며 row-in 재생 — 데이터 갱신 지점으로 시선을 끈다.
                 // 행의 row-in 은 스크롤 리빌([data-lift].is-lit)이 준 것이라
-                // animation 을 잠깐 none 으로 껐다 되살려 처음부터 재생시킨다
+                // animation 을 잠깐 none 으로 껐다 되살려 처음부터 재생시킨다.
+                // 빠른 스크롤로 바로 도착한 패널(.is-lit-instantly)은 스타일시트가 row-in 을 꺼 두므로
+                // 재생할 애니메이션을 직접 준다
                 $addRow.css('animation', 'none');
                 void $addRow[0].offsetWidth;
-                $addRow.css({animation: '', 'animation-delay': '0s'});
+                $addRow.css('animation', moreReduceMotion ? '' : 'row-in .7s var(--ease-float) both');
             };
         } else {
             fillAddRow();
