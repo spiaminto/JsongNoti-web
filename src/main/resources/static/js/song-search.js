@@ -574,7 +574,7 @@ $(function () {
                 // 재생할 애니메이션을 직접 준다
                 $addRow.css('animation', 'none');
                 void $addRow[0].offsetWidth;
-                $addRow.css('animation', moreReduceMotion ? '' : 'row-in .7s var(--ease-float) both');
+                $addRow.css('animation', moreReduceMotion ? '' : 'row-in .45s var(--ease-float) both');
             };
         } else {
             fillAddRow();
