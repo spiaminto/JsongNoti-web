@@ -36,15 +36,4 @@
     var systemPrefersDark = !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
     var startDark = savedDarkMode === 'true' || (savedDarkMode === null && systemPrefersDark);
     if (startDark) window.applyColorTheme(true);
-
-    // [임시 실험 스위치] 왼쪽 아래 스위치 상자(lab-switches.js)에서 고른 값을 첫 페인트 전에 html 클래스로 붙인다.
-    // localStorage 'labSwitches' 는 { 클래스 이름: true } 모양이다
-    try {
-        var labSwitches = JSON.parse(localStorage.getItem('labSwitches') || '{}');
-        Object.keys(labSwitches).forEach(function (className) {
-            if (labSwitches[className]) root.classList.add(className);
-        });
-    } catch (ignored) {
-        // 저장소 접근이 막힌 환경은 원래대로
-    }
 })();
