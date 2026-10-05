@@ -13,6 +13,15 @@
     text-align: left;
 }
 
+/* 검색 유형 라디오 사이 간격: 네 개가 390px 폭에서 한 줄에 들어간다 (Bootstrap 기본 1rem) */
+.search-type-check-wrapper .form-check-inline {
+    margin-right: .8rem;
+}
+
+.search-type-check-wrapper .form-check-inline:last-child {
+    margin-right: 0;
+}
+
 #searchHintContainer {
     text-align: left;
 }
