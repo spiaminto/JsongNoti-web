@@ -785,24 +785,29 @@ html[data-theme="dark"] .modal .song-table th {
     border-color: rgb(255 255 255 / .12);
 }
 
-/* ---------- 모션: scroll edge (ui-rnd 5턴) ----------
+/* ---------- 모션: scroll edge (ui-rnd 5턴, 7기 6번) ----------
    상단바 유리 밑으로 콘텐츠가 지나가면 화면 상단에 점진 블러 베일이
    떠올라, 콘텐츠가 가장자리에서 디졸브된다. 베일 요소는 glass-motion.js 가
    상단바 있는 페이지에만 심고, 표시는 .navbar.scroll-veil-on(scrollY > 8)을
-   형제 선택자로 따라간다. 상단바의 backdrop 을 먼저 뭉개지 않도록 짧게 둔다:
-   뷰포트와 상단바 사이 틈(0~14px)은 완전 블러, 상단바 중간쯤에서 0 */
+   형제 선택자로 따라간다. 높이는 떠 있는 캡슐의 아랫선보다 32px 더 내려온다.
+   흐림과 배경색 페이드(--bg 45%)를 같은 마스크로 깎는다 — 마스크는 위에서
+   완전, 아래로 갈수록 천천히 줄어드는 곡선이라 띠의 아랫선이 보이지 않는다 */
 .scroll-veil {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    height: 56px;
+    height: calc(var(--chrome-capsule-top) + var(--chrome-capsule-height) + 32px);
     z-index: 39; /* 상단바(40) 바로 아래 */
     pointer-events: none;
+    background: color-mix(in srgb, var(--bg) 45%, transparent);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
-    -webkit-mask-image: linear-gradient(to bottom, #000 25%, transparent);
-    mask-image: linear-gradient(to bottom, #000 25%, transparent);
+    --scroll-veil-mask: linear-gradient(to bottom,
+        #000 0%, rgb(0 0 0 / .96) 14%, rgb(0 0 0 / .86) 28%, rgb(0 0 0 / .7) 42%,
+        rgb(0 0 0 / .5) 56%, rgb(0 0 0 / .3) 70%, rgb(0 0 0 / .14) 84%, transparent 100%);
+    -webkit-mask-image: var(--scroll-veil-mask);
+    mask-image: var(--scroll-veil-mask);
     opacity: 0;
     transition: opacity .45s ease;
 }
