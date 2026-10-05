@@ -1039,7 +1039,7 @@ html[data-theme="dark"] .bokeh {
 [data-lift] {
     opacity: .14;
     transform: translateY(34px) scale(.985);
-    transition: opacity .6s var(--ease-float), transform .6s var(--ease-float);
+    transition: opacity .6s var(--ease-float) var(--reveal-delay), transform .6s var(--ease-float) var(--reveal-delay);
     will-change: transform, opacity;
 }
 
@@ -1059,12 +1059,12 @@ html[data-theme="dark"] .bokeh {
     animation: row-in .45s var(--ease-float) both;
 }
 
-[data-lift].is-lit tbody tr:nth-child(1) { animation-delay: .15s; }
-[data-lift].is-lit tbody tr:nth-child(2) { animation-delay: .23s; }
-[data-lift].is-lit tbody tr:nth-child(3) { animation-delay: .31s; }
-[data-lift].is-lit tbody tr:nth-child(4) { animation-delay: .39s; }
-[data-lift].is-lit tbody tr:nth-child(5) { animation-delay: .47s; }
-[data-lift].is-lit tbody tr:nth-child(6) { animation-delay: .55s; }
+[data-lift].is-lit tbody tr:nth-child(1) { animation-delay: calc(var(--reveal-delay) + .15s); }
+[data-lift].is-lit tbody tr:nth-child(2) { animation-delay: calc(var(--reveal-delay) + .23s); }
+[data-lift].is-lit tbody tr:nth-child(3) { animation-delay: calc(var(--reveal-delay) + .31s); }
+[data-lift].is-lit tbody tr:nth-child(4) { animation-delay: calc(var(--reveal-delay) + .39s); }
+[data-lift].is-lit tbody tr:nth-child(5) { animation-delay: calc(var(--reveal-delay) + .47s); }
+[data-lift].is-lit tbody tr:nth-child(6) { animation-delay: calc(var(--reveal-delay) + .55s); }
 
 @keyframes row-in {
     to { opacity: 1; transform: none; }

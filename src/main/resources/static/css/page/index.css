@@ -167,7 +167,7 @@
     }
 }
 
-/* 물방울 동심원: 영상·글이 떠오른 뒤 1s 에 잔물결로 퍼진다 */
+/* 물방울 동심원: 영상·글이 떠오른 뒤(리빌 지연 + 1s) 잔물결로 퍼진다 */
 .drops {
     position: absolute;
     left: var(--dx, 18%);
@@ -193,7 +193,7 @@
 
 .usage-row.is-lit .drops i {
     animation: drop 1.5s ease-out both;
-    animation-delay: calc(1s + var(--dd));
+    animation-delay: calc(var(--reveal-delay) + 1s + var(--dd));
 }
 
 @keyframes drop {
@@ -215,7 +215,7 @@
 .usage-row .u-text {
     opacity: .1;
     transform: translateY(30px) scale(.985);
-    transition: opacity .6s var(--ease-float), transform .6s var(--ease-float);
+    transition: opacity .6s var(--ease-float) var(--reveal-delay), transform .6s var(--ease-float) var(--reveal-delay);
     will-change: transform, opacity;
 }
 
@@ -228,7 +228,7 @@
 
 /* 글 타일은 영상보다 반 박자 늦게 */
 .usage-row.is-lit .u-text {
-    transition-delay: .25s;
+    transition-delay: calc(var(--reveal-delay) + .25s);
 }
 
 /* 빠르게 스크롤하는 중에 들어온 줄은 동심원 없이 내용이 바로 도착 상태로 (glass.css .is-lit-instantly) */
