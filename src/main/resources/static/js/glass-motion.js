@@ -67,13 +67,19 @@
 
     // 스크롤 속도: 페이지 위치 판정(updatePagePosition)이 프레임마다 잰다. 마지막 판정이
     // PAGE_SCROLL_SPEED_STALE_MS 보다 오래됐으면 멈춘 것으로 본다
-    var REVEAL_INSTANTLY_SPEED = 2, PAGE_SCROLL_SPEED_STALE_MS = 100; // px/ms, ms
+    var REVEAL_INSTANTLY_SPEED = 4, PAGE_SCROLL_SPEED_STALE_MS = 100; // px/ms, ms
     var pageScrollSpeed = 0, pageScrollMeasuredAt = 0;
-    var isScrollingFast = function () {
-        return performance.now() - pageScrollMeasuredAt < PAGE_SCROLL_SPEED_STALE_MS && pageScrollSpeed > REVEAL_INSTANTLY_SPEED;
+    var currentScrollSpeed = function () {
+        return performance.now() - pageScrollMeasuredAt < PAGE_SCROLL_SPEED_STALE_MS ? pageScrollSpeed : 0;
     };
-    // [임시 실험 스위치] html.reveal-motion-always (lab-switches.js): 속도와 상관없이 늘 떠오른다(비교용)
+    // [임시 실험 스위치] (lab-switches.js) html.reveal-speed-N 이면 기준 속도를 N px/ms 로 바꾸고,
+    // html.reveal-motion-always 면 속도와 상관없이 늘 떠오른다
+    var revealSpeedSwitch = /(?:^|\s)reveal-speed-(\d+)(?:\s|$)/.exec(document.documentElement.className);
+    if (revealSpeedSwitch) REVEAL_INSTANTLY_SPEED = Number(revealSpeedSwitch[1]);
     var revealMotionAlways = document.documentElement.classList.contains("reveal-motion-always");
+    var isScrollingFast = function () {
+        return currentScrollSpeed() > REVEAL_INSTANTLY_SPEED;
+    };
 
     // 스크롤 리빌: 30% 이상 보이면 떠오르고, 한 번 떠오르면 다시 숨지 않는다.
     // 그 순간 빠르게 스크롤하는 중이면 떠오르는 모션 없이 바로 도착 상태가 된다 (glass.css·index.css)
@@ -900,7 +906,9 @@
         followScroll: followScroll,
         cancelFollowScroll: cancelFollowScroll,
         followTrackButton: followTrackButton,
-        settleFollowTrack: settleFollowTrack
+        settleFollowTrack: settleFollowTrack,
+        // [임시 실험 스위치] 스위치 상자가 지금 스크롤 속도(px/ms)를 보여 줄 때 읽는다
+        currentScrollSpeed: currentScrollSpeed
     };
 
     } // init 끝

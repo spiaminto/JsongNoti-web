@@ -23,11 +23,16 @@
             ]
         },
         {
-            title: "패널 등장",
-            kind: "check",
+            title: "바로 나오는 스크롤 속도 (px/ms)",
+            kind: "radio",
             options: [
-                { label: "빠를 때도 늘 떠오르기 (비교용)", className: "reveal-motion-always" }
-            ]
+                { label: "2", className: "reveal-speed-2" },
+                { label: "4", className: null },
+                { label: "6", className: "reveal-speed-6" },
+                { label: "8", className: "reveal-speed-8" },
+                { label: "끔", className: "reveal-motion-always" }
+            ],
+            speedMeter: true
         }
     ];
 
@@ -44,6 +49,7 @@
         ".lab-switches-segments button{flex:1;height:var(--btn-h-md);border:0;border-radius:calc(var(--r-control) - 4px);",
         "background:transparent;color:var(--ink-2);font:inherit;font-weight:var(--fw-strong)}",
         ".lab-switches-segments button.is-on{background:var(--ink);color:var(--panel-bg)}",
+        ".lab-switches-speed{margin-top:8px;color:var(--ink-3);font-variant-numeric:tabular-nums}",
         ".lab-switches-check{display:flex;align-items:center;gap:10px;min-height:40px;cursor:pointer}",
         ".lab-switches-check input{width:20px;height:20px;margin:0;accent-color:var(--ink)}",
         ".lab-switches-reload{width:100%;height:var(--btn-h-lg);margin-top:14px;border:0;border-radius:var(--r-capsule);",
@@ -86,6 +92,33 @@
         } catch (ignored) {
             // 저장소 접근이 막힌 환경은 이번 로드에서만 바뀐다
         }
+    }
+
+    // 스크롤 한 번(멈춤 사이)의 가장 빠른 속도를 보여 준다. 속도는 glass-motion.js 가 잰 값을 읽는다
+    function createSpeedMeter() {
+        var SCROLL_GESTURE_GAP_MS = 400;
+        var meter = document.createElement("div");
+        meter.className = "lab-switches-speed";
+        meter.textContent = "이번 스크롤 최고 속도: -";
+        var peakSpeed = 0, lastScrollAt = 0, meterQueued = false;
+        window.addEventListener("scroll", function () {
+            var now = performance.now();
+            if (now - lastScrollAt > SCROLL_GESTURE_GAP_MS) peakSpeed = 0;
+            lastScrollAt = now;
+            if (meterQueued) return;
+            meterQueued = true;
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    meterQueued = false;
+                    if (!window.glassMotion || !window.glassMotion.currentScrollSpeed) return;
+                    var speed = window.glassMotion.currentScrollSpeed();
+                    if (speed <= peakSpeed) return;
+                    peakSpeed = speed;
+                    meter.textContent = "이번 스크롤 최고 속도: " + peakSpeed.toFixed(1);
+                });
+            });
+        }, { passive: true });
+        return meter;
     }
 
     function init() {
@@ -175,6 +208,7 @@
                     segments.appendChild(button);
                 });
                 section.appendChild(segments);
+                if (group.speedMeter) section.appendChild(createSpeedMeter());
             } else {
                 group.options.forEach(function (option) {
                     var label = document.createElement("label");
