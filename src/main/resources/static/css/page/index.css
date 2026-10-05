@@ -292,10 +292,10 @@
 }
 
 /* ---------- 히어로에서 첫 신곡 멈추기 (7기 1번) ----------
-   맨 위 구간에 손가락을 댔을 때만 glass-motion.js 가 html.hero-scroll-stop 을 붙인다. 스냅 자리는 맨 위(높이 0 인
-   .navbar), 손가락을 댄 자리(.hero-scroll-anchor), 신곡 표 묶음(지나칠 수 없음) 셋이다. 맨 위 자리에 화면보다 큰
-   요소를 쓰면 그 안이 통째로 자유 구간이 되어 세게 튕길 때 신곡 표 묶음을 지나친다(S10 실측).
-   신곡 표 묶음은 윗선이 화면 위에서 12px 에 오게 멈춘다 — 떠 있는 캡슐이 패널 머리 위에 겹치고 표는 화면에
+   1200px 미만에서 맨 위 구간에 손가락을 댔을 때만 glass-motion.js 가 html.hero-scroll-stop 을 붙인다. 스냅 자리는
+   맨 위(높이 0 인 .navbar), 손가락이 있는 자리(.hero-scroll-anchor), 신곡 표 묶음(지나칠 수 없음) 셋이다. 맨 위
+   자리에 화면보다 큰 요소를 쓰면 그 안이 통째로 자유 구간이 되어 세게 튕길 때 신곡 표 묶음을 지나친다(S10 실측).
+   신곡 표 묶음은 윗선이 화면 맨 위에 오게 멈춘다 — 떠 있는 캡슐이 패널 윗부분 위에 올라앉고 표는 화면에
    다 들어온다(사용자 결정) */
 .hero-scroll-anchor {
     position: absolute;
@@ -317,7 +317,7 @@ html.hero-scroll-stop .hero-scroll-anchor {
 html.hero-scroll-stop .songs-grid {
     scroll-snap-align: start;
     scroll-snap-stop: always;
-    scroll-margin-top: 12px;
+    scroll-margin-top: 0;
 }
 
 /* ---------- 접근성·모바일 ---------- */
