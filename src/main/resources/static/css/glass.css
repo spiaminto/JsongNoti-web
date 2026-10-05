@@ -1038,7 +1038,7 @@ html[data-theme="dark"] .bokeh {
    흐림은 걸지 않는다 — 스크롤 도중에 떠오르므로 메인 스레드의 filter 전환이 덜컥거린다(로드 시퀀스 절) */
 [data-lift] {
     opacity: .14;
-    transform: translateY(34px) scale(.985);
+    transform: translateY(16px) scale(.985);
     transition: opacity .6s var(--ease-float) var(--reveal-delay), transform .6s var(--ease-float) var(--reveal-delay);
     will-change: transform, opacity;
 }
@@ -1052,7 +1052,7 @@ html[data-theme="dark"] .bokeh {
 /* 표의 행은 패널이 떠오른 뒤 위에서부터 순서대로 */
 [data-lift] tbody tr {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(8px);
 }
 
 [data-lift].is-lit tbody tr {

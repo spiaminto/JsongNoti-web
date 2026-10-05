@@ -214,7 +214,7 @@
 .usage-row .u-video,
 .usage-row .u-text {
     opacity: .1;
-    transform: translateY(30px) scale(.985);
+    transform: translateY(14px) scale(.985);
     transition: opacity .6s var(--ease-float) var(--reveal-delay), transform .6s var(--ease-float) var(--reveal-delay);
     will-change: transform, opacity;
 }
