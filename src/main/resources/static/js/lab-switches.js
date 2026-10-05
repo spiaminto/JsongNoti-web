@@ -23,14 +23,6 @@
             ]
         },
         {
-            title: "캡슐 유리 재질 만들기",
-            kind: "radio",
-            options: [
-                { label: "바로", className: null },
-                { label: "로드 뒤로", className: "glass-material-late" }
-            ]
-        },
-        {
             title: "떠오를 때 흐림",
             kind: "radio",
             options: [
