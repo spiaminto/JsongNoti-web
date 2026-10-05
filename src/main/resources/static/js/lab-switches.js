@@ -23,6 +23,14 @@
             ]
         },
         {
+            title: "떠오를 때 흐림",
+            kind: "radio",
+            options: [
+                { label: "있음", className: null },
+                { label: "없음", className: "entrance-no-blur" }
+            ]
+        },
+        {
             title: "바로 나오는 스크롤 속도 (px/ms)",
             kind: "radio",
             options: [

@@ -1445,6 +1445,19 @@ html.overscroll-locked body {
     overscroll-behavior-y: none;
 }
 
+/* 떠오를 때 흐림 빼기. 요소 자신에 거는 filter: blur 전환은 컴포지터로 못 가 메인 스레드에서 돌고,
+   스크롤 중에는 띄엄띄엄 갱신되어 덜컥거린다(6기 실측, Pixel). 유리 재질의 backdrop-filter 는 그대로다.
+   대상: 로드 시퀀스(.veil, 히어로 안쪽), 스크롤 리빌(패널, 사용 방법 타일), 브랜드 캡슐 이름 바꾸기 */
+html.entrance-no-blur .veil,
+html.entrance-no-blur .hero.veil .hero-stagger,
+html.entrance-no-blur [data-lift],
+html.entrance-no-blur .usage-row .u-video,
+html.entrance-no-blur .usage-row .u-text,
+html.entrance-no-blur .navbar .brand-title-site,
+html.entrance-no-blur .navbar .brand-title-page {
+    filter: none;
+}
+
 /* ---------- 접근성: 모션·투명도·대비 각각 대응 (P14) ----------
    3기 구조에서 손댈 것: 스프링 토큰(탄성)·로드 시퀀스·리빌·행 lift 의 모션,
    크롬 유리(브랜드 캡슐·메뉴 캡슐·모달 베일·스크롤 베일)의 투명도, 패널·버튼·
