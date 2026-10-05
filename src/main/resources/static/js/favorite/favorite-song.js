@@ -55,7 +55,7 @@ $(function () {
                         .append($('<rp>').text(')'))
                 );
             } else {
-                $defaultInfoPreview.text(info || '작품정보가 없습니다.');
+                $defaultInfoPreview.text(info || '작품정보가 없어요.');
             }
             $infoTextInput.prop('disabled', true).addClass('d-none');
             $defaultInfoPreview.removeClass('d-none');
@@ -275,7 +275,7 @@ $(function () {
         // 제목은 루비(rb 원본값 + rt 대표값 + rp 괄호)라 rb 만 읽는다 — 전체를 읽으면 "제목()" 이 된다 (song-search.js 와 같음)
         let songTitle = $target.find('.song-title-text rb').text() || $target.find('.song-title-text').text();
         let songSinger = $target.closest('tr').find('.song-singer-original').text() || $target.closest('tr').find('.song-singer').text();
-        if (!confirm('확인을 누르면 다음 곡이 삭제됩니다.\n' + songSinger + ' - ' + songTitle)) return false; // 취소시 리턴
+        if (!confirm('확인을 누르면 다음 곡이 삭제돼요.\n' + songSinger + ' - ' + songTitle)) return false; // 취소시 리턴
 
         let favoriteSongId = $target.closest('tr').find('.song-number').data('favorite-song-id')
         let userId = $('.favorite-song-section-header').data('user-id');

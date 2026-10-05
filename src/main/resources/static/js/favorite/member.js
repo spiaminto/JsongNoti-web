@@ -38,7 +38,7 @@ $(function () {
 // 탈퇴 인증코드 전송
     $('#verifyDeleteUserForm').submit(function (event) {
         event.preventDefault();
-        if (!confirm('정말 탈퇴 하시겠습니까?')) {
+        if (!confirm('정말 탈퇴할까요?')) {
             return;
         }
         $(this).prop('disabled', true);

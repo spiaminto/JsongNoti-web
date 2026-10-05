@@ -13,7 +13,7 @@ $(function () {
 
     $("#searchSongInput").on('invalid', function () {
         if (this.validity.tooShort) {
-            this.setCustomValidity('두글자 이상 입력해주세요');
+            this.setCustomValidity('두 글자 이상 입력해 주세요.');
         }
     }).on('input', function () {
         this.setCustomValidity('');
@@ -238,7 +238,7 @@ $(function () {
             }
         } else if (!group.message) {
             $group.append(
-                $('<p>').addClass('unified-search-empty-message text-center text-muted').text('검색 결과가 없습니다.')
+                $('<p>').addClass('unified-search-empty-message text-center text-muted').text('검색 결과가 없어요.')
             );
         }
 

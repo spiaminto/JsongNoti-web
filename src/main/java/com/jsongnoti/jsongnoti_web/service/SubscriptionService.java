@@ -40,7 +40,7 @@ public class SubscriptionService {
         // 구독자 수 제한
         long totalCount = subscriptionRepository.count();
         if (totalCount > 100) {
-            return SubscriptionServiceResult.fail("죄송합니다. 현재 구독자수가 많아 추가 구독이 어렵습니다.", null);
+            return SubscriptionServiceResult.fail("죄송해요. 지금은 구독자가 많아 더 구독할 수 없어요.", null);
         }
 
         Optional<Subscription> findUserOptional = subscriptionRepository.findByEmail(email);
@@ -51,11 +51,11 @@ public class SubscriptionService {
             // 등록 + 미인증 유저 -> 검증
             Subscription findSubscription = findUserOptional.get();
             if (findSubscription.isVerified()) {
-                return SubscriptionServiceResult.fail("이미 인증된 이메일입니다.", findSubscription.getId());
+                return SubscriptionServiceResult.fail("이미 인증된 이메일이에요.", findSubscription.getId());
             }
             if (findSubscription.getAuthenticationTimestamp() != null &&
                     findSubscription.getAuthenticationTimestamp().isAfter(LocalDateTime.now().minusMinutes(1))) {
-                return SubscriptionServiceResult.fail("이미 인증메일을 발송했습니다. 1분 후에 다시 시도해주세요.", findSubscription.getId());
+                return SubscriptionServiceResult.fail("이미 인증 메일을 보냈어요. 1분 뒤에 다시 시도해 주세요.", findSubscription.getId());
             }
 
             // 인증 토큰, 토큰만료시간 갱신
@@ -74,7 +74,7 @@ public class SubscriptionService {
         }
 
         gmailSender.sendVerifyMail(processedSubscription.getEmail(), processedSubscription.getAuthenticationToken(), GmailSender.VerifyMailType.SUBSCRIBE);
-        return SubscriptionServiceResult.success("이메일 인증 메일이 발송되었습니다. 확인해주세요.", processedSubscription.getId());
+        return SubscriptionServiceResult.success("인증 메일을 보냈어요. 메일을 확인해 주세요.", processedSubscription.getId());
     }
 
     /**
@@ -96,13 +96,13 @@ public class SubscriptionService {
         Subscription findSubscription = findUserOptional.get();
         if (!findSubscription.getAuthenticationToken().equals(authenticationToken)) {
             findSubscription.verificationFailed();
-            return SubscriptionServiceResult.fail("인증코드가 일치하지 않습니다. 3회 이상 실패하면 다시 인증요청 해야합니다. " + "(" + findSubscription.getAuthenticationRetry() + "회 실패" + ")", userId);
+            return SubscriptionServiceResult.fail("인증코드가 일치하지 않아요. 3회 넘게 틀리면 인증을 다시 요청해야 해요. " + "(" + findSubscription.getAuthenticationRetry() + "회 실패" + ")", userId);
         }
 
         // 인증
         findSubscription.verify();
 
-        return SubscriptionServiceResult.success("이메일 인증이 완료되었습니다. \n이제 신곡이 등록되면 알림 메일을 받아보실 수 있습니다.", userId);
+        return SubscriptionServiceResult.success("이메일 인증이 끝났어요. \n이제 신곡이 등록되면 알림 메일을 받을 수 있어요.", userId);
     }
 
     /**
@@ -116,11 +116,11 @@ public class SubscriptionService {
         
         // 검증
         if (findSubscription == null || !findSubscription.isVerified()) {
-            return SubscriptionServiceResult.fail("가입되지 않은 이메일입니다.", null);
+            return SubscriptionServiceResult.fail("가입되지 않은 이메일이에요.", null);
         }
         if (findSubscription.getAuthenticationTimestamp() != null &&
                 findSubscription.getAuthenticationTimestamp().isAfter(LocalDateTime.now().minusMinutes(1))) {
-            return SubscriptionServiceResult.fail("이미 인증메일을 발송했습니다. 1분 후에 다시 시도해주세요.", findSubscription.getId());
+            return SubscriptionServiceResult.fail("이미 인증 메일을 보냈어요. 1분 뒤에 다시 시도해 주세요.", findSubscription.getId());
         }
 
         // 인증 토큰, 토큰만료시간 갱신
@@ -128,7 +128,7 @@ public class SubscriptionService {
 
         gmailSender.sendVerifyMail(findSubscription.getEmail(), findSubscription.getAuthenticationToken(), GmailSender.VerifyMailType.UNSUBSCRIBE);
 
-        return SubscriptionServiceResult.success("구독취소 인증 메일이 발송되었습니다. 확인해주세요.", findSubscription.getId());
+        return SubscriptionServiceResult.success("구독 취소 인증 메일을 보냈어요. 메일을 확인해 주세요.", findSubscription.getId());
     }
 
     /**
@@ -150,13 +150,13 @@ public class SubscriptionService {
         Subscription findSubscription = findUserOptional.get();
         if (!findSubscription.getAuthenticationToken().equals(authenticationToken)) {
             findSubscription.verificationFailed();
-            return SubscriptionServiceResult.fail("인증코드가 일치하지 않습니다. 실패횟수가 3회를 초과하면 다시 인증요청 해야합니다." + "(" + findSubscription.getAuthenticationRetry() + "회 실패" + ")", userId);
+            return SubscriptionServiceResult.fail("인증코드가 일치하지 않아요. 3회 넘게 틀리면 인증을 다시 요청해야 해요. " + "(" + findSubscription.getAuthenticationRetry() + "회 실패" + ")", userId);
         }
 
         // 삭제
         subscriptionRepository.delete(findSubscription);
 
-        return SubscriptionServiceResult.success("구독취소가 완료되었습니다. 이용해주셔서 감사합니다.", userId);
+        return SubscriptionServiceResult.success("구독 취소가 끝났어요. 이용해 주셔서 감사해요.", userId);
     }
 
     /**
@@ -167,20 +167,20 @@ public class SubscriptionService {
      */
     protected ValidateVerifyResult validateVerifyRequest(Optional<Subscription> userOptional, RequestType requestType) {
         if (userOptional.isEmpty()) {
-            return ValidateVerifyResult.fail("가입되지 않은 이메일입니다.");
+            return ValidateVerifyResult.fail("가입되지 않은 이메일이에요.");
         } else {
             Subscription subscription = userOptional.get();
             if (requestType == RequestType.ADD && subscription.isVerified()) {
-                return ValidateVerifyResult.fail("이미 인증된 이메일입니다.");
+                return ValidateVerifyResult.fail("이미 인증된 이메일이에요.");
             }
             if (requestType == RequestType.DELETE && !subscription.isVerified()) {
-                return ValidateVerifyResult.fail("가입되지 않은 이메일입니다.");
+                return ValidateVerifyResult.fail("가입되지 않은 이메일이에요.");
             }
             if (subscription.getAuthenticationTimestamp().isBefore(LocalDateTime.now().minusMinutes(5))) {
-                return ValidateVerifyResult.fail("인증 시간이 만료되었습니다. 다시 인증요청 해주세요.");
+                return ValidateVerifyResult.fail("인증 시간이 지났어요. 인증을 다시 요청해 주세요.");
             }
             if (subscription.getAuthenticationRetry() >= 3) {
-                return ValidateVerifyResult.fail("인증 시도 횟수를 초과했습니다. 다시 인증요청 해주세요.");
+                return ValidateVerifyResult.fail("인증 시도 횟수를 넘었어요. 인증을 다시 요청해 주세요.");
             }
         }
         return ValidateVerifyResult.success("검증성공");

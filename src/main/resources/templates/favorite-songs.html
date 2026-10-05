@@ -219,7 +219,7 @@
     <div id="favoriteSongContainer">
       <div class="favorite-song-section-header" th:data-user-id="${userId}" }>
         <h1>애창곡</h1>
-        <p th:text="${username + '님의 애창곡 목록입니다.'}"> 애창곡 목록입니다. </p>
+        <p class="text-subheadline text-muted" th:text="${username + '님의 애창곡 목록이에요.'}"> 애창곡 목록이에요. </p>
       </div>
       <div class="songs-grid">
         <!-- 태진 -->
@@ -254,17 +254,17 @@
             </div>
           </h3>
           <div class="switch-order-hint-collapse collapse" id="switchOrderTjCollapse">
-            <p>
-              순서 변경 후 <b>'변경 완료' 버튼을 눌러야 적용</b>됩니다.
+            <p class="text-subheadline text-muted">
+              순서를 바꾼 뒤 <b>'변경 완료' 버튼을 눌러야 적용</b>돼요.
               <br>
               <span class="hint-pick">처음 클릭한 곡</span>
               이
               <span class="hint-target">두번째로 클릭한 곡</span>
-              바로 아래 순서로 변경됩니다.
+              바로 아래 순서로 바뀌어요.
             </p>
           </div>
           <div class="delete-favorite-song-hint-collapse collapse" id="deleteFavoriteSongTjCollapse">
-            <p>삭제하려는 애창곡의 제목을 클릭하면 삭제됩니다.</p>
+            <p class="text-subheadline text-muted">삭제할 애창곡의 제목을 누르면 삭제돼요.</p>
           </div>
           <div class="song-table-border">
             <table class="song-table table-tj">
@@ -327,17 +327,17 @@
             </div>
           </h3>
           <div class="switch-order-hint-collapse collapse" id="switchOrderKyCollapse">
-            <p>
-              순서 변경 후 <b>'변경 완료' 버튼을 눌러야 적용</b>됩니다.
+            <p class="text-subheadline text-muted">
+              순서를 바꾼 뒤 <b>'변경 완료' 버튼을 눌러야 적용</b>돼요.
               <br>
               <span class="hint-pick">처음 클릭한 곡</span>
               이
               <span class="hint-target">두번째로 클릭한 곡</span>
-              바로 아래 순서로 변경됩니다.
+              바로 아래 순서로 바뀌어요.
             </p>
           </div>
           <div class="delete-favorite-song-hint-collapse collapse" id="deleteFavoriteSongKyCollapse">
-            <p>삭제하려는 애창곡의 제목을 클릭하면 삭제됩니다.</p>
+            <p class="text-subheadline text-muted">삭제할 애창곡의 제목을 누르면 삭제돼요.</p>
           </div>
           <div class="song-table-border">
             <table class="song-table table-ky">
@@ -412,7 +412,7 @@
                   <div class="song-singer"></div>
                   <div class="song-info">
                     <span><b>추가 내용:</b></span>
-                    <span class="song-info-text ms-1">여기에 추가 내용이 표시됩니다.</span>
+                    <span class="song-info-text ms-1">여기에 추가 내용이 표시돼요.</span>
                   </div>
                 </td>
               </tr>
@@ -434,7 +434,7 @@
               </div>
             </div>
             <div class="text-center">
-              <p class="mb-2 d-inline">애창곡 저장시 추가할 내용을 입력해 주세요.</p>
+              <p class="mb-2 d-inline text-subheadline text-muted">애창곡 저장시 추가할 내용을 입력해 주세요.</p>
               <div class="form-check-inline ms-2">
                 <input class="form-check-input" type="checkbox" value="" id="useDefaultInfoTextCheck">
                 <label class="form-check-label" for="useDefaultInfoTextCheck">
@@ -444,7 +444,7 @@
             </div>
             <div class="field-row mt-2 mb-3">
             <textarea type="text" id="addInfoTextInput" class="form-control text-input"
-                      placeholder="추가 내용을 비워둘경우 노래 제목만 저장합니다 (최대 50자)"
+                      placeholder="추가 내용을 비워 두면 노래 제목만 저장해요 (최대 50자)"
                       aria-label="추가텍스트" aria-describedby="" maxlength="50"></textarea>
               <div id="defaultInfoPreview" class="form-control text-input text-start d-none" role="status"></div>
               <button class="btn" type="submit" id="addSongButton">애창곡 추가</button>
@@ -455,7 +455,7 @@
     </div>
 
     <div id="searchHintContainer" class="mt-3">
-      <p> 원어와 한국어로 검색할 수 있습니다.
+      <p> 원어와 한국어로 검색할 수 있어요.
         <a href="https://github.com/spiaminto/JsongNoti-web?tab=readme-ov-file#2-%EB%85%B8%EB%9E%98-%EA%B2%80%EC%83%89"
            target="_blank"
            class="search-help-link align-top">
@@ -463,10 +463,10 @@
           <i class="bi bi-box-arrow-up-right"></i>
         </a>
       </p>
-      <p> 한글 검색시 검색어와 유사한 결과를 찾아 보여줍니다.</p>
-      <p> 검색어는 <b>띄어쓰기를 구분</b>하며, <b>검색어를 짧게 입력할 경우 결과가 누락될 수 있습니다.</b></p>
+      <p> 한글로 검색하면 검색어와 비슷한 결과를 찾아 보여드려요.</p>
+      <p> 검색어는 <b>띄어쓰기를 구분</b>하고, <b>검색어를 짧게 입력하면 결과가 빠질 수 있어요.</b></p>
       <p><em class="text-muted unified-hint">
-        노래제목, 아티스트명, 작품명을 한 번에 검색합니다.
+        노래 제목, 아티스트명, 작품명을 한 번에 검색해요.
       </em></p>
       <p><em class="text-muted singer-hint">
         <b>검색 예시</b> : Official髭男dism, 오피셜 히게 단디즘, 히게단 (약칭 일부 지원, 2025년 11월 기준 433건 등록)
@@ -533,9 +533,9 @@
     <div class="row row-for-expand-padding">
       <div class="collapse song-search-result-collapse" id="songSearchResultCollapse">
         <div class="card card-body px-1 py-2">
-          <div class="song-search-result-header">
-            <p class="mb-0">노래 제목을 누르면 애창곡 추가 폼에 입력됩니다.</p>
-            <p class="text-muted text-subheadline mb-1">(한글 표시는 참고용으로, 정확하지 않습니다)</p>
+          <div class="song-search-result-header text-subheadline text-muted">
+            <p class="mb-0">노래 제목을 누르면 애창곡 추가 폼에 입력돼요.</p>
+            <p class="mb-1">한글 표시는 참고용이라 정확하지 않아요.</p>
           </div>
           <div id="unifiedSongSearchGroups" class="d-none"></div>
           <div id="singleSongSearchResult">
@@ -552,15 +552,15 @@
                 </tbody>
               </table>
             </div>
-            <div class="mt-4 text-subheadline text-center">
+            <div class="mt-4 text-subheadline text-center text-muted">
               <p class="mb-0">
-                원하는 검색 결과가 없는 경우 추가 검색 버튼 클릭 <br>
+                원하는 결과가 없으면 추가 검색 버튼을 눌러 주세요.
               </p>
               <button id="additionalSongSearchButton" class="btn mt-2 ms-auto">
                 추가 검색
               </button>
               <p class="mb-0 mt-2">
-                원하는 곡이 검색되지 않을경우 홈페이지 아래의 <b>메일문의 링크를 눌러 문의</b>주시면 빠르게 반영하겠습니다. </p>
+                원하는 곡이 검색되지 않으면 페이지 아래의 <b>메일문의 링크로 알려 주세요.</b> 빠르게 반영할게요. </p>
             </div>
           </div>
         </div>
@@ -580,7 +580,7 @@
         <div class="modal-body">
           <div class="modal-body-content">
             <div class="text-center">
-              선택한 노래의 바로 다음 순서로 추가됩니다.<br>
+              선택한 노래의 바로 다음 순서로 추가돼요.<br>
             </div>
             <div class="song-table-border mt-2">
               <table class="song-table" id="choosePresentOrderTable">
@@ -672,8 +672,8 @@
         </div>
         <div class="modal-body">
           <p>
-            가입한 이메일을 인증하여 회원 탈퇴를 진행합니다.<br>
-            회원을 탈퇴하면 저장된 메모와 설정이 모두 삭제됩니다.
+            가입한 이메일을 인증하면 회원 탈퇴가 진행돼요.<br>
+            탈퇴하면 저장된 메모와 설정이 모두 삭제돼요.
           </p>
           <form class="forms-unsubscribe forms" id="deleteUserForm">
             <!-- Email address input-->
