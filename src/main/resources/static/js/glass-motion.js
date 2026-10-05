@@ -482,18 +482,17 @@
         });
     });
 
-    // [임시 실험 스위치] html.overscroll-smart (lab-switches.js): 페이지가 내려가 있으면
-    // html.overscroll-locked 를 붙여 오버스크롤을 끄고, 맨 위에서 스크롤이 멈추면 뗀다(glass.css 접근성 절 앞)
-    if (document.documentElement.classList.contains("overscroll-smart")) {
-        var updateOverscrollLock = function () {
-            document.documentElement.classList.toggle("overscroll-locked", window.scrollY > 0);
-        };
-        window.addEventListener("scroll", function () {
-            if (window.scrollY > 0) document.documentElement.classList.add("overscroll-locked");
-        }, { passive: true });
-        window.addEventListener("scrollend", updateOverscrollLock);
-        updateOverscrollLock();
-    }
+    // 오버스크롤: 페이지가 내려가 있으면 html.overscroll-locked 를 붙여 끄고, 맨 위에서 스크롤이 멈추면 뗀다
+    // (glass.css 오버스크롤 절). Chrome 은 제스처를 시작할 때 overscroll-behavior 를 읽으므로, 맨 위에서
+    // 새로 당기는 제스처에는 늘어남과 당겨서 새로 고침이 그대로 걸린다
+    var updateOverscrollLock = function () {
+        document.documentElement.classList.toggle("overscroll-locked", window.scrollY > 0);
+    };
+    window.addEventListener("scroll", function () {
+        if (window.scrollY > 0) document.documentElement.classList.add("overscroll-locked");
+    }, { passive: true });
+    window.addEventListener("scrollend", updateOverscrollLock);
+    updateOverscrollLock();
 
     // scroll 중 hover 억제: 휠 노치마다(스크롤 제스처가 끝날 때마다) Chrome 이
     // 포인터 아래 행의 hover 를 갱신해 행 배경이 켜졌다 꺼지고, 그때마다 결과

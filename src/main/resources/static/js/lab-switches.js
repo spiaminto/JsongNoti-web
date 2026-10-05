@@ -3,33 +3,16 @@
  *
  * 휴대폰에서 성능 비교용 동작을 켜고 끄는 상자다. 고른 값은 localStorage 'labSwitches'
  * ({ 클래스 이름: true })에 남고, theme-init.js 가 다음 로드의 첫 페인트 전에 html 클래스로 붙인다.
- * 바꾼 값은 새로 고침해야 온전히 적용된다 — 등장 효과는 패널마다 한 번이고, 오버스크롤 smart 는
+ * 바꾼 값은 새로 고침해야 온전히 적용된다 — 등장 효과는 패널마다 한 번이고, 기준 속도는
  * glass-motion.js 가 로드 때 읽는다. 상자는 접으면 동그란 버튼이 되고, 접힘 여부는
  * localStorage 'labSwitchesMinimized' 에 남는다.
  *
- * 스위치가 붙이는 클래스는 glass.css 의 실험 스위치 절과 glass-motion.js 가 읽는다.
+ * 지금 스위치는 "바로 나오는 스크롤 속도" 하나다. 붙이는 클래스는 glass-motion.js 가 읽는다.
  */
 (function () {
     "use strict";
 
     var SWITCH_GROUPS = [
-        {
-            title: "오버스크롤",
-            kind: "radio",
-            options: [
-                { label: "켬", className: null },
-                { label: "스마트", className: "overscroll-smart" },
-                { label: "끔", className: "overscroll-off" }
-            ]
-        },
-        {
-            title: "떠오를 때 흐림",
-            kind: "radio",
-            options: [
-                { label: "있음", className: null },
-                { label: "없음", className: "entrance-no-blur" }
-            ]
-        },
         {
             title: "바로 나오는 스크롤 속도 (px/ms)",
             kind: "radio",

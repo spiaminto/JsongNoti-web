@@ -215,16 +215,15 @@
 .usage-row .u-text {
     opacity: .1;
     transform: translateY(30px) scale(.985);
-    filter: blur(12px);
-    transition: opacity .6s var(--ease-float), transform .6s var(--ease-float), filter .6s var(--ease-float);
-    will-change: transform, opacity, filter;
+    transition: opacity .6s var(--ease-float), transform .6s var(--ease-float);
+    will-change: transform, opacity;
 }
 
 .usage-row.is-lit .u-video,
 .usage-row.is-lit .u-text {
     opacity: 1;
     transform: none;
-    filter: blur(0);
+    will-change: auto;
 }
 
 /* 글 타일은 영상보다 반 박자 늦게 */
