@@ -635,10 +635,18 @@
   <footer class="footer">
     <div class="row">
       <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
-        <button type="button" class="btn btn-danger" id="unsubscribeModalButton" data-bs-toggle="modal"
-                data-bs-target="#unsubscribeModal">
-          구독 취소
-        </button>
+        <!-- 푸터 버튼 한 줄: 위험 동작(있는 화면만) | 테마 토글 -->
+        <div class="footer-button-row">
+          <button type="button" class="btn btn-danger" id="unsubscribeModalButton" data-bs-toggle="modal"
+                  data-bs-target="#unsubscribeModal">
+            구독 취소
+          </button>
+          <!-- 테마 토글 (common-handlers.js): 라벨은 누르면 바뀔 테마. 둘 중 하나만 보인다 (footer.css) -->
+          <button type="button" class="btn dark-mode-button">
+            <span class="theme-label-to-dark"><i class="bi bi-moon-fill" aria-hidden="true"></i>다크 모드</span>
+            <span class="theme-label-to-light"><i class="bi bi-sun-fill" aria-hidden="true"></i>라이트 모드</span>
+          </button>
+        </div>
         <p id="footerText" class="text-muted">&copy; 제이노티 by JsongNoti. All Rights
           Reserved.</p>
         <p id="footerTextCopyright" class="mb-0">icons Designed by
@@ -650,11 +658,6 @@
           <p id="footerTextPrivacyPolicy" class="d-inline-block mb-0 ms-2"><a
               class="text-muted text-decoration-none" href="/privacy-policy"><b>개인정보처리방침</b></a></p>
         </div>
-        <!-- 테마 토글 (common-handlers.js): 라벨은 누르면 바뀔 테마. 둘 중 하나만 보인다 (footer.css) -->
-        <button type="button" class="btn dark-mode-button">
-          <span class="theme-label-to-dark"><i class="bi bi-moon-fill" aria-hidden="true"></i>다크 모드</span>
-          <span class="theme-label-to-light"><i class="bi bi-sun-fill" aria-hidden="true"></i>라이트 모드</span>
-        </button>
       </div>
       <div class="footer-icon-container col-lg-6  text-center text-lg-end">
         <ul class="list-inline mb-0">
