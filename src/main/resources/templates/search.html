@@ -304,6 +304,11 @@
             <p id="footerTextPrivacyPolicy" class="d-inline-block mb-0 ms-2"><a
                 class="text-muted text-decoration-none" href="/privacy-policy"><b>개인정보처리방침</b></a></p>
           </div>
+          <!-- 테마 토글 (common-handlers.js): 라벨은 누르면 바뀔 테마. 둘 중 하나만 보인다 (footer.css) -->
+          <button type="button" class="btn dark-mode-button">
+            <span class="theme-label-to-dark"><i class="bi bi-moon-fill" aria-hidden="true"></i>다크 모드</span>
+            <span class="theme-label-to-light"><i class="bi bi-sun-fill" aria-hidden="true"></i>라이트 모드</span>
+          </button>
         </div>
         <div class="col-lg-6 footer-icon-container text-center text-lg-end">
           <ul class="list-inline mb-0">
@@ -313,7 +318,7 @@
                 <i class="bi-github footer-icon"></i>
               </a>
             </li>
-            <li class="list-inline-item contact-mail-pc me-4">
+            <li class="list-inline-item contact-mail-pc">
               <a class="text-decoration-none"
                  href="https://mail.google.com/mail/?view=cm&fs=1&to=jsongnoti%2Bcs@gmail.com&su=일본 신곡 알림이 문의"
                  target="_blank">
@@ -321,20 +326,11 @@
                 <i class="bi-envelope footer-icon"></i>
               </a>
             </li>
-            <li class="list-inline-item contact-mail-mobile me-4">
+            <li class="list-inline-item contact-mail-mobile">
               <a class="text-decoration-none"
                  href="mailto:jsongnoti+cs@gmail.com?subject=일본 신곡 알림이 문의">
                 메일문의
                 <i class="bi-envelope footer-icon"></i>
-              </a>
-            </li>
-            <!-- 다크모드 토글: light 전용 오버홀 동안 숨김 (footer.css 에서 display:none) -->
-            <!-- dark 토글 (common-handlers.js) -->
-          <li class="list-inline-item dark-mode-button">
-              <a class="text-decoration-none"
-                 href="mailto:jsongnoti+cs@gmail.com?subject=일본 신곡 알림이 문의">
-                다크모드
-                <i class="bi bi-moon-fill footer-icon"></i>
               </a>
             </li>
           </ul>
