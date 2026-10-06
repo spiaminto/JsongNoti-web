@@ -860,7 +860,12 @@
         var se = document.scrollingElement || document.documentElement;
         document.documentElement.style.overflowAnchor = "none";
         trackHiddenDone = false;
-        var e0 = null;
+        // 이탈량의 출발값은 부르는 순간(접힘이 높이를 줄이기 전)에 잰다 — 첫 rAF 에서 재면 그 프레임에
+        // 이미 줄어든 높이만큼 버튼이 튄 자리를 출발점으로 삼아, 한 프레임 동안 화면이 덜컹인다
+        var r0 = btnEl.getBoundingClientRect();
+        var desired0 = r0.top + r0.height / 2 + window.scrollY - se.clientHeight / 2;
+        desired0 = Math.max(0, Math.min(se.scrollHeight - se.clientHeight, desired0));
+        var e0 = desired0 - window.scrollY;
         var start = null;
         var abort = function () { cancelFollowScroll(); };
         window.addEventListener("wheel", abort, { passive: true });
@@ -879,7 +884,6 @@
             // 문서가 전환 중에 실제로 줄어드는 만큼 상한도 프레임마다 따라간다
             var natural = se.scrollHeight - se.clientHeight;
             desired = Math.max(0, Math.min(natural, desired));
-            if (e0 === null) e0 = desired - window.scrollY;
             window.scrollTo(0, desired - e0 * (1 - captureEase(t)));
             // hidden 미발화 대비 3s 안전 상한
             if (t >= 1 && (trackHiddenDone || ts - start > 3000)) {
