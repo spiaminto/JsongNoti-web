@@ -285,6 +285,14 @@
     margin-bottom: 0;
     max-width: 30rem;
     color: var(--ink-2);
+    /* 한국어 산문은 어절 단위로 줄바꿈한다. 어절이 줄보다 길면 그 안에서 끊는다 */
+    word-break: keep-all;
+    overflow-wrap: break-word;
+}
+
+/* 본문 강조: 굵기에 더해 본문(--ink-2)보다 한 단 진한 잉크 */
+.u-text p strong {
+    color: var(--ink);
 }
 
 .u-text a {
