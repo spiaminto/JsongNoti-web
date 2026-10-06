@@ -30,7 +30,7 @@
 }
 
 .footer-icon {
-    font-size: var(--fs-2xl);
+    font-size: var(--fs-lg);
 }
 
 .footer-icon-container a:hover {
