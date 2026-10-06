@@ -33,6 +33,11 @@
     font-size: var(--fs-lg);
 }
 
+/* 아이콘 잉크 중심을 옆 글자 잉크 중심에 맞춘다: Bootstrap 기본 -.125em 이면 아이콘이 약 1.3px 위에 뜬다 */
+.footer-icon::before {
+    vertical-align: -.19em;
+}
+
 .footer-icon-container a:hover {
     color: var(--ink) !important;
     text-decoration: underline !important;
