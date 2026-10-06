@@ -63,6 +63,19 @@
               }, 500);
           });
 
+// 지난달 신곡 버튼: 목록이 펼쳐져 있는 동안 이름 뒤에 "접기"
+          $('.last-month-show-button').each(function () {
+              let $button = $(this);
+              let closedLabel = $button.text().trim();
+              $($button.data('bs-target'))
+                  .on('show.bs.collapse', function (event) {
+                      if (event.target === this) $button.text(closedLabel + ' 접기');
+                  })
+                  .on('hide.bs.collapse', function (event) {
+                      if (event.target === this) $button.text(closedLabel);
+                  });
+          });
+
       })
   </script>
 </head>
