@@ -332,6 +332,25 @@ a.song-title-text:hover {
     border-bottom: 2px solid rgb(100 125 155 / .45);
 }
 
+/* 추가일 배지가 있는 제목: 제목은 패널 가운데, 배지는 제목 오른쪽 칸에 붙는다.
+   폭이 모자라면 배지 칸은 배지 폭을 지키고 왼쪽 칸이 줄어 제목이 필요한 만큼만 왼쪽으로 간다 */
+.song-header-text:has(> .song-header-subtext) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(max-content, 1fr);
+    column-gap: .6rem;
+}
+
+.song-header-text:has(> .song-header-subtext) > span {
+    grid-column: 2;
+    white-space: nowrap;
+}
+
+.song-header-text > .song-header-subtext {
+    grid-column: 3;
+    justify-self: start;
+    white-space: nowrap;
+}
+
 .song-panel:has(.table-tj) .song-header-text {
     border-bottom-color: rgb(147 58 5 / .4); /* --tj-ink 계열 */
 }
@@ -345,7 +364,7 @@ a.song-title-text:hover {
     background: var(--badge-tint);
     border: 1px solid rgb(255 255 255 / .6);
     border-radius: var(--r-capsule);
-    padding: .28rem .7rem;
+    padding: .28rem .5rem;
     min-width: 0;
 }
 
