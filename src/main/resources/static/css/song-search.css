@@ -42,12 +42,11 @@
     color: var(--ink-2);
 }
 
-/* 검색 도움말 링크: 잉크색 + 밑줄 */
+/* 검색 도움말 링크: 옅은 잉크, 밑줄 없음. 본문보다 작은 글자라 아래 끝을 본문 글자 아래 끝에 맞춘다 */
 #searchHintContainer .search-help-link {
-    color: var(--ink);
-    text-decoration: underline;
-    text-decoration-thickness: from-font;
-    text-underline-offset: .2em;
+    color: var(--ink-3);
+    text-decoration: none;
+    vertical-align: text-bottom;
 }
 
 .song-search-result-collapse {
