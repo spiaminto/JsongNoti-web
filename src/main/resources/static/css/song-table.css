@@ -383,6 +383,11 @@ a.song-title-text:hover {
     display: flow-root;
 }
 
+/* 지난달 월 헤더: 이번달 표 바로 밑에 붙지 않게 위로 띄운다. 래퍼가 flow-root 라 이 여백도 함께 접힌다 */
+.song-table-collapse > .song-header-text {
+    margin-top: 2rem;
+}
+
 .last-month-show-button-wrapper {
     margin-top: 1rem;
     margin-bottom: 1rem;
