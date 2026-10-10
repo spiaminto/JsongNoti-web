@@ -64,17 +64,15 @@
 .hint-pick {
     background: var(--badge-tint);
     color: var(--badge-ink);
-    border-radius: 6px;
+    border-radius: var(--r-swatch);
     padding: .15rem .35rem;
-    font-weight: var(--fw-strong); /* 색 견본 배지 */
 }
 
 .hint-target {
     background: rgb(140 160 180 / .35);
     color: var(--ink);
-    border-radius: 6px;
+    border-radius: var(--r-swatch);
     padding: .15rem .35rem;
-    font-weight: var(--fw-strong); /* 색 견본 배지 */
 }
 
 /* ---------- 순서변경·삭제 편집 모드 (3기 D18, iOS 편집 모드 문법) ----------
@@ -295,7 +293,7 @@ tr:is(.song-row-will-switch, .song-row-be-switched, .song-row-deleting) {
     height: auto;
     left: calc(-25% + 6px);
     right: 6px;
-    border-radius: 14px;
+    border-radius: var(--r-control);
     background: transparent;
     box-shadow: none;
     border: 1.5px dashed rgb(30 42 56 / .28);
@@ -396,7 +394,7 @@ html[data-theme="dark"] #choosePresentOrderTable tr.selected td.song-title::befo
 .favorite-song-add-form-container {
     border-top: 2px solid rgb(100 125 155 / .45);
     border-bottom: 2px solid rgb(100 125 155 / .45);
-    padding: .8rem 0.3rem;
+    padding: .4rem 0.3rem;
     max-width: 768px;
 }
 
@@ -405,14 +403,12 @@ html[data-theme="dark"] #choosePresentOrderTable tr.selected td.song-title::befo
 }
 
 #defaultInfoPreview {
-    font-size: var(--fs-body);
     padding: 0.75rem 1rem;
 }
 
 #favoriteSongAddForm .song-info {
     /* 애창곡 등록시 추가내용 부분 강조 */
     color: var(--ink-2);
-    font-size: var(--fs-md);
 }
 
 /* 노래 등록 폼 아래 마진 공백 생기는거 삭제 */

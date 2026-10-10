@@ -72,8 +72,6 @@ html[data-theme="dark"] .dark-mode-element {
     border: 0;
     border-radius: var(--r-capsule);
     background: transparent;
-    font-size: var(--fs-sm);
-    font-weight: var(--fw-strong); /* 13px 아이콘 라벨 — 작은 글자의 강조 */
     color: var(--ink);
     text-decoration: none;
     cursor: pointer;
@@ -103,7 +101,6 @@ html[data-theme="dark"] .menu-capsule .icon-link:hover {
 
 .icon-link .icon-link-label {
     color: var(--ink-2);
-    line-height: 1.2;
 }
 
 .icon-link:hover .icon-link-label {
@@ -113,10 +110,6 @@ html[data-theme="dark"] .menu-capsule .icon-link:hover {
 /* ---------- 입력 크기 제한 (기존 유지) ---------- */
 .text-input {
     max-width: 500px;
-}
-
-.text-input::placeholder {
-    font-size: var(--fs-md);
 }
 
 /* CSS smooth scroll 을 끈다 — 사용방법 바로가기 등이 jQuery animate 로

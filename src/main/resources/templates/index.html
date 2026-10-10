@@ -17,6 +17,7 @@
   <!-- dark 초기값: 스타일시트보다 먼저 동기 실행 (theme-init.js, FOUC 방지) -->
   <script src="/static/js/theme-init.js" th:src="@{/js/theme-init.js}"></script>
   <!-- 웹폰트는 glass.css 가 weight 매핑과 함께 로드한다 -->
+  <link href="/static/css/tokens.css" th:href="@{/css/tokens.css}" rel="stylesheet"/>
   <!-- 한글 안전망 글꼴: SUITE 에 없는 음절만 (font-fallback.css) -->
   <link href="/static/css/font-fallback.css" th:href="@{/css/font-fallback.css}" rel="stylesheet"/>
   <link href="/static/css/glass.css" th:href="@{/css/glass.css}" rel="stylesheet"/>
@@ -26,6 +27,7 @@
   <link href="/static/css/song-table.css" th:href="@{/css/song-table.css}" rel="stylesheet"/>
   <link href="/static/css/footer.css" th:href="@{/css/footer.css}" rel="stylesheet"/>
   <link href="/static/css/page/index.css" th:href="@{/css/page/index.css}" rel="stylesheet"/>
+  <link href="/static/css/typography.css" th:href="@{/css/typography.css}" rel="stylesheet"/>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-JFWLSXBEYR"></script>
   <script>
@@ -41,7 +43,6 @@
   <script src="https://code.jquery.com/jquery.min.js"></script>
   <script src="/static/js/common-handlers.js" th:src="@{/js/common-handlers.js}" type="text/javascript"></script>
   <script src="/static/js/glass-motion.js" th:src="@{/js/glass-motion.js}" type="text/javascript"></script>
-  <script src="/static/js/frost-baking.js" th:src="@{/js/frost-baking.js}" type="text/javascript"></script>
   <script src="/static/js/glass-material.js" th:src="@{/js/glass-material.js}" type="text/javascript"></script>
   <script src="/static/js/index/subscribe.js" th:src="@{/js/index/subscribe.js}" type="text/javascript"></script>
   <script src="/static/js/index/unsubscribe.js" th:src="@{/js/index/unsubscribe.js}" type="text/javascript"></script>
@@ -62,6 +63,19 @@
               }, 500);
           });
 
+// 지난달 신곡 버튼: 목록이 펼쳐져 있는 동안 이름 뒤에 "접기"
+          $('.last-month-show-button').each(function () {
+              let $button = $(this);
+              let closedLabel = $button.text().trim();
+              $($button.data('bs-target'))
+                  .on('show.bs.collapse', function (event) {
+                      if (event.target === this) $button.text(closedLabel + ' 접기');
+                  })
+                  .on('hide.bs.collapse', function (event) {
+                      if (event.target === this) $button.text(closedLabel);
+                  });
+          });
+
       })
   </script>
 </head>
@@ -71,14 +85,14 @@
 <!-- 배경 연출: 씻어낸 히어로 사진 + 햇살. 콘텐츠 뒤(z-index 0)에 깔린다 -->
 <div class="photo-bg" aria-hidden="true"></div>
 <div class="sky" aria-hidden="true">
-  <span class="ray" style="--x:-6%;  --w:120px; --a:.50; --b:22px; --d:.05s"></span>
-  <span class="ray" style="--x:4%;   --w:52px;  --a:.62; --b:10px; --d:.22s"></span>
-  <span class="ray" style="--x:11%;  --w:88px;  --a:.45; --b:16px; --d:.12s"></span>
-  <span class="ray" style="--x:19%;  --w:34px;  --a:.68; --b:7px;  --d:.38s"></span>
-  <span class="ray" style="--x:26%;  --w:140px; --a:.34; --b:26px; --d:.18s"></span>
-  <span class="ray" style="--x:37%;  --w:60px;  --a:.52; --b:12px; --d:.48s"></span>
-  <span class="ray" style="--x:47%;  --w:96px;  --a:.30; --b:20px; --d:.30s"></span>
-  <span class="ray" style="--x:58%;  --w:44px;  --a:.42; --b:9px;  --d:.58s"></span>
+  <span class="ray" style="--x:-6%;  --w:120px; --a:.50; --b:22px; --d:.025s"></span>
+  <span class="ray" style="--x:4%;   --w:52px;  --a:.62; --b:10px; --d:.11s"></span>
+  <span class="ray" style="--x:11%;  --w:88px;  --a:.45; --b:16px; --d:.06s"></span>
+  <span class="ray" style="--x:19%;  --w:34px;  --a:.68; --b:7px;  --d:.19s"></span>
+  <span class="ray" style="--x:26%;  --w:140px; --a:.34; --b:26px; --d:.09s"></span>
+  <span class="ray" style="--x:37%;  --w:60px;  --a:.52; --b:12px; --d:.24s"></span>
+  <span class="ray" style="--x:47%;  --w:96px;  --a:.30; --b:20px; --d:.15s"></span>
+  <span class="ray" style="--x:58%;  --w:44px;  --a:.42; --b:9px;  --d:.29s"></span>
 </div>
 
 <div id="container">
@@ -122,7 +136,7 @@
               <div class="video-shadow dark-mode-element"></div>
             </div>
             <p class="mb-0 login-modal-info">
-              애창곡의 정보를 추가하고싶은 내용과 함께 저장할 수 있습니다.
+              애창곡의 정보를 추가하고 싶은 내용과 함께 저장할 수 있어요.
               <a href="https://github.com/spiaminto/JsongNoti-web?tab=readme-ov-file#3-%EC%95%A0%EC%B0%BD%EA%B3%A1"
                  target="_blank"
                  class="text-decoration-none">
@@ -130,7 +144,7 @@
                 <i class="bi bi-box-arrow-up-right"></i>
               </a>
               <br>
-              서비스 이용을 위해 구글 로그인이 필요합니다.
+              서비스 이용을 위해 구글 로그인이 필요해요.
             </p>
           </div>
         </div>
@@ -146,7 +160,7 @@
 
   <!-- 히어로: 스크롤이 아니라 딜레이(0.8s)로 떠오르는 콘텐츠 패널(프로스트) -->
   <header class="hero-zone">
-    <div class="hero content-panel veil" style="--vd:.35s">
+    <div class="hero content-panel content-panel-blur veil" style="--vd:.35s">
       <h1 class="headerText hero-stagger" style="--stagger-index:0">
         <span class="hero-keyword">한글로</span> 검색하고,<br>
         <span class="hero-keyword">애창곡</span>으로 저장하고,<br>
@@ -211,8 +225,8 @@
         <div class="modal-body">
           <div class="modal-body-content">
             <h4>개인정보 수집 및 이용 안내 동의</h4>
-            제이노티는 알림메일 서비스 제공을 위해 다음과 같은 개인정보를 수집하고 있습니다.<br>
-            개인정보 수집을 거부하는 경우 메일 서비스 이용에 제한이 될 수 있습니다.<br>
+            제이노티는 알림메일 서비스 제공을 위해 다음과 같은 개인정보를 수집하고 있어요.<br>
+            개인정보 수집을 거부하면 메일 서비스 이용이 제한될 수 있어요.<br>
             ▪ 수집하고자 하는 항목: 이메일 주소<br>
             ▪ 개인정보 수집 목적: 알림메일 서비스 제공 및 회원 관리, 문의처리<br>
             ▪ 보유 및 이용 기간: 회원 탈퇴시 까지 보유. 구독 취소시 48시간 이내 삭제. 구독 취소시 이메일 인증이 어려운 경우 7일간 보관 후 삭제.<br>
@@ -240,7 +254,8 @@
       <div class="new-song-section-header">
         <h2 class="new-song-header-text" data-lift>최근 신곡</h2>
         <p class="songs-intro" data-lift>
-          최근 신곡 목록이에요. 노래 제목을 클릭하면 구글 검색으로 이동해요.<br>
+          최근 신곡 목록이에요.<br>
+          노래 제목을 클릭하면 구글 검색으로 이동해요.<br>
           한글 표시는 참고용이라 정확하지 않아요.
         </p>
       </div>
@@ -485,7 +500,7 @@
           이메일로 전송된 구독 인증 메일의 인증번호를 입력하면 구독이 완료돼요.
         </p>
         <p>
-          메일이 오지 않으면 스팸함을 확인해 주세요.
+          메일이 오지 않으면 <strong>스팸함을 확인해 주세요</strong>.
           인증 메일이 스팸으로 분류되었다면 스팸 해제를 해야 알림 메일을 정상적으로 받을 수 있어요.
         </p>
       </div>
@@ -507,7 +522,7 @@
       <div class="u-text content-panel">
         <h3>이메일 수신</h3>
         <p>
-          노래방에 일본 신곡이 추가되면 오전 10시에 등록된 이메일로 알려드려요.
+          노래방에 일본 신곡이 추가되면 <strong>오전 10시</strong>에 등록된 이메일로 알려드려요.
           메일이 오지 않으면 스팸함을 확인해 주세요.
         </p>
         <p>
@@ -579,7 +594,7 @@
         </div>
         <div class="modal-body">
           <p>
-            구독시 입력한 이메일을 인증하여 구독취소를 진행합니다.<br>
+            구독할 때 입력한 이메일을 인증하면 구독이 취소돼요.<br>
           </p>
           <form class="forms-unsubscribe forms" id="unsubscribeForm">
             <!-- Email address input-->
@@ -620,19 +635,27 @@
   <footer class="footer">
     <div class="row">
       <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
-        <button type="button" class="btn btn-danger" id="unsubscribeModalButton" data-bs-toggle="modal"
-                data-bs-target="#unsubscribeModal">
-          구독 취소
-        </button>
-        <p id="footerText" class="text-muted small">&copy; 제이노티 by JsongNoti. All Rights
+        <!-- 푸터 버튼 한 줄: 위험 동작(있는 화면만) | 테마 토글 -->
+        <div class="footer-button-row">
+          <button type="button" class="btn btn-danger" id="unsubscribeModalButton" data-bs-toggle="modal"
+                  data-bs-target="#unsubscribeModal">
+            구독 취소
+          </button>
+          <!-- 테마 토글 (common-handlers.js): 라벨은 누르면 바뀔 테마. 둘 중 하나만 보인다 (footer.css) -->
+          <button type="button" class="btn dark-mode-button">
+            <span class="theme-label-to-dark"><i class="bi bi-moon-fill" aria-hidden="true"></i>다크 모드</span>
+            <span class="theme-label-to-light"><i class="bi bi-sun-fill" aria-hidden="true"></i>라이트 모드</span>
+          </button>
+        </div>
+        <p id="footerText" class="text-muted">&copy; 제이노티 by JsongNoti. All Rights
           Reserved.</p>
-        <p id="footerTextCopyright" class="small mb-0">icons Designed by
+        <p id="footerTextCopyright" class="mb-0">icons Designed by
           <a class="text-muted text-decoration-none" href="https://www.freepik.com/">Freepik</a>
         </p>
         <div id="footerTextLinkWrapper" class="">
-          <p id="footerTextTermsOfUse" class="d-inline-block small mb-0"><a
+          <p id="footerTextTermsOfUse" class="d-inline-block mb-0"><a
               class="text-muted text-decoration-none" href="/terms-of-use">이용약관</a></p>
-          <p id="footerTextPrivacyPolicy" class="d-inline-block small mb-0 ms-2"><a
+          <p id="footerTextPrivacyPolicy" class="d-inline-block mb-0 ms-2"><a
               class="text-muted text-decoration-none" href="/privacy-policy"><b>개인정보처리방침</b></a></p>
         </div>
       </div>
@@ -641,30 +664,22 @@
           <li class="list-inline-item me-4">&nbsp;
             <a class="text-decoration-none" href="https://github.com/spiaminto/JsongNoti-web">
               Github
-              <i class="bi-github fs-3"></i>
+              <i class="bi-github footer-icon"></i>
             </a>
           </li>
-          <li class="list-inline-item contact-mail-pc me-4">
+          <li class="list-inline-item contact-mail-pc">
             <a class="text-decoration-none"
                href="https://mail.google.com/mail/?view=cm&fs=1&to=jsongnoti%2Bcs@gmail.com&su=일본 신곡 알림이 문의"
                target="_blank">
               메일문의
-              <i class="bi-envelope fs-3"></i>
+              <i class="bi-envelope footer-icon"></i>
             </a>
           </li>
-          <li class="list-inline-item contact-mail-mobile me-4">
+          <li class="list-inline-item contact-mail-mobile">
             <a class="text-decoration-none"
                href="mailto:jsongnoti+cs@gmail.com?subject=일본 신곡 알림이 문의">
               메일문의
-              <i class="bi-envelope fs-3"></i>
-            </a>
-          </li>
-          <!-- dark 토글 (common-handlers.js) -->
-          <li class="list-inline-item dark-mode-button">
-            <a class="text-decoration-none"
-               href="">
-              다크모드
-              <i class="bi bi-moon-fill fs-3"></i>
+              <i class="bi-envelope footer-icon"></i>
             </a>
           </li>
         </ul>

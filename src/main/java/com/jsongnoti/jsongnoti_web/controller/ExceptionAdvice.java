@@ -26,21 +26,21 @@ public class ExceptionAdvice {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ExceptionResponse> handleException(RuntimeException e) {
         log.error("error: {}, message = {}", e.getClass().getName(), e.getMessage());
-        return ResponseEntity.internalServerError().body(ExceptionResponse.withMessage("내부 오류가 발생했습니다."));
+        return ResponseEntity.internalServerError().body(ExceptionResponse.withMessage("내부 오류가 생겼어요."));
     }
 
     // DB 예외 전역처리
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ExceptionResponse> handleException(Exception e) {
         log.error("error: {}, message = {}", e.getClass().getName(), e.getMessage());
-        return ResponseEntity.internalServerError().body(ExceptionResponse.withMessage("내부 데이터 오류가 발생했습니다."));
+        return ResponseEntity.internalServerError().body(ExceptionResponse.withMessage("내부 데이터 오류가 생겼어요."));
     }
 
     // NullPointerException 예외 전역처리
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<ExceptionResponse> handleException(NullPointerException e) {
         log.error("error: {}, message = {}", e.getClass().getName(), e.getMessage());
-        return ResponseEntity.internalServerError().body(ExceptionResponse.withMessage("내부 오류가 발생했습니다."));
+        return ResponseEntity.internalServerError().body(ExceptionResponse.withMessage("내부 오류가 생겼어요."));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -55,7 +55,7 @@ public class ExceptionAdvice {
         log.error("error: {}, message = {}", ex.getClass().getName(), ex.getMessage());
         StringBuilder messageBuilder = new StringBuilder();
         ex.getBindingResult().getFieldErrors().forEach(error -> {
-            String errorMessage = getErrorMessage(messageSource, error).orElse("입력값 오류입니다.");
+            String errorMessage = getErrorMessage(messageSource, error).orElse("입력값이 올바르지 않아요.");
             messageBuilder.append(errorMessage).append("\n");
         });
         return ResponseEntity.badRequest().body(ExceptionResponse.withMessage(messageBuilder.toString()));

@@ -4,11 +4,11 @@
 
    3기 구조 (ADR 0001): 실시간 유리(backdrop-filter)는 크롬 — 내비바·사이드
    버튼·모달 뒤 베일·스크롤 베일 — 에만 쓴다. 표·카드·폼 본문을 담는
-   콘텐츠 패널(.content-panel)은 불투명하고, 재질감은 프로스트(사진을 미리
-   흐려 구운 그림, frost-baking.js)가 준다.
+   콘텐츠 패널(.content-panel)은 덮개색 한 겹의 반투명 패널이고, 첫 화면
+   사진 위의 히어로만 뒤를 흐린다(.content-panel-blur).
 
    이 파일이 담당하는 것:
-     1) 디자인 토큰(:root, dark 는 html[data-theme="dark"])과 웹폰트(SUITE 가변) 선언
+     1) 웹폰트(SUITE 가변) 선언 — 디자인 토큰은 tokens.css, 글자 역할은 typography.css
      2) 콘텐츠 패널(.content-panel)과 Bootstrap 컴포넌트(.btn, .form-control, .modal 등)의
         시각 오버라이드 — 동작(JS)은 Bootstrap 그대로 두고 겉만 바꾼다
      3) 배경 연출: 빛 웅덩이(body::before), 사진 배경(.photo-bg), 햇살(.sky/.ray), 보케(.bokeh)
@@ -16,7 +16,7 @@
      5) 접근성: reduced-motion / reduced-transparency / contrast 대응
 
    레이아웃과 페이지 구성은 다루지 않는다 (containers.css, page/*.css 담당).
-   Bootstrap CSS 뒤, 다른 커스텀 CSS 앞에 로드해야 한다.
+   Bootstrap CSS·tokens.css 뒤, 다른 커스텀 CSS 앞에 로드해야 한다.
    ========================================================================== */
 
 /* ---------- 웹폰트 ----------
@@ -33,141 +33,6 @@
     font-weight: 300 900;
     font-display: swap;
     src: url(../fonts/SUITE-Variable.woff2) format("woff2-variations");
-}
-
-/* ---------- 디자인 토큰 ---------- */
-:root {
-    /* 잉크(글자) 4단계: 진한 · 보조 · 옅은 · 흐린 */
-    --ink: #1b232b;
-    --ink-2: #45515c;
-    --ink-3: #66717e;
-    --ink-4: #8792a0;
-
-    /* 바탕 */
-    --bg: #eaf0f4;
-
-    /* 콘텐츠 패널: 불투명 바탕 + 패널 그림자. 프로스트 굽기(frost-baking.js)가
-       background-image 로 흐린 사진을 깔고, 그 위를 --panel-frost-cover 색으로
-       한 번 덮어 글자 대비를 지킨다 (시안 FROST_L/FROST_D 값) */
-    --panel-bg: #fff;
-    --panel-frost-cover: rgb(255 255 255 / .8);
-    --panel-shadow:
-        0 1px 0 rgb(255 255 255 / .9) inset,
-        0 0 0 1px rgb(30 42 56 / .06),
-        0 18px 48px -12px rgb(30 42 56 / .18);
-
-    /* 버튼 사다리 (D20, iOS HIG 3단 + xsmall): 높이(줄 높이)·글자 크기 쌍.
-       large 는 단독 카드 버튼·모달 발 버튼(터치 44px 충족), medium 은 입력
-       그룹 옆·헤더 컨트롤, small 은 표 안 보조 컨트롤, xsmall 은 패널 헤더
-       옆 순서변경·삭제. 패딩·글자를 감으로 정하지 않고 이 중 하나를 고른다 */
-    --btn-h-lg: 50px;
-    --btn-h-md: 36px;
-    --btn-h-sm: 28px;
-    --btn-h-xs: 24px;
-    --btn-font-lg: 17px;
-    --btn-font-md: 15px;
-    --btn-font-sm: 13px;
-    --btn-font-xs: 12px;
-
-    /* 햇살 색 (rgb 채널값 — rgb(var(--sun) / a) 형태로 사용) */
-    --sun: 255 240 205;
-
-    /* 서비스 브랜드: TJ·금영 식별색을 유리에 맞춘 tint + 어두운 잉크 */
-    --tj-tint: rgb(249 80 1 / .14);
-    --tj-ink: #933a05;
-    --ky-tint: rgb(100 149 237 / .18);
-    --ky-ink: #2f5495;
-
-    /* 추가일 badge·최신곡 highlight 공용 */
-    --badge-tint: rgb(255 200 120 / .30);
-    --badge-ink: #7a5210;
-
-    /* 위험 동작(구독취소·탈퇴) */
-    --danger-tint: rgb(255 122 96 / .18);
-    --danger-ink: #a03015;
-
-    /* 스프링 (P11): 위치·크기·코너의 움직임은 살짝 튀는 spatial 곡선 하나,
-       색·투명도는 튀지 않는 effects 곡선. spatial 은 언더댐핑 스텝 응답을
-       linear() 로 샘플링한 값 — 정본 계산기는
-       docs/decisions/references/_ux/_material-expressive/_raw/13-spring-linear.js.
-       reduced-motion 에서는 spatial 을 effects 로 바꾼다 (파일 끝 접근성 절) */
-    --spring-spatial: linear(0, 0.013 0.6%, 0.05 1.2%, 0.2 2.5%, 0.55 6%, 0.86 10%, 1.05 14%, 1.12 18%, 1.1 22%, 1.03 30%, 0.99 38%, 1);
-    --ease-effects: ease;
-    /* 떠오름(로드 시퀀스·스크롤 리빌)용 감속 곡선 */
-    --ease-float: cubic-bezier(.22, .8, .3, 1);
-
-    /* 글자 사다리 (P21, 4기 7턴): iOS Dynamic Type 을 px 로 옮긴 8단. 글자
-       브레이크포인트는 768·1200 둘뿐이고 아래 미디어 블록에서 토큰 값만 바뀐다 —
-       쓰는 쪽은 var(--fs-*) 만 적고 vw·미디어 쿼리를 두지 않는다. 버튼 글자는
-       위의 --btn-font-* (D20) 가 따로 정한다. 표: docs/_temp/ui-overhaul-4.md 7턴 */
-    --fs-xs: 12px;    /* caption: 배지 */
-    --fs-sm: 13px;    /* footnote: 푸터·아이콘 라벨·동의 문구·결과 수 */
-    --fs-md: 14px;    /* subheadline: 표 머리글·번호·보조줄, 안내문, placeholder */
-    --fs-body: 15px;  /* body: 본문·표 제목 셀·입력창·모달 항목 */
-    --fs-lg: 18px;    /* title3: 패널 제목 h3·상단바 브랜드·h4 */
-    --fs-xl: 20px;    /* title2: 모달 제목 */
-    --fs-2xl: 24px;   /* title1: 섹션 제목 h2, 에러 카드 제목 */
-    --fs-title-large: 28px; /* large title: 페이지 제목 h1 (홈은 히어로가 대신) */
-    --fs-hero: 26px;  /* index 히어로 헤드라인 */
-
-    /* 굵기 사다리 (4기 9턴 후속): SUITE 가변이 300~900 을 모두 그리므로 얼굴 없는 값이
-       한 단 굵게 그려지던 문제가 없다. 다섯 단만 쓰고, 고를 때는 크기를 함께 본다 —
-       작은 글자일수록 같은 강조에 더 굵어야 하므로 13px 이하의 강조는 strong(600),
-       18px 이상의 제목은 title(700) 이다. body 아래(300 이하)는 쓰지 않는다:
-       18px 아래에서 흐려진다. 글자 크기는 위의 --fs-* 가 정한다 */
-    --fw-body: 400;     /* 본문, 보조줄, 대표값, 입력창 */
-    --fw-mid: 500;      /* 본문보다 한 단: 아티스트, 노래 번호, 표 머리글 */
-    --fw-strong: 600;   /* 작은 글자의 강조: 버튼, 배지, 링크, 루비(11px) */
-    --fw-title: 700;    /* 제목: 노래 제목, h1~h6, 모달 제목 */
-    --fw-display: 800;  /* 한 화면에 하나뿐인 표시 (지금은 쓰는 곳 없음) */
-
-    /* 반경 사다리. 반경을 가진 컨테이너는 --r-parent 를 함께 내려주고, 가장자리에
-       맞닿는 자식은 calc(var(--r-parent) - 간격) 으로 받는다. 홀로 놓이면 --r-control */
-    --r-panel: 24px;     /* 콘텐츠 패널 */
-    --r-sheet: 28px;     /* 모달, 에러 카드 */
-    --r-control: 14px;   /* 입력, 보조 버튼, 경고, lift 판, 그룹 */
-    --r-capsule: 999px;  /* 상단의 두 캡슐, 주요 액션 버튼, 배지 */
-}
-
-@media (min-width: 768px) {
-    :root {
-        --fs-md: 15px;
-        --fs-body: 17px;
-        --fs-lg: 20px;
-        --fs-xl: 22px;
-        --fs-2xl: 28px;
-        --fs-title-large: 34px;
-        --fs-hero: 32px;
-    }
-}
-
-@media (min-width: 1200px) {
-    :root {
-        --fs-hero: 34px;
-    }
-}
-
-/* dark (D7, D22): 색 토큰이 통째로 바뀌고 사진은 어둡게 눌린다.
-   스위치는 html[data-theme="dark"] — 초기값은 theme-init.js, 토글은
-   common-handlers.js. Bootstrap 기본색을 위해 data-bs-theme 도 함께 세팅된다 */
-html[data-theme="dark"] {
-    --ink: #eef2f6;
-    --ink-2: #c3ccd6;
-    --ink-3: #a7b1bc;
-    --ink-4: #8b96a3;
-    --bg: #121a24;
-    --tj-ink: #ffb088;
-    --ky-ink: #9fc0ff;
-    --badge-tint: rgb(255 200 120 / .18);
-    --badge-ink: #ffd18a;
-    --danger-tint: rgb(255 69 58 / .26);
-    --danger-ink: #ff5a50;
-    --panel-bg: #1b2430;
-    --panel-frost-cover: rgb(27 36 48 / .72);
-    --panel-shadow:
-        0 1px 0 rgb(255 255 255 / .06) inset,
-        0 0 0 1px rgb(255 255 255 / .06),
-        0 24px 60px -16px rgb(0 0 0 / .6);
 }
 
 /* ---------- 전역 베이스 ---------- */
@@ -245,72 +110,35 @@ textarea:focus-visible {
 }
 
 /* ---------- 콘텐츠 패널 ----------
-   불투명한 패널 (ADR 0001). 실시간 유리가 없으므로 스크롤·펼침에 재래스터
-   비용이 들지 않는다. 재질감은 frost-baking.js 가 background-image 로 깔아
-   주는 프로스트가 맡고, 그 전(사진 로드 전·실패 시)에는 바탕색만 보인다.
-   border 0 + padding-box 클립: 테두리가 있으면 굽힌 그림이 테두리 밑으로
-   비쳐 1px 띠가 생긴다 (시안 5턴 교훈). 그림자 안쪽 1px 흰 선이 테두리 역할.
-   프로스트 그림은 frost-baking.js 가 패널마다 inline 변수(--panel-frost-image,
-   --panel-frost-size)로 준다. 크기는 구운 자연 크기 — 높이 전환 중 그림이
-   늘어나지 않고 잘리기만 한다. 변수가 없으면(사진 로드 전·실패·오류 페이지)
-   덮개색만 바탕색 위에 얹혀 바탕색 패널이 된다 */
+   덮개색 한 겹의 반투명 패널. 뒤의 사진·보케가 흐림 없이 옅게 비친다.
+   실시간 유리가 아니므로 스크롤·펼침에 재래스터 비용이 들지 않는다.
+   border 0 + padding-box 클립: 그림자 안쪽 1px 흰 선이 테두리 역할.
+   모달은 모두 패널 밖(body 직속)에 있어 패널의 스태킹 컨텍스트에 갇히지
+   않는다 — 패널 안에 모달을 넣지 않는다 (page/search.css #container 주석) */
 .content-panel {
     position: relative;
-    background-color: var(--panel-bg);
-    background-image:
-        linear-gradient(var(--panel-frost-cover), var(--panel-frost-cover)),
-        var(--panel-frost-image, none);
-    background-repeat: no-repeat;
-    background-size: auto, var(--panel-frost-size, 100% 100%);
-    background-position: 0 0;
+    background-color: var(--panel-cover);
     background-clip: padding-box;
     border: 0;
     --r-parent: var(--r-panel);
     border-radius: var(--r-parent);
     box-shadow: var(--panel-shadow);
-    /* 프로스트 교체 페이드(::before)를 패널 배경과 내용 사이에 끼우려면 패널이
-       스태킹 컨텍스트여야 한다. 모달은 모두 패널 밖(body 직속)에 있어 갇히지
-       않는다 — 패널 안에 모달을 넣지 않는다 (page/search.css #container 주석) */
     isolation: isolate;
 }
 
-/* 프로스트 교체 페이드 (4기 2턴): 본 배경은 새 그림으로 바로 바뀌고,
-   frost-baking.js 가 옛 그림을 ::before 에 옛 크기만큼 얹어 0.4s 동안 걷는다.
-   background-image 는 전환이 안 되므로 두 장을 겹쳐 opacity 로 바꾼다
-   (컴포지터 처리). 덮개도 옛 그림 크기로만 깔아 그 밖은 투명 — 높이 전환
-   중 패널이 옛 그림보다 커진 자리엔 본 배경의 새 그림이 바로 비친다(바탕색
-   띠 없음). top 1px 은 패널의 inset 흰 선(--panel-shadow) 자리라 비워 두고
-   그림을 1px 올려 맞춘다. 층 높이는 옛 그림 높이(패널보다 길면 패널까지).
-   옛 그림이 새 그림보다 짧을 때(패널이 자랄 때, .frost-crossfade-feather)만
-   아래 96px 을 마스크로 흐린다 — 층이 그대로 끝나면 그 아랫변이 전환 중
-   가는 가로선으로 비친다(4기 3턴). 같은 크기 교체(테마·창 크기)에 마스크를
-   두면 패널이 위아래로 갈라져 보인다(4기 4턴) */
-.content-panel.frost-crossfade::before {
-    content: '';
-    position: absolute;
-    inset: 1px 0 auto 0;
-    height: calc(var(--panel-frost-height-prev, 100%) - 1px);
-    max-height: calc(100% - 1px);
-    z-index: -1;
-    border-radius: inherit;
-    pointer-events: none;
-    background-image:
-        linear-gradient(var(--panel-frost-cover), var(--panel-frost-cover)),
-        var(--panel-frost-image-prev, none);
-    background-repeat: no-repeat;
-    background-size: var(--panel-frost-size-prev, 100% 100%), var(--panel-frost-size-prev, 100% 100%);
-    background-position: 0 -1px;
-    animation: frost-crossfade-out .4s ease forwards;
+/* 뒤를 흐리는 콘텐츠 패널: 첫 화면 사진 위에 놓여 사진이 선명하게 비치는
+   패널(홈 히어로)에만 쓴다. 값은 apple.com 반투명 표면과 같은 blur 20px·채도 180% */
+.content-panel-blur {
+    -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    backdrop-filter: blur(20px) saturate(1.8);
 }
-@keyframes frost-crossfade-out { to { opacity: 0; } }
-.content-panel.frost-crossfade.frost-crossfade-feather::before {
-    -webkit-mask-image: linear-gradient(#000 calc(100% - 96px), transparent);
-    mask-image: linear-gradient(#000 calc(100% - 96px), transparent);
+html[data-theme="dark"] .content-panel-blur {
+    -webkit-backdrop-filter: blur(20px) saturate(.75);
+    backdrop-filter: blur(20px) saturate(.75);
 }
 
 /* 테마 전환 (4기 4턴): 토글(common-handlers.js)이 View Transition 으로 감싼다 —
-   옛 화면과 새 화면 스냅샷이 .3s 크로스페이드. 새 스냅샷에는 콜백 안에서 즉시
-   구운 프로스트가 들어간다(frost-baking.js). 미지원·모션 최소화는 즉시 전환 */
+   옛 화면과 새 화면 스냅샷이 .3s 크로스페이드. 미지원·모션 최소화는 즉시 전환 */
 ::view-transition-old(root),
 ::view-transition-new(root) {
     animation-duration: .3s;
@@ -518,7 +346,6 @@ html[data-theme="dark"] .delete-favorite-song-complete-button {
     max-width: none;
     height: var(--btn-h-lg);
     padding: 0 1.1rem;
-    font-size: max(16px, var(--fs-body));
     border-radius: var(--r-control);
 }
 
@@ -659,10 +486,6 @@ html[data-theme="dark"] .form-check-input:checked {
     --bs-modal-width: 440px;
 }
 
-.modal-dialog {
-    font-size: var(--fs-body);
-}
-
 .modal-content {
     background: var(--panel-bg);
     color: var(--ink);
@@ -682,9 +505,6 @@ html[data-theme="dark"] .form-check-input:checked {
 
 .modal-title {
     color: var(--ink);
-    font-size: var(--fs-xl);
-    font-weight: var(--fw-title);
-    letter-spacing: -.01em;
 }
 
 .modal-body {
@@ -791,27 +611,20 @@ html[data-theme="dark"] .form-check-input:checked {
 .login-modal-info {
     padding: 0 4px;
     color: var(--ink-2);
-    font-size: var(--fs-md);
-    line-height: 1.6;
 }
 
 .login-modal-info a {
     color: var(--ink);
-    font-weight: var(--fw-strong);
     white-space: nowrap;
 }
 
 /* 이메일 수집 동의: 본문 회색, 소제목만 잉크 */
 #agreementModal .modal-body-content {
     color: var(--ink-2);
-    font-size: var(--fs-md);
-    line-height: 1.7;
 }
 
 #agreementModal .modal-body-content h4 {
     color: var(--ink);
-    font-size: var(--fs-body);
-    font-weight: var(--fw-title);
     margin: 0 0 8px;
 }
 
@@ -819,7 +632,6 @@ html[data-theme="dark"] .form-check-input:checked {
 #unsubscribeModal .modal-body p,
 #deleteUserModal .modal-body p {
     color: var(--ink-2);
-    font-size: var(--fs-md);
     margin-bottom: 14px;
 }
 
@@ -835,8 +647,6 @@ html[data-theme="dark"] .form-check-input:checked {
     margin: 16px 0 8px;
     padding-left: 14px;
     color: var(--ink-2);
-    font-size: var(--fs-body);
-    font-weight: var(--fw-strong);
 }
 
 .inset-group-title:first-child {
@@ -875,7 +685,6 @@ html[data-theme="dark"] .form-check-input:checked {
     padding: 12px 16px;
     cursor: pointer;
     color: var(--ink);
-    font-size: var(--fs-body);
 }
 
 /* ✓: 잉크색 꺾쇠 — 선택 시 스프링으로 튀어나온다 */
@@ -928,7 +737,6 @@ html[data-theme="dark"] .form-check-input:checked {
 
 #presentOrderModal .modal-body .text-center {
     color: var(--ink-2);
-    font-size: var(--fs-md);
 }
 
 /* dark 시트 */
@@ -977,26 +785,42 @@ html[data-theme="dark"] .modal .song-table th {
     border-color: rgb(255 255 255 / .12);
 }
 
-/* ---------- 모션: scroll edge (ui-rnd 5턴) ----------
+/* ---------- 모션: scroll edge (ui-rnd 5턴, 7기 6번) ----------
    상단바 유리 밑으로 콘텐츠가 지나가면 화면 상단에 점진 블러 베일이
    떠올라, 콘텐츠가 가장자리에서 디졸브된다. 베일 요소는 glass-motion.js 가
    상단바 있는 페이지에만 심고, 표시는 .navbar.scroll-veil-on(scrollY > 8)을
-   형제 선택자로 따라간다. 상단바의 backdrop 을 먼저 뭉개지 않도록 짧게 둔다:
-   뷰포트와 상단바 사이 틈(0~14px)은 완전 블러, 상단바 중간쯤에서 0 */
+   형제 선택자로 따라간다. 높이는 떠 있는 캡슐의 아랫선보다 32px 더 내려온다.
+   흐림은 두 겹이다: 4px(전체 높이, 배경색 페이드 --bg 45% 포함), 12px(위 45%).
+   위로 갈수록 겹이 쌓여 흐림 세기 자체가 커진다. 겹마다 위에서 완전, 아래로
+   갈수록 천천히 줄어드는 같은 곡선의 마스크를 쓴다 */
 .scroll-veil {
+    --scroll-veil-height: calc(var(--chrome-capsule-top) + var(--chrome-capsule-height) + 32px);
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    height: 56px;
+    height: var(--scroll-veil-height);
     z-index: 39; /* 상단바(40) 바로 아래 */
     pointer-events: none;
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-    -webkit-mask-image: linear-gradient(to bottom, #000 25%, transparent);
-    mask-image: linear-gradient(to bottom, #000 25%, transparent);
+    --scroll-veil-mask: linear-gradient(to bottom,
+        #000 0%, rgb(0 0 0 / .96) 14%, rgb(0 0 0 / .86) 28%, rgb(0 0 0 / .7) 42%,
+        rgb(0 0 0 / .5) 56%, rgb(0 0 0 / .3) 70%, rgb(0 0 0 / .14) 84%, transparent 100%);
+    -webkit-mask-image: var(--scroll-veil-mask);
+    mask-image: var(--scroll-veil-mask);
     opacity: 0;
     transition: opacity .45s ease;
+}
+
+.scroll-veil-layer-1 {
+    background: color-mix(in srgb, var(--bg) 45%, transparent);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+}
+
+.scroll-veil-layer-2 {
+    height: calc(var(--scroll-veil-height) * .45);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
 }
 
 /* 페이지 상단 흐려짐(scroll edge effect) 켜짐 */
@@ -1004,10 +828,10 @@ html[data-theme="dark"] .modal .song-table th {
     opacity: 1;
 }
 
-/* dark 에서는 베일이 살짝 어둡게도 눌러 글자가 내비바 뒤로 잠기게 한다 */
-html[data-theme="dark"] .scroll-veil {
-    -webkit-backdrop-filter: blur(12px) brightness(.8);
-    backdrop-filter: blur(12px) brightness(.8);
+/* dark 에서는 베일이 살짝 어둡게도 눌러 글자가 내비바 뒤로 잠기게 한다 (전체 높이 층에서 한 번) */
+html[data-theme="dark"] .scroll-veil-layer-1 {
+    -webkit-backdrop-filter: blur(4px) brightness(.8);
+    backdrop-filter: blur(4px) brightness(.8);
 }
 
 /* 모달이 열릴 때 화면이 옆으로 밀리는 것 방지.
@@ -1043,15 +867,14 @@ mark,
 .mark {
     color: var(--badge-ink);
     background: var(--badge-tint);
-    border-radius: 8px;
+    border-radius: var(--r-mark);
 }
 
 /* ---------- 사진 배경: 씻어낸 노래방 사진 ----------
    사이트 공통으로 가장 뒤에 까는 사진 (D15 — index·검색·애창곡).
    위로 갈수록 선명하고 아래로 갈수록 바탕색에 녹는다. 스크롤하면 함께
-   밀려 올라간다. 내비바(유리)가 이 사진을 실제로 블러하고, 콘텐츠 패널은
-   frost-baking.js 가 같은 사진을 패널 자리에 맞춰 흐려 구운 그림을 받는다 —
-   아래 마스크·페이드·필터 값을 바꾸면 굽기 코드의 값도 함께 맞춘다 (ADR 0002) */
+   밀려 올라간다. 내비바(유리)와 히어로(.content-panel-blur)가 이 사진을
+   실제로 블러하고, 나머지 콘텐츠 패널 아래로는 흐림 없이 옅게 비친다 */
 .photo-bg {
     position: absolute;
     top: 0;
@@ -1144,7 +967,7 @@ html[data-theme="dark"] .sky {
         rgb(var(--sun) / 0) 88%);
     filter: blur(var(--b));
     opacity: 0;
-    animation: ray-in 1.4s var(--ease-float) forwards;
+    animation: ray-in .7s var(--ease-float) forwards;
     animation-delay: var(--d);
     /* 떠오르는 동안만 합성 레이어 — 끝나면 JS 가 .settled 를 붙여 해제한다.
        will-change 가 남아 있으면 blur 가 걸린 대형 레이어 8장이 매 프레임
@@ -1163,9 +986,9 @@ html[data-theme="dark"] .sky {
 }
 
 /* ---------- 보케 ----------
-   히어로 사진의 조명 방울을 CSS 로 추상화한 잔상. 콘텐츠 패널 바깥의
-   배경에서 떠다니고, 패널 안에는 굽기 시점의 모습이 프로스트에 정지 상태로
-   들어간다 (D11). 위치·크기는 glass-motion.js 가 로드마다 랜덤으로 흩뿌린다 */
+   히어로 사진의 조명 방울을 CSS 로 추상화한 잔상. 배경에 떠 있고 콘텐츠
+   패널 아래로도 옅게 비친다. 위치·크기는 glass-motion.js 가 로드마다 랜덤으로
+   흩뿌린다 */
 .bokeh {
     position: absolute;
     /* 점이 영역 밖으로 튀어나와도 문서 스크롤 높이에 관여하지 못하게
@@ -1198,13 +1021,20 @@ html[data-theme="dark"] .bokeh {
 /* ---------- 로드 시퀀스 (딜레이 기반) ----------
    햇살(CSS 애니메이션) → 상단바 → 히어로 순서.
    .veil 이 붙은 요소는 숨은 채 시작하고, glass-motion.js 가 .on 을 붙이면
-   inline 변수 --vd 만큼 기다렸다가 떠오른다 */
+   inline 변수 --vd 만큼 기다렸다가 떠오른다.
+   흐린 채 시작하는 것은 떠 있는 유리 캡슐뿐이다. 요소 자신에 거는 filter: blur 전환은 메인 스레드에서
+   돌아 스크롤 중 띄엄띄엄 갱신되고, 비용이 면적에 비례해 히어로 같은 큰 패널은 덜컥거린다(6기 실측).
+   캡슐은 작아서 싸다. 캡슐의 전환 목록(filter 포함)은 containers.css 에 있다 */
 .veil {
     opacity: 0;
     transform: translateY(22px);
-    filter: blur(14px);
-    transition: opacity 1s var(--ease-float), transform 1s var(--ease-float), filter 1s var(--ease-float);
+    transition: opacity 1s var(--ease-float), transform 1s var(--ease-float);
     transition-delay: var(--vd, 0s);
+    will-change: transform, opacity;
+}
+
+.glass-capsule.veil:not(.on) {
+    filter: blur(14px);
     will-change: transform, opacity, filter;
 }
 
@@ -1219,39 +1049,38 @@ html[data-theme="dark"] .bokeh {
     will-change: auto;
 }
 
-/* ---------- 스크롤 리빌: 희미한 유리 → 선명 ----------
-   [data-lift] 요소가 30% 이상 보이면 glass-motion.js 가 .is-lit 을 붙인다 */
+/* ---------- 스크롤 리빌: 옅은 유리 → 또렷 ----------
+   [data-lift] 요소가 30% 이상 보이면 glass-motion.js 가 .is-lit 을 붙인다.
+   흐림은 걸지 않는다 — 스크롤 도중에 떠오르므로 메인 스레드의 filter 전환이 덜컥거린다(로드 시퀀스 절) */
 [data-lift] {
     opacity: .14;
-    transform: translateY(34px) scale(.985);
-    filter: blur(12px);
-    transition: opacity 1.1s var(--ease-float), transform 1.1s var(--ease-float), filter 1.1s var(--ease-float);
-    will-change: transform, opacity, filter;
+    transform: translateY(16px) scale(.985);
+    transition: opacity .6s var(--ease-float) var(--reveal-delay), transform .6s var(--ease-float) var(--reveal-delay);
+    will-change: transform, opacity;
 }
 
 [data-lift].is-lit {
     opacity: 1;
     transform: none;
-    filter: none; /* .veil.on 과 같은 취지 — 도착 후 필터 패스·레이어를 남기지 않는다 */
     will-change: auto;
 }
 
 /* 표의 행은 패널이 떠오른 뒤 위에서부터 순서대로 */
 [data-lift] tbody tr {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(8px);
 }
 
 [data-lift].is-lit tbody tr {
-    animation: row-in .7s var(--ease-float) both;
+    animation: row-in .45s var(--ease-float) both;
 }
 
-[data-lift].is-lit tbody tr:nth-child(1) { animation-delay: .25s; }
-[data-lift].is-lit tbody tr:nth-child(2) { animation-delay: .35s; }
-[data-lift].is-lit tbody tr:nth-child(3) { animation-delay: .45s; }
-[data-lift].is-lit tbody tr:nth-child(4) { animation-delay: .55s; }
-[data-lift].is-lit tbody tr:nth-child(5) { animation-delay: .65s; }
-[data-lift].is-lit tbody tr:nth-child(6) { animation-delay: .75s; }
+[data-lift].is-lit tbody tr:nth-child(1) { animation-delay: calc(var(--reveal-delay) + .15s); }
+[data-lift].is-lit tbody tr:nth-child(2) { animation-delay: calc(var(--reveal-delay) + .23s); }
+[data-lift].is-lit tbody tr:nth-child(3) { animation-delay: calc(var(--reveal-delay) + .31s); }
+[data-lift].is-lit tbody tr:nth-child(4) { animation-delay: calc(var(--reveal-delay) + .39s); }
+[data-lift].is-lit tbody tr:nth-child(5) { animation-delay: calc(var(--reveal-delay) + .47s); }
+[data-lift].is-lit tbody tr:nth-child(6) { animation-delay: calc(var(--reveal-delay) + .55s); }
 
 @keyframes row-in {
     to { opacity: 1; transform: none; }
@@ -1502,7 +1331,7 @@ html:not([data-theme="dark"]) .glass-capsule.is-over-dark {
 html:not([data-theme="dark"]) .glass-capsule.is-over-dark .navbar-brand,
 html:not([data-theme="dark"]) .glass-capsule.is-over-dark .icon-link,
 html:not([data-theme="dark"]) .glass-capsule.is-over-dark .icon-link-label {
-    color: #f2f5f8;
+    color: var(--ink-over-dark);
 }
 
 html:not([data-theme="dark"]) .glass-capsule.is-over-dark .selection-lens {
@@ -1610,13 +1439,25 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
     html:not([data-theme="dark"]) div.glass-capsule.is-over-dark {
         background: rgb(27 36 48 / .86);
     }
+    /* 흐리지 못하면 사진이 선명하게 비치므로 불투명 바탕색 패널로 */
+    .content-panel-blur {
+        background-color: var(--panel-bg);
+    }
+}
+
+/* ---------- 오버스크롤: 내려가 있는 동안만 끈다 ----------
+   맨 위에서 걸리는 Android 늘어남이 Pixel 에서 0.2~0.4초 멈춤을 만든다(6기 실측). 페이지가 내려가 있으면
+   glass-motion.js 가 .overscroll-locked 를 붙여 끄고, 맨 위에서 스크롤이 멈추면 떼어 당겨서 새로 고침을 살린다 */
+html.overscroll-locked,
+html.overscroll-locked body {
+    overscroll-behavior-y: none;
 }
 
 /* ---------- 접근성: 모션·투명도·대비 각각 대응 (P14) ----------
    3기 구조에서 손댈 것: 스프링 토큰(탄성)·로드 시퀀스·리빌·행 lift 의 모션,
    크롬 유리(브랜드 캡슐·메뉴 캡슐·모달 베일·스크롤 베일)의 투명도, 패널·버튼·
-   입력창의 테두리 대비. 콘텐츠 패널은 불투명 프로스트라 투명도 설정과 무관하고,
-   굴절(glass-material.js)은 투명도 최소화에서 스스로 물러선다 */
+   입력창의 테두리 대비, 콘텐츠 패널의 투명도. 굴절(glass-material.js)은
+   투명도 최소화에서 스스로 물러선다 */
 /* 모션 최소화: 탄성만 끄고(spatial → effects) 큰 전환은 짧은 크로스페이드.
    편집 모드 컨트롤·집은 행·옮겨진 행(favorite-song.css)과 행 lift 는 같은
    토큰을 쓰므로 토큰 교체만으로 탄성이 빠진다 */
@@ -1643,8 +1484,7 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
     .btn:hover, .btn-close:hover { transform: none; }
 }
 
-/* 투명도 최소화: 폴백 사다리의 맨 아래 단 — 크롬 유리를 불투명하게.
-   콘텐츠 패널은 원래 불투명이라 손댈 것이 없다.
+/* 투명도 최소화: 폴백 사다리의 맨 아래 단 — 크롬 유리와 콘텐츠 패널을 불투명하게.
    두 캡슐은 재질 선언이 뒤에 로드되는 파일(containers·
    common.css)에 있어, 같은 특정도로는 지므로 태그를 붙여 한 단계 올린다 */
 @media (prefers-reduced-transparency: reduce) {
@@ -1664,6 +1504,11 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
     div.glass-capsule::after { display: none; }
     .modal-backdrop { -webkit-backdrop-filter: none; backdrop-filter: none; }
     .scroll-veil { display: none; }
+    .content-panel {
+        background-color: var(--panel-bg);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
 }
 
 /* 고대비: 잉크를 진하게, 크롬 유리를 거의 불투명하게, 장식 빛은 제거.
@@ -1685,9 +1530,12 @@ html[data-theme="dark"] .has-selection-lens.has-selection-lens .icon-link:hover 
     .btn, .btn:hover, .btn:active {
         box-shadow: 0 0 0 1.5px var(--edge-contrast);
     }
-    /* 프로스트(구운 사진)는 덮개 아래로 비쳐 글자 대비를 깎는다 — 바탕색 패널만 */
-    .content-panel { background-image: none; }
-    .content-panel.frost-crossfade::before { display: none; }
+    /* 패널 아래로 비치는 배경은 글자 대비를 깎는다 — 불투명 바탕색 패널만 */
+    .content-panel {
+        background-color: var(--panel-bg);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
     /* 맑은 유리는 몸체가 얇은 틴트라 대비가 부족하다 — 거의 불투명으로
        올리고 장식 테두리(conic ::after)는 제거해 림 보더만 남긴다 */
     div.glass-capsule {

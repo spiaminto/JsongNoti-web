@@ -18,6 +18,7 @@
   <!-- dark 초기값: 스타일시트보다 먼저 동기 실행 (theme-init.js, FOUC 방지) -->
   <script src="/static/js/theme-init.js" th:src="@{/js/theme-init.js}"></script>
   <!-- 웹폰트는 glass.css 가 weight 매핑과 함께 로드한다 -->
+  <link href="/static/css/tokens.css" th:href="@{/css/tokens.css}" rel="stylesheet"/>
   <!-- 한글 안전망 글꼴: SUITE 에 없는 음절만 (font-fallback.css) -->
   <link href="/static/css/font-fallback.css" th:href="@{/css/font-fallback.css}" rel="stylesheet"/>
   <link href="/static/css/glass.css" th:href="@{/css/glass.css}" rel="stylesheet"/>
@@ -28,6 +29,7 @@
   <link href="/static/css/song-table.css" th:href="@{/css/song-table.css}" rel="stylesheet"/>
   <link href="/static/css/song-search.css" th:href="@{/css/song-search.css}" rel="stylesheet"/>
   <link href="/static/css/page/favorite-song.css" th:href="@{/css/page/favorite-song.css}" rel="stylesheet"/>
+  <link href="/static/css/typography.css" th:href="@{/css/typography.css}" rel="stylesheet"/>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-JFWLSXBEYR"></script>
   <script>
@@ -44,7 +46,6 @@
   <script src="/static/js/common-handlers.js" th:src="@{/js/common-handlers.js}" type="text/javascript"></script>
   <script src="/static/js/song-table-util.js" th:src="@{/js/song-table-util.js}" type="module"></script>
   <script src="/static/js/glass-motion.js" th:src="@{/js/glass-motion.js}" type="text/javascript"></script>
-  <script src="/static/js/frost-baking.js" th:src="@{/js/frost-baking.js}" type="text/javascript"></script>
   <script src="/static/js/glass-material.js" th:src="@{/js/glass-material.js}" type="text/javascript"></script>
   <script src="/static/js/song-search.js" th:src="@{/js/song-search.js}" type="module"></script>
   <script src="/static/js/favorite/favorite-song-util.js" th:src="@{/js/favorite/favorite-song-util.js}"
@@ -73,14 +74,14 @@
 <!-- 배경: 씻어낸 노래방 사진 + 햇살 (사이트 공통, D15. 스타일은 glass.css) -->
 <div class="photo-bg" aria-hidden="true"></div>
 <div class="sky" aria-hidden="true">
-  <span class="ray" style="--x:-6%;  --w:120px; --a:.50; --b:22px; --d:.05s"></span>
-  <span class="ray" style="--x:4%;   --w:52px;  --a:.62; --b:10px; --d:.22s"></span>
-  <span class="ray" style="--x:11%;  --w:88px;  --a:.45; --b:16px; --d:.12s"></span>
-  <span class="ray" style="--x:19%;  --w:34px;  --a:.68; --b:7px;  --d:.38s"></span>
-  <span class="ray" style="--x:26%;  --w:140px; --a:.34; --b:26px; --d:.18s"></span>
-  <span class="ray" style="--x:37%;  --w:60px;  --a:.52; --b:12px; --d:.48s"></span>
-  <span class="ray" style="--x:47%;  --w:96px;  --a:.30; --b:20px; --d:.30s"></span>
-  <span class="ray" style="--x:58%;  --w:44px;  --a:.42; --b:9px;  --d:.58s"></span>
+  <span class="ray" style="--x:-6%;  --w:120px; --a:.50; --b:22px; --d:.025s"></span>
+  <span class="ray" style="--x:4%;   --w:52px;  --a:.62; --b:10px; --d:.11s"></span>
+  <span class="ray" style="--x:11%;  --w:88px;  --a:.45; --b:16px; --d:.06s"></span>
+  <span class="ray" style="--x:19%;  --w:34px;  --a:.68; --b:7px;  --d:.19s"></span>
+  <span class="ray" style="--x:26%;  --w:140px; --a:.34; --b:26px; --d:.09s"></span>
+  <span class="ray" style="--x:37%;  --w:60px;  --a:.52; --b:12px; --d:.24s"></span>
+  <span class="ray" style="--x:47%;  --w:96px;  --a:.30; --b:20px; --d:.15s"></span>
+  <span class="ray" style="--x:58%;  --w:44px;  --a:.42; --b:9px;  --d:.29s"></span>
 </div>
 
 <div id="container">
@@ -218,7 +219,7 @@
     <div id="favoriteSongContainer">
       <div class="favorite-song-section-header" th:data-user-id="${userId}" }>
         <h1>애창곡</h1>
-        <p th:text="${username + '님의 애창곡 목록입니다.'}"> 애창곡 목록입니다. </p>
+        <p class="text-subheadline text-muted" th:text="${username + '님의 애창곡 목록이에요.'}"> 애창곡 목록이에요. </p>
       </div>
       <div class="songs-grid">
         <!-- 태진 -->
@@ -253,17 +254,17 @@
             </div>
           </h3>
           <div class="switch-order-hint-collapse collapse" id="switchOrderTjCollapse">
-            <p>
-              순서 변경 후 <b>'변경 완료' 버튼을 눌러야 적용</b>됩니다.
+            <p class="text-subheadline text-muted">
+              순서를 바꾼 뒤 <b>'변경 완료' 버튼을 눌러야 적용</b>돼요.
               <br>
               <span class="hint-pick">처음 클릭한 곡</span>
               이
               <span class="hint-target">두번째로 클릭한 곡</span>
-              바로 아래 순서로 변경됩니다.
+              바로 아래 순서로 바뀌어요.
             </p>
           </div>
           <div class="delete-favorite-song-hint-collapse collapse" id="deleteFavoriteSongTjCollapse">
-            <p>삭제하려는 애창곡의 제목을 클릭하면 삭제됩니다.</p>
+            <p class="text-subheadline text-muted">삭제할 애창곡의 제목을 누르면 삭제돼요.</p>
           </div>
           <div class="song-table-border">
             <table class="song-table table-tj">
@@ -326,17 +327,17 @@
             </div>
           </h3>
           <div class="switch-order-hint-collapse collapse" id="switchOrderKyCollapse">
-            <p>
-              순서 변경 후 <b>'변경 완료' 버튼을 눌러야 적용</b>됩니다.
+            <p class="text-subheadline text-muted">
+              순서를 바꾼 뒤 <b>'변경 완료' 버튼을 눌러야 적용</b>돼요.
               <br>
               <span class="hint-pick">처음 클릭한 곡</span>
               이
               <span class="hint-target">두번째로 클릭한 곡</span>
-              바로 아래 순서로 변경됩니다.
+              바로 아래 순서로 바뀌어요.
             </p>
           </div>
           <div class="delete-favorite-song-hint-collapse collapse" id="deleteFavoriteSongKyCollapse">
-            <p>삭제하려는 애창곡의 제목을 클릭하면 삭제됩니다.</p>
+            <p class="text-subheadline text-muted">삭제할 애창곡의 제목을 누르면 삭제돼요.</p>
           </div>
           <div class="song-table-border">
             <table class="song-table table-ky">
@@ -375,14 +376,14 @@
 
   <!-- 애창곡 추가: 검색해서 고르고 추가 내용을 붙이는 유리 패널 -->
   <section class="add-favorite-song-section text-center content-panel" data-lift>
-    <h2>
+    <h3>
       <span>애창곡 추가</span>
       <button id="addInfoTextCollapseButton" class="btn arrow-collapse-button rounded-circle"
               type="button" data-bs-toggle="collapse"
               data-bs-target="#addInfoTextCollapse" aria-expanded="false" aria-controls="addTextCollapse">
         <i class="bi bi-caret-down-fill"></i>
       </button>
-    </h2>
+    </h3>
 
     <!--애창곡 추가 폼 -->
     <div class="row justify-content-center">
@@ -411,7 +412,7 @@
                   <div class="song-singer"></div>
                   <div class="song-info">
                     <span><b>추가 내용:</b></span>
-                    <span class="song-info-text ms-1">여기에 추가 내용이 표시됩니다.</span>
+                    <span class="song-info-text ms-1">여기에 내용이 표시돼요.</span>
                   </div>
                 </td>
               </tr>
@@ -433,7 +434,7 @@
               </div>
             </div>
             <div class="text-center">
-              <p class="mb-2 d-inline">애창곡 저장시 추가할 내용을 입력해 주세요.</p>
+              <p class="mb-2 d-inline text-subheadline text-muted">애창곡 저장시 추가할 내용을 입력해 주세요.</p>
               <div class="form-check-inline ms-2">
                 <input class="form-check-input" type="checkbox" value="" id="useDefaultInfoTextCheck">
                 <label class="form-check-label" for="useDefaultInfoTextCheck">
@@ -443,7 +444,7 @@
             </div>
             <div class="field-row mt-2 mb-3">
             <textarea type="text" id="addInfoTextInput" class="form-control text-input"
-                      placeholder="추가 내용을 비워둘경우 노래 제목만 저장합니다 (최대 50자)"
+                      placeholder="추가 내용을 비워 두면 노래 제목만 저장해요 (최대 50자)"
                       aria-label="추가텍스트" aria-describedby="" maxlength="50"></textarea>
               <div id="defaultInfoPreview" class="form-control text-input text-start d-none" role="status"></div>
               <button class="btn" type="submit" id="addSongButton">애창곡 추가</button>
@@ -454,18 +455,18 @@
     </div>
 
     <div id="searchHintContainer" class="mt-3">
-      <p> 원어와 한국어로 검색할 수 있습니다.</p>
-      <p> 한글 검색시 검색어와 유사한 결과를 찾아 보여줍니다.
+      <p> 원어와 한국어로 검색할 수 있어요.
         <a href="https://github.com/spiaminto/JsongNoti-web?tab=readme-ov-file#2-%EB%85%B8%EB%9E%98-%EA%B2%80%EC%83%89"
            target="_blank"
-           class="text-decoration-none small align-top">
+           class="search-help-link">
           검색 도움말
           <i class="bi bi-box-arrow-up-right"></i>
         </a>
       </p>
-      <p> 검색어는 <b>띄어쓰기를 구분</b>하며, <b>검색어를 짧게 입력할 경우 결과가 누락될 수 있습니다.</b></p>
+      <p> 한글로 검색하면 연관된 결과를 찾아 보여드려요.</p>
+      <p> 검색어는 <b>띄어쓰기를 구분</b>하고, <b>검색어를 짧게 입력하면 결과가 빠질 수 있어요.</b></p>
       <p><em class="text-muted unified-hint">
-        노래제목, 아티스트명, 작품명을 한 번에 검색합니다.
+        노래 제목, 아티스트명, 작품명을 한 번에 검색해요.
       </em></p>
       <p><em class="text-muted singer-hint">
         <b>검색 예시</b> : Official髭男dism, 오피셜 히게 단디즘, 히게단 (약칭 일부 지원, 2025년 11월 기준 433건 등록)
@@ -493,19 +494,19 @@
       <div class="search-type-check-wrapper input-wrapper mb-2">
         <div class="form-check form-check-inline">
           <input class="form-check-input" type="radio" name="searchType" id="searchTypeUnified" value="UNIFIED" checked>
-          <label class="form-check-label" for="searchTypeUnified">통합검색</label>
+          <label class="form-check-label" for="searchTypeUnified">통합</label>
         </div>
         <div class="form-check form-check-inline">
           <input class="form-check-input" type="radio" name="searchType" id="searchTypeTitle" value="TITLE">
-          <label class="form-check-label" for="searchTypeTitle">노래제목</label>
+          <label class="form-check-label" for="searchTypeTitle">제목</label>
         </div>
         <div class="form-check form-check-inline">
           <input class="form-check-input" type="radio" name="searchType" id="searchTypeArtist" value="SINGER">
-          <label class="form-check-label" for="searchTypeArtist">아티스트명</label>
+          <label class="form-check-label" for="searchTypeArtist">아티스트</label>
         </div>
         <div class="form-check form-check-inline">
           <input class="form-check-input" type="radio" name="searchType" id="searchTypeInfo" value="INFO">
-          <label class="form-check-label" for="searchTypeInfo">작품명/정보</label>
+          <label class="form-check-label" for="searchTypeInfo">작품명</label>
         </div>
       </div>
       <div class="search-field">
@@ -532,9 +533,9 @@
     <div class="row row-for-expand-padding">
       <div class="collapse song-search-result-collapse" id="songSearchResultCollapse">
         <div class="card card-body px-1 py-2">
-          <div class="song-search-result-header">
-            <p class="mb-0">노래 제목을 누르면 애창곡 추가 폼에 입력됩니다.</p>
-            <p class="text-muted small mb-1">(한글 표시는 참고용으로, 정확하지 않습니다)</p>
+          <div class="song-search-result-header text-subheadline text-muted">
+            <p class="mb-0">노래 제목을 누르면 애창곡 추가 폼에 입력돼요.</p>
+            <p class="mb-1">한글 표시는 참고용이라 정확하지 않아요.</p>
           </div>
           <div id="unifiedSongSearchGroups" class="d-none"></div>
           <div id="singleSongSearchResult">
@@ -551,15 +552,15 @@
                 </tbody>
               </table>
             </div>
-            <div class="mt-4 small text-center">
+            <div class="mt-4 text-subheadline text-center text-muted">
               <p class="mb-0">
-                원하는 검색 결과가 없는 경우 추가 검색 버튼 클릭 <br>
+                원하는 결과가 없으면 추가 검색 버튼을 눌러 주세요.
               </p>
               <button id="additionalSongSearchButton" class="btn mt-2 ms-auto">
                 추가 검색
               </button>
               <p class="mb-0 mt-2">
-                원하는 곡이 검색되지 않을경우 홈페이지 아래의 <b>메일문의 링크를 눌러 문의</b>주시면 빠르게 반영하겠습니다. </p>
+                원하는 곡이 검색되지 않으면 페이지 아래의 <b>메일문의 링크로 알려 주세요.</b> 빠르게 반영할게요. </p>
             </div>
           </div>
         </div>
@@ -579,7 +580,7 @@
         <div class="modal-body">
           <div class="modal-body-content">
             <div class="text-center">
-              선택한 노래의 바로 다음 순서로 추가됩니다.<br>
+              선택한 노래의 바로 다음 순서로 추가돼요.<br>
             </div>
             <div class="song-table-border mt-2">
               <table class="song-table" id="choosePresentOrderTable">
@@ -607,18 +608,26 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
-          <button type="button" class="btn btn-danger" id="deleteUserModalButton" data-bs-toggle="modal"
-                  data-bs-target="#deleteUserModal">
-            회원 탈퇴
-          </button>
-          <p id="footerText" class="text-muted small">&copy; 제이노티 by JsongNoti. All Rights
+          <!-- 푸터 버튼 한 줄: 위험 동작(있는 화면만) | 테마 토글 -->
+          <div class="footer-button-row">
+            <button type="button" class="btn btn-danger" id="deleteUserModalButton" data-bs-toggle="modal"
+                    data-bs-target="#deleteUserModal">
+              회원 탈퇴
+            </button>
+            <!-- 테마 토글 (common-handlers.js): 라벨은 누르면 바뀔 테마. 둘 중 하나만 보인다 (footer.css) -->
+            <button type="button" class="btn dark-mode-button">
+              <span class="theme-label-to-dark"><i class="bi bi-moon-fill" aria-hidden="true"></i>다크 모드</span>
+              <span class="theme-label-to-light"><i class="bi bi-sun-fill" aria-hidden="true"></i>라이트 모드</span>
+            </button>
+          </div>
+          <p id="footerText" class="text-muted">&copy; 제이노티 by JsongNoti. All Rights
             Reserved.</p>
-          <p id="footerTextCopyright" class="small mb-0">icons Designed by
+          <p id="footerTextCopyright" class="mb-0">icons Designed by
             <a class="text-muted text-decoration-none" href="https://www.freepik.com/">Freepik</a>
           <div id="footerTextLinkWrapper" class="">
-            <p id="footerTextTermsOfUse" class="d-inline-block small mb-0"><a
+            <p id="footerTextTermsOfUse" class="d-inline-block mb-0"><a
                 class="text-muted text-decoration-none" href="/terms-of-use">이용약관</a></p>
-            <p id="footerTextPrivacyPolicy" class="d-inline-block small mb-0 ms-2"><a
+            <p id="footerTextPrivacyPolicy" class="d-inline-block mb-0 ms-2"><a
                 class="text-muted text-decoration-none" href="/privacy-policy"><b>개인정보처리방침</b></a></p>
           </div>
         </div>
@@ -627,31 +636,22 @@
             <li class="list-inline-item me-4">&nbsp;
               <a class="text-decoration-none" href="https://github.com/spiaminto/JsongNoti-web">
                 Github
-                <i class="bi-github fs-3"></i>
+                <i class="bi-github footer-icon"></i>
               </a>
             </li>
-            <li class="list-inline-item contact-mail-pc me-4">
+            <li class="list-inline-item contact-mail-pc">
               <a class="text-decoration-none"
                  href="https://mail.google.com/mail/?view=cm&fs=1&to=jsongnoti%2Bcs@gmail.com&su=일본 신곡 알림이 문의"
                  target="_blank">
                 메일문의
-                <i class="bi-envelope fs-3"></i>
+                <i class="bi-envelope footer-icon"></i>
               </a>
             </li>
-            <li class="list-inline-item contact-mail-mobile me-4">
+            <li class="list-inline-item contact-mail-mobile">
               <a class="text-decoration-none"
                  href="mailto:jsongnoti+cs@gmail.com?subject=일본 신곡 알림이 문의">
                 메일문의
-                <i class="bi-envelope fs-3"></i>
-              </a>
-            </li>
-            <!-- 다크모드 토글: light 전용 오버홀 동안 숨김 (footer.css 에서 display:none) -->
-            <!-- dark 토글 (common-handlers.js) -->
-          <li class="list-inline-item dark-mode-button">
-              <a class="text-decoration-none"
-                 href="mailto:jsongnoti+cs@gmail.com?subject=일본 신곡 알림이 문의">
-                다크모드
-                <i class="bi bi-moon-fill fs-3"></i>
+                <i class="bi-envelope footer-icon"></i>
               </a>
             </li>
           </ul>
@@ -671,8 +671,8 @@
         </div>
         <div class="modal-body">
           <p>
-            가입한 이메일을 인증하여 회원 탈퇴를 진행합니다.<br>
-            회원을 탈퇴하면 저장된 메모와 설정이 모두 삭제됩니다.
+            가입한 이메일을 인증하면 회원 탈퇴가 진행돼요.<br>
+            탈퇴하면 저장된 메모와 설정이 모두 삭제돼요.
           </p>
           <form class="forms-unsubscribe forms" id="deleteUserForm">
             <!-- Email address input-->

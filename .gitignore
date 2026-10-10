@@ -3,6 +3,7 @@ gradle.properties
 buildNumber.txt
 debug.log
 .playwright-mcp/
+.chrome-devtools-mcp/
 .mcp.json
 .env
 

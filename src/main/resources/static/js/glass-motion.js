@@ -5,7 +5,7 @@
  * 담당:
  *  1) 로드 시퀀스: .veil 요소에 .on 을 붙여 --vd 딜레이 순서대로 띄운다
  *  2) 스크롤 리빌: [data-lift] 요소가 30% 이상 보이면 .is-lit 을 붙인다 (기존 fade-in.js 대체)
- *  3) scroll edge: 화면 상단 점진 블러 베일(.scroll-veil)을 심고 scrollY > 8 에서
+ *  3) scroll edge: 화면 상단 점진 블러 베일(.scroll-veil 두 겹)을 심고 scrollY > 8 에서
  *     .navbar 에 .scroll-veil-on 을 붙여 켠다 (ui-rnd 5턴). 크롬 유리(.glass-capsule)마다
  *     콘텐츠 패널이 밑에 들어오면 .over-content, 글자 밑에 busy 패널(.content-panel-busy)이 있으면
  *     .over-content-busy 를 붙여 상태를 바꾼다 (glass.css 재질 절)
@@ -26,8 +26,11 @@
  * 10) 페이지 제목 접힘: 페이지 제목(h1)이 스크롤로 브랜드 캡슐 밑을 지나가면 .navbar 에
  *     .is-page-title-scrolled-away 를 붙인다. 캡슐의 이름이 사이트 이름에서 페이지 이름으로
  *     바뀐다 (header-text.css 브랜드 이름 자리)
+ * 11) 신곡 표 머리에서 멈추기: index 에서 1200px 미만일 때 손가락을 빠르게 올리면
+ *     (SONG_PANEL_STOP_FLICK_SPEED) 아래쪽 다음 신곡 표(TJ·금영)의 윗머리를 스냅 자리로 켠다. 튕기면 그 표가
+ *     화면 위에 오는 자리에서 멈추고, 천천히 끌다 놓으면 평소처럼 스크롤된다 (page/index.css 같은 이름의 절)
  *
- * 콘텐츠 패널은 불투명 프로스트라(ADR 0001) 여기서는 손대지 않는다 — 굽기는 frost-baking.js.
+ * 콘텐츠 패널은 덮개색 한 겹의 반투명 패널이라(glass.css) 여기서는 손대지 않는다.
  *
  * 컬랩스의 높이 전환 자체에는 관여하지 않는다 — 전 페이지 순정 부트스트랩
  * collapse 를 쓴다. (과거 6·7번 높이 예약 구역은 body 그라디언트가 문서
@@ -78,17 +81,21 @@
     });
 
     // scroll edge: 상단 점진 블러 베일(.scroll-veil)은 상단바 있는 페이지에만 심는다 —
-    // 표시는 CSS 형제 선택자(.navbar.scroll-veil-on ~ .scroll-veil)가 따라온다
+    // 표시는 CSS 형제 선택자(.navbar.scroll-veil-on ~ .scroll-veil)가 따라온다.
+    // 흐림 세기가 다른 층 둘(.scroll-veil-layer-1~2)을 형제로 심는다 — 한 요소 안에 겹치면
+    // 바깥 요소의 마스크·투명도 때문에 안쪽 층이 뒤 화면을 읽지 못한다
     var navbar = document.querySelector(".navbar");
     if (navbar) {
-        var scrollVeil = document.createElement("div");
-        scrollVeil.className = "scroll-veil";
-        scrollVeil.setAttribute("aria-hidden", "true");
-        // 형제 선택자가 물리도록 상단바와 같은 부모(#container)의 끝에 심는다
-        // (fixed 라 부모가 어디든 뷰포트 기준으로 뜬다)
-        navbar.parentElement.appendChild(scrollVeil);
+        for (var veilLayer = 1; veilLayer <= 2; veilLayer++) {
+            var scrollVeil = document.createElement("div");
+            scrollVeil.className = "scroll-veil scroll-veil-layer-" + veilLayer;
+            scrollVeil.setAttribute("aria-hidden", "true");
+            // 형제 선택자가 물리도록 상단바와 같은 부모(#container)의 끝에 심는다
+            // (fixed 라 부모가 어디든 뷰포트 기준으로 뜬다)
+            navbar.parentElement.appendChild(scrollVeil);
+        }
 
-        // 페이지 위치: 스크롤 위치로 .navbar 에 두 상태를 붙인다
+        // 페이지 위치: 스크롤 위치로 .navbar 에 세 상태를 붙인다
         //  .scroll-veil-on    — 8px 넘게 내려왔다. 상단 흐림 베일이 켜진다
         //  .is-past-top-zone  — 최상단 영역을 벗어났다. 120px 을 넘으면 켜고 40px 아래로 돌아오면 끈다 —
         //                       문턱을 둘로 나눠 맨 위 근처에서 오르내리지 않게 한다
@@ -117,26 +124,39 @@
         // 메뉴 캡슐의 이동 (containers.css "메뉴 캡슐의 이동" 절): 최상단 영역을 벗어나면 돌면서
         // 오른쪽 아래로 내려가고, 돌아오면 올라온다. 1200px 이상에서는 위에 머문다
         // 자리: 위는 콘텐츠 열(1140px)의 오른쪽 끝·윗선 16px (containers.css 의 --chrome-* 와 같은 값),
-        // 아래는 오른쪽 12px·캡슐의 아랫선이 화면 높이의 70%
+        // 아래는 오른쪽 12px·캡슐의 아랫선이 주소창이 숨은 화면 높이(100lvh)의 70%. 아래 자리는 화면 아랫선에서
+        // 재므로 휴대폰 주소창이 나타나고 사라져도 화면에서 움직이지 않는다
         var MENU_COLUMN_HALF = 570, MENU_EDGE = 12, MENU_TOP = 16, MENU_DOCK_BOTTOM_LINE = .7;
         var menuCapsule = document.querySelector(".menu-capsule");
         var menuButtons = menuCapsule ? Array.prototype.slice.call(menuCapsule.querySelectorAll(".icon-link")) : [];
         var menuStaysOnTop = window.matchMedia("(min-width: 1200px)");
         var menuReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
         var menuDocked = false;
+        // 주소창이 숨은 화면 높이(100lvh)를 재는 보이지 않는 막대. lvh 를 모르는 브라우저에서는 높이 0
+        var largeViewportProbe = document.createElement("div");
+        largeViewportProbe.style.cssText = "position:fixed;top:0;left:0;width:0;height:100lvh;visibility:hidden;pointer-events:none";
+        largeViewportProbe.setAttribute("aria-hidden", "true");
+        document.body.appendChild(largeViewportProbe);
 
-        // 자리는 right·bottom 이 아니라 기기 픽셀에 맞춘 left·top 으로 놓는다 — 소수점 자리에 놓이면
-        // 이동이 끝난 뒤 내용이 픽셀 격자에 다시 물리며 살짝 움직인다
+        // 자리는 right 가 아니라 기기 픽셀에 맞춘 left 로, 위 자리는 top·아래 자리는 bottom 으로 놓는다 —
+        // 소수점 자리에 놓이면 이동이 끝난 뒤 내용이 픽셀 격자에 다시 물리며 살짝 움직인다
         var placeMenuCapsule = function () {
             var ratio = window.devicePixelRatio || 1;
+            var snapToDevicePixel = function (value) { return Math.round(value * ratio) / ratio + "px"; };
             var viewportWidth = document.documentElement.clientWidth;
             var left = menuDocked
                 ? viewportWidth - MENU_EDGE - menuCapsule.offsetWidth
                 : viewportWidth - Math.max(MENU_EDGE, viewportWidth / 2 - MENU_COLUMN_HALF) - menuCapsule.offsetWidth;
-            var top = menuDocked ? window.innerHeight * MENU_DOCK_BOTTOM_LINE - menuCapsule.offsetHeight : MENU_TOP;
-            menuCapsule.style.left = Math.round(left * ratio) / ratio + "px";
-            menuCapsule.style.top = Math.round(top * ratio) / ratio + "px";
+            menuCapsule.style.left = snapToDevicePixel(left);
             menuCapsule.style.right = "auto";
+            if (menuDocked) {
+                var largeViewportHeight = largeViewportProbe.offsetHeight || window.innerHeight;
+                menuCapsule.style.top = "auto";
+                menuCapsule.style.bottom = snapToDevicePixel(largeViewportHeight * (1 - MENU_DOCK_BOTTOM_LINE));
+            } else {
+                menuCapsule.style.top = snapToDevicePixel(MENU_TOP);
+                menuCapsule.style.bottom = "auto";
+            }
         };
 
         var applyMenuDocked = function () {
@@ -456,6 +476,120 @@
         });
     });
 
+    // 오버스크롤: 페이지가 내려가 있으면 html.overscroll-locked 를 붙여 끄고, 맨 위에서 스크롤이 멈추면 뗀다
+    // (glass.css 오버스크롤 절). Chrome 은 제스처를 시작할 때 overscroll-behavior 를 읽으므로, 맨 위에서
+    // 새로 당기는 제스처에는 늘어남과 당겨서 새로 고침이 그대로 걸린다
+    var updateOverscrollLock = function () {
+        document.documentElement.classList.toggle("overscroll-locked", window.scrollY > 0);
+    };
+    window.addEventListener("scroll", function () {
+        if (window.scrollY > 0) document.documentElement.classList.add("overscroll-locked");
+    }, { passive: true });
+    window.addEventListener("scrollend", updateOverscrollLock);
+    updateOverscrollLock();
+
+    // 신곡 표 머리에서 멈추기 (7기 1번): 손가락을 빠르게 올리는(아래로 스크롤) 동안만 스냅을 켠다. 스냅 자리는
+    // 손가락이 있는 자리(앵커)와, 지금 자리 아래의 다음 신곡 표 윗머리(지나칠 수 없음) 둘이다. 다음 윗머리가 화면
+    // 높이의 SONG_PANEL_STOP_REACH 배보다 멀면 켜지 않는다. 앵커는 켤 때 그 자리에 놓고 켜져 있는 동안 스크롤
+    // 위치를 따라가므로 켜는 순간 끌려가지 않고, 튕기면 진행 방향의 윗머리로 간다. 손가락이 느려지거나 멈추면 끄므로
+    // 그 뒤에 놓으면 평소처럼 스크롤된다. 끌어서 윗머리를 지나치면 끄고, 스크롤이 멈추면 끈다. 터치 이벤트로만
+    // 켜지므로 휠·키보드 스크롤에는 걸리지 않고, PC 폭(1200px 이상)에서는 켜지 않는다
+    var SONG_PANEL_STOP_FLICK_SPEED = 1.5; // 튕김으로 보는 손가락 속도(px/ms)
+    var SONG_PANEL_STOP_SPEED_WINDOW = 100; // 손가락 속도를 재는 최근 구간(ms)
+    var SONG_PANEL_STOP_FINGER_REST = 80; // 켜진 채 손가락이 이만큼(ms) 움직이지 않으면 멈춘 것으로 보고 끈다
+    var SONG_PANEL_STOP_REACH = 1.2; // 다음 윗머리가 화면 높이의 이 배수 안쪽일 때만 켠다
+    var songPanels = document.querySelector(".hero") ? document.querySelectorAll(".songs-grid > .song-panel") : [];
+    var songPanelStopOffOnPc = window.matchMedia("(min-width: 1200px)");
+    if (songPanels.length) {
+        var root = document.documentElement;
+        var appendScrollMarker = function (className) {
+            var marker = document.createElement("div");
+            marker.className = className;
+            marker.setAttribute("aria-hidden", "true");
+            document.body.appendChild(marker);
+            return marker;
+        };
+        var fingerAnchor = appendScrollMarker("scroll-stop-finger-anchor");
+        var songPanelStopPoints = Array.prototype.map.call(songPanels, function () {
+            return appendScrollMarker("song-panel-stop-point");
+        });
+        var songPanelStopTouching = false;
+        var songPanelStopYs = []; // 패널마다 멈추는 스크롤 위치 (index.css 의 scroll-margin-top 반영)
+        var nextSongPanelStop = -1; // 켜져 있는 멈춤 자리의 순번, 꺼져 있으면 -1
+        var fingerSamples = [];
+        var fingerRestTimer = 0;
+        // 멈춤 자리를 각 패널의 레이아웃 위치(transform 은 뺌)에 놓는다
+        var placeSongPanelStopPoints = function () {
+            songPanelStopYs = Array.prototype.map.call(songPanels, function (panel, index) {
+                var top = 0;
+                for (var element = panel; element; element = element.offsetParent) top += element.offsetTop;
+                var stopPoint = songPanelStopPoints[index];
+                stopPoint.style.top = top + "px";
+                return top - parseFloat(getComputedStyle(stopPoint).scrollMarginTop || 0);
+            });
+        };
+        // 지금 자리 아래의 첫 멈춤 자리 순번, 손이 닿지 않으면 -1 (2열로 높이가 같으면 앞의 것)
+        var findNextSongPanelStop = function () {
+            for (var index = 0; index < songPanelStopYs.length; index++) {
+                var distance = songPanelStopYs[index] - window.scrollY;
+                if (distance > 1) return distance <= window.innerHeight * SONG_PANEL_STOP_REACH ? index : -1;
+            }
+            return -1;
+        };
+        // 최근 구간의 손가락 위쪽 속도(px/ms), 아래로 스크롤하는 방향이 양수
+        var recordFinger = function (y, time) {
+            fingerSamples.push({ y: y, time: time });
+            while (time - fingerSamples[0].time > SONG_PANEL_STOP_SPEED_WINDOW) fingerSamples.shift();
+            var first = fingerSamples[0];
+            return time > first.time ? (first.y - y) / (time - first.time) : 0;
+        };
+        var setNextSongPanelStop = function (index) {
+            if (index === nextSongPanelStop) return;
+            if (nextSongPanelStop >= 0) songPanelStopPoints[nextSongPanelStop].classList.remove("is-next-stop");
+            if (index >= 0) {
+                fingerAnchor.style.top = window.scrollY + "px";
+                songPanelStopPoints[index].classList.add("is-next-stop");
+            }
+            root.classList.toggle("song-panel-scroll-stop", index >= 0);
+            nextSongPanelStop = index;
+        };
+        window.addEventListener("touchstart", function (event) {
+            songPanelStopTouching = true;
+            if (songPanelStopOffOnPc.matches) songPanelStopYs = [];
+            else placeSongPanelStopPoints();
+            fingerSamples = [];
+            recordFinger(event.touches[0].clientY, event.timeStamp);
+        }, { passive: true });
+        window.addEventListener("touchmove", function (event) {
+            var speed = recordFinger(event.touches[0].clientY, event.timeStamp);
+            var flicking = event.touches.length === 1 && speed >= SONG_PANEL_STOP_FLICK_SPEED;
+            setNextSongPanelStop(flicking ? findNextSongPanelStop() : -1);
+            clearTimeout(fingerRestTimer);
+            if (nextSongPanelStop >= 0) {
+                fingerRestTimer = setTimeout(function () { setNextSongPanelStop(-1); }, SONG_PANEL_STOP_FINGER_REST);
+            }
+        }, { passive: true });
+        window.addEventListener("touchend", function (event) {
+            songPanelStopTouching = false;
+            clearTimeout(fingerRestTimer);
+            var speed = recordFinger(event.changedTouches[0].clientY, event.timeStamp);
+            if (speed < SONG_PANEL_STOP_FLICK_SPEED) setNextSongPanelStop(-1);
+        }, { passive: true });
+        window.addEventListener("touchcancel", function () {
+            songPanelStopTouching = false;
+            clearTimeout(fingerRestTimer);
+            setNextSongPanelStop(-1);
+        }, { passive: true });
+        window.addEventListener("scroll", function () {
+            if (!songPanelStopTouching || nextSongPanelStop < 0) return;
+            if (window.scrollY > songPanelStopYs[nextSongPanelStop] + 1) setNextSongPanelStop(-1);
+            else fingerAnchor.style.top = window.scrollY + "px";
+        }, { passive: true });
+        window.addEventListener("scrollend", function () {
+            if (!songPanelStopTouching) setNextSongPanelStop(-1);
+        });
+    }
+
     // scroll 중 hover 억제: 휠 노치마다(스크롤 제스처가 끝날 때마다) Chrome 이
     // 포인터 아래 행의 hover 를 갱신해 행 배경이 켜졌다 꺼지고, 그때마다 결과
     // 카드가 재페인트되어 GPU 래스터를 기다린다 (ui-overhaul-2 7턴 실측: 첫
@@ -726,7 +860,12 @@
         var se = document.scrollingElement || document.documentElement;
         document.documentElement.style.overflowAnchor = "none";
         trackHiddenDone = false;
-        var e0 = null;
+        // 이탈량의 출발값은 부르는 순간(접힘이 높이를 줄이기 전)에 잰다 — 첫 rAF 에서 재면 그 프레임에
+        // 이미 줄어든 높이만큼 버튼이 튄 자리를 출발점으로 삼아, 한 프레임 동안 화면이 덜컹인다
+        var r0 = btnEl.getBoundingClientRect();
+        var desired0 = r0.top + r0.height / 2 + window.scrollY - se.clientHeight / 2;
+        desired0 = Math.max(0, Math.min(se.scrollHeight - se.clientHeight, desired0));
+        var e0 = desired0 - window.scrollY;
         var start = null;
         var abort = function () { cancelFollowScroll(); };
         window.addEventListener("wheel", abort, { passive: true });
@@ -745,7 +884,6 @@
             // 문서가 전환 중에 실제로 줄어드는 만큼 상한도 프레임마다 따라간다
             var natural = se.scrollHeight - se.clientHeight;
             desired = Math.max(0, Math.min(natural, desired));
-            if (e0 === null) e0 = desired - window.scrollY;
             window.scrollTo(0, desired - e0 * (1 - captureEase(t)));
             // hidden 미발화 대비 3s 안전 상한
             if (t >= 1 && (trackHiddenDone || ts - start > 3000)) {

@@ -83,7 +83,7 @@ public class IndexController {
 
     @GetMapping("/login")
     public String login(RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("alertMessage", "로그인이 필요합니다.");
+        redirectAttributes.addFlashAttribute("alertMessage", "로그인이 필요해요.");
         return "redirect:/";
     }
 

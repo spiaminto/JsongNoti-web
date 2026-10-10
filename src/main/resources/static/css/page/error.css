@@ -27,6 +27,7 @@ html[data-theme="dark"] body::before {
 
 /* 카드: 시트와 같은 28px 반경, 패널 그림자 + 먼 그림자. 작게 잡지 않는다 (PC 560px) */
 .error-card {
+    box-sizing: border-box;
     width: min(560px, 100vw - 32px);
     padding: 3.4rem clamp(2.4rem, 9vw, 4.5rem) 3.2rem;
     --r-parent: var(--r-sheet);
@@ -40,16 +41,11 @@ html[data-theme="dark"] .error-card {
 
 .error-card h1 {
     color: var(--ink);
-    font-size: var(--fs-2xl);
-    font-weight: var(--fw-title);
-    letter-spacing: -.015em;
     margin: 0 0 .7rem;
 }
 
 .error-card p {
     color: var(--ink-2);
-    font-size: var(--fs-body);
-    line-height: 1.6;
     margin: 0 0 2.2rem;
 }
 

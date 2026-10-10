@@ -13,6 +13,15 @@
     text-align: left;
 }
 
+/* 검색 유형 라디오 사이 간격: 네 개가 390px 폭에서 한 줄에 들어간다 (Bootstrap 기본 1rem) */
+.search-type-check-wrapper .form-check-inline {
+    margin-right: .5rem;
+}
+
+.search-type-check-wrapper .form-check-inline:last-child {
+    margin-right: 0;
+}
+
 #searchHintContainer {
     text-align: left;
 }
@@ -27,35 +36,26 @@
     }
 }
 
+/* 페이지 제목 아래 소개: 다른 페이지의 소개 문구와 같은 옅은 잉크 */
 #searchHintContainer p {
-    font-size: var(--fs-md);
     margin-bottom: 0.2rem;
+    color: var(--ink-2);
 }
 
-/* 검색 도움말 링크: 잉크색 + 밑줄 */
+/* 검색 도움말 링크: 옅은 잉크, 밑줄 없음. 본문보다 작은 글자라 아래 끝을 본문 글자 아래 끝에 맞춘다 */
 #searchHintContainer .search-help-link {
-    color: var(--ink);
-    text-decoration: underline;
-    text-decoration-thickness: from-font;
-    text-underline-offset: .2em;
+    color: var(--ink-3);
+    text-decoration: none;
+    vertical-align: text-bottom;
 }
 
 .song-search-result-collapse {
     width: 100%;
     margin: 0 auto;
     max-width: 768px;
+    /* .row 자식의 좌우 거터 12px 를 8px 로 줄인다. card 의 px-1 4px 와 합쳐 .row 의 -12px 를 상쇄해
+       결과 표가 신곡 표처럼 패널 여백에서 바로 시작한다 */
     padding: 0 0.5rem;
-}
-
-/* 검색 결과 표는 1열이라 index 의 2열 표보다 정보 밀도가 낮다 — 768px 이상에서
-   표 토큰만 한 칸 넓힌다(제목 17→18, 보조줄 15→16, 4기 8턴). 사다리(glass.css)는
-   그대로이고 이 패널 안에서 값만 다시 정한다. 보조줄 위 여백 .7rem 예외는 9턴 후속에서
-   세로 간격을 다시 정하며(제목→아티스트 .125rem, 아티스트→작품명 .5rem) 걷었다 */
-@media (min-width: 768px) {
-    .song-search-result-collapse {
-        --fs-body: 18px;
-        --fs-md: 16px;
-    }
 }
 
 .song-search-result-collapse .song-title:hover {
@@ -63,7 +63,7 @@
 }
 
 .unified-search-group {
-    padding: 1rem 0.5rem 0;
+    padding: 1rem 0 0;
 }
 
 /* C 플랫(19턴): 그룹 사이 구분선은 지운다("표 맨아래 border" — 사용자 피드백).
@@ -88,13 +88,10 @@
 
 .unified-search-group-header h4 {
     margin: 0;
-    font-size: var(--fs-body);
 }
 
 .unified-search-result-count {
     color: var(--ink-2);
-    font-size: var(--fs-sm);
-    font-weight: var(--fw-body);
 }
 
 .unified-search-group-message,
@@ -122,7 +119,7 @@
    지나가고 전 행이 동기로 반짝인다 */
 .song-table .placeholder {
     background-color: rgb(154 178 200 / .35);
-    border-radius: 6px;
+    border-radius: var(--r-swatch);
 }
 
 .song-table .placeholder-wave {

@@ -49,13 +49,13 @@ public class FavoriteSongService {
         // 중복확인
         FavoriteSong findFavoriteSong = favoriteSongRepository.findByMemberIdAndBrandAndSongNumber(userId, song.getBrand(), song.getSongNumber());
         if (findFavoriteSong != null) {
-            return FavoriteSongServiceResult.fail("이미 해당 곡이 존재합니다.");
+            return FavoriteSongServiceResult.fail("이미 저장된 곡이에요.");
         }
 
         long favoriteSongCount = favoriteSongRepository.countByMemberId(userId);
         // 100개 이상 저장불가
         if (favoriteSongCount >= 200) {
-            return FavoriteSongServiceResult.fail("현재 애창곡은 200개까지만 저장 가능합니다.");
+            return FavoriteSongServiceResult.fail("애창곡은 지금 200개까지만 저장할 수 있어요.");
         }
         // 순서 미리 변경
         if (favoriteSongCount != presentOrder) {
@@ -74,7 +74,7 @@ public class FavoriteSongService {
                 .build();
         favoriteSongRepository.save(favoriteSong);
 
-        return FavoriteSongServiceResult.success("애창곡이 저장되었습니다.");
+        return FavoriteSongServiceResult.success("애창곡을 저장했어요.");
     }
 
     @Transactional
@@ -82,13 +82,13 @@ public class FavoriteSongService {
         // 검증
         FavoriteSong findFavoriteSong = favoriteSongRepository.findById(favoriteSongId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 곡입니다."));
         if (!findFavoriteSong.getMemberId().equals(userId)) {
-            return FavoriteSongServiceResult.fail("잘못된 요청입니다.");
+            return FavoriteSongServiceResult.fail("잘못된 요청이에요.");
         }
         // 작업
         favoriteSongRepository.deleteById(favoriteSongId);
         // 반환
         syncPresentOrder(userId, findFavoriteSong.getPresentOrder(), findFavoriteSong.getBrand(), "delete");
-        return FavoriteSongServiceResult.success("애창곡이 삭제되었습니다.");
+        return FavoriteSongServiceResult.success("애창곡을 삭제했어요.");
     }
 
     /**
@@ -117,7 +117,7 @@ public class FavoriteSongService {
         // 검증
         if (favoriteSongs.size() != favoriteSongIds.size()) {
             // 들어온 갯수와 실제 갯수가 다름 (다른 브랜드가 섞여들어옴 or 중복된 id 가 들어옴)
-            return FavoriteSongServiceResult.fail("잘못된 요청입니다.");
+            return FavoriteSongServiceResult.fail("잘못된 요청이에요.");
         }
         // 순서 매핑
         Map<Long, Integer> favoriteSongIdOrderMap = IntStream.range(0, favoriteSongIds.size())
@@ -130,7 +130,7 @@ public class FavoriteSongService {
                 favoriteSong.updatePresentOrder(order);
             }
         });
-        return FavoriteSongServiceResult.success("순서가 변경되었습니다.");
+        return FavoriteSongServiceResult.success("순서를 바꿨어요.");
     }
 
 

@@ -1,14 +1,10 @@
 /* ==========================================================================
-   header-text.css — 헤더·본문 typography
-   글래스모피즘 오버홀: 잉크 색은 glass.css 토큰을 쓰고,
-   SUITE 가변 글꼴이 300~900 을 모두 그리므로 bold 같은 키워드 대신
-   명시적인 weight 를 쓴다.
+   header-text.css — 제목의 색·여백과 상단바 브랜드 이름의 배치
+   글자 크기·줄간격·자간·굵기는 typography.css 의 글자 역할이 정한다.
    ========================================================================== */
 
 h1, h2, h3, h4, h5, h6 {
     color: var(--ink);
-    font-weight: var(--fw-title); /* 제목은 크기가 위계를 지므로 800 까지 올리지 않는다 */
-    letter-spacing: -.02em;
 }
 
 h1, h2, h3 {
@@ -26,9 +22,6 @@ h1, h2, h3 {
 }
 
 .brand-name .navbar-brand {
-    font-size: var(--fs-lg); /* 전 구간 동일 (992px 분기 제거) */
-    font-weight: var(--fw-title); /* 크롬 글자라 페이지 제목 h1 보다 무겁지 않게 */
-    letter-spacing: -.04em;
     color: var(--ink);
     padding: 0;
     margin-right: 0;
@@ -79,26 +72,4 @@ h1, h2, h3 {
         translate: none !important;
         filter: none !important;
     }
-}
-
-/* ---------- 본문 헤더 크기: 글자 사다리 (glass.css --fs-*, 4기 7턴, 5기 9번) ---------- */
-h1 { /* 페이지 제목, 페이지당 하나 (노래 검색, 애창곡). 홈은 히어로 문장 */
-    font-size: var(--fs-title-large);
-    letter-spacing: -.025em;
-}
-
-h2 { /* 섹션 제목 (최근 신곡, 사용 방법, 검색 결과, 애창곡 추가) */
-    font-size: var(--fs-2xl);
-}
-
-h3 { /* 패널 제목 (월별 신곡, 브랜드별 애창곡)과 소제목 (구독하기, 문의사항 ...). 모달 제목은 glass.css .modal-title */
-    font-size: var(--fs-lg);
-}
-
-h4 { /* 하위 소제목 */
-    font-size: var(--fs-lg);
-}
-
-.lead {
-    font-size: var(--fs-body);
 }

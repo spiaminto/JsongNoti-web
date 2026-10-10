@@ -1,8 +1,8 @@
 /* ==========================================================================
    footer.css — 푸터
    푸터는 패널 없이 바탕 위에 바로 놓는다. 글자는 보조 잉크(--ink-2)라
-   dark 에서도 토큰만 바뀌면 된다. dark 토글 버튼(.dark-mode-button)은
-   3기에서 복원 (D22, 동작은 common-handlers.js).
+   dark 에서도 토큰만 바뀌면 된다. 테마 토글(.dark-mode-button)은 링크 줄이
+   아니라 왼쪽 묶음 맨 위 버튼 줄에 위험 동작 버튼과 나란히 둔다 (동작은 common-handlers.js).
    기존 Bootstrap grid(.row/.col-lg-6) 골격은 유지하고 색·간격만 다듬는다.
    ========================================================================== */
 
@@ -13,19 +13,23 @@
 
 .footer p {
     margin-bottom: 0;
-    font-size: var(--fs-sm);
     color: var(--ink-2);
 }
 
-/* Bootstrap 의 .text-muted 색 대신 잉크 톤으로 통일 */
-.footer .text-muted,
-.footer a.text-muted {
-    color: var(--ink-2) !important;
+/* 버튼 줄: 구독 취소·회원 탈퇴(있는 화면만) | 테마 토글. 버튼 크기는 사다리 medium(기본 .btn).
+   모바일은 가운데, 992px 이상은 왼쪽 묶음을 따라 왼쪽에 붙는다 */
+.footer-button-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .5rem;
+    margin-bottom: 1rem;
 }
 
-/* 구독 취소·회원 탈퇴 버튼: 크기는 사다리 medium(기본 .btn) — 14턴 피드백 */
-.footer .btn-danger {
-    margin-bottom: 1rem;
+@media (min-width: 992px) {
+    .footer-button-row {
+        justify-content: flex-start;
+    }
 }
 
 .footer-icon-container {
@@ -33,8 +37,16 @@
 }
 
 .footer-icon-container a {
-    font-weight: var(--fw-strong); /* 작은 글자의 강조 */
     color: var(--ink-2) !important; /* .text-primary-emphasis 를 잉크 톤으로 */
+}
+
+.footer-icon {
+    font-size: var(--fs-lg);
+}
+
+/* 아이콘 잉크 중심을 옆 글자 잉크 중심에 맞춘다: Bootstrap 기본 -.125em 이면 아이콘이 약 1.3px 위에 뜬다 */
+.footer-icon::before {
+    vertical-align: -.19em;
 }
 
 .footer-icon-container a:hover {
@@ -48,6 +60,28 @@
         margin-top: auto;
         margin-bottom: auto;
     }
+}
+
+/* 테마 토글: 중립 .btn. 라벨은 누르면 바뀔 테마 — 라이트에서는 다크 모드, 다크에서는 라이트 모드 */
+.dark-mode-button .theme-label-to-dark,
+.dark-mode-button .theme-label-to-light {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+}
+
+.dark-mode-button .theme-label-to-light,
+html[data-theme="dark"] .dark-mode-button .theme-label-to-dark {
+    display: none;
+}
+
+html[data-theme="dark"] .dark-mode-button .theme-label-to-light {
+    display: inline-flex;
+}
+
+/* 링크 줄의 PC 끝 항목: 뒤에 숨은 모바일 항목이 있어 Bootstrap 이 붙이는 오른쪽 여백을 걷는다 */
+.footer-icon-container .list-inline-item.contact-mail-pc {
+    margin-right: 0;
 }
 
 /* 메일문의 링크: PC 는 gmail 웹, 모바일은 mailto */

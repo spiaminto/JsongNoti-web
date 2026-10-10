@@ -34,7 +34,7 @@ public class FavoriteSongController {
         Long userId = favoriteSongSearchRequest.getUserId();
         // 폼 userId 값 검증
         if (!userId.equals(principalDetails.getMemberId())) {
-            return ResponseEntity.badRequest().body(FavoriteSongResponse.withMessage("잘못된 애창곡 요청입니다."));
+            return ResponseEntity.badRequest().body(FavoriteSongResponse.withMessage("잘못된 애창곡 요청이에요."));
         }
 
         FavoriteSongServiceResult result = favoriteSongService.searchFavoriteSongs(new FavoriteSongSearchCond(favoriteSongSearchRequest.getUserId(), favoriteSongSearchRequest.getBrand(), favoriteSongSearchRequest.getFavoriteSongPresentType()));
@@ -49,7 +49,7 @@ public class FavoriteSongController {
         Long userId = favoriteSongAddRequest.getUserId();
         // 폼 userId 값 검증
         if (!userId.equals(principalDetails.getMemberId())) {
-            return ResponseEntity.badRequest().body(FavoriteSongResponse.withMessage("잘못된 추가 요청입니다."));
+            return ResponseEntity.badRequest().body(FavoriteSongResponse.withMessage("잘못된 추가 요청이에요."));
         }
 
         Long songId = favoriteSongAddRequest.getSongId();
@@ -69,7 +69,7 @@ public class FavoriteSongController {
         Long userId = favoriteSongsReorderRequest.getUserId();
         // 폼 userId 값 검증
         if (!userId.equals(principalDetails.getMemberId())) {
-            return ResponseEntity.badRequest().body(FavoriteSongResponse.withMessage("잘못된 순서변경 요청입니다."));
+            return ResponseEntity.badRequest().body(FavoriteSongResponse.withMessage("잘못된 순서 변경 요청이에요."));
         }
 
         List<Long> favoriteSongIds = favoriteSongsReorderRequest.getFavoriteSongIds();
@@ -89,7 +89,7 @@ public class FavoriteSongController {
         Long userId = favoriteSongDeleteRequest.getUserId();
         // 폼 userId 값 검증
         if (!userId.equals(principalDetails.getMemberId())) {
-            return ResponseEntity.badRequest().body(FavoriteSongResponse.withMessage("잘못된 메모삭제 요청입니다."));
+            return ResponseEntity.badRequest().body(FavoriteSongResponse.withMessage("잘못된 메모 삭제 요청이에요."));
         }
 
         FavoriteSongServiceResult result = favoriteSongService.deleteFavoriteSong(userId, favoriteSongId);
